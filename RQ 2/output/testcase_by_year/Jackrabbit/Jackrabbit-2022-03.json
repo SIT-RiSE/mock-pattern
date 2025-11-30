@@ -1,0 +1,271 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-core\\src\\test\\java\\org\\apache\\jackrabbit\\api\\security\\user\\UserManagerTest.java",
+  "methodName" : "testFindUserWithSpecialCharIdByPrincipalName",
+  "sourceCode" : "@Test\r\npublic void testFindUserWithSpecialCharIdByPrincipalName() throws RepositoryException {\r\n    List<String> ids = Arrays.asList(\"'\", Text.escapeIllegalJcrChars(\"']\"), Text.escape(\"']\"));\r\n    for (String id : ids) {\r\n        User user = null;\r\n        try {\r\n            user = userMgr.createUser(id, \"pw\");\r\n            superuser.save();\r\n            boolean found = false;\r\n            Iterator<Authorizable> it = userMgr.findAuthorizables(\"rep:principalName\", id, UserManager.SEARCH_TYPE_USER);\r\n            while (it.hasNext() && !found) {\r\n                Authorizable a = it.next();\r\n                found = id.equals(a.getID());\r\n            }\r\n            assertTrue(found);\r\n        } finally {\r\n            if (user != null) {\r\n                user.remove();\r\n                superuser.save();\r\n            }\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-core\\src\\test\\java\\org\\apache\\jackrabbit\\api\\security\\user\\UserManagerTest.java",
+  "methodName" : "testFindUserWithSpecialCharIdByPrincipalName2",
+  "sourceCode" : "@Test\r\npublic void testFindUserWithSpecialCharIdByPrincipalName2() throws RepositoryException {\r\n    List<String> ids = Arrays.asList(\"]\");\r\n    for (String id : ids) {\r\n        User user = null;\r\n        try {\r\n            user = userMgr.createUser(id, \"pw\");\r\n            superuser.save();\r\n            boolean found = false;\r\n            Iterator<Authorizable> it = userMgr.findAuthorizables(\"rep:principalName\", id, UserManager.SEARCH_TYPE_USER);\r\n            while (it.hasNext() && !found) {\r\n                Authorizable a = it.next();\r\n                found = id.equals(a.getID());\r\n            }\r\n            assertTrue(found);\r\n        } finally {\r\n            if (user != null) {\r\n                user.remove();\r\n                superuser.save();\r\n            }\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-core\\src\\test\\java\\org\\apache\\jackrabbit\\api\\security\\user\\UserManagerTest.java",
+  "methodName" : "testQueryUserWithSpecialCharId",
+  "sourceCode" : "@Test\r\npublic void testQueryUserWithSpecialCharId() throws Exception {\r\n    List<String> ids = Arrays.asList(\"'\", \"]\");\r\n    for (String id : ids) {\r\n        User user = null;\r\n        try {\r\n            user = userMgr.createUser(id, \"pw\");\r\n            superuser.save();\r\n            boolean found = false;\r\n            String query = \"{\\\"condition\\\":[{\\\"named\\\":\\\"\" + id + \"\\\"}]}\";\r\n            AuthorizableQueryManager queryManager = new AuthorizableQueryManager(userMgr, superuser.getValueFactory());\r\n            Iterator<Authorizable> it = queryManager.execute(query);\r\n            while (it.hasNext() && !found) {\r\n                Authorizable a = it.next();\r\n                found = id.equals(a.getID());\r\n            }\r\n            assertTrue(found);\r\n        } finally {\r\n            if (user != null) {\r\n                user.remove();\r\n                superuser.save();\r\n            }\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-core\\src\\test\\java\\org\\apache\\jackrabbit\\core\\integration\\InterruptedQueryTest.java",
+  "methodName" : "testQuery",
+  "sourceCode" : "@Test\r\npublic void testQuery() throws Exception {\r\n    if (Constants.WINDOWS) {\r\n        return;\r\n    }\r\n    for (int i = 0; i < 100; i++) {\r\n        session.getRootNode().addNode(\"node\" + i, \"nt:unstructured\");\r\n    }\r\n    session.save();\r\n    final QueryManager qm = session.getWorkspace().getQueryManager();\r\n    final AtomicBoolean stop = new AtomicBoolean(false);\r\n    final List<Exception> exceptions = Collections.synchronizedList(new ArrayList<Exception>());\r\n    Thread t = new Thread(new Runnable() {\r\n\r\n        @Override\r\n        public void run() {\r\n            while (!stop.get() && exceptions.isEmpty()) {\r\n                try {\r\n                    // execute query\r\n                    String stmt = \"//*[@jcr:primaryType='nt:unstructured']\";\r\n                    qm.createQuery(stmt, Query.XPATH).execute();\r\n                } catch (RepositoryException e) {\r\n                    if (Constants.SUN_OS) {\r\n                        // on Solaris it's OK when the root cause\r\n                        // of the exception is an InterruptedIOException\r\n                        // the underlying file is not closed\r\n                        Throwable t = e;\r\n                        while (t.getCause() != null) {\r\n                            t = t.getCause();\r\n                        }\r\n                        if (!(t instanceof InterruptedIOException)) {\r\n                            exceptions.add(e);\r\n                        }\r\n                    } else {\r\n                        exceptions.add(e);\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    });\r\n    t.start();\r\n    for (int i = 0; i < 200 && t.isAlive(); i++) {\r\n        t.interrupt();\r\n        Thread.sleep((long) (100.0 * Math.random()));\r\n    }\r\n    stop.set(true);\r\n    t.join();\r\n    if (!exceptions.isEmpty()) {\r\n        throw exceptions.get(0);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-core\\src\\test\\java\\org\\apache\\jackrabbit\\core\\integration\\UtilsGetPathTest.java",
+  "methodName" : "testGetOrCreateByPath1",
+  "sourceCode" : "@Test\r\npublic void testGetOrCreateByPath1() throws RepositoryException {\r\n    String path = testRoot + \"/foo\";\r\n    Node node = JcrUtils.getOrCreateByPath(path, \"nt:unstructured\", superuser);\r\n    superuser.save();\r\n    assertEquals(path, node.getPath());\r\n    assertTrue(superuser.nodeExists(path));\r\n    // existing top-level node, two new descendant nodes\r\n    String path2 = testRoot + \"/foo/a/b\";\r\n    Node node2 = JcrUtils.getOrCreateByPath(path2, \"nt:unstructured\", superuser);\r\n    superuser.save();\r\n    assertEquals(path2, node2.getPath());\r\n    assertTrue(superuser.nodeExists(path2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-core\\src\\test\\java\\org\\apache\\jackrabbit\\core\\integration\\UtilsGetPathTest.java",
+  "methodName" : "testGetOrCreateByPathNoRoot",
+  "sourceCode" : "@Test\r\npublic void testGetOrCreateByPathNoRoot() throws RepositoryException {\r\n    String base = testRoot + \"/foo\";\r\n    Node inter = JcrUtils.getOrCreateByPath(base, \"nt:unstructured\", superuser);\r\n    assertEquals(base, inter.getPath());\r\n    superuser.save();\r\n    // test what happens if getRootNode() throws\r\n    Session mockedSession = Mockito.spy(superuser);\r\n    Mockito.when(mockedSession.getRootNode()).thenThrow(new AccessDeniedException(\"access denied\"));\r\n    Mockito.when(mockedSession.getNode(\"/\")).thenThrow(new AccessDeniedException(\"access denied\"));\r\n    Mockito.when(mockedSession.getItem(\"/\")).thenThrow(new AccessDeniedException(\"access denied\"));\r\n    Mockito.when(mockedSession.nodeExists(\"/\")).thenReturn(false);\r\n    Node result = JcrUtils.getOrCreateByPath(base + \"/bar\", false, null, null, mockedSession, false);\r\n    mockedSession.save();\r\n    assertEquals(base + \"/bar\", result.getPath());\r\n    // already exists -> nop\r\n    Node result2 = JcrUtils.getOrCreateByPath(base + \"/bar\", false, null, null, mockedSession, false);\r\n    mockedSession.save();\r\n    assertEquals(base + \"/bar\", result2.getPath());\r\n    // create unique\r\n    Node result3 = JcrUtils.getOrCreateByPath(base + \"/bar\", true, null, null, mockedSession, false);\r\n    mockedSession.save();\r\n    assertEquals(base + \"/bar0\", result3.getPath());\r\n    // already exists with createUnique == false should pass even when parent isn't readable\r\n    Mockito.when(mockedSession.getNode(base)).thenThrow(new AccessDeniedException(\"access denied\"));\r\n    Mockito.when(mockedSession.getItem(base)).thenThrow(new AccessDeniedException(\"access denied\"));\r\n    Mockito.when(mockedSession.nodeExists(base)).thenReturn(false);\r\n    Node result4 = JcrUtils.getOrCreateByPath(base + \"/bar\", false, null, null, mockedSession, false);\r\n    mockedSession.save();\r\n    assertEquals(base + \"/bar\", result4.getPath());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-core\\src\\test\\java\\org\\apache\\jackrabbit\\core\\query\\lucene\\ComparableArrayTest.java",
+  "methodName" : "testInsert",
+  "sourceCode" : "/**\r\n * Test for JCR-2906 to make sure the SharedFieldCache arranges the entries\r\n * properly and keeps the internal array creation efficient.\r\n */\r\n@Test\r\npublic void testInsert() throws RepositoryException {\r\n    ComparableArray ca = new ComparableArray(\"a\", 1);\r\n    assertEquals(\"a\", ca.toString());\r\n    assertEquals(1, ca.getOffset());\r\n    // insert before\r\n    ca.insert(\"b\", 0);\r\n    assertEquals(\"[b, a]\", ca.toString());\r\n    assertEquals(0, ca.getOffset());\r\n    // insert after\r\n    ca.insert(\"c\", 3);\r\n    assertEquals(\"[b, a, null, c]\", ca.toString());\r\n    assertEquals(0, ca.getOffset());\r\n    // insert inside\r\n    ca.insert(\"d\", 2);\r\n    assertEquals(\"[b, a, d, c]\", ca.toString());\r\n    assertEquals(0, ca.getOffset());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-core\\src\\test\\java\\org\\apache\\jackrabbit\\core\\security\\authorization\\acl\\ReadTest.java",
+  "methodName" : "testEmptyGlobRestriction",
+  "sourceCode" : "/**\r\n * @see <a href=\"https://issues.apache.org/jira/browse/OAK-2412\">OAK-2412</a>\r\n */\r\n@Test\r\npublic void testEmptyGlobRestriction() throws Exception {\r\n    Node grandchild = superuser.getNode(childNPath).addNode(\"child\");\r\n    String ccPath = grandchild.getPath();\r\n    superuser.save();\r\n    // first deny access to 'path' (read-access is granted in the test setup)\r\n    Privilege[] read = privilegesFromName(Privilege.JCR_READ);\r\n    withdrawPrivileges(path, read, Collections.EMPTY_MAP);\r\n    Session testSession = getTestSession();\r\n    assertFalse(testSession.nodeExists(path));\r\n    assertFalse(canGetNode(testSession, path));\r\n    assertFalse(testSession.nodeExists(childNPath));\r\n    assertFalse(canGetNode(testSession, childNPath));\r\n    assertFalse(testSession.nodeExists(ccPath));\r\n    assertFalse(canGetNode(testSession, ccPath));\r\n    assertFalse(testSession.propertyExists(childNPath + '/' + JcrConstants.JCR_PRIMARYTYPE));\r\n    Map<String, Value> emptyStringRestriction = new HashMap<String, Value>(getRestrictions(superuser, childNPath));\r\n    emptyStringRestriction.put(AccessControlConstants.P_GLOB.toString(), vf.createValue(\"\"));\r\n    givePrivileges(childNPath, read, emptyStringRestriction);\r\n    assertFalse(testSession.nodeExists(path));\r\n    assertFalse(canGetNode(testSession, path));\r\n    assertTrue(testSession.nodeExists(childNPath));\r\n    assertTrue(canGetNode(testSession, childNPath));\r\n    assertFalse(testSession.nodeExists(ccPath));\r\n    assertFalse(canGetNode(testSession, ccPath));\r\n    assertFalse(testSession.propertyExists(childNPath + '/' + JcrConstants.JCR_PRIMARYTYPE));\r\n    givePrivileges(ccPath, read, Collections.EMPTY_MAP);\r\n    assertTrue(testSession.nodeExists(ccPath));\r\n    assertTrue(canGetNode(testSession, ccPath));\r\n    assertTrue(testSession.propertyExists(ccPath + '/' + JcrConstants.JCR_PRIMARYTYPE));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-core\\src\\test\\java\\org\\apache\\jackrabbit\\core\\security\\authorization\\acl\\ReadTest.java",
+  "methodName" : "testEmptyGlobRestriction2",
+  "sourceCode" : "/**\r\n * @see <a href=\"https://issues.apache.org/jira/browse/OAK-2412\">OAK-2412</a>\r\n */\r\n@Test\r\npublic void testEmptyGlobRestriction2() throws Exception {\r\n    Node grandchild = superuser.getNode(childNPath).addNode(\"child\");\r\n    String ccPath = grandchild.getPath();\r\n    superuser.save();\r\n    // first deny access to 'path' (read-access is granted in the test setup)\r\n    Privilege[] read = privilegesFromName(Privilege.JCR_READ);\r\n    withdrawPrivileges(path, read, Collections.EMPTY_MAP);\r\n    Session testSession = getTestSession();\r\n    assertFalse(testSession.nodeExists(path));\r\n    assertFalse(canGetNode(testSession, path));\r\n    assertFalse(testSession.nodeExists(childNPath));\r\n    assertFalse(canGetNode(testSession, childNPath));\r\n    assertFalse(testSession.nodeExists(ccPath));\r\n    assertFalse(canGetNode(testSession, ccPath));\r\n    assertFalse(testSession.propertyExists(childNPath + '/' + JcrConstants.JCR_PRIMARYTYPE));\r\n    Map<String, Value> emptyStringRestriction = new HashMap<String, Value>(getRestrictions(superuser, path));\r\n    emptyStringRestriction.put(AccessControlConstants.P_GLOB.toString(), vf.createValue(\"\"));\r\n    givePrivileges(path, read, emptyStringRestriction);\r\n    assertTrue(testSession.nodeExists(path));\r\n    assertTrue(canGetNode(testSession, path));\r\n    assertFalse(testSession.nodeExists(childNPath));\r\n    assertFalse(canGetNode(testSession, childNPath));\r\n    assertFalse(testSession.nodeExists(ccPath));\r\n    assertFalse(canGetNode(testSession, ccPath));\r\n    assertFalse(testSession.propertyExists(childNPath + '/' + JcrConstants.JCR_PRIMARYTYPE));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-core\\src\\test\\java\\org\\apache\\jackrabbit\\core\\security\\authorization\\acl\\ReadTest.java",
+  "methodName" : "testEmptyGlobRestriction3",
+  "sourceCode" : "/**\r\n * @see <a href=\"https://issues.apache.org/jira/browse/OAK-2412\">OAK-2412</a>\r\n */\r\n@Test\r\npublic void testEmptyGlobRestriction3() throws Exception {\r\n    Node child2 = superuser.getNode(path).addNode(\"child2\");\r\n    String childNPath2 = child2.getPath();\r\n    superuser.save();\r\n    try {\r\n        Group group1 = getTestGroup();\r\n        Group group2 = getUserManager(superuser).createGroup(\"group2\");\r\n        group2.addMember(testUser);\r\n        Group group3 = getUserManager(superuser).createGroup(\"group3\");\r\n        superuser.save();\r\n        assertTrue(group1.isDeclaredMember(testUser));\r\n        assertTrue(group2.isDeclaredMember(testUser));\r\n        assertFalse(group3.isDeclaredMember(testUser));\r\n        Privilege[] read = privilegesFromName(Privilege.JCR_READ);\r\n        withdrawPrivileges(path, group1.getPrincipal(), read, Collections.EMPTY_MAP);\r\n        Map<String, Value> emptyStringRestriction = new HashMap<String, Value>(getRestrictions(superuser, path));\r\n        emptyStringRestriction.put(AccessControlConstants.P_GLOB.toString(), vf.createValue(\"\"));\r\n        givePrivileges(path, group1.getPrincipal(), read, emptyStringRestriction);\r\n        withdrawPrivileges(childNPath, group2.getPrincipal(), read, Collections.EMPTY_MAP);\r\n        emptyStringRestriction = new HashMap<String, Value>(getRestrictions(superuser, childNPath));\r\n        emptyStringRestriction.put(AccessControlConstants.P_GLOB.toString(), vf.createValue(\"\"));\r\n        givePrivileges(childNPath, group2.getPrincipal(), read, emptyStringRestriction);\r\n        withdrawPrivileges(childNPath2, group3.getPrincipal(), read, Collections.EMPTY_MAP);\r\n        emptyStringRestriction = new HashMap<String, Value>(getRestrictions(superuser, childNPath2));\r\n        emptyStringRestriction.put(AccessControlConstants.P_GLOB.toString(), vf.createValue(\"\"));\r\n        givePrivileges(childNPath2, group3.getPrincipal(), read, emptyStringRestriction);\r\n        // NOTE: test-session is created here and is expected to reflect the\r\n        // group membership changes made above.\r\n        Session testSession = getTestSession();\r\n        assertTrue(testSession.nodeExists(path));\r\n        assertTrue(testSession.nodeExists(childNPath));\r\n        assertFalse(testSession.nodeExists(childNPath2));\r\n    } finally {\r\n        Authorizable g2 = getUserManager(superuser).getAuthorizable(\"group2\");\r\n        if (g2 != null) {\r\n            g2.remove();\r\n        }\r\n        Authorizable g3 = getUserManager(superuser).getAuthorizable(\"group3\");\r\n        if (g3 != null) {\r\n            g3.remove();\r\n        }\r\n        superuser.save();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-core\\src\\test\\java\\org\\apache\\jackrabbit\\core\\security\\simple\\SimpleSecurityManagerTest.java",
+  "methodName" : "testRemove",
+  "sourceCode" : "/**\r\n * @see <a href=\"https://issues.apache.org/jira/browse/JCR-3697\">JCR-3697</a>\r\n */\r\n@Test\r\npublic void testRemove() throws RepositoryException {\r\n    Session s = repository.login(new SimpleCredentials(\"admin\", \"admin\".toCharArray()));\r\n    Node n = s.getRootNode().addNode((\"a\"));\r\n    s.save();\r\n    n.remove();\r\n    s.save();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-it-osgi\\src\\test\\java\\org\\apache\\jackrabbit\\oak\\osgi\\OSGiIT.java",
+  "methodName" : "bundleStates",
+  "sourceCode" : "@Test\r\npublic void bundleStates() {\r\n    for (Bundle bundle : context.getBundles()) {\r\n        assertEquals(String.format(\"Bundle %s not active. have a look at the logs\", bundle.toString()), Bundle.ACTIVE, bundle.getState());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-it-osgi\\src\\test\\java\\org\\apache\\jackrabbit\\oak\\osgi\\OSGiIT.java",
+  "methodName" : "listBundles",
+  "sourceCode" : "@Test\r\npublic void listBundles() {\r\n    for (Bundle bundle : context.getBundles()) {\r\n        System.out.println(bundle);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-it-osgi\\src\\test\\java\\org\\apache\\jackrabbit\\oak\\osgi\\OSGiIT.java",
+  "methodName" : "listServices",
+  "sourceCode" : "@Test\r\npublic void listServices() throws InvalidSyntaxException {\r\n    for (ServiceReference<?> reference : context.getAllServiceReferences(null, null)) {\r\n        System.out.println(reference);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-jcr-server\\src\\test\\java\\org\\apache\\jackrabbit\\server\\remoting\\davex\\JsonWriterTest.java",
+  "methodName" : "testDoubleOutput",
+  "sourceCode" : "@Test\r\npublic void testDoubleOutput() throws Exception {\r\n    StringWriter writer = new StringWriter();\r\n    JsonWriter jsonWriter = new JsonWriter(writer);\r\n    Node parent = createMock(Node.class);\r\n    Property doubleProperty = createMock(Property.class);\r\n    Value doublePropertyValue = createMock(Value.class);\r\n    expect(doubleProperty.getType()).andReturn(PropertyType.DOUBLE).anyTimes();\r\n    expect(doubleProperty.getName()).andReturn(\"singleValued\").anyTimes();\r\n    expect(doubleProperty.isMultiple()).andReturn(false).anyTimes();\r\n    expect(doubleProperty.getValue()).andReturn(doublePropertyValue).anyTimes();\r\n    expect(doublePropertyValue.getType()).andReturn(PropertyType.DOUBLE).anyTimes();\r\n    expect(doublePropertyValue.getDouble()).andReturn(5d).anyTimes();\r\n    expect(doublePropertyValue.getString()).andReturn(\"5\").anyTimes();\r\n    Property mvDoubleProperty = createMock(Property.class);\r\n    Value mvDoublePropertyValue1 = createMock(Value.class);\r\n    Value mvDoublePropertyValue2 = createMock(Value.class);\r\n    expect(mvDoubleProperty.getType()).andReturn(PropertyType.DOUBLE).anyTimes();\r\n    expect(mvDoubleProperty.getName()).andReturn(\"multiValued\").anyTimes();\r\n    expect(mvDoubleProperty.isMultiple()).andReturn(true).anyTimes();\r\n    expect(mvDoubleProperty.getValues()).andReturn(new Value[] { mvDoublePropertyValue1, mvDoublePropertyValue2 }).anyTimes();\r\n    expect(mvDoublePropertyValue1.getType()).andReturn(PropertyType.DOUBLE).anyTimes();\r\n    expect(mvDoublePropertyValue1.getDouble()).andReturn(42d).anyTimes();\r\n    expect(mvDoublePropertyValue1.getString()).andReturn(\"42\").anyTimes();\r\n    expect(mvDoublePropertyValue2.getType()).andReturn(PropertyType.DOUBLE).anyTimes();\r\n    expect(mvDoublePropertyValue2.getDouble()).andReturn(98.6).anyTimes();\r\n    expect(mvDoublePropertyValue2.getString()).andReturn(\"98.6\").anyTimes();\r\n    final List<Property> properties = new ArrayList<Property>();\r\n    properties.add(doubleProperty);\r\n    properties.add(mvDoubleProperty);\r\n    expect(parent.getProperties()).andAnswer(new IAnswer<PropertyIterator>() {\r\n\r\n        @Override\r\n        public PropertyIterator answer() throws Throwable {\r\n            return new PropertyIteratorAdapter(properties.iterator());\r\n        }\r\n    });\r\n    expect(parent.getNodes()).andAnswer(new IAnswer<NodeIterator>() {\r\n\r\n        @Override\r\n        public NodeIterator answer() throws Throwable {\r\n            return new NodeIteratorAdapter(Collections.<Node>emptyIterator());\r\n        }\r\n    });\r\n    replayAll();\r\n    jsonWriter.write(parent, 1);\r\n    assertEquals(\"{\\\":singleValued\\\":\\\"Double\\\",\\\"singleValued\\\":5,\\\":multiValued\\\":\\\"Double\\\",\\\"multiValued\\\":[42,98.6],\\\"::NodeIteratorSize\\\":0}\", writer.toString());\r\n    verifyAll();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-spi2dav\\src\\test\\java\\org\\apache\\jackrabbit\\spi2dav\\ConnectionOptionsTest.java",
+  "methodName" : "testFromServiceParameterToServiceParameters",
+  "sourceCode" : "@Test\r\npublic void testFromServiceParameterToServiceParameters() {\r\n    Map<String, String> serviceParameters = new HashMap<>();\r\n    serviceParameters.put(ConnectionOptions.PARAM_USE_SYSTEM_PROPERTIES, \"true\");\r\n    serviceParameters.put(ConnectionOptions.PARAM_MAX_CONNECTIONS, \"10\");\r\n    serviceParameters.put(ConnectionOptions.PARAM_ALLOW_SELF_SIGNED_CERTIFICATES, \"true\");\r\n    serviceParameters.put(ConnectionOptions.PARAM_DISABLE_HOSTNAME_VERIFICATION, \"true\");\r\n    serviceParameters.put(ConnectionOptions.PARAM_CONNECTION_TIMEOUT_MS, \"100\");\r\n    serviceParameters.put(ConnectionOptions.PARAM_REQUEST_TIMEOUT_MS, \"200\");\r\n    serviceParameters.put(ConnectionOptions.PARAM_SOCKET_TIMEOUT_MS, \"300\");\r\n    serviceParameters.put(ConnectionOptions.PARAM_PROXY_HOST, \"somehost\");\r\n    serviceParameters.put(ConnectionOptions.PARAM_PROXY_PORT, \"111\");\r\n    serviceParameters.put(ConnectionOptions.PARAM_PROXY_USERNAME, \"user\");\r\n    serviceParameters.put(ConnectionOptions.PARAM_PROXY_PASSWORD, \"password\");\r\n    Assert.assertEquals(serviceParameters, ConnectionOptions.fromServiceFactoryParameters(serviceParameters).toServiceFactoryParameters());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-spi2dav\\src\\test\\java\\org\\apache\\jackrabbit\\spi2dav\\ConnectionOptionsTest.java",
+  "methodName" : "testLegacyMaxConnectionsParameter",
+  "sourceCode" : "@Test\r\npublic void testLegacyMaxConnectionsParameter() {\r\n    Map<String, String> serviceParameters = new HashMap<>();\r\n    serviceParameters.put(\"org.apache.jackrabbit.spi2davex.MaxConnections\", \"30\");\r\n    ConnectionOptions connectionOptions = ConnectionOptions.builder().maxConnections(30).build();\r\n    Assert.assertEquals(connectionOptions, ConnectionOptions.fromServiceFactoryParameters(serviceParameters));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-spi2dav\\src\\test\\java\\org\\apache\\jackrabbit\\spi2dav\\ConnectionOptionsTest.java",
+  "methodName" : "testBuilder",
+  "sourceCode" : "@Test\r\npublic void testBuilder() {\r\n    ConnectionOptions.Builder builder = ConnectionOptions.builder();\r\n    builder.allowSelfSignedCertificates(true);\r\n    builder.disableHostnameVerification(false);\r\n    builder.maxConnections(10);\r\n    builder.connectionTimeoutMs(100);\r\n    builder.requestTimeoutMs(200);\r\n    builder.socketTimeoutMs(300);\r\n    builder.proxyHost(\"proxyHost\");\r\n    builder.proxyPort(1234);\r\n    builder.proxyUsername(\"proxyUser\");\r\n    builder.proxyPassword(\"proxyPassword\");\r\n    builder.proxyProtocol(\"https:\");\r\n    ConnectionOptions options = builder.build();\r\n    Assert.assertEquals(true, options.isAllowSelfSignedCertificates());\r\n    Assert.assertEquals(false, options.isDisableHostnameVerification());\r\n    Assert.assertEquals(10, options.getMaxConnections());\r\n    Assert.assertEquals(100, options.getConnectionTimeoutMs());\r\n    Assert.assertEquals(200, options.getRequestTimeoutMs());\r\n    Assert.assertEquals(300, options.getSocketTimeoutMs());\r\n    Assert.assertEquals(\"proxyHost\", options.getProxyHost());\r\n    Assert.assertEquals(1234, options.getProxyPort());\r\n    Assert.assertEquals(\"proxyUser\", options.getProxyUsername());\r\n    Assert.assertEquals(\"proxyPassword\", options.getProxyPassword());\r\n    Assert.assertEquals(\"https:\", options.getProxyProtocol());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-spi2dav\\src\\test\\java\\org\\apache\\jackrabbit\\spi2dav\\IdURICacheTest.java",
+  "methodName" : "testException",
+  "sourceCode" : "@Test\r\npublic void testException() {\r\n    String wspuri = \"https://example.org/foo/\";\r\n    IdURICache cache = new IdURICache(wspuri);\r\n    String test;\r\n    // port number\r\n    test = \"https://example.org:443/foo/x\";\r\n    try {\r\n        cache.add(test, null);\r\n        fail(\"should throw\");\r\n    } catch (IllegalArgumentException ex) {\r\n        assertEquals(\"Workspace mismatch: '\" + test + \"' not under workspace '\" + wspuri + \"' (position 18: '{https://example.org}:443/foo/x', expected: '/foo/')\", ex.getMessage());\r\n    }\r\n    // protocol\r\n    test = \"http://example.org/foo/x\";\r\n    try {\r\n        cache.add(test, null);\r\n        fail(\"should throw\");\r\n    } catch (IllegalArgumentException ex) {\r\n        assertEquals(\"Workspace mismatch: '\" + test + \"' not under workspace '\" + wspuri + \"' (position 3: '{http}://example.org/foo/x', expected: 's://example.org/foo/')\", ex.getMessage());\r\n    }\r\n    // hostname\r\n    test = \"https://example.com/foo/x\";\r\n    try {\r\n        cache.add(test, null);\r\n        fail(\"should throw\");\r\n    } catch (IllegalArgumentException ex) {\r\n        assertEquals(\"Workspace mismatch: '\" + test + \"' not under workspace '\" + wspuri + \"' (position 15: '{https://example.}com/foo/x', expected: 'org/foo/')\", ex.getMessage());\r\n    }\r\n    // root path\r\n    test = \"https://example.org/bar/x\";\r\n    try {\r\n        cache.add(test, null);\r\n        fail(\"should throw\");\r\n    } catch (IllegalArgumentException ex) {\r\n        assertEquals(\"Workspace mismatch: '\" + test + \"' not under workspace '\" + wspuri + \"' (position 19: '{https://example.org/}bar/x', expected: 'foo/')\", ex.getMessage());\r\n    }\r\n    // too short\r\n    test = \"https://example.org/fo/x\";\r\n    try {\r\n        cache.add(test, null);\r\n        fail(\"should throw\");\r\n    } catch (IllegalArgumentException ex) {\r\n        assertEquals(\"Workspace mismatch: '\" + test + \"' not under workspace '\" + wspuri + \"' (position 21: '{https://example.org/fo}/x', expected: 'o/')\", ex.getMessage());\r\n    }\r\n    // way too short\r\n    test = \"https://x.org/foo/x\";\r\n    try {\r\n        cache.add(test, null);\r\n        fail(\"should throw\");\r\n    } catch (IllegalArgumentException ex) {\r\n        assertEquals(\"Workspace mismatch: '\" + test + \"' not under workspace '\" + wspuri + \"' (position 7: '{https://}x.org/foo/x', expected: 'example.org/foo/')\", ex.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\jackrabbit-webdav\\src\\test\\java\\org\\apache\\jackrabbit\\webdav\\header\\FieldValueParserTest.java",
+  "methodName" : "testDavComplianceHeader",
+  "sourceCode" : "@Test\r\npublic void testDavComplianceHeader() {\r\n    List<String> l;\r\n    l = FieldValueParser.tokenizeList(\"1\");\r\n    assertArrayEquals(new String[] { \"1\" }, l.toArray());\r\n    l = FieldValueParser.tokenizeList(\"1,2,,,,,3,,bind,\");\r\n    assertArrayEquals(new String[] { \"1\", \"2\", \"3\", \"bind\" }, l.toArray());\r\n    l = FieldValueParser.tokenizeList(\"1,2,<http://example.com/foo,bar>\");\r\n    assertArrayEquals(new String[] { \"1\", \"2\", \"<http://example.com/foo,bar>\" }, l.toArray());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\compatibility\\create10\\src\\test\\java\\org\\apache\\jackrabbit\\harness\\compatibility\\CreateRepositoryTest.java",
+  "methodName" : "createRepositories",
+  "sourceCode" : "@Test\r\npublic void createRepositories() throws Exception {\r\n    doCreateRepositories(\"jackrabbit-1.0\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\compatibility\\create11\\src\\test\\java\\org\\apache\\jackrabbit\\harness\\compatibility\\CreateRepositoryTest.java",
+  "methodName" : "createRepositories",
+  "sourceCode" : "@Test\r\npublic void createRepositories() throws Exception {\r\n    doCreateRepositories(\"jackrabbit-1.1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\compatibility\\create12\\src\\test\\java\\org\\apache\\jackrabbit\\harness\\compatibility\\CreateRepositoryTest.java",
+  "methodName" : "createRepositories",
+  "sourceCode" : "@Test\r\npublic void createRepositories() throws Exception {\r\n    doCreateRepositories(\"jackrabbit-1.2\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\compatibility\\create13\\src\\test\\java\\org\\apache\\jackrabbit\\harness\\compatibility\\CreateRepositoryTest.java",
+  "methodName" : "createRepositories",
+  "sourceCode" : "@Test\r\npublic void createRepositories() throws Exception {\r\n    doCreateRepositories(\"jackrabbit-1.3\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\compatibility\\create14\\src\\test\\java\\org\\apache\\jackrabbit\\harness\\compatibility\\CreateRepositoryTest.java",
+  "methodName" : "createRepositories",
+  "sourceCode" : "@Test\r\npublic void createRepositories() throws Exception {\r\n    doCreateRepositories(\"jackrabbit-1.4\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\compatibility\\create15\\src\\test\\java\\org\\apache\\jackrabbit\\harness\\compatibility\\CreateRepositoryTest.java",
+  "methodName" : "createRepositories",
+  "sourceCode" : "@Test\r\npublic void createRepositories() throws Exception {\r\n    doCreateRepositories(\"jackrabbit-1.5\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\compatibility\\create16\\src\\test\\java\\org\\apache\\jackrabbit\\harness\\compatibility\\CreateRepositoryTest.java",
+  "methodName" : "createRepositories",
+  "sourceCode" : "@Test\r\npublic void createRepositories() throws Exception {\r\n    doCreateRepositories(\"jackrabbit-1.6\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\compatibility\\create20\\src\\test\\java\\org\\apache\\jackrabbit\\harness\\compatibility\\CreateRepositoryTest.java",
+  "methodName" : "createRepositories",
+  "sourceCode" : "@Test\r\npublic void createRepositories() throws Exception {\r\n    doCreateRepositories(\"jackrabbit-2.0\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\compatibility\\create21\\src\\test\\java\\org\\apache\\jackrabbit\\harness\\compatibility\\CreateRepositoryTest.java",
+  "methodName" : "createRepositories",
+  "sourceCode" : "@Test\r\npublic void createRepositories() throws Exception {\r\n    doCreateRepositories(\"jackrabbit-2.1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\compatibility\\create22\\src\\test\\java\\org\\apache\\jackrabbit\\harness\\compatibility\\CreateRepositoryTest.java",
+  "methodName" : "createRepositories",
+  "sourceCode" : "@Test\r\npublic void createRepositories() throws Exception {\r\n    doCreateRepositories(\"jackrabbit-2.2\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\compatibility\\create24\\src\\test\\java\\org\\apache\\jackrabbit\\harness\\compatibility\\CreateRepositoryTest.java",
+  "methodName" : "createRepositories",
+  "sourceCode" : "@Test\r\npublic void createRepositories() throws Exception {\r\n    doCreateRepositories(\"jackrabbit-2.4\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\compatibility\\create26\\src\\test\\java\\org\\apache\\jackrabbit\\harness\\compatibility\\CreateRepositoryTest.java",
+  "methodName" : "createRepositories",
+  "sourceCode" : "@Test\r\npublic void createRepositories() throws Exception {\r\n    doCreateRepositories(\"jackrabbit-2.6\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\performance\\jackrabbit10\\src\\test\\java\\org\\apache\\jackrabbit\\performance\\PerformanceTest.java",
+  "methodName" : "testPerformance",
+  "sourceCode" : "@Test\r\npublic void testPerformance() throws Exception {\r\n    testPerformance(\"1.0\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\performance\\jackrabbit11\\src\\test\\java\\org\\apache\\jackrabbit\\performance\\PerformanceTest.java",
+  "methodName" : "testPerformance",
+  "sourceCode" : "@Test\r\npublic void testPerformance() throws Exception {\r\n    testPerformance(\"1.1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\performance\\jackrabbit12\\src\\test\\java\\org\\apache\\jackrabbit\\performance\\PerformanceTest.java",
+  "methodName" : "testPerformance",
+  "sourceCode" : "@Test\r\npublic void testPerformance() throws Exception {\r\n    testPerformance(\"1.2\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\performance\\jackrabbit13\\src\\test\\java\\org\\apache\\jackrabbit\\performance\\PerformanceTest.java",
+  "methodName" : "testPerformance",
+  "sourceCode" : "@Test\r\npublic void testPerformance() throws Exception {\r\n    testPerformance(\"1.3\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\performance\\jackrabbit14\\src\\test\\java\\org\\apache\\jackrabbit\\performance\\PerformanceTest.java",
+  "methodName" : "testPerformance",
+  "sourceCode" : "@Test\r\npublic void testPerformance() throws Exception {\r\n    testPerformance(\"1.4\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\performance\\jackrabbit15\\src\\test\\java\\org\\apache\\jackrabbit\\performance\\PerformanceTest.java",
+  "methodName" : "testPerformance",
+  "sourceCode" : "@Test\r\npublic void testPerformance() throws Exception {\r\n    testPerformance(\"1.5\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\performance\\jackrabbit16\\src\\test\\java\\org\\apache\\jackrabbit\\performance\\PerformanceTest.java",
+  "methodName" : "testPerformance",
+  "sourceCode" : "@Test\r\npublic void testPerformance() throws Exception {\r\n    testPerformance(\"1.6\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\performance\\jackrabbit20\\src\\test\\java\\org\\apache\\jackrabbit\\performance\\PerformanceTest.java",
+  "methodName" : "testPerformance",
+  "sourceCode" : "@Test\r\npublic void testPerformance() throws Exception {\r\n    testPerformance(\"2.0\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\performance\\jackrabbit21\\src\\test\\java\\org\\apache\\jackrabbit\\performance\\PerformanceTest.java",
+  "methodName" : "testPerformance",
+  "sourceCode" : "@Test\r\npublic void testPerformance() throws Exception {\r\n    testPerformance(\"2.1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\performance\\jackrabbit22\\src\\test\\java\\org\\apache\\jackrabbit\\performance\\PerformanceTest.java",
+  "methodName" : "testPerformance",
+  "sourceCode" : "@Test\r\npublic void testPerformance() throws Exception {\r\n    testPerformance(\"2.2\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\performance\\jackrabbit23\\src\\test\\java\\org\\apache\\jackrabbit\\performance\\PerformanceTest.java",
+  "methodName" : "testPerformance",
+  "sourceCode" : "@Test\r\npublic void testPerformance() throws Exception {\r\n    testPerformance(\"2.3\");\r\n    System.setProperty(QueryEngine.NATIVE_SORT_SYSTEM_PROPERTY, \"true\");\r\n    testPerformance(\"2.3-expSort\", getDefaultConfig());\r\n    System.setProperty(QueryEngine.NATIVE_SORT_SYSTEM_PROPERTY, \"false\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\performance\\jackrabbit24\\src\\test\\java\\org\\apache\\jackrabbit\\performance\\PerformanceTest.java",
+  "methodName" : "testPerformance",
+  "sourceCode" : "@Test\r\npublic void testPerformance() throws Exception {\r\n    testPerformance(\"2.4\");\r\n    System.setProperty(QueryEngine.NATIVE_SORT_SYSTEM_PROPERTY, \"true\");\r\n    testPerformance(\"2.4-expSort\", getDefaultConfig());\r\n    System.setProperty(QueryEngine.NATIVE_SORT_SYSTEM_PROPERTY, \"false\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Jackrabbit\\test\\performance\\jackrabbit26\\src\\test\\java\\org\\apache\\jackrabbit\\performance\\PerformanceTest.java",
+  "methodName" : "testPerformance",
+  "sourceCode" : "@Test\r\npublic void testPerformance() throws Exception {\r\n    testPerformance(\"2.6\");\r\n    System.setProperty(QueryEngine.NATIVE_SORT_SYSTEM_PROPERTY, \"true\");\r\n    testPerformance(\"2.6-expSort\", getDefaultConfig());\r\n    System.setProperty(QueryEngine.NATIVE_SORT_SYSTEM_PROPERTY, \"false\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+} ]

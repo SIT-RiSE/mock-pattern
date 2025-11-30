@@ -1,0 +1,511 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\samples\\dci\\src\\test\\java\\org\\qi4j\\dci\\moneytransfer\\test\\TransferMoneyTest.java",
+  "methodName" : "transferHalfOfMoneyFromSavingsToChecking",
+  "sourceCode" : "@Test\r\npublic void transferHalfOfMoneyFromSavingsToChecking() throws Exception {\r\n    UnitOfWork uow = assembler.unitOfWorkFactory().newUnitOfWork(UsecaseBuilder.newUsecase(\"Transfer from savings to checking\"));\r\n    try {\r\n        // Select source and destination\r\n        BalanceData source = uow.get(BalanceData.class, SAVINGS_ACCOUNT_ID);\r\n        BalanceData destination = uow.get(BalanceData.class, CHECKING_ACCOUNT_ID);\r\n        // Instantiate context and execute enactments with that context\r\n        TransferMoneyContext context = new TransferMoneyContext();\r\n        context.bind(source, destination);\r\n        // Query for half the balance\r\n        final Integer amountToTransfer = context.availableFunds() / 2;\r\n        // Transfer from savings to checking\r\n        context.transfer(amountToTransfer);\r\n        uow.complete();\r\n    } catch (Exception e) {\r\n        uow.discard();\r\n        throw e;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\samples\\dci\\src\\test\\java\\org\\qi4j\\dci\\moneytransfer\\test\\TransferMoneyTest.java",
+  "methodName" : "transferTwiceOfMoneyFromSavingsToChecking",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void transferTwiceOfMoneyFromSavingsToChecking() throws Exception {\r\n    UnitOfWork uow = assembler.unitOfWorkFactory().newUnitOfWork(UsecaseBuilder.newUsecase(\"Transfer from savings to checking\"));\r\n    try {\r\n        // Select source and destination\r\n        BalanceData source = uow.get(BalanceData.class, SAVINGS_ACCOUNT_ID);\r\n        BalanceData destination = uow.get(BalanceData.class, CHECKING_ACCOUNT_ID);\r\n        // Instantiate context and execute enactments with that context\r\n        TransferMoneyContext context = new TransferMoneyContext();\r\n        context.bind(source, destination);\r\n        // Query for double the balance\r\n        final Integer amountToTransfer = context.availableFunds() * 2;\r\n        // Transfer from savings to checking\r\n        context.transfer(amountToTransfer);\r\n        uow.complete();\r\n    } catch (Exception e) {\r\n        uow.discard();\r\n        throw e;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\samples\\dci\\src\\test\\java\\org\\qi4j\\dci\\moneytransfer\\test\\TransferMoneyTest.java",
+  "methodName" : "payAllBills",
+  "sourceCode" : "@Test\r\npublic void payAllBills() throws Exception {\r\n    UnitOfWork uow = assembler.unitOfWorkFactory().newUnitOfWork(newUsecase(\"Pay all bills from checking to creditors\"));\r\n    try {\r\n        BalanceData source = uow.get(BalanceData.class, CHECKING_ACCOUNT_ID);\r\n        PayBillsContext context = new PayBillsContext();\r\n        context.bind(source).payBills();\r\n        uow.complete();\r\n    } catch (Exception e) {\r\n        uow.discard();\r\n        throw e;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\samples\\dddsample\\ops4j\\qi4j\\sample-app1\\src\\tests\\java\\org\\qi4j\\samples\\cargo\\app1\\model\\cargo\\CargoXmlTest.java",
+  "methodName" : "givenCargoWhenConvertingToSoapMessageExpectCorrectFormat",
+  "sourceCode" : "@Test\r\npublic void givenCargoWhenConvertingToSoapMessageExpectCorrectFormat() throws Exception {\r\n    AegisType type = typeMapping.getType(CargoValue.class);\r\n    UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();\r\n    try {\r\n        // Test Writing\r\n        Location origin = locationRepository.findLocationByUnLocode(\"SESTO\");\r\n        Location destination = locationRepository.findLocationByUnLocode(\"AUMEL\");\r\n        RouteSpecification specification = createRouteSpecification(origin.identity().get(), destination.identity().get(), createDate(\"2009-04-15\"));\r\n        final Voyage STO_TO_HAM = voyageRepository.findVoyageByVoyageIdentity(\"V400\");\r\n        final Voyage HAM_TO_MEL = voyageRepository.findVoyageByVoyageIdentity(\"V300\");\r\n        Leg leg1 = createLeg(origin.identity().get(), createDate(\"2010-12-01\"), \"DEHAM\", createDate(\"2010-12-05\"), STO_TO_HAM);\r\n        Leg leg2 = createLeg(\"DEHAM\", createDate(\"2010-12-01\"), destination.identity().get(), createDate(\"2010-12-05\"), HAM_TO_MEL);\r\n        List<Leg> legs = createLegs(leg1, leg2);\r\n        Itinerary itinerary = createItinerary(legs);\r\n        CargoValue cargo = createCargo(origin, specification, itinerary, null);\r\n        ByteArrayOutputStream bos = new ByteArrayOutputStream();\r\n        ElementWriter writer = new ElementWriter(bos, \"cargo\", \"urn:qi4j:type\");\r\n        type.writeObject(cargo, writer, getContext());\r\n        writer.close();\r\n        writer.flush();\r\n        bos.close();\r\n        byte[] bytes = bos.toByteArray();\r\n        System.out.println(new String(bytes));\r\n        Document doc = DOMUtils.readXml(new ByteArrayInputStream(bytes));\r\n        Element element = doc.getDocumentElement();\r\n        addNamespace(\"ns1\", \"urn:qi4j:type\");\r\n        assertValid(\"/ns1:response/fullName[text()='Niclas Hedhman']\", element);\r\n        assertValid(\"/ns1:response/car/year[text()='2005']\", element);\r\n        // Test reading\r\n        ElementReader reader = new ElementReader(new ByteArrayInputStream(VALUE1.getBytes()));\r\n        Person person = (Person) type.readObject(reader, getContext());\r\n        reader.getXMLStreamReader().close();\r\n        assertEquals(\"Niclas Hedhman\", person.fullName().get());\r\n        assertEquals(\"2005\", person.car().get().year().get());\r\n        assertEquals(\"Mini Cooper\", person.car().get().model().get());\r\n        assertEquals(\"BMW\", person.car().get().manufacturer().get());\r\n    } finally {\r\n        uow.discard();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\samples\\dddsample\\src\\test\\java\\org\\qi4j\\samples\\dddsample\\bootstrap\\BootstrapTest.java",
+  "methodName" : "testQi4jServiceExportedToSpring",
+  "sourceCode" : "@Test\r\npublic final void testQi4jServiceExportedToSpring() {\r\n    for (String bean : BEANS) {\r\n        assertNotNull(appContext.getBean(bean));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\samples\\dddsample\\src\\test\\java\\org\\qi4j\\samples\\dddsample\\domain\\model\\cargo\\assembly\\CargoTest.java",
+  "methodName" : "testlastKnownLocationUnknownWhenNoEvents",
+  "sourceCode" : "@Test\r\npublic void testlastKnownLocationUnknownWhenNoEvents() {\r\n    UnitOfWorkFactory uowf = moduleInstance.unitOfWorkFactory();\r\n    UnitOfWork uow = uowf.newUnitOfWork();\r\n    ServiceReference<CargoRepository> cargoRepositoryRef = cargoRepositoryService();\r\n    CargoRepository cargoRepository = cargoRepositoryRef.get();\r\n    ServiceReference<LocationRepository> locationRepositoryRef = locationRepositoryService();\r\n    LocationRepository locationRepository = locationRepositoryRef.get();\r\n    try {\r\n        Cargo cargo = cargoRepository.find(XYZ);\r\n        assertEquals(locationRepository.unknownLocation(), cargo.lastKnownLocation());\r\n    } finally {\r\n        uow.discard();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\samples\\dddsample\\src\\test\\java\\org\\qi4j\\samples\\dddsample\\domain\\model\\cargo\\TrackingIdTest.java",
+  "methodName" : "testConstructor",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testConstructor() throws Exception {\r\n    new TrackingId(null);\r\n    fail(\"Should not accept null constructor arguments\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\samples\\dddsample\\src\\test\\java\\org\\qi4j\\samples\\dddsample\\domain\\model\\location\\assembly\\LocationTest.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "@Test\r\npublic final void testEquals() {\r\n    UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();\r\n    try {\r\n        // Same UN locode - equal\r\n        assertTrue(createLocation(\"ATEST\", \"test-name\").equals(createLocation(\"ATEST\", \"test-name\")));\r\n        // Different UN locodes - not equal\r\n        assertFalse(createLocation(\"ATEST\", \"test-name\").equals(createLocation(\"TESTB\", \"test-name\")));\r\n        // Always equal to itself\r\n        Location location = createLocation(\"ATEST\", \"test-name\");\r\n        assertTrue(location.equals(location));\r\n        // Never equal to null\r\n        assertFalse(location.equals(null));\r\n        // Special UNKNOWN location is equal to itself\r\n        ServiceReference<LocationRepository> locationRepositoryServiceReference = locationRepositoryService();\r\n        LocationRepository locationRepository = locationRepositoryServiceReference.get();\r\n        Location unknownLocation = locationRepository.unknownLocation();\r\n        assertTrue(unknownLocation.equals(unknownLocation));\r\n        try {\r\n            createLocation(null, null);\r\n            fail(\"Should not allow any null constructor arguments\");\r\n        } catch (IllegalArgumentException expected) {\r\n        }\r\n    } finally {\r\n        uow.discard();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\samples\\dddsample\\src\\test\\java\\org\\qi4j\\samples\\dddsample\\domain\\model\\location\\assembly\\SampleLocationDataBootstrapServiceTest.java",
+  "methodName" : "testSampleLocations",
+  "sourceCode" : "@Test\r\npublic final void testSampleLocations() {\r\n    ServiceFinder serviceFinder = moduleInstance.serviceFinder();\r\n    LocationRepository locationRepository = serviceFinder.<LocationRepository>findService(LocationRepository.class).get();\r\n    UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();\r\n    try {\r\n        for (String[] locations : LOCATIONS) {\r\n            UnLocode unLocode = new UnLocode(locations[0]);\r\n            Location location = locationRepository.find(unLocode);\r\n            assertNotNull(location);\r\n            Assert.assertEquals(locations[1], location.name());\r\n        }\r\n    } finally {\r\n        uow.discard();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\complex\\postgresql\\src\\test\\java\\org\\qi4j\\library\\sql\\postgresql\\PostgreSQLDBIntegrityTest.java",
+  "methodName" : "createAndRemoveEntityAndVerifyNoExtraDataLeftInDB",
+  "sourceCode" : "@Test\r\npublic void createAndRemoveEntityAndVerifyNoExtraDataLeftInDB() throws Exception {\r\n    UnitOfWork uow = this.unitOfWorkFactory.newUnitOfWork();\r\n    TestEntity entity = uow.newEntity(TestEntity.class);\r\n    uow.complete();\r\n    uow = this.unitOfWorkFactory.newUnitOfWork();\r\n    entity = uow.get(entity);\r\n    SQLConfiguration config = uow.get(SQLConfiguration.class, SQLTestHelper.SQL_INDEXING_SERVICE_NAME);\r\n    String schemaName = config.schemaName().get();\r\n    if (schemaName == null) {\r\n        schemaName = PostgreSQLAppStartup.DEFAULT_SCHEMA_NAME;\r\n    }\r\n    uow.remove(entity);\r\n    uow.complete();\r\n    Connection connection = ((DataSourceService) this.serviceLocator.findService(DataSourceService.class).get()).getDataSource().getConnection();\r\n    GenericDatabaseExplorer.visitDatabaseTables(connection, null, schemaName, null, new DatabaseProcessorAdapter() {\r\n\r\n        @Override\r\n        public void beginProcessRowInfo(String schemaNamee, String tableName, Object[] rowContents) {\r\n            if (tableName.startsWith(DBNames.QNAME_TABLE_NAME_PREFIX) || tableName.equals(DBNames.ALL_QNAMES_TABLE_NAME) || tableName.equals(DBNames.ENTITY_TABLE_NAME)) {\r\n                throw new RuntimeException(\"Table: \" + schemaNamee + \".\" + tableName);\r\n            }\r\n        }\r\n    }, SQLVendorProvider.createVendor(PostgreSQLVendor.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\complex\\postgresql\\src\\test\\java\\org\\qi4j\\library\\sql\\postgresql\\PostgreSQLDBIntegrityTest.java",
+  "methodName" : "createAndModifyEntity",
+  "sourceCode" : "@Test\r\npublic void createAndModifyEntity() throws Exception {\r\n    UnitOfWork uow = this.unitOfWorkFactory.newUnitOfWork();\r\n    TestEntity entity = uow.newEntity(TestEntity.class);\r\n    uow.complete();\r\n    uow = this.unitOfWorkFactory.newUnitOfWork();\r\n    entity = uow.get(entity);\r\n    entity.testString().set(\"NewTestString\");\r\n    uow.complete();\r\n    uow = this.unitOfWorkFactory.newUnitOfWork();\r\n    entity = uow.get(entity);\r\n    Assert.assertEquals(\"New value did not store in indexing.\", \"NewTestString\", entity.testString().get());\r\n    uow.discard();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\complex\\postgresql\\src\\test\\java\\org\\qi4j\\library\\sql\\postgresql\\PostgreSQLQueryTest.java",
+  "methodName" : "ignoredScript29",
+  "sourceCode" : "@Test\r\npublic void ignoredScript29() {\r\n    // PostgreSQL indexing engine supports complex value indexing.\r\n    super.script29();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\complex\\postgresql\\src\\test\\java\\org\\qi4j\\library\\sql\\postgresql\\PostgreSQLQueryTest.java",
+  "methodName" : "ignoredScript23",
+  "sourceCode" : "@Test\r\npublic void ignoredScript23() throws Exception {\r\n    // This test doesn't seem to sporadically fail anymore, at least for this test.\r\n    super.script23();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\entitystore\\jdbm\\JdbmEntityStorePerformanceTest.java",
+  "methodName" : "whenCreateEntityWithSinglePropertyThenRecordIterationsPerSecond",
+  "sourceCode" : "@Test\r\n@Override\r\npublic void whenCreateEntityWithSinglePropertyThenRecordIterationsPerSecond() throws Exception {\r\n    super.whenCreateEntityWithSinglePropertyThenRecordIterationsPerSecond();\r\n}",
+  "annotations" : [ "Test", "Override" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\entitystore\\jdbm\\JdbmEntityStorePerformanceTest.java",
+  "methodName" : "whenCreateEntityWithSinglePropertyInBatchThenRecordIterationsPerSecond",
+  "sourceCode" : "@Test\r\n@Override\r\npublic void whenCreateEntityWithSinglePropertyInBatchThenRecordIterationsPerSecond() throws Exception {\r\n    super.whenCreateEntityWithSinglePropertyInBatchThenRecordIterationsPerSecond();\r\n}",
+  "annotations" : [ "Test", "Override" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\entitystore\\model\\AbstractEntityStorePerformanceTest.java",
+  "methodName" : "whenCreateEntityWithSinglePropertyThenRecordIterationsPerSecond",
+  "sourceCode" : "@Test\r\npublic void whenCreateEntityWithSinglePropertyThenRecordIterationsPerSecond() throws Exception {\r\n    try {\r\n        Assembler assembler = new Assembler() {\r\n\r\n            public void assemble(ModuleAssembly module) throws AssemblyException {\r\n                module.entities(SimpleProduct.class);\r\n            }\r\n        };\r\n        createQi4jRuntime(assembler);\r\n        profile(new Runnable() {\r\n\r\n            public void run() {\r\n                try {\r\n                    Report report = new Report(storeName);\r\n                    report.start(\"createEntityWithSingleProperty\");\r\n                    for (int i = 0; i < ITERATIONS; i++) {\r\n                        UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();\r\n                        SimpleProduct product = uow.newEntity(SimpleProduct.class);\r\n                        String id = product.identity().get();\r\n                        uow.complete();\r\n                        if (i % 1000 == 0) {\r\n                            Logger.getLogger(getClass().getName()).info(\"Iteration:\" + i);\r\n                        }\r\n                    }\r\n                    report.stop(ITERATIONS);\r\n                    writeReport(report);\r\n                } catch (UnitOfWorkCompletionException e) {\r\n                    e.printStackTrace();\r\n                } catch (IOException e) {\r\n                    e.printStackTrace();\r\n                }\r\n            }\r\n        });\r\n    } finally {\r\n        cleanUp();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\entitystore\\model\\AbstractEntityStorePerformanceTest.java",
+  "methodName" : "whenCreateEntityWithSinglePropertyInBatchThenRecordIterationsPerSecond",
+  "sourceCode" : "@Test\r\npublic void whenCreateEntityWithSinglePropertyInBatchThenRecordIterationsPerSecond() throws Exception {\r\n    try {\r\n        Assembler assembler = new Assembler() {\r\n\r\n            public void assemble(ModuleAssembly module) throws AssemblyException {\r\n                module.entities(SimpleProduct.class);\r\n            }\r\n        };\r\n        createQi4jRuntime(assembler);\r\n        profile(new Runnable() {\r\n\r\n            public void run() {\r\n                try {\r\n                    Report report = new Report(storeName);\r\n                    report.start(\"createEntityInBulkWithSingleProperty\");\r\n                    UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();\r\n                    for (int i = 0; i < ITERATIONS; i++) {\r\n                        SimpleProduct product = uow.newEntity(SimpleProduct.class);\r\n                        String id = product.identity().get();\r\n                        if (i % 1000 == 0) {\r\n                            uow.complete();\r\n                            uow = unitOfWorkFactory.newUnitOfWork();\r\n                        }\r\n                    }\r\n                    uow.complete();\r\n                    report.stop(ITERATIONS);\r\n                    writeReport(report);\r\n                } catch (UnitOfWorkCompletionException e) {\r\n                    e.printStackTrace();\r\n                } catch (IOException e) {\r\n                    e.printStackTrace();\r\n                }\r\n            }\r\n        });\r\n    } finally {\r\n        cleanUp();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\entitystore\\model\\AbstractEntityStorePerformanceTest.java",
+  "methodName" : "whenCreateEntityWithComplexTypeThenRecordIterationsPerSecond",
+  "sourceCode" : "@Test\r\npublic void whenCreateEntityWithComplexTypeThenRecordIterationsPerSecond() throws Exception {\r\n    try {\r\n        Assembler assembler = new Assembler() {\r\n\r\n            public void assemble(ModuleAssembly module) throws AssemblyException {\r\n                module.entities(ComplexProduct.class);\r\n            }\r\n        };\r\n        createQi4jRuntime(assembler);\r\n        profile(new Runnable() {\r\n\r\n            public void run() {\r\n                try {\r\n                    Report report = new Report(storeName);\r\n                    report.start(\"createEntityWithComplexType\");\r\n                    for (int i = 0; i < ITERATIONS; i++) {\r\n                        UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();\r\n                        ComplexProduct product = uow.newEntity(ComplexProduct.class);\r\n                        String id = product.identity().get();\r\n                        uow.complete();\r\n                    }\r\n                    report.stop(ITERATIONS);\r\n                    writeReport(report);\r\n                } catch (UnitOfWorkCompletionException e) {\r\n                    e.printStackTrace();\r\n                } catch (IOException e) {\r\n                    e.printStackTrace();\r\n                }\r\n            }\r\n        });\r\n    } finally {\r\n        cleanUp();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\entitystore\\model\\AbstractEntityStorePerformanceTest.java",
+  "methodName" : "whenCreateEntityWithComplexTypeInBatchThenRecordIterationsPerSecond",
+  "sourceCode" : "@Test\r\npublic void whenCreateEntityWithComplexTypeInBatchThenRecordIterationsPerSecond() throws Exception {\r\n    try {\r\n        Assembler assembler = new Assembler() {\r\n\r\n            public void assemble(ModuleAssembly module) throws AssemblyException {\r\n                module.entities(ComplexProduct.class);\r\n            }\r\n        };\r\n        createQi4jRuntime(assembler);\r\n        profile(new Runnable() {\r\n\r\n            public void run() {\r\n                try {\r\n                    Report report = new Report(storeName);\r\n                    report.start(\"createEntityInBulkWithComplexType\");\r\n                    UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();\r\n                    for (int i = 0; i < ITERATIONS; i++) {\r\n                        ComplexProduct product = uow.newEntity(ComplexProduct.class);\r\n                        String id = product.identity().get();\r\n                        if (i % 1000 == 0) {\r\n                            uow.complete();\r\n                            uow = unitOfWorkFactory.newUnitOfWork();\r\n                        }\r\n                    }\r\n                    uow.complete();\r\n                    report.stop(ITERATIONS);\r\n                    writeReport(report);\r\n                } catch (UnitOfWorkCompletionException e) {\r\n                    e.printStackTrace();\r\n                } catch (IOException e) {\r\n                    e.printStackTrace();\r\n                }\r\n            }\r\n        });\r\n    } finally {\r\n        cleanUp();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\entitystore\\model\\AbstractEntityStorePerformanceTest.java",
+  "methodName" : "whenReadEntityWithComplexTypeThenRecordIterationsPerSecond",
+  "sourceCode" : "@Test\r\npublic void whenReadEntityWithComplexTypeThenRecordIterationsPerSecond() throws Exception {\r\n    try {\r\n        Assembler assembler = new Assembler() {\r\n\r\n            public void assemble(ModuleAssembly module) throws AssemblyException {\r\n                module.entities(ComplexProduct.class);\r\n            }\r\n        };\r\n        createQi4jRuntime(assembler);\r\n        {\r\n            UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();\r\n            for (int i = 0; i < ITERATIONS; i++) {\r\n                ComplexProduct product = uow.newEntity(ComplexProduct.class, \"product\" + i);\r\n                product.name().set(\"Product \" + i);\r\n                if (i % 1000 == 0) {\r\n                    uow.complete();\r\n                    uow = unitOfWorkFactory.newUnitOfWork();\r\n                }\r\n            }\r\n            uow.complete();\r\n        }\r\n        profile(new Runnable() {\r\n\r\n            public void run() {\r\n                try {\r\n                    Report report = new Report(storeName);\r\n                    UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();\r\n                    Random rnd = new Random();\r\n                    report.start(\"readEntityWithComplexType\");\r\n                    for (int i = 0; i < ITERATIONS; i++) {\r\n                        String id = rnd.nextInt(ITERATIONS) + \"\";\r\n                        ComplexProduct product = uow.get(ComplexProduct.class, \"product\" + id);\r\n                        Name name = product.name();\r\n                        if (i % 100 == 0) {\r\n                            uow.discard();\r\n                            uow = unitOfWorkFactory.newUnitOfWork();\r\n                        }\r\n                    }\r\n                    uow.complete();\r\n                    report.stop(ITERATIONS);\r\n                    writeReport(report);\r\n                } catch (UnitOfWorkCompletionException e) {\r\n                    e.printStackTrace();\r\n                } catch (IOException e) {\r\n                    e.printStackTrace();\r\n                }\r\n            }\r\n        });\r\n    } finally {\r\n        cleanUp();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\entitystore\\sql\\DerbySQLEntityStorePerformanceTest.java",
+  "methodName" : "whenCreateEntityWithSinglePropertyThenRecordIterationsPerSecond",
+  "sourceCode" : "@Test\r\n@Override\r\npublic void whenCreateEntityWithSinglePropertyThenRecordIterationsPerSecond() throws Exception {\r\n    super.whenCreateEntityWithSinglePropertyThenRecordIterationsPerSecond();\r\n}",
+  "annotations" : [ "Test", "Override" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\entitystore\\sql\\DerbySQLEntityStorePerformanceTest.java",
+  "methodName" : "whenCreateEntityWithSinglePropertyInBatchThenRecordIterationsPerSecond",
+  "sourceCode" : "@Test\r\n@Override\r\npublic void whenCreateEntityWithSinglePropertyInBatchThenRecordIterationsPerSecond() throws Exception {\r\n    super.whenCreateEntityWithSinglePropertyInBatchThenRecordIterationsPerSecond();\r\n}",
+  "annotations" : [ "Test", "Override" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\indexing\\rdf\\QueryPerformanceTest.java",
+  "methodName" : "testIndexing1",
+  "sourceCode" : "@Test\r\npublic void testIndexing1() throws Exception {\r\n    LeadRepository leadRepo = populateEntityStore();\r\n    measureFluentQuery(leadRepo, \"Lead64531\");\r\n    measureFluentQuery(leadRepo, \"Lead98275\");\r\n    measureFluentQuery(leadRepo, \"Lead3\");\r\n    measureFluentQuery(leadRepo, \"Lead14331\");\r\n    measureFluentQuery(leadRepo, \"Lead631\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\indexing\\rdf\\QueryPerformanceTest.java",
+  "methodName" : "testIndexing2",
+  "sourceCode" : "@Test\r\npublic void testIndexing2() throws Exception {\r\n    LeadRepository leadRepo = populateEntityStore();\r\n    measureNamedQuery(leadRepo, \"1\");\r\n    measureNamedQuery(leadRepo, \"2\");\r\n    measureNamedQuery(leadRepo, \"3\");\r\n    measureNamedQuery(leadRepo, \"4\");\r\n    measureNamedQuery(leadRepo, \"5\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\runtime\\composite\\CompositeCreationPerformanceTest.java",
+  "methodName" : "newInstanceForRegisteredCompositePerformance",
+  "sourceCode" : "/**\r\n * Tests performance of new composite creation\r\n */\r\n@Test\r\npublic void newInstanceForRegisteredCompositePerformance() {\r\n    SingletonAssembler assembler = new SingletonAssembler() {\r\n\r\n        public void assemble(ModuleAssembly module) throws AssemblyException {\r\n            module.transients(AnyComposite.class);\r\n            module.objects(AnyObject.class);\r\n            module.values(AnyValue.class);\r\n        }\r\n    };\r\n    int loops = 2;\r\n    long t0 = 0;\r\n    {\r\n        for (int i = 0; i < loops; i++) {\r\n            t0 = t0 + testJavaObjectCreationPerformance();\r\n        }\r\n        t0 = t0 / loops;\r\n    }\r\n    long t1 = 0;\r\n    {\r\n        TransientBuilderFactory transientBuilderFactory = assembler.transientBuilderFactory();\r\n        for (int i = 0; i < loops; i++) {\r\n            t1 = t1 + testCompositeCreationPerformance(transientBuilderFactory);\r\n        }\r\n        t1 = t1 / loops;\r\n    }\r\n    long t2 = 0;\r\n    {\r\n        ObjectBuilderFactory objectBuilderFactory = assembler.objectBuilderFactory();\r\n        for (int i = 0; i < loops; i++) {\r\n            t2 = t2 + testObjectCreationPerformance(objectBuilderFactory);\r\n        }\r\n        t2 = t2 / loops;\r\n    }\r\n    long t3 = 0;\r\n    {\r\n        ValueBuilderFactory valueBuilderFactory = assembler.valueBuilderFactory();\r\n        for (int i = 0; i < loops; i++) {\r\n            t3 = t3 + testValueCreationPerformance(valueBuilderFactory);\r\n        }\r\n        t3 = t3 / loops;\r\n    }\r\n    long t4 = 0;\r\n    {\r\n        TransientBuilderFactory transientBuilderFactory = assembler.transientBuilderFactory();\r\n        for (int i = 0; i < loops; i++) {\r\n            t4 = t4 + testCompositeCreationWithBuilderPerformance(transientBuilderFactory);\r\n        }\r\n        t4 = t4 / loops;\r\n    }\r\n    long t5 = 0;\r\n    {\r\n        ObjectBuilderFactory objectBuilderFactory = assembler.objectBuilderFactory();\r\n        for (int i = 0; i < loops; i++) {\r\n            t5 = t5 + testObjectCreationWithBuilderPerformance(objectBuilderFactory);\r\n        }\r\n        t5 = t5 / loops;\r\n    }\r\n    long t6 = 0;\r\n    {\r\n        ValueBuilderFactory valueBuilderFactory = assembler.valueBuilderFactory();\r\n        for (int i = 0; i < loops; i++) {\r\n            t6 = t6 + testValueCreationWithBuilderPerformance(valueBuilderFactory);\r\n        }\r\n        t6 = t6 / loops;\r\n    }\r\n    System.out.println(\"Transient: \" + (t1 / t0) + \"x\");\r\n    System.out.println(\"TransientBuilder: \" + (t4 / t0) + \"x\");\r\n    System.out.println(\"Value: \" + (t3 / t0) + \"x\");\r\n    System.out.println(\"ValueBuilder: \" + (t6 / t0) + \"x\");\r\n    System.out.println(\"Object: \" + (t2 / t0) + \"x\");\r\n    System.out.println(\"ObjectBuilder: \" + (t5 / t0) + \"x\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\runtime\\composite\\InvocationPerformanceTest.java",
+  "methodName" : "testInvokeMixin",
+  "sourceCode" : "@Test\r\npublic void testInvokeMixin() {\r\n    // Create instance\r\n    TransientBuilder<SimpleComposite> builder = transientBuilderFactory.newTransientBuilder(SimpleComposite.class);\r\n    Simple simple = builder.newInstance();\r\n    for (int i = 0; i < 60000; i++) {\r\n        simple.test();\r\n    }\r\n    int rounds = 3;\r\n    for (int i = 0; i < rounds; i++) {\r\n        System.gc();\r\n        performanceCheck(simple);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\runtime\\composite\\InvocationPerformanceTest.java",
+  "methodName" : "testInvokeMixinWithTypedConcern",
+  "sourceCode" : "@Test\r\npublic void testInvokeMixinWithTypedConcern() {\r\n    // Create instance\r\n    Simple simple = transientBuilderFactory.newTransient(SimpleWithTypedConcernComposite.class);\r\n    for (int i = 0; i < 60000; i++) {\r\n        simple.test();\r\n    }\r\n    int rounds = 3;\r\n    for (int i = 0; i < rounds; i++) {\r\n        performanceCheck(simple);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\runtime\\composite\\InvocationPerformanceTest.java",
+  "methodName" : "testInvokeMixinWithGenericConcern",
+  "sourceCode" : "@Test\r\npublic void testInvokeMixinWithGenericConcern() {\r\n    // Create instance\r\n    Simple simple = transientBuilderFactory.newTransient(SimpleWithGenericConcernComposite.class);\r\n    for (int i = 0; i < 60000; i++) {\r\n        simple.test();\r\n    }\r\n    int rounds = 3;\r\n    for (int i = 0; i < rounds; i++) {\r\n        performanceCheck(simple);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\runtime\\composite\\InvocationPerformanceTest.java",
+  "methodName" : "testInvokeMixin2",
+  "sourceCode" : "@Test\r\npublic void testInvokeMixin2() {\r\n    testInvokeMixin();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\runtime\\composite\\InvocationPerformanceTest.java",
+  "methodName" : "testInvokeMixinWithTypedConcern2",
+  "sourceCode" : "@Test\r\npublic void testInvokeMixinWithTypedConcern2() {\r\n    testInvokeMixinWithTypedConcern();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\runtime\\composite\\InvocationPerformanceTest.java",
+  "methodName" : "testInvokeMixinWithGenericConcern2",
+  "sourceCode" : "@Test\r\npublic void testInvokeMixinWithGenericConcern2() {\r\n    testInvokeMixinWithGenericConcern();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\runtime\\composite\\PropertyMixinInvocationPerformanceTest.java",
+  "methodName" : "testNewInstance",
+  "sourceCode" : "@Test\r\npublic void testNewInstance() {\r\n    {\r\n        TransientBuilder<SimpleComposite> builder = transientBuilderFactory.newTransientBuilder(SimpleComposite.class);\r\n        SimpleComposite simple = builder.newInstance();\r\n        int rounds = 1;\r\n        for (int i = 0; i < rounds; i++) {\r\n            performanceCheck(simple);\r\n        }\r\n    }\r\n    {\r\n        TransientBuilder<SimpleComposite> builder = transientBuilderFactory.newTransientBuilder(SimpleComposite.class);\r\n        SimpleComposite simple = builder.newInstance();\r\n        int rounds = 1;\r\n        for (int i = 0; i < rounds; i++) {\r\n            performanceCheck(simple);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\performance\\src\\main\\java\\org\\qi4j\\test\\performance\\runtime\\object\\ObjectCreationPerformanceTest.java",
+  "methodName" : "newInstanceForRegisteredObjectPerformance",
+  "sourceCode" : "/**\r\n * Tests performance of new object creation\r\n */\r\n@Test\r\npublic void newInstanceForRegisteredObjectPerformance() {\r\n    SingletonAssembler assembler = new SingletonAssembler() {\r\n\r\n        public void assemble(ModuleAssembly module) throws AssemblyException {\r\n            module.objects(AnyObject.class);\r\n        }\r\n    };\r\n    ObjectBuilderFactory objectBuilderFactory = assembler.objectBuilderFactory();\r\n    for (int i = 0; i < 10; i++) {\r\n        testPerformance(objectBuilderFactory);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\regression\\src\\main\\java\\org\\qi4j\\tests\\regression\\niclas1\\PieroTest.java",
+  "methodName" : "testPersistence",
+  "sourceCode" : "@Test\r\npublic void testPersistence() {\r\n    UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();\r\n    try {\r\n        String carId1 = createCar(\"Volvo\", \"S80\", 2007);\r\n        String carId2 = createCar(\"Volvo\", \"C70\", 2006);\r\n        String carId3 = createCar(\"Ford\", \"Transit\", 2007);\r\n        String carId4 = createCar(\"Ford\", \"Mustang\", 2007);\r\n        String carId5 = createCar(\"Ford\", \"Mustang\", 2006);\r\n        String carId6 = createCar(\"Ford\", \"Mustang\", 2005);\r\n        uow.complete();\r\n        uow = unitOfWorkFactory.newUnitOfWork();\r\n        System.out.println(uow.get(Car.class, carId1));\r\n        System.out.println(uow.get(Car.class, carId2));\r\n        System.out.println(uow.get(Car.class, carId3));\r\n        System.out.println(uow.get(Car.class, carId4));\r\n        System.out.println(uow.get(Car.class, carId5));\r\n        System.out.println(uow.get(Car.class, carId6));\r\n        uow.discard();\r\n    } catch (ConcurrentEntityModificationException e) {\r\n        // Can not happen.\r\n        e.printStackTrace();\r\n    } catch (UnitOfWorkCompletionException e) {\r\n        e.printStackTrace();\r\n    }\r\n    uow = unitOfWorkFactory.newUnitOfWork();\r\n    QueryBuilder<Car> qb = queryBuilderFactory.newQueryBuilder(Car.class);\r\n    Car template = QueryExpressions.templateFor(Car.class);\r\n    qb.where(QueryExpressions.eq(template.year(), 2007));\r\n    Query<Car> query = qb.newQuery(uow);\r\n    query.orderBy(orderBy(template.manufacturer()), orderBy(template.model()));\r\n    System.out.println(\"Cars from 2007\");\r\n    for (Car car : query) {\r\n        System.out.println(car.manufacturer().get() + \" \" + car.model().get() + \", \" + car.year().get());\r\n    }\r\n    uow.discard();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\regression\\src\\main\\java\\org\\qi4j\\tests\\regression\\niclas2\\ConcernsOnPropertyTest.java",
+  "methodName" : "whenConcernOnPropertyThenConcernIsInvoked",
+  "sourceCode" : "@Test\r\npublic void whenConcernOnPropertyThenConcernIsInvoked() {\r\n    TransientBuilder<Car> builder = transientBuilderFactory.newTransientBuilder(Car.class);\r\n    Car prototype = builder.prototypeFor(Car.class);\r\n    prototype.manufacturer().set(\"Volvo\");\r\n    Car car = builder.newInstance();\r\n    Assert.assertEquals(\"Concern on Property methods.\", \"Simon says: Volvo\", car.manufacturer().get());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\regression\\src\\main\\java\\org\\qi4j\\tests\\regression\\qi327\\Qi327Test.java",
+  "methodName" : "givenValueCompositeThatImplementsInitializableWhenCreatingValueExpectInitializeMethodNotCalledInPrototype",
+  "sourceCode" : "@Test\r\npublic void givenValueCompositeThatImplementsInitializableWhenCreatingValueExpectInitializeMethodNotCalledInPrototype() throws Exception {\r\n    ValueBuilder<Person> builder = valueBuilderFactory.newValueBuilder(Person.class);\r\n    builder.prototype().name().set(\"Niclas\");\r\n    builder.newInstance();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tests\\regression\\src\\main\\java\\org\\qi4j\\tests\\regression\\qi328\\Qi328TestCase.java",
+  "methodName" : "givenValueCompositeWithInternalStateMixinWhenSerializingExpectInternalStateInOutput",
+  "sourceCode" : "@Test\r\npublic void givenValueCompositeWithInternalStateMixinWhenSerializingExpectInternalStateInOutput() throws Exception {\r\n    ValueBuilder<OuterValue> builder = valueBuilderFactory.newValueBuilder(OuterValue.class);\r\n    OuterValue.State prototype = builder.prototypeFor(OuterValue.State.class);\r\n    builder.prototype().firstName().set(\"Niclas\");\r\n    prototype.lastName().set(\"Hedhman\");\r\n    OuterValue value = builder.newInstance();\r\n    System.out.println(\"Niclas: \" + value);\r\n    value.printName();\r\n    assertEquals(\"{\\\"firstName\\\":\\\"Niclas\\\",\\\"lastName\\\":\\\"Hedhman\\\"}\", value.toJSON());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tools\\codesnippet\\src\\test\\java\\org\\qi4j\\tools\\codesnippet\\parser\\IndentStripFilterTest.java",
+  "methodName" : "testStripIndent",
+  "sourceCode" : "@Test\r\npublic void testStripIndent() throws SAXException, ParserConfigurationException, IOException, TransformerException {\r\n    XMLReader input = createReader();\r\n    IndentStripFilter filter = new IndentStripFilter(\"sample\", input);\r\n    InputSource inputSource = getInputSource(\"IndentStripFilterTest.testStripIndent.in.xml\");\r\n    Transformer tf = transformerFactory.newTransformer(getSource(\"IndentStripFilterTest.identity.xsl\"));\r\n    StringWriter actual = new StringWriter();\r\n    Result outputTarget = new StreamResult(actual);\r\n    tf.transform(new SAXSource(filter, inputSource), outputTarget);\r\n    String expected = getResourceAsString(\"IndentStripFilterTest.testStripIndent.out.xml\");\r\n    assertEquals(trimLineFeeds(expected), trimLineFeeds(actual.toString()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tools\\codesnippet\\src\\test\\java\\org\\qi4j\\tools\\codesnippet\\parser\\IndentStripFilterTest.java",
+  "methodName" : "testDontStripIndent",
+  "sourceCode" : "@Test\r\npublic void testDontStripIndent() throws SAXException, ParserConfigurationException, IOException, TransformerException {\r\n    XMLReader input = createReader();\r\n    IndentStripFilter filter = new IndentStripFilter(\"anyStringButNotSample\", input);\r\n    InputSource inputSource = getInputSource(\"IndentStripFilterTest.testStripIndent.in.xml\");\r\n    Transformer tf = transformerFactory.newTransformer(getSource(\"IndentStripFilterTest.identity.xsl\"));\r\n    StringWriter actual = new StringWriter();\r\n    Result outputTarget = new StreamResult(actual);\r\n    tf.transform(new SAXSource(filter, inputSource), outputTarget);\r\n    // -- no stripping should have been done, so we use the input for comparison\r\n    String expected = getResourceAsString(\"IndentStripFilterTest.testStripIndent.in.xml\");\r\n    assertEquals(trimLineFeeds(expected), trimLineFeeds(actual.toString()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tools\\codesnippet\\src\\test\\java\\org\\qi4j\\tools\\codesnippet\\parser\\IndentStripFilterTest.java",
+  "methodName" : "testMultipleCharacterEvents",
+  "sourceCode" : "/**\r\n * Test filter manually with small chunks of character data, because this cannot (easily) be achieved with a parser\r\n * on small documents.\r\n *\r\n * @throws SAXException\r\n */\r\n@Test\r\npublic void testMultipleCharacterEvents() throws SAXException {\r\n    final String I_0 = \"\";\r\n    final String I_1 = \" \";\r\n    final String I_2 = \"  \";\r\n    final String I_3 = \"   \";\r\n    final String[][] testValues = { { \"Hello world! \\n\\nMy name is Foo, Foo Bar.\", \"Hello world! \\n\\nMy name is Foo, Foo Bar.\" }, { \"\\tA sample with one tab indent\", \"A sample with one tab indent\" }, { I_1 + \"A sample with\\n\" + I_2 + \"multiple lines and increasing indent\\n\" + I_3 + \"on each line\", I_0 + \"A sample with\\n\" + I_1 + \"multiple lines and increasing indent\\n\" + I_2 + \"on each line\" } };\r\n    for (int ii = 0; ii < testValues.length; ii++) {\r\n        String input = testValues[ii][0];\r\n        String expected = testValues[ii][1];\r\n        final String actual = filterStringInput(input);\r\n        assertEquals(expected, actual);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tools\\codesnippet\\src\\test\\java\\org\\qi4j\\tools\\codesnippet\\parser\\JavaXmlCommentsReaderTest.java",
+  "methodName" : "testSourceWithoutXmlComments",
+  "sourceCode" : "@Test\r\npublic void testSourceWithoutXmlComments() throws IOException {\r\n    String actual = readFully(newJavaXmlCommentsReader(\"SourceWithoutXmlComments.java.txt\"));\r\n    String expected = readFully(newInputStreamReader(\"SourceWithoutXmlComments.java.out.txt\"));\r\n    assertEquals(expected, actual);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tools\\codesnippet\\src\\test\\java\\org\\qi4j\\tools\\codesnippet\\parser\\JavaXmlCommentsReaderTest.java",
+  "methodName" : "testSourceWithXmlComments",
+  "sourceCode" : "@Test\r\npublic void testSourceWithXmlComments() throws IOException {\r\n    String actual = readFully(newJavaXmlCommentsReader(\"SourceWithXmlComments.java.txt\"));\r\n    String expected = readFully(newInputStreamReader(\"SourceWithXmlComments.java.out.txt\"));\r\n    assertEquals(expected, actual);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tools\\codesnippet\\src\\test\\java\\org\\qi4j\\tools\\codesnippet\\parser\\JavaXmlCommentsReaderTest.java",
+  "methodName" : "testCDATAEscape",
+  "sourceCode" : "@Test\r\npublic void testCDATAEscape() throws IOException {\r\n    String actual = readFully(newJavaXmlCommentsReader(\"CDATAEscape.java.txt\"));\r\n    String expected = readFully(newInputStreamReader(\"CDATAEscape.java.out.txt\"));\r\n    assertEquals(expected, actual);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tools\\codesnippet\\src\\test\\java\\org\\qi4j\\tools\\codesnippet\\parser\\JavaXmlCommentsReaderTest.java",
+  "methodName" : "main",
+  "sourceCode" : "@Test\r\npublic void main() throws UnsupportedEncodingException, IOException {\r\n    String actual = readFully(newJavaXmlCommentsReader(\"CDATAEscape.java.txt\"));\r\n    FileWriter out = new FileWriter(\"CDATAEscape.java.out.txt\");\r\n    out.append(actual);\r\n    out.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tools\\entity-viewer\\src\\test\\java\\org\\qi4j\\swing\\library\\swing\\entityviewer\\sample\\ApplicationSample.java",
+  "methodName" : "runSample",
+  "sourceCode" : "@Test\r\npublic void runSample() throws Exception {\r\n    setUp();\r\n    createTestData();\r\n    //testQuery();\r\n    new EntityViewer().show(qi4j, applicationModel, application);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tools\\envisage\\src\\test\\java\\org\\qi4j\\envisage\\sample\\EnvisageSample.java",
+  "methodName" : "runSample",
+  "sourceCode" : "@Test\r\npublic void runSample() throws Exception {\r\n    setUp();\r\n    createTestData();\r\n    //createTestData2();\r\n    //createTestData3();\r\n    new Envisage().run(applicationModel);\r\n    //        Thread.sleep( 1113000 );\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\cargo\\src\\test\\java\\org\\qi4j\\tutorials\\cargo\\step2\\SequencingConcernTest.java",
+  "methodName" : "failingBooking",
+  "sourceCode" : "/**\r\n * Tests that when shipping service fails to make the booking generator is not called and booking failure code is\r\n * returned.\r\n */\r\n@Test\r\n@Ignore(\"Expectations need to be figured out.\")\r\npublic void failingBooking() {\r\n    SingletonAssembler assembler = new SingletonAssembler() {\r\n\r\n        public void assemble(ModuleAssembly module) throws AssemblyException {\r\n            module.transients(ShippingServiceTestComposite.class);\r\n        }\r\n    };\r\n    ShippingService shippingService = createMock(ShippingService.class);\r\n    Cargo cargo = createMock(Cargo.class);\r\n    Voyage voyage = createMock(Voyage.class);\r\n    HasSequence sequence = createMock(HasSequence.class);\r\n    expect(shippingService.makeBooking(cargo, voyage)).andReturn(-1000);\r\n    expect(voyage.bookedCargoSize()).andReturn(new PropertyInstance<Double>(new GenericPropertyInfo(Voyage.class, \"bookedCargoSize\"), 0.0, null)).atLeastOnce();\r\n    expect(cargo.size()).andReturn(new PropertyInstance<Double>(new GenericPropertyInfo(Cargo.class, \"size\"), 0.0, null)).atLeastOnce();\r\n    expect(sequence.sequence()).andReturn(new PropertyInstance<Integer>(new GenericPropertyInfo(HasSequence.class, \"sequence\"), 0, null)).atLeastOnce();\r\n    replay(shippingService, cargo, voyage);\r\n    ShippingServiceTestComposite underTest = assembler.transientBuilderFactory().newTransient(ShippingServiceTestComposite.class);\r\n    underTest.useMock(shippingService).forClass(ShippingService.class);\r\n    assertThat(\"Booking result\", underTest.makeBooking(cargo, voyage), is(equalTo(-1000)));\r\n    verify(shippingService, cargo, voyage);\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\cargo\\src\\test\\java\\org\\qi4j\\tutorials\\cargo\\step2\\SequencingConcernTest.java",
+  "methodName" : "succesfulBooking",
+  "sourceCode" : "/**\r\n * Tests that when shipping service succeeds to make the booking generator gets called and generated value is\r\n * returned.\r\n */\r\n@Test\r\n@Ignore(\"Expectations need to be figured out.\")\r\npublic void succesfulBooking() {\r\n    SingletonAssembler assembler = new SingletonAssembler() {\r\n\r\n        public void assemble(ModuleAssembly module) throws AssemblyException {\r\n            module.transients(ShippingServiceTestComposite.class);\r\n        }\r\n    };\r\n    ShippingService shippingService = createMock(ShippingService.class);\r\n    Cargo cargo = createMock(Cargo.class);\r\n    Voyage voyage = createMock(Voyage.class);\r\n    HasSequence generator = createMock(HasSequence.class);\r\n    Property<Integer> sequence = createMock(Property.class);\r\n    expect(shippingService.makeBooking(cargo, voyage)).andReturn(100);\r\n    expect(generator.sequence()).andReturn(sequence).anyTimes();\r\n    expect(sequence.get()).andReturn(1000);\r\n    replay(shippingService, cargo, voyage, generator, sequence);\r\n    ShippingServiceTestComposite underTest = assembler.transientBuilderFactory().newTransient(ShippingServiceTestComposite.class);\r\n    underTest.useMock(shippingService).forClass(ShippingService.class);\r\n    underTest.useMock(generator).forClass(HasSequence.class);\r\n    assertThat(\"Booking result\", underTest.makeBooking(cargo, voyage), is(equalTo(1000)));\r\n    verify(shippingService, cargo, voyage, generator, sequence);\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\cargo\\src\\test\\java\\org\\qi4j\\tutorials\\cargo\\step2\\Step2TestCase.java",
+  "methodName" : "testOrdinaryBooking",
+  "sourceCode" : "@Test\r\npublic void testOrdinaryBooking() {\r\n    Cargo cargo1 = newCargo(40);\r\n    Cargo cargo2 = newCargo(40);\r\n    Cargo cargo3 = newCargo(20);\r\n    int code = shippingService.makeBooking(cargo1, voyage);\r\n    assertEquals(0, code);\r\n    code = shippingService.makeBooking(cargo2, voyage);\r\n    assertEquals(1, code);\r\n    code = shippingService.makeBooking(cargo3, voyage);\r\n    assertEquals(2, code);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\cargo\\src\\test\\java\\org\\qi4j\\tutorials\\cargo\\step2\\Step2TestCase.java",
+  "methodName" : "testOverbooking",
+  "sourceCode" : "@Test\r\npublic void testOverbooking() {\r\n    Cargo cargo1 = newCargo(100);\r\n    Cargo cargo2 = newCargo(9);\r\n    int code = shippingService.makeBooking(cargo1, voyage);\r\n    assertEquals(0, code);\r\n    code = shippingService.makeBooking(cargo2, voyage);\r\n    assertEquals(-1, code);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\cargo\\src\\test\\java\\org\\qi4j\\tutorials\\cargo\\step2\\Step2TestCase.java",
+  "methodName" : "testTooMuch",
+  "sourceCode" : "@Test\r\npublic void testTooMuch() {\r\n    Cargo cargo1 = newCargo(40);\r\n    Cargo cargo2 = newCargo(40);\r\n    Cargo cargo3 = newCargo(31);\r\n    int code = shippingService.makeBooking(cargo1, voyage);\r\n    assertEquals(0, code);\r\n    code = shippingService.makeBooking(cargo2, voyage);\r\n    assertEquals(1, code);\r\n    code = shippingService.makeBooking(cargo3, voyage);\r\n    assertEquals(-1, code);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial1\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult() {\r\n    {\r\n        helloWorld.setPhrase(\"Hello\");\r\n        helloWorld.setName(\"World\");\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Hello World\"));\r\n    }\r\n    {\r\n        helloWorld.setPhrase(\"Hey\");\r\n        helloWorld.setName(\"Universe\");\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Hey Universe\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial1\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidPhraseThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidPhraseThenThrowException() {\r\n    try {\r\n        helloWorld.setPhrase(null);\r\n        fail(\"Should not be allowed to set phrase to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial1\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidNameThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidNameThenThrowException() {\r\n    try {\r\n        helloWorld.setName(null);\r\n        fail(\"Should not be allowed to set name to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial10\\HelloWorldTest.java",
+  "methodName" : "givenAssemblyWhenBuildInstanceAndSayThenReturnCorrectResult",
+  "sourceCode" : "@Test\r\npublic void givenAssemblyWhenBuildInstanceAndSayThenReturnCorrectResult() {\r\n    {\r\n        TransientBuilder<HelloWorldComposite> builder = assembly.transientBuilderFactory().newTransientBuilder(HelloWorldComposite.class);\r\n        builder.prototypeFor(HelloWorldState.class).phrase().set(\"Hello\");\r\n        builder.prototypeFor(HelloWorldState.class).name().set(\"World\");\r\n        HelloWorldComposite helloWorld = builder.newInstance();\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Hello World\"));\r\n    }\r\n    {\r\n        TransientBuilder<HelloWorldComposite> builder = assembly.transientBuilderFactory().newTransientBuilder(HelloWorldComposite.class);\r\n        builder.prototypeFor(HelloWorldState.class).phrase().set(\"Hey\");\r\n        builder.prototypeFor(HelloWorldState.class).name().set(\"Universe\");\r\n        HelloWorldComposite helloWorld = builder.newInstance();\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Hey Universe\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial10\\HelloWorldTest.java",
+  "methodName" : "givenAssemblyWhenSetInvalidPhraseThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenAssemblyWhenSetInvalidPhraseThenThrowException() {\r\n    try {\r\n        TransientBuilder<HelloWorldComposite> builder = assembly.transientBuilderFactory().newTransientBuilder(HelloWorldComposite.class);\r\n        builder.prototypeFor(HelloWorldState.class).phrase().set(null);\r\n        HelloWorldComposite helloWorld = builder.newInstance();\r\n        fail(\"Should not be allowed to set phrase to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n    try {\r\n        TransientBuilder<HelloWorldComposite> builder = assembly.transientBuilderFactory().newTransientBuilder(HelloWorldComposite.class);\r\n        builder.prototypeFor(HelloWorldState.class).phrase().set(\"\");\r\n        HelloWorldComposite helloWorld = builder.newInstance();\r\n        fail(\"Should not be allowed to set phrase to empty string\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial10\\HelloWorldTest.java",
+  "methodName" : "givenAssemblyWhenSetInvalidNameThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenAssemblyWhenSetInvalidNameThenThrowException() {\r\n    try {\r\n        TransientBuilder<HelloWorldComposite> builder = assembly.transientBuilderFactory().newTransientBuilder(HelloWorldComposite.class);\r\n        builder.prototypeFor(HelloWorldState.class).name().set(null);\r\n        HelloWorldComposite helloWorld = builder.newInstance();\r\n        fail(\"Should not be allowed to set phrase to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n    try {\r\n        TransientBuilder<HelloWorldComposite> builder = assembly.transientBuilderFactory().newTransientBuilder(HelloWorldComposite.class);\r\n        builder.prototypeFor(HelloWorldState.class).name().set(\"\");\r\n        HelloWorldComposite helloWorld = builder.newInstance();\r\n        fail(\"Should not be allowed to set phrase to empty string\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial2\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult() {\r\n    {\r\n        helloWorld.setPhrase(\"Hello\");\r\n        helloWorld.setName(\"World\");\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Hello World\"));\r\n    }\r\n    {\r\n        helloWorld.setPhrase(\"Hey\");\r\n        helloWorld.setName(\"Universe\");\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Hey Universe\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial2\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidPhraseThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidPhraseThenThrowException() {\r\n    try {\r\n        helloWorld.setPhrase(null);\r\n        fail(\"Should not be allowed to set phrase to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial2\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidNameThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidNameThenThrowException() {\r\n    try {\r\n        helloWorld.setName(null);\r\n        fail(\"Should not be allowed to set name to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial3\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult() {\r\n    {\r\n        helloWorld.setPhrase(\"Hello\");\r\n        helloWorld.setName(\"World\");\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Hello World\"));\r\n    }\r\n    {\r\n        helloWorld.setPhrase(\"Hey\");\r\n        helloWorld.setName(\"Universe\");\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Hey Universe\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial3\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidPhraseThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidPhraseThenThrowException() {\r\n    try {\r\n        helloWorld.setPhrase(null);\r\n        fail(\"Should not be allowed to set phrase to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial3\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidNameThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidNameThenThrowException() {\r\n    try {\r\n        helloWorld.setName(null);\r\n        fail(\"Should not be allowed to set name to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial4\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult() {\r\n    {\r\n        helloWorld.setPhrase(\"Hello\");\r\n        helloWorld.setName(\"World\");\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Hello World\"));\r\n    }\r\n    {\r\n        helloWorld.setPhrase(\"Hey\");\r\n        helloWorld.setName(\"Universe\");\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Hey Universe\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial4\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidPhraseThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidPhraseThenThrowException() {\r\n    try {\r\n        helloWorld.setPhrase(null);\r\n        fail(\"Should not be allowed to set phrase to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial4\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidNameThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidNameThenThrowException() {\r\n    try {\r\n        helloWorld.setName(null);\r\n        fail(\"Should not be allowed to set name to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial5\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult() {\r\n    {\r\n        helloWorld.setPhrase(\"Hello\");\r\n        helloWorld.setName(\"World\");\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Simon says:Hello World\"));\r\n    }\r\n    {\r\n        helloWorld.setPhrase(\"Hey\");\r\n        helloWorld.setName(\"Universe\");\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Simon says:Hey Universe\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial5\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidPhraseThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidPhraseThenThrowException() {\r\n    try {\r\n        helloWorld.setPhrase(null);\r\n        fail(\"Should not be allowed to set phrase to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial5\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidNameThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidNameThenThrowException() {\r\n    try {\r\n        helloWorld.setName(null);\r\n        fail(\"Should not be allowed to set name to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial6\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult() {\r\n    {\r\n        helloWorld.setPhrase(\"Hello\");\r\n        helloWorld.setName(\"World\");\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Simon says:Hello World\"));\r\n    }\r\n    {\r\n        helloWorld.setPhrase(\"Hey\");\r\n        helloWorld.setName(\"Universe\");\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Simon says:Hey Universe\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial6\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidPhraseThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidPhraseThenThrowException() {\r\n    try {\r\n        helloWorld.setPhrase(null);\r\n        fail(\"Should not be allowed to set phrase to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n    try {\r\n        helloWorld.setPhrase(\"\");\r\n        fail(\"Should not be allowed to set phrase to empty string\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial6\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidNameThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidNameThenThrowException() {\r\n    try {\r\n        helloWorld.setName(null);\r\n        fail(\"Should not be allowed to set name to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n    try {\r\n        helloWorld.setName(\"\");\r\n        fail(\"Should not be allowed to set name to empty string\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial7\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult() {\r\n    {\r\n        helloWorld.setPhrase(\"Hello\");\r\n        helloWorld.setName(\"World\");\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Hello World\"));\r\n    }\r\n    {\r\n        helloWorld.setPhrase(\"Hey\");\r\n        helloWorld.setName(\"Universe\");\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Hey Universe\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial7\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidPhraseThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidPhraseThenThrowException() {\r\n    try {\r\n        helloWorld.setPhrase(null);\r\n        fail(\"Should not be allowed to set phrase to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n    try {\r\n        helloWorld.setPhrase(\"\");\r\n        fail(\"Should not be allowed to set phrase to empty string\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial7\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidNameThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidNameThenThrowException() {\r\n    try {\r\n        helloWorld.setName(null);\r\n        fail(\"Should not be allowed to set name to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n    try {\r\n        helloWorld.setName(\"\");\r\n        fail(\"Should not be allowed to set name to empty string\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial8\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult() {\r\n    {\r\n        helloWorld.phrase().set(\"Hey\");\r\n        helloWorld.name().set(\"Universe\");\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Hey Universe\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial8\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidPhraseThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidPhraseThenThrowException() {\r\n    try {\r\n        helloWorld.phrase().set(null);\r\n        fail(\"Should not be allowed to set phrase to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n    try {\r\n        helloWorld.phrase().set(\"\");\r\n        fail(\"Should not be allowed to set phrase to empty string\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial8\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidNameThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidNameThenThrowException() {\r\n    try {\r\n        helloWorld.name().set(null);\r\n        fail(\"Should not be allowed to set name to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n    try {\r\n        helloWorld.name().set(\"\");\r\n        fail(\"Should not be allowed to set name to empty string\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial9\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetPropertiesAndSayThenReturnCorrectResult() {\r\n    {\r\n        helloWorld.phrase().set(\"Hey\");\r\n        helloWorld.name().set(\"Universe\");\r\n        String result = helloWorld.say();\r\n        assertThat(result, equalTo(\"Hey Universe\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial9\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidPhraseThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidPhraseThenThrowException() {\r\n    try {\r\n        helloWorld.phrase().set(null);\r\n        fail(\"Should not be allowed to set phrase to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n    try {\r\n        helloWorld.phrase().set(\"\");\r\n        fail(\"Should not be allowed to set phrase to empty string\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\composites\\src\\test\\java\\org\\qi4j\\tutorials\\composites\\tutorial9\\HelloWorldTest.java",
+  "methodName" : "givenHelloWorldWhenSetInvalidNameThenThrowException",
+  "sourceCode" : "@Test\r\npublic void givenHelloWorldWhenSetInvalidNameThenThrowException() {\r\n    try {\r\n        helloWorld.name().set(null);\r\n        fail(\"Should not be allowed to set name to null\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n    try {\r\n        helloWorld.name().set(\"\");\r\n        fail(\"Should not be allowed to set name to empty string\");\r\n    } catch (IllegalArgumentException e) {\r\n        // Ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\services\\src\\test\\java\\org\\qi4j\\tutorials\\services\\step1\\LibraryTest.java",
+  "methodName" : "testLibrary",
+  "sourceCode" : "@Test\r\npublic void testLibrary() throws Exception {\r\n    Consumer consumer = new Consumer(new Library());\r\n    consumer.run();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\services\\src\\test\\java\\org\\qi4j\\tutorials\\services\\step2\\LibraryTest.java",
+  "methodName" : "testLibrary",
+  "sourceCode" : "@Test\r\npublic void testLibrary() throws Exception {\r\n    Consumer consumer = objectBuilderFactory.newObject(Consumer.class);\r\n    consumer.run();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\services\\src\\test\\java\\org\\qi4j\\tutorials\\services\\step3\\LibraryTest.java",
+  "methodName" : "testLibrary",
+  "sourceCode" : "@Test\r\npublic void testLibrary() throws Exception {\r\n    Consumer consumer = objectBuilderFactory.newObject(Consumer.class);\r\n    consumer.run();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\tutorials\\services\\src\\test\\java\\org\\qi4j\\tutorials\\services\\step4\\LibraryTest.java",
+  "methodName" : "testLibrary",
+  "sourceCode" : "@Test\r\npublic void testLibrary() throws Exception {\r\n    Consumer consumer = objectBuilderFactory.newObject(Consumer.class);\r\n    consumer.run();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

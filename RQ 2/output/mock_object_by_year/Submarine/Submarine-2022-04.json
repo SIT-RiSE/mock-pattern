@@ -1,0 +1,841 @@
+[
+  {
+    "rawMockObjectId": 1,
+    "variableName": "spyExperimentManager",
+    "variableType": "ExperimentManager",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.submarine.server.experiment",
+      "filePath": "C:\\Java_projects\\temp_projects\\Submarine\\submarine-server\\server-core\\src\\test\\java\\org\\apache\\submarine\\server\\experiment\\ExperimentManagerTest.java"
+    },
+    "statements": [
+      {
+        "code": "// Spy experimentManager in order to stub generateExperimentId()\r\nExperimentManager spyExperimentManager = spy(experimentManager);",
+        "line": 100,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCreateExperiment",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCreateExperiment() {\r\n    // Create a experimentID for this experiment\r\n    ExperimentId experimentId = new ExperimentId();\r\n    experimentId.setServerTimestamp(System.currentTimeMillis());\r\n    experimentId.setId(1);\r\n    // Construct expected result\r\n    Experiment expectedExperiment = new Experiment();\r\n    expectedExperiment.setSpec(spec);\r\n    expectedExperiment.setExperimentId(experimentId);\r\n    expectedExperiment.rebuild(result);\r\n    // Spy experimentManager in order to stub generateExperimentId()\r\n    ExperimentManager spyExperimentManager = spy(experimentManager);\r\n    doReturn(experimentId).when(spyExperimentManager).generateExperimentId();\r\n    // Stub mockSubmitter createExperiment\r\n    when(mockSubmitter.createExperiment(any(ExperimentSpec.class))).thenReturn(result);\r\n    // actual experiment should == expected experiment\r\n    Experiment actualExperiment = spyExperimentManager.createExperiment(spec);\r\n    verifyResult(expectedExperiment, actualExperiment);\r\n}"
+        }
+      },
+      {
+        "code": "doReturn(experimentId).when(spyExperimentManager).generateExperimentId();",
+        "line": 101,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCreateExperiment",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCreateExperiment() {\r\n    // Create a experimentID for this experiment\r\n    ExperimentId experimentId = new ExperimentId();\r\n    experimentId.setServerTimestamp(System.currentTimeMillis());\r\n    experimentId.setId(1);\r\n    // Construct expected result\r\n    Experiment expectedExperiment = new Experiment();\r\n    expectedExperiment.setSpec(spec);\r\n    expectedExperiment.setExperimentId(experimentId);\r\n    expectedExperiment.rebuild(result);\r\n    // Spy experimentManager in order to stub generateExperimentId()\r\n    ExperimentManager spyExperimentManager = spy(experimentManager);\r\n    doReturn(experimentId).when(spyExperimentManager).generateExperimentId();\r\n    // Stub mockSubmitter createExperiment\r\n    when(mockSubmitter.createExperiment(any(ExperimentSpec.class))).thenReturn(result);\r\n    // actual experiment should == expected experiment\r\n    Experiment actualExperiment = spyExperimentManager.createExperiment(spec);\r\n    verifyResult(expectedExperiment, actualExperiment);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 2,
+    "variableName": "spyExperimentManager",
+    "variableType": "ExperimentManager",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.submarine.server.experiment",
+      "filePath": "C:\\Java_projects\\temp_projects\\Submarine\\submarine-server\\server-core\\src\\test\\java\\org\\apache\\submarine\\server\\experiment\\ExperimentManagerTest.java"
+    },
+    "statements": [
+      {
+        "code": "ExperimentManager spyExperimentManager = spy(experimentManager);",
+        "line": 137,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testFinaExperimentByTag",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testFinaExperimentByTag() {\r\n    // Build two experiment objects, only experiment1 has tags\r\n    ExperimentId experimentId1 = new ExperimentId();\r\n    experimentId1.setServerTimestamp(System.currentTimeMillis());\r\n    experimentId1.setId(1);\r\n    Experiment experiment1 = new Experiment();\r\n    experiment1.setSpec(spec);\r\n    experiment1.setExperimentId(experimentId1);\r\n    experiment1.rebuild(result);\r\n    ExperimentId experimentId2 = new ExperimentId();\r\n    experimentId2.setServerTimestamp(System.currentTimeMillis());\r\n    experimentId2.setId(2);\r\n    ExperimentEntity entity1 = new ExperimentEntity();\r\n    entity1.setId(experiment1.getSpec().getMeta().getExperimentId());\r\n    entity1.setExperimentSpec(new GsonBuilder().disableHtmlEscaping().create().toJson(experiment1.getSpec()));\r\n    doReturn(Arrays.asList(entity1)).when(mockService).selectAll();\r\n    when(mockSubmitter.findExperiment(any(ExperimentSpec.class))).thenReturn(experiment1);\r\n    ExperimentManager spyExperimentManager = spy(experimentManager);\r\n    // only the experiment1 object should be found with giving tag stable\r\n    List<Experiment> foundExperiments = spyExperimentManager.listExperimentsByTag(\"stable\");\r\n    assertEquals(1, foundExperiments.size());\r\n    // no object should be found when we're searching with tag \"test\"\r\n    List<Experiment> foundExperiments2 = spyExperimentManager.listExperimentsByTag(\"test\");\r\n    assertEquals(0, foundExperiments2.size());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 3,
+    "variableName": "mockSubmitter",
+    "variableType": "Submitter",
+    "isGlobal": true,
+    "mockPatternLevel": 2,
+    "classContext": {
+      "packageName": "org.apache.submarine.server.experiment",
+      "filePath": "C:\\Java_projects\\temp_projects\\Submarine\\submarine-server\\server-core\\src\\test\\java\\org\\apache\\submarine\\server\\experiment\\ExperimentManagerTest.java",
+      "className": "ExperimentManagerTest"
+    },
+    "statements": [
+      {
+        "code": "private Submitter mockSubmitter;",
+        "line": 60,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "mockSubmitter = mock(Submitter.class);",
+        "line": 80,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "init",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void init() throws SubmarineException {\r\n    spec = (ExperimentSpec) buildFromJsonFile(ExperimentSpec.class, specFile);\r\n    newSpec = (ExperimentSpec) buildFromJsonFile(ExperimentSpec.class, newSpecFile);\r\n    result = (Experiment) buildFromJsonFile(Experiment.class, resultFile);\r\n    status = (Experiment) buildFromJsonFile(Experiment.class, statusFile);\r\n    mockSubmitter = mock(Submitter.class);\r\n    mockService = mock(ExperimentService.class);\r\n    experimentManager = new ExperimentManager(mockSubmitter, mockService);\r\n}"
+        }
+      },
+      {
+        "code": "// Stub mockSubmitter createExperiment\r\nwhen(mockSubmitter.createExperiment(any(ExperimentSpec.class))).thenReturn(result);",
+        "line": 104,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCreateExperiment",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCreateExperiment() {\r\n    // Create a experimentID for this experiment\r\n    ExperimentId experimentId = new ExperimentId();\r\n    experimentId.setServerTimestamp(System.currentTimeMillis());\r\n    experimentId.setId(1);\r\n    // Construct expected result\r\n    Experiment expectedExperiment = new Experiment();\r\n    expectedExperiment.setSpec(spec);\r\n    expectedExperiment.setExperimentId(experimentId);\r\n    expectedExperiment.rebuild(result);\r\n    // Spy experimentManager in order to stub generateExperimentId()\r\n    ExperimentManager spyExperimentManager = spy(experimentManager);\r\n    doReturn(experimentId).when(spyExperimentManager).generateExperimentId();\r\n    // Stub mockSubmitter createExperiment\r\n    when(mockSubmitter.createExperiment(any(ExperimentSpec.class))).thenReturn(result);\r\n    // actual experiment should == expected experiment\r\n    Experiment actualExperiment = spyExperimentManager.createExperiment(spec);\r\n    verifyResult(expectedExperiment, actualExperiment);\r\n}"
+        }
+      },
+      {
+        "code": "when(mockSubmitter.findExperiment(any(ExperimentSpec.class))).thenReturn(experiment1);",
+        "line": 135,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testFinaExperimentByTag",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testFinaExperimentByTag() {\r\n    // Build two experiment objects, only experiment1 has tags\r\n    ExperimentId experimentId1 = new ExperimentId();\r\n    experimentId1.setServerTimestamp(System.currentTimeMillis());\r\n    experimentId1.setId(1);\r\n    Experiment experiment1 = new Experiment();\r\n    experiment1.setSpec(spec);\r\n    experiment1.setExperimentId(experimentId1);\r\n    experiment1.rebuild(result);\r\n    ExperimentId experimentId2 = new ExperimentId();\r\n    experimentId2.setServerTimestamp(System.currentTimeMillis());\r\n    experimentId2.setId(2);\r\n    ExperimentEntity entity1 = new ExperimentEntity();\r\n    entity1.setId(experiment1.getSpec().getMeta().getExperimentId());\r\n    entity1.setExperimentSpec(new GsonBuilder().disableHtmlEscaping().create().toJson(experiment1.getSpec()));\r\n    doReturn(Arrays.asList(entity1)).when(mockService).selectAll();\r\n    when(mockSubmitter.findExperiment(any(ExperimentSpec.class))).thenReturn(experiment1);\r\n    ExperimentManager spyExperimentManager = spy(experimentManager);\r\n    // only the experiment1 object should be found with giving tag stable\r\n    List<Experiment> foundExperiments = spyExperimentManager.listExperimentsByTag(\"stable\");\r\n    assertEquals(1, foundExperiments.size());\r\n    // no object should be found when we're searching with tag \"test\"\r\n    List<Experiment> foundExperiments2 = spyExperimentManager.listExperimentsByTag(\"test\");\r\n    assertEquals(0, foundExperiments2.size());\r\n}"
+        }
+      },
+      {
+        "code": "// Stub mockSubmitter findExperiment\r\nwhen(mockSubmitter.findExperiment(any(ExperimentSpec.class))).thenReturn(result);",
+        "line": 193,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testGetExperiment",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testGetExperiment() {\r\n    // Create the experimentID for this experiment\r\n    ExperimentId experimentId = new ExperimentId();\r\n    experimentId.setServerTimestamp(System.currentTimeMillis());\r\n    experimentId.setId(1);\r\n    // Create the entity\r\n    ExperimentEntity entity = new ExperimentEntity();\r\n    entity.setExperimentSpec(toJson(spec));\r\n    entity.setId(experimentId.toString());\r\n    entity.setUid(result.getUid());\r\n    if (result.getCreatedTime() != null) {\r\n        entity.setCreateTime(DateTime.parse(result.getCreatedTime()).toDate());\r\n    } else {\r\n        entity.setCreateTime(null);\r\n    }\r\n    if (result.getAcceptedTime() != null) {\r\n        entity.setAcceptedTime(DateTime.parse(result.getAcceptedTime()).toDate());\r\n    } else {\r\n        entity.setAcceptedTime(null);\r\n    }\r\n    if (result.getRunningTime() != null) {\r\n        entity.setRunningTime(DateTime.parse(result.getRunningTime()).toDate());\r\n    } else {\r\n        entity.setRunningTime(null);\r\n    }\r\n    if (result.getFinishedTime() != null) {\r\n        entity.setFinishedTime(DateTime.parse(result.getFinishedTime()).toDate());\r\n    } else {\r\n        entity.setFinishedTime(null);\r\n    }\r\n    entity.setExperimentStatus(result.getStatus());\r\n    // Construct expected result\r\n    Experiment expectedExperiment = new Experiment();\r\n    expectedExperiment.setSpec(spec);\r\n    expectedExperiment.setExperimentId(experimentId);\r\n    expectedExperiment.rebuild(result);\r\n    // Stub service select\r\n    // Pretend there is a entity in db\r\n    when(mockService.select(any(String.class))).thenReturn(entity);\r\n    // Stub mockSubmitter findExperiment\r\n    when(mockSubmitter.findExperiment(any(ExperimentSpec.class))).thenReturn(result);\r\n    // get experiment\r\n    Experiment actualExperiment = experimentManager.getExperiment(experimentId.toString());\r\n    verifyResult(expectedExperiment, actualExperiment);\r\n}"
+        }
+      },
+      {
+        "code": "// Stub mockSubmitter patchExperiment\r\nwhen(mockSubmitter.patchExperiment(any(ExperimentSpec.class))).thenReturn(result);",
+        "line": 226,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testPatchExperiment",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testPatchExperiment() {\r\n    // Create the experimentID for this experiment\r\n    ExperimentId experimentId = new ExperimentId();\r\n    experimentId.setServerTimestamp(System.currentTimeMillis());\r\n    experimentId.setId(1);\r\n    // Create the entity\r\n    ExperimentEntity entity = new ExperimentEntity();\r\n    entity.setExperimentSpec(toJson(spec));\r\n    entity.setId(experimentId.toString());\r\n    // Construct expected result\r\n    Experiment expectedExperiment = new Experiment();\r\n    expectedExperiment.setSpec(newSpec);\r\n    expectedExperiment.setExperimentId(experimentId);\r\n    expectedExperiment.rebuild(result);\r\n    // Stub service select\r\n    // Pretend there is a entity in db\r\n    when(mockService.select(any(String.class))).thenReturn(entity);\r\n    // Stub mockSubmitter patchExperiment\r\n    when(mockSubmitter.patchExperiment(any(ExperimentSpec.class))).thenReturn(result);\r\n    // patch experiment\r\n    Experiment actualExperiment = experimentManager.patchExperiment(experimentId.toString(), newSpec);\r\n    verifyResult(expectedExperiment, actualExperiment);\r\n}"
+        }
+      },
+      {
+        "code": "// Stub mockSubmitter deleteExperiment\r\nwhen(mockSubmitter.deleteExperiment(any(ExperimentSpec.class))).thenReturn(status);",
+        "line": 257,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testDeleteExperiment",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testDeleteExperiment() {\r\n    // Create the experimentID for this experiment\r\n    ExperimentId experimentId = new ExperimentId();\r\n    experimentId.setServerTimestamp(System.currentTimeMillis());\r\n    experimentId.setId(1);\r\n    // Create the entity\r\n    ExperimentEntity entity = new ExperimentEntity();\r\n    entity.setExperimentSpec(toJson(spec));\r\n    entity.setId(experimentId.toString());\r\n    // Construct expected result\r\n    Experiment expectedExperiment = new Experiment();\r\n    expectedExperiment.setSpec(spec);\r\n    expectedExperiment.setExperimentId(experimentId);\r\n    expectedExperiment.rebuild(status);\r\n    // Stub service select\r\n    // Pretend there is a entity in db\r\n    when(mockService.select(any(String.class))).thenReturn(entity);\r\n    // Stub mockSubmitter deleteExperiment\r\n    when(mockSubmitter.deleteExperiment(any(ExperimentSpec.class))).thenReturn(status);\r\n    // delete experiment\r\n    Experiment actualExperiment = experimentManager.deleteExperiment(experimentId.toString());\r\n    verifyResult(expectedExperiment, actualExperiment);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 4,
+    "variableName": "mockService",
+    "variableType": "ExperimentService",
+    "isGlobal": true,
+    "mockPatternLevel": 2,
+    "classContext": {
+      "packageName": "org.apache.submarine.server.experiment",
+      "filePath": "C:\\Java_projects\\temp_projects\\Submarine\\submarine-server\\server-core\\src\\test\\java\\org\\apache\\submarine\\server\\experiment\\ExperimentManagerTest.java",
+      "className": "ExperimentManagerTest"
+    },
+    "statements": [
+      {
+        "code": "private ExperimentService mockService;",
+        "line": 61,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "mockService = mock(ExperimentService.class);",
+        "line": 81,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "init",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void init() throws SubmarineException {\r\n    spec = (ExperimentSpec) buildFromJsonFile(ExperimentSpec.class, specFile);\r\n    newSpec = (ExperimentSpec) buildFromJsonFile(ExperimentSpec.class, newSpecFile);\r\n    result = (Experiment) buildFromJsonFile(Experiment.class, resultFile);\r\n    status = (Experiment) buildFromJsonFile(Experiment.class, statusFile);\r\n    mockSubmitter = mock(Submitter.class);\r\n    mockService = mock(ExperimentService.class);\r\n    experimentManager = new ExperimentManager(mockSubmitter, mockService);\r\n}"
+        }
+      },
+      {
+        "code": "doReturn(Arrays.asList(entity1)).when(mockService).selectAll();",
+        "line": 133,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testFinaExperimentByTag",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testFinaExperimentByTag() {\r\n    // Build two experiment objects, only experiment1 has tags\r\n    ExperimentId experimentId1 = new ExperimentId();\r\n    experimentId1.setServerTimestamp(System.currentTimeMillis());\r\n    experimentId1.setId(1);\r\n    Experiment experiment1 = new Experiment();\r\n    experiment1.setSpec(spec);\r\n    experiment1.setExperimentId(experimentId1);\r\n    experiment1.rebuild(result);\r\n    ExperimentId experimentId2 = new ExperimentId();\r\n    experimentId2.setServerTimestamp(System.currentTimeMillis());\r\n    experimentId2.setId(2);\r\n    ExperimentEntity entity1 = new ExperimentEntity();\r\n    entity1.setId(experiment1.getSpec().getMeta().getExperimentId());\r\n    entity1.setExperimentSpec(new GsonBuilder().disableHtmlEscaping().create().toJson(experiment1.getSpec()));\r\n    doReturn(Arrays.asList(entity1)).when(mockService).selectAll();\r\n    when(mockSubmitter.findExperiment(any(ExperimentSpec.class))).thenReturn(experiment1);\r\n    ExperimentManager spyExperimentManager = spy(experimentManager);\r\n    // only the experiment1 object should be found with giving tag stable\r\n    List<Experiment> foundExperiments = spyExperimentManager.listExperimentsByTag(\"stable\");\r\n    assertEquals(1, foundExperiments.size());\r\n    // no object should be found when we're searching with tag \"test\"\r\n    List<Experiment> foundExperiments2 = spyExperimentManager.listExperimentsByTag(\"test\");\r\n    assertEquals(0, foundExperiments2.size());\r\n}"
+        }
+      },
+      {
+        "code": "// Stub service select\r\n// Pretend there is a entity in db\r\nwhen(mockService.select(any(String.class))).thenReturn(entity);",
+        "line": 190,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testGetExperiment",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testGetExperiment() {\r\n    // Create the experimentID for this experiment\r\n    ExperimentId experimentId = new ExperimentId();\r\n    experimentId.setServerTimestamp(System.currentTimeMillis());\r\n    experimentId.setId(1);\r\n    // Create the entity\r\n    ExperimentEntity entity = new ExperimentEntity();\r\n    entity.setExperimentSpec(toJson(spec));\r\n    entity.setId(experimentId.toString());\r\n    entity.setUid(result.getUid());\r\n    if (result.getCreatedTime() != null) {\r\n        entity.setCreateTime(DateTime.parse(result.getCreatedTime()).toDate());\r\n    } else {\r\n        entity.setCreateTime(null);\r\n    }\r\n    if (result.getAcceptedTime() != null) {\r\n        entity.setAcceptedTime(DateTime.parse(result.getAcceptedTime()).toDate());\r\n    } else {\r\n        entity.setAcceptedTime(null);\r\n    }\r\n    if (result.getRunningTime() != null) {\r\n        entity.setRunningTime(DateTime.parse(result.getRunningTime()).toDate());\r\n    } else {\r\n        entity.setRunningTime(null);\r\n    }\r\n    if (result.getFinishedTime() != null) {\r\n        entity.setFinishedTime(DateTime.parse(result.getFinishedTime()).toDate());\r\n    } else {\r\n        entity.setFinishedTime(null);\r\n    }\r\n    entity.setExperimentStatus(result.getStatus());\r\n    // Construct expected result\r\n    Experiment expectedExperiment = new Experiment();\r\n    expectedExperiment.setSpec(spec);\r\n    expectedExperiment.setExperimentId(experimentId);\r\n    expectedExperiment.rebuild(result);\r\n    // Stub service select\r\n    // Pretend there is a entity in db\r\n    when(mockService.select(any(String.class))).thenReturn(entity);\r\n    // Stub mockSubmitter findExperiment\r\n    when(mockSubmitter.findExperiment(any(ExperimentSpec.class))).thenReturn(result);\r\n    // get experiment\r\n    Experiment actualExperiment = experimentManager.getExperiment(experimentId.toString());\r\n    verifyResult(expectedExperiment, actualExperiment);\r\n}"
+        }
+      },
+      {
+        "code": "// Stub service select\r\n// Pretend there is a entity in db\r\nwhen(mockService.select(any(String.class))).thenReturn(entity);",
+        "line": 223,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testPatchExperiment",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testPatchExperiment() {\r\n    // Create the experimentID for this experiment\r\n    ExperimentId experimentId = new ExperimentId();\r\n    experimentId.setServerTimestamp(System.currentTimeMillis());\r\n    experimentId.setId(1);\r\n    // Create the entity\r\n    ExperimentEntity entity = new ExperimentEntity();\r\n    entity.setExperimentSpec(toJson(spec));\r\n    entity.setId(experimentId.toString());\r\n    // Construct expected result\r\n    Experiment expectedExperiment = new Experiment();\r\n    expectedExperiment.setSpec(newSpec);\r\n    expectedExperiment.setExperimentId(experimentId);\r\n    expectedExperiment.rebuild(result);\r\n    // Stub service select\r\n    // Pretend there is a entity in db\r\n    when(mockService.select(any(String.class))).thenReturn(entity);\r\n    // Stub mockSubmitter patchExperiment\r\n    when(mockSubmitter.patchExperiment(any(ExperimentSpec.class))).thenReturn(result);\r\n    // patch experiment\r\n    Experiment actualExperiment = experimentManager.patchExperiment(experimentId.toString(), newSpec);\r\n    verifyResult(expectedExperiment, actualExperiment);\r\n}"
+        }
+      },
+      {
+        "code": "// Stub service select\r\n// Pretend there is a entity in db\r\nwhen(mockService.select(any(String.class))).thenReturn(entity);",
+        "line": 254,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testDeleteExperiment",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testDeleteExperiment() {\r\n    // Create the experimentID for this experiment\r\n    ExperimentId experimentId = new ExperimentId();\r\n    experimentId.setServerTimestamp(System.currentTimeMillis());\r\n    experimentId.setId(1);\r\n    // Create the entity\r\n    ExperimentEntity entity = new ExperimentEntity();\r\n    entity.setExperimentSpec(toJson(spec));\r\n    entity.setId(experimentId.toString());\r\n    // Construct expected result\r\n    Experiment expectedExperiment = new Experiment();\r\n    expectedExperiment.setSpec(spec);\r\n    expectedExperiment.setExperimentId(experimentId);\r\n    expectedExperiment.rebuild(status);\r\n    // Stub service select\r\n    // Pretend there is a entity in db\r\n    when(mockService.select(any(String.class))).thenReturn(entity);\r\n    // Stub mockSubmitter deleteExperiment\r\n    when(mockSubmitter.deleteExperiment(any(ExperimentSpec.class))).thenReturn(status);\r\n    // delete experiment\r\n    Experiment actualExperiment = experimentManager.deleteExperiment(experimentId.toString());\r\n    verifyResult(expectedExperiment, actualExperiment);\r\n}"
+        }
+      },
+      {
+        "code": "// Stub service select\r\n// Pretend that we cannot find the entity\r\nwhen(mockService.select(any(String.class))).thenReturn(null);",
+        "line": 274,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testGetNotFoundExperiment",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test(expected = SubmarineRuntimeException.class)\r\npublic void testGetNotFoundExperiment() {\r\n    // Create the experimentID for this experiment\r\n    ExperimentId experimentId = new ExperimentId();\r\n    experimentId.setServerTimestamp(System.currentTimeMillis());\r\n    experimentId.setId(1);\r\n    // Stub service select\r\n    // Pretend that we cannot find the entity\r\n    when(mockService.select(any(String.class))).thenReturn(null);\r\n    // get experiment\r\n    experimentManager.getExperiment(experimentId.toString());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 5,
+    "variableName": "notebookService",
+    "variableType": "NotebookService",
+    "isGlobal": true,
+    "mockPatternLevel": 2,
+    "classContext": {
+      "packageName": "org.apache.submarine.server.internal",
+      "filePath": "C:\\Java_projects\\temp_projects\\Submarine\\submarine-server\\server-core\\src\\test\\java\\org\\apache\\submarine\\server\\internal\\InternalServiceManagerTest.java",
+      "className": "InternalServiceManagerTest"
+    },
+    "statements": [
+      {
+        "code": "private NotebookService notebookService;",
+        "line": 45,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "notebookService = mock(NotebookService.class);",
+        "line": 50,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "init",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void init() throws SubmarineException {\r\n    notebookService = mock(NotebookService.class);\r\n    experimentService = mock(ExperimentService.class);\r\n    internalServiceManager = new InternalServiceManager(experimentService, notebookService);\r\n}"
+        }
+      },
+      {
+        "code": "when(notebookService.select(any(String.class))).thenReturn(notebook);",
+        "line": 67,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testUpdateNotebook",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testUpdateNotebook() {\r\n    Notebook notebook = new Notebook();\r\n    notebook.setNotebookId(new NotebookId());\r\n    notebook.setName(\"test\");\r\n    notebook.setReason(\"test\");\r\n    notebook.setSpec(new NotebookSpec());\r\n    notebook.setStatus(\"running\");\r\n    notebook.setUid(\"mock-user\");\r\n    notebook.setUrl(\"http://submarine.org\");\r\n    when(notebookService.select(any(String.class))).thenReturn(notebook);\r\n    Map<String, Object> updateObject = new HashMap<>();\r\n    updateObject.put(\"name\", \"test\");\r\n    updateObject.put(\"notebookId\", new NotebookId());\r\n    updateObject.put(\"reason\", \"test\");\r\n    updateObject.put(\"spec\", new NotebookSpec());\r\n    updateObject.put(\"status\", \"running\");\r\n    updateObject.put(\"uid\", \"mock-user\");\r\n    updateObject.put(\"url\", \"http://submarine.org\");\r\n    when(notebookService.update(any(Notebook.class))).thenReturn(true);\r\n    assertEquals(internalServiceManager.updateCRStatus(CustomResourceType.Notebook, updateObject.get(\"notebookId\").toString(), updateObject), true);\r\n}"
+        }
+      },
+      {
+        "code": "when(notebookService.update(any(Notebook.class))).thenReturn(true);",
+        "line": 78,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testUpdateNotebook",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testUpdateNotebook() {\r\n    Notebook notebook = new Notebook();\r\n    notebook.setNotebookId(new NotebookId());\r\n    notebook.setName(\"test\");\r\n    notebook.setReason(\"test\");\r\n    notebook.setSpec(new NotebookSpec());\r\n    notebook.setStatus(\"running\");\r\n    notebook.setUid(\"mock-user\");\r\n    notebook.setUrl(\"http://submarine.org\");\r\n    when(notebookService.select(any(String.class))).thenReturn(notebook);\r\n    Map<String, Object> updateObject = new HashMap<>();\r\n    updateObject.put(\"name\", \"test\");\r\n    updateObject.put(\"notebookId\", new NotebookId());\r\n    updateObject.put(\"reason\", \"test\");\r\n    updateObject.put(\"spec\", new NotebookSpec());\r\n    updateObject.put(\"status\", \"running\");\r\n    updateObject.put(\"uid\", \"mock-user\");\r\n    updateObject.put(\"url\", \"http://submarine.org\");\r\n    when(notebookService.update(any(Notebook.class))).thenReturn(true);\r\n    assertEquals(internalServiceManager.updateCRStatus(CustomResourceType.Notebook, updateObject.get(\"notebookId\").toString(), updateObject), true);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 6,
+    "variableName": "experimentService",
+    "variableType": "ExperimentService",
+    "isGlobal": true,
+    "mockPatternLevel": 2,
+    "classContext": {
+      "packageName": "org.apache.submarine.server.internal",
+      "filePath": "C:\\Java_projects\\temp_projects\\Submarine\\submarine-server\\server-core\\src\\test\\java\\org\\apache\\submarine\\server\\internal\\InternalServiceManagerTest.java",
+      "className": "InternalServiceManagerTest"
+    },
+    "statements": [
+      {
+        "code": "private ExperimentService experimentService;",
+        "line": 46,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "experimentService = mock(ExperimentService.class);",
+        "line": 51,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "init",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void init() throws SubmarineException {\r\n    notebookService = mock(NotebookService.class);\r\n    experimentService = mock(ExperimentService.class);\r\n    internalServiceManager = new InternalServiceManager(experimentService, notebookService);\r\n}"
+        }
+      },
+      {
+        "code": "when(experimentService.select(any(String.class))).thenReturn(experimentEntity);",
+        "line": 90,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testUpdateExperiment",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testUpdateExperiment() {\r\n    ExperimentEntity experimentEntity = new ExperimentEntity();\r\n    experimentEntity.setId(\"test\");\r\n    experimentEntity.setExperimentSpec(\"\");\r\n    experimentEntity.setExperimentStatus(\"running\");\r\n    when(experimentService.select(any(String.class))).thenReturn(experimentEntity);\r\n    Map<String, Object> updateObject = new HashMap<>();\r\n    updateObject.put(\"id\", \"test\");\r\n    updateObject.put(\"experimentSpec\", \"\");\r\n    updateObject.put(\"status\", \"running\");\r\n    when(experimentService.update(any(ExperimentEntity.class))).thenReturn(true);\r\n    assertEquals(internalServiceManager.updateCRStatus(CustomResourceType.TFJob, experimentEntity.getId(), updateObject), true);\r\n}"
+        }
+      },
+      {
+        "code": "when(experimentService.update(any(ExperimentEntity.class))).thenReturn(true);",
+        "line": 97,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testUpdateExperiment",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testUpdateExperiment() {\r\n    ExperimentEntity experimentEntity = new ExperimentEntity();\r\n    experimentEntity.setId(\"test\");\r\n    experimentEntity.setExperimentSpec(\"\");\r\n    experimentEntity.setExperimentStatus(\"running\");\r\n    when(experimentService.select(any(String.class))).thenReturn(experimentEntity);\r\n    Map<String, Object> updateObject = new HashMap<>();\r\n    updateObject.put(\"id\", \"test\");\r\n    updateObject.put(\"experimentSpec\", \"\");\r\n    updateObject.put(\"status\", \"running\");\r\n    when(experimentService.update(any(ExperimentEntity.class))).thenReturn(true);\r\n    assertEquals(internalServiceManager.updateCRStatus(CustomResourceType.TFJob, experimentEntity.getId(), updateObject), true);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 7,
+    "variableName": "mockClusterServer",
+    "variableType": "ClusterServer",
+    "isGlobal": true,
+    "mockPatternLevel": 2,
+    "classContext": {
+      "packageName": "org.apache.submarine.server.rest",
+      "filePath": "C:\\Java_projects\\temp_projects\\Submarine\\submarine-server\\server-core\\src\\test\\java\\org\\apache\\submarine\\server\\rest\\ClusterRestApiTest.java",
+      "className": "ClusterRestApiTest"
+    },
+    "statements": [
+      {
+        "code": "private static ClusterServer mockClusterServer;",
+        "line": 50,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "mockClusterServer = mock(ClusterServer.class);",
+        "line": 78,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "init",
+          "methodAnnotations": [
+            "BeforeClass"
+          ],
+          "methodRawCode": "@BeforeClass\r\npublic static void init() {\r\n    mockClusterServer = mock(ClusterServer.class);\r\n    clusterRestApi = new ClusterRestApi();\r\n    clusterRestApi.setClusterServer(mockClusterServer);\r\n    meta1.put(ClusterMeta.NODE_NAME, nodeName1);\r\n    meta1.put(ClusterMeta.SERVER_START_TIME, SERVER_START_TIME1);\r\n    meta1.put(ClusterMeta.CPU_USED, cpuUsed1);\r\n    meta1.put(ClusterMeta.CPU_CAPACITY, cpuCapacity1);\r\n    meta1.put(ClusterMeta.MEMORY_USED, memoryUsed1);\r\n    meta1.put(ClusterMeta.MEMORY_CAPACITY, memoryCapacity1);\r\n    meta1.put(ClusterMeta.INTP_START_TIME, INTP_START_TIME);\r\n    meta1.put(ClusterMeta.LATEST_HEARTBEAT, LATEST_HEARTBEAT);\r\n    meta1.put(ClusterMeta.STATUS, ClusterMeta.ONLINE_STATUS);\r\n    meta2.put(ClusterMeta.NODE_NAME, nodeName2);\r\n    meta2.put(ClusterMeta.SERVER_START_TIME, SERVER_START_TIME2);\r\n    meta2.put(ClusterMeta.CPU_USED, cpuUsed2);\r\n    meta2.put(ClusterMeta.CPU_CAPACITY, cpuCapacity2);\r\n    meta2.put(ClusterMeta.MEMORY_USED, memoryUsed2);\r\n    meta2.put(ClusterMeta.MEMORY_CAPACITY, memoryCapacity2);\r\n    meta2.put(ClusterMeta.STATUS, ClusterMeta.OFFLINE_STATUS);\r\n    clusterMetas.put(nodeName1, meta1);\r\n    clusterMetas.put(nodeName2, meta2);\r\n    mockClusterServer.putClusterMeta(SERVER_META, nodeName1, meta1);\r\n    mockClusterServer.putClusterMeta(SERVER_META, nodeName2, meta2);\r\n}"
+        }
+      },
+      {
+        "code": "clusterRestApi.setClusterServer(mockClusterServer);",
+        "line": 80,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "init",
+          "methodAnnotations": [
+            "BeforeClass"
+          ],
+          "methodRawCode": "@BeforeClass\r\npublic static void init() {\r\n    mockClusterServer = mock(ClusterServer.class);\r\n    clusterRestApi = new ClusterRestApi();\r\n    clusterRestApi.setClusterServer(mockClusterServer);\r\n    meta1.put(ClusterMeta.NODE_NAME, nodeName1);\r\n    meta1.put(ClusterMeta.SERVER_START_TIME, SERVER_START_TIME1);\r\n    meta1.put(ClusterMeta.CPU_USED, cpuUsed1);\r\n    meta1.put(ClusterMeta.CPU_CAPACITY, cpuCapacity1);\r\n    meta1.put(ClusterMeta.MEMORY_USED, memoryUsed1);\r\n    meta1.put(ClusterMeta.MEMORY_CAPACITY, memoryCapacity1);\r\n    meta1.put(ClusterMeta.INTP_START_TIME, INTP_START_TIME);\r\n    meta1.put(ClusterMeta.LATEST_HEARTBEAT, LATEST_HEARTBEAT);\r\n    meta1.put(ClusterMeta.STATUS, ClusterMeta.ONLINE_STATUS);\r\n    meta2.put(ClusterMeta.NODE_NAME, nodeName2);\r\n    meta2.put(ClusterMeta.SERVER_START_TIME, SERVER_START_TIME2);\r\n    meta2.put(ClusterMeta.CPU_USED, cpuUsed2);\r\n    meta2.put(ClusterMeta.CPU_CAPACITY, cpuCapacity2);\r\n    meta2.put(ClusterMeta.MEMORY_USED, memoryUsed2);\r\n    meta2.put(ClusterMeta.MEMORY_CAPACITY, memoryCapacity2);\r\n    meta2.put(ClusterMeta.STATUS, ClusterMeta.OFFLINE_STATUS);\r\n    clusterMetas.put(nodeName1, meta1);\r\n    clusterMetas.put(nodeName2, meta2);\r\n    mockClusterServer.putClusterMeta(SERVER_META, nodeName1, meta1);\r\n    mockClusterServer.putClusterMeta(SERVER_META, nodeName2, meta2);\r\n}"
+        }
+      },
+      {
+        "code": "mockClusterServer.putClusterMeta(SERVER_META, nodeName1, meta1);",
+        "line": 102,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "init",
+          "methodAnnotations": [
+            "BeforeClass"
+          ],
+          "methodRawCode": "@BeforeClass\r\npublic static void init() {\r\n    mockClusterServer = mock(ClusterServer.class);\r\n    clusterRestApi = new ClusterRestApi();\r\n    clusterRestApi.setClusterServer(mockClusterServer);\r\n    meta1.put(ClusterMeta.NODE_NAME, nodeName1);\r\n    meta1.put(ClusterMeta.SERVER_START_TIME, SERVER_START_TIME1);\r\n    meta1.put(ClusterMeta.CPU_USED, cpuUsed1);\r\n    meta1.put(ClusterMeta.CPU_CAPACITY, cpuCapacity1);\r\n    meta1.put(ClusterMeta.MEMORY_USED, memoryUsed1);\r\n    meta1.put(ClusterMeta.MEMORY_CAPACITY, memoryCapacity1);\r\n    meta1.put(ClusterMeta.INTP_START_TIME, INTP_START_TIME);\r\n    meta1.put(ClusterMeta.LATEST_HEARTBEAT, LATEST_HEARTBEAT);\r\n    meta1.put(ClusterMeta.STATUS, ClusterMeta.ONLINE_STATUS);\r\n    meta2.put(ClusterMeta.NODE_NAME, nodeName2);\r\n    meta2.put(ClusterMeta.SERVER_START_TIME, SERVER_START_TIME2);\r\n    meta2.put(ClusterMeta.CPU_USED, cpuUsed2);\r\n    meta2.put(ClusterMeta.CPU_CAPACITY, cpuCapacity2);\r\n    meta2.put(ClusterMeta.MEMORY_USED, memoryUsed2);\r\n    meta2.put(ClusterMeta.MEMORY_CAPACITY, memoryCapacity2);\r\n    meta2.put(ClusterMeta.STATUS, ClusterMeta.OFFLINE_STATUS);\r\n    clusterMetas.put(nodeName1, meta1);\r\n    clusterMetas.put(nodeName2, meta2);\r\n    mockClusterServer.putClusterMeta(SERVER_META, nodeName1, meta1);\r\n    mockClusterServer.putClusterMeta(SERVER_META, nodeName2, meta2);\r\n}"
+        }
+      },
+      {
+        "code": "mockClusterServer.putClusterMeta(SERVER_META, nodeName2, meta2);",
+        "line": 103,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "init",
+          "methodAnnotations": [
+            "BeforeClass"
+          ],
+          "methodRawCode": "@BeforeClass\r\npublic static void init() {\r\n    mockClusterServer = mock(ClusterServer.class);\r\n    clusterRestApi = new ClusterRestApi();\r\n    clusterRestApi.setClusterServer(mockClusterServer);\r\n    meta1.put(ClusterMeta.NODE_NAME, nodeName1);\r\n    meta1.put(ClusterMeta.SERVER_START_TIME, SERVER_START_TIME1);\r\n    meta1.put(ClusterMeta.CPU_USED, cpuUsed1);\r\n    meta1.put(ClusterMeta.CPU_CAPACITY, cpuCapacity1);\r\n    meta1.put(ClusterMeta.MEMORY_USED, memoryUsed1);\r\n    meta1.put(ClusterMeta.MEMORY_CAPACITY, memoryCapacity1);\r\n    meta1.put(ClusterMeta.INTP_START_TIME, INTP_START_TIME);\r\n    meta1.put(ClusterMeta.LATEST_HEARTBEAT, LATEST_HEARTBEAT);\r\n    meta1.put(ClusterMeta.STATUS, ClusterMeta.ONLINE_STATUS);\r\n    meta2.put(ClusterMeta.NODE_NAME, nodeName2);\r\n    meta2.put(ClusterMeta.SERVER_START_TIME, SERVER_START_TIME2);\r\n    meta2.put(ClusterMeta.CPU_USED, cpuUsed2);\r\n    meta2.put(ClusterMeta.CPU_CAPACITY, cpuCapacity2);\r\n    meta2.put(ClusterMeta.MEMORY_USED, memoryUsed2);\r\n    meta2.put(ClusterMeta.MEMORY_CAPACITY, memoryCapacity2);\r\n    meta2.put(ClusterMeta.STATUS, ClusterMeta.OFFLINE_STATUS);\r\n    clusterMetas.put(nodeName1, meta1);\r\n    clusterMetas.put(nodeName2, meta2);\r\n    mockClusterServer.putClusterMeta(SERVER_META, nodeName1, meta1);\r\n    mockClusterServer.putClusterMeta(SERVER_META, nodeName2, meta2);\r\n}"
+        }
+      },
+      {
+        "code": "when(mockClusterServer.getClusterMeta(ClusterMetaType.SERVER_META, \"\")).thenReturn(clusterMetas);",
+        "line": 123,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testGetClusterNodes",
+          "methodAnnotations": [
+            "Ignore",
+            "Test"
+          ],
+          "methodRawCode": "@Ignore\r\n@Test\r\npublic void testGetClusterNodes() {\r\n    when(mockClusterServer.getClusterMeta(ClusterMetaType.SERVER_META, \"\")).thenReturn(clusterMetas);\r\n    Response response = clusterRestApi.getClusterNodes();\r\n    ArrayList<HashMap<String, Object>> result = getResultListFromResponse(response);\r\n    Map<String, Object> properties1 = (LinkedTreeMap) result.get(0).get(ClusterMeta.PROPERTIES);\r\n    Map<String, Object> properties2 = (LinkedTreeMap) result.get(1).get(ClusterMeta.PROPERTIES);\r\n    assertEquals(nodeName1, result.get(0).get(ClusterMeta.NODE_NAME));\r\n    assertEquals(\"ONLINE\", properties1.get(\"STATUS\"));\r\n    assertEquals(\"0.50GB / 1.00GB = 50.00%\", properties1.get(\"MEMORY_USED / MEMORY_CAPACITY\"));\r\n    assertEquals(\"0.20 / 0.40 = 50.00%\", properties1.get(\"CPU_USED / CPU_CAPACITY\"));\r\n    assertEquals(nodeName2, result.get(1).get(ClusterMeta.NODE_NAME));\r\n    assertEquals(\"OFFLINE\", properties2.get(\"STATUS\"));\r\n    assertEquals(\"0.25GB / 1.00GB = 25.00%\", properties2.get(\"MEMORY_USED / MEMORY_CAPACITY\"));\r\n    assertEquals(\"0.25 / 0.40 = 62.50%\", properties2.get(\"CPU_USED / CPU_CAPACITY\"));\r\n}"
+        }
+      },
+      {
+        "code": "when(mockClusterServer.getClusterMeta(ClusterMetaType.INTP_PROCESS_META, \"\")).thenReturn(clusterMetas);",
+        "line": 143,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testGetClusterNode",
+          "methodAnnotations": [
+            "Ignore",
+            "Test"
+          ],
+          "methodRawCode": "@Ignore\r\n@Test\r\npublic void testGetClusterNode() {\r\n    when(mockClusterServer.getClusterMeta(ClusterMetaType.INTP_PROCESS_META, \"\")).thenReturn(clusterMetas);\r\n    Response response = clusterRestApi.getClusterNode(nodeName1, \"\");\r\n    ArrayList<HashMap<String, Object>> result = getResultListFromResponse(response);\r\n    Map<String, Object> properties = (LinkedTreeMap) result.get(0).get(ClusterMeta.PROPERTIES);\r\n    assertEquals(clusterMetas.get(nodeName1).get(ClusterMeta.NODE_NAME), result.get(0).get(ClusterMeta.NODE_NAME));\r\n    assertEquals(\"ONLINE\", properties.get(\"STATUS\"));\r\n    assertEquals(INTP_START_TIME.format(DateTimeFormatter.ISO_DATE_TIME), properties.get(\"INTP_START_TIME\"));\r\n    assertEquals(LATEST_HEARTBEAT.format(DateTimeFormatter.ISO_DATE_TIME), properties.get(\"LATEST_HEARTBEAT\"));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 8,
+    "variableName": "mockExperimentManager",
+    "variableType": "ExperimentManager",
+    "isGlobal": true,
+    "mockPatternLevel": 2,
+    "classContext": {
+      "packageName": "org.apache.submarine.server.rest",
+      "filePath": "C:\\Java_projects\\temp_projects\\Submarine\\submarine-server\\server-core\\src\\test\\java\\org\\apache\\submarine\\server\\rest\\ExperimentRestApiTest.java",
+      "className": "ExperimentRestApiTest"
+    },
+    "statements": [
+      {
+        "code": "private static ExperimentManager mockExperimentManager;",
+        "line": 57,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "mockExperimentManager = mock(ExperimentManager.class);",
+        "line": 99,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "init",
+          "methodAnnotations": [
+            "BeforeClass"
+          ],
+          "methodRawCode": "@BeforeClass\r\npublic static void init() {\r\n    mockExperimentManager = mock(ExperimentManager.class);\r\n    experimentRestApi = new ExperimentRestApi();\r\n    experimentRestApi.setExperimentManager(mockExperimentManager);\r\n}"
+        }
+      },
+      {
+        "code": "experimentRestApi.setExperimentManager(mockExperimentManager);",
+        "line": 101,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "init",
+          "methodAnnotations": [
+            "BeforeClass"
+          ],
+          "methodRawCode": "@BeforeClass\r\npublic static void init() {\r\n    mockExperimentManager = mock(ExperimentManager.class);\r\n    experimentRestApi = new ExperimentRestApi();\r\n    experimentRestApi.setExperimentManager(mockExperimentManager);\r\n}"
+        }
+      },
+      {
+        "code": "when(mockExperimentManager.createExperiment(any(ExperimentSpec.class))).thenReturn(actualExperiment);",
+        "line": 125,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCreateExperiment",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void testCreateExperiment() {\r\n    actualExperiment = new Experiment();\r\n    actualExperiment.setAcceptedTime(experimentAcceptedTime);\r\n    actualExperiment.setCreatedTime(experimentCreatedTime);\r\n    actualExperiment.setRunningTime(experimentRunningTime);\r\n    actualExperiment.setFinishedTime(experimentFinishedTime);\r\n    actualExperiment.setUid(experimentUid);\r\n    actualExperiment.setStatus(experimentStatus);\r\n    actualExperiment.setExperimentId(experimentId);\r\n    kernelSpec.setName(kernelSpecName);\r\n    kernelSpec.setChannels(kernelChannels);\r\n    kernelSpec.setCondaDependencies(kernelCondaDependencies);\r\n    kernelSpec.setPipDependencies(kernelPipDependencies);\r\n    meta.setName(metaName);\r\n    meta.setFramework(metaFramework);\r\n    environmentSpec.setDockerImage(dockerImage);\r\n    environmentSpec.setKernelSpec(kernelSpec);\r\n    experimentSpec.setMeta(meta);\r\n    experimentSpec.setEnvironment(environmentSpec);\r\n    actualExperiment.setSpec(experimentSpec);\r\n    when(mockExperimentManager.createExperiment(any(ExperimentSpec.class))).thenReturn(actualExperiment);\r\n    Response createExperimentResponse = experimentRestApi.createExperiment(experimentSpec);\r\n    assertEquals(Response.Status.OK.getStatusCode(), createExperimentResponse.getStatus());\r\n    Experiment result = getResultFromResponse(createExperimentResponse, Experiment.class);\r\n    verifyResult(result, experimentUid);\r\n}"
+        }
+      },
+      {
+        "code": "when(mockExperimentManager.getExperiment(any(String.class))).thenReturn(actualExperiment);",
+        "line": 134,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testGetExperiment",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testGetExperiment() {\r\n    when(mockExperimentManager.getExperiment(any(String.class))).thenReturn(actualExperiment);\r\n    Response getExperimentResponse = experimentRestApi.getExperiment(dummyId);\r\n    Experiment result = getResultFromResponse(getExperimentResponse, Experiment.class);\r\n    verifyResult(result, experimentUid);\r\n}"
+        }
+      },
+      {
+        "code": "when(mockExperimentManager.patchExperiment(any(String.class), any(ExperimentSpec.class))).thenReturn(actualExperiment);",
+        "line": 142,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testPatchExperiment",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testPatchExperiment() {\r\n    when(mockExperimentManager.patchExperiment(any(String.class), any(ExperimentSpec.class))).thenReturn(actualExperiment);\r\n    Response patchExperimentResponse = experimentRestApi.patchExperiment(dummyId, new ExperimentSpec());\r\n    Experiment result = getResultFromResponse(patchExperimentResponse, Experiment.class);\r\n    verifyResult(result, experimentUid);\r\n}"
+        }
+      },
+      {
+        "code": "when(mockExperimentManager.listExperimentLogsByStatus(any(String.class))).thenReturn(experimentLogList);",
+        "line": 155,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testListLog",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testListLog() {\r\n    List<ExperimentLog> experimentLogList = new ArrayList<>();\r\n    ExperimentLog log1 = new ExperimentLog();\r\n    log1.setExperimentId(dummyId);\r\n    experimentLogList.add(log1);\r\n    when(mockExperimentManager.listExperimentLogsByStatus(any(String.class))).thenReturn(experimentLogList);\r\n    Response listLogResponse = experimentRestApi.listLog(\"running\");\r\n    List<ExperimentLog> result = getResultListFromResponse(listLogResponse, ExperimentLog.class);\r\n    assertEquals(dummyId, result.get(0).getExperimentId());\r\n}"
+        }
+      },
+      {
+        "code": "when(mockExperimentManager.getExperimentLog(any(String.class))).thenReturn(log1);",
+        "line": 165,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testGetLog",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testGetLog() {\r\n    ExperimentLog log1 = new ExperimentLog();\r\n    log1.setExperimentId(dummyId);\r\n    when(mockExperimentManager.getExperimentLog(any(String.class))).thenReturn(log1);\r\n    Response logResponse = experimentRestApi.getLog(dummyId);\r\n    ExperimentLog result = getResultFromResponse(logResponse, ExperimentLog.class);\r\n    assertEquals(dummyId, result.getExperimentId());\r\n}"
+        }
+      },
+      {
+        "code": "when(mockExperimentManager.listExperimentsByStatus(any(String.class))).thenReturn(experimentList);",
+        "line": 181,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testListExperiment",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testListExperiment() {\r\n    Experiment experiment2 = new Experiment();\r\n    experiment2.rebuild(actualExperiment);\r\n    String experiment2Uid = \"0b617cea-81fa-40b6-bbff-da3e400d2be5\";\r\n    experiment2.setUid(experiment2Uid);\r\n    experiment2.setExperimentId(experimentId);\r\n    List<Experiment> experimentList = new ArrayList<>();\r\n    experimentList.add(actualExperiment);\r\n    experimentList.add(experiment2);\r\n    when(mockExperimentManager.listExperimentsByStatus(any(String.class))).thenReturn(experimentList);\r\n    Response listExperimentResponse = experimentRestApi.listExperiments(Response.Status.OK.toString());\r\n    List<Experiment> result = getResultListFromResponse(listExperimentResponse, Experiment.class);\r\n    verifyResult(result.get(0), experimentUid);\r\n    verifyResult(result.get(1), experiment2Uid);\r\n}"
+        }
+      },
+      {
+        "code": "when(mockExperimentManager.deleteExperiment(log1ID)).thenReturn(actualExperiment);",
+        "line": 193,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testDeleteExperiment",
+          "methodAnnotations": [
+            "Ignore",
+            "Test"
+          ],
+          "methodRawCode": "// TODO(KUAN-HSUN LI): mock the s3Client\r\n@Ignore\r\n@Test\r\npublic void testDeleteExperiment() {\r\n    String log1ID = \"experiment_1597012631706_0002\";\r\n    when(mockExperimentManager.deleteExperiment(log1ID)).thenReturn(actualExperiment);\r\n    Response deleteExperimentResponse = experimentRestApi.deleteExperiment(log1ID);\r\n    Experiment result = getResultFromResponse(deleteExperimentResponse, Experiment.class);\r\n    verifyResult(result, experimentUid);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 9,
+    "variableName": "internalServiceManager",
+    "variableType": "InternalServiceManager",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.submarine.server.rest",
+      "filePath": "C:\\Java_projects\\temp_projects\\Submarine\\submarine-server\\server-core\\src\\test\\java\\org\\apache\\submarine\\server\\rest\\InternalServiceRestApiTest.java"
+    },
+    "statements": [
+      {
+        "code": "InternalServiceManager internalServiceManager = mock(InternalServiceManager.class);",
+        "line": 44,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "init",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void init() {\r\n    InternalServiceManager internalServiceManager = mock(InternalServiceManager.class);\r\n    internalServiceRestApi = mock(InternalServiceRestApi.class);\r\n    internalServiceRestApi.setInternalServiceManager(internalServiceManager);\r\n}"
+        }
+      },
+      {
+        "code": "internalServiceRestApi.setInternalServiceManager(internalServiceManager);",
+        "line": 46,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "init",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void init() {\r\n    InternalServiceManager internalServiceManager = mock(InternalServiceManager.class);\r\n    internalServiceRestApi = mock(InternalServiceRestApi.class);\r\n    internalServiceRestApi.setInternalServiceManager(internalServiceManager);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 10,
+    "variableName": "internalServiceRestApi",
+    "variableType": "InternalServiceRestApi",
+    "isGlobal": true,
+    "mockPatternLevel": 2,
+    "classContext": {
+      "packageName": "org.apache.submarine.server.rest",
+      "filePath": "C:\\Java_projects\\temp_projects\\Submarine\\submarine-server\\server-core\\src\\test\\java\\org\\apache\\submarine\\server\\rest\\InternalServiceRestApiTest.java",
+      "className": "InternalServiceRestApiTest"
+    },
+    "statements": [
+      {
+        "code": "InternalServiceRestApi internalServiceRestApi;",
+        "line": 40,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "internalServiceRestApi = mock(InternalServiceRestApi.class);",
+        "line": 45,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "init",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void init() {\r\n    InternalServiceManager internalServiceManager = mock(InternalServiceManager.class);\r\n    internalServiceRestApi = mock(InternalServiceRestApi.class);\r\n    internalServiceRestApi.setInternalServiceManager(internalServiceManager);\r\n}"
+        }
+      },
+      {
+        "code": "internalServiceRestApi.setInternalServiceManager(internalServiceManager);",
+        "line": 46,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "init",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void init() {\r\n    InternalServiceManager internalServiceManager = mock(InternalServiceManager.class);\r\n    internalServiceRestApi = mock(InternalServiceRestApi.class);\r\n    internalServiceRestApi.setInternalServiceManager(internalServiceManager);\r\n}"
+        }
+      },
+      {
+        "code": "when(internalServiceRestApi.updateEnvironment(any(String.class), any(String.class), any(Map.class))).thenReturn(new JsonResponse.Builder<String>(Response.Status.OK).success(true).build());",
+        "line": 51,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testUpdateCRStatus",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testUpdateCRStatus() {\r\n    when(internalServiceRestApi.updateEnvironment(any(String.class), any(String.class), any(Map.class))).thenReturn(new JsonResponse.Builder<String>(Response.Status.OK).success(true).build());\r\n    Response response = internalServiceRestApi.updateEnvironment(CustomResourceType.Notebook.getCustomResourceType(), \"notebookId\", new HashMap<String, Object>());\r\n    assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());\r\n}"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,217 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\consumer\\MessageFetchManagerTest.java",
+  "methodName" : "testMessageFetchManager",
+  "sourceCode" : "@Test\r\npublic void testMessageFetchManager() throws Exception {\r\n    TubeClientConfig clientConfig = mock(TubeClientConfig.class);\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1\");\r\n    when(clientConfig.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    ConsumerConfig config = new ConsumerConfig(\"182.168.1.2:18080\", \"192.168.1.1:18080\", \"test\");\r\n    ClientFactory clientFactory = new NettyClientFactory();\r\n    TubeBaseSessionFactory factory = new TubeBaseSessionFactory(clientFactory, clientConfig);\r\n    SimplePushMessageConsumer consumer = new SimplePushMessageConsumer(factory, config);\r\n    MessageFetchManager fetchManager = new MessageFetchManager(config, consumer);\r\n    Assert.assertFalse(fetchManager.isShutdown());\r\n    fetchManager.startFetchWorkers();\r\n    fetchManager.stopFetchWorkers(true);\r\n    Assert.assertTrue(fetchManager.isShutdown());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\consumer\\PartitionExtTest.java",
+  "methodName" : "testPartitionExt",
+  "sourceCode" : "@Test\r\npublic void testPartitionExt() {\r\n    FlowCtrlRuleHandler groupFlowCtrlRuleHandler = new FlowCtrlRuleHandler(false);\r\n    FlowCtrlRuleHandler defFlowCtrlRuleHandler = new FlowCtrlRuleHandler(true);\r\n    PartitionExt partition = new PartitionExt(groupFlowCtrlRuleHandler, defFlowCtrlRuleHandler, new BrokerInfo(1, \"192.168.1.1\", 18080), \"test\", 1);\r\n    partition.setLastPackConsumed(true);\r\n    assertTrue(partition.isLastPackConsumed());\r\n    partition.setLastPackConsumed(false);\r\n    assertFalse(partition.isLastPackConsumed());\r\n    partition.getAndResetLastPackConsumed();\r\n    assertFalse(partition.isLastPackConsumed());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\consumer\\PartitionExtTest.java",
+  "methodName" : "testPartitionExtSuccess",
+  "sourceCode" : "@Test\r\npublic void testPartitionExtSuccess() {\r\n    FlowCtrlRuleHandler groupFlowCtrlRuleHandler = new FlowCtrlRuleHandler(false);\r\n    FlowCtrlRuleHandler defFlowCtrlRuleHandler = new FlowCtrlRuleHandler(true);\r\n    PartitionExt partition = new PartitionExt(groupFlowCtrlRuleHandler, defFlowCtrlRuleHandler, new BrokerInfo(1, \"192.168.1.1\", 18080), \"test\", 1);\r\n    int limitDlt = 4096;\r\n    partition.setPullTempData(0, 200, false, 1024, limitDlt, 10, false);\r\n    //assertEquals(limitDlt, partition.procConsumeResult(false));\r\n    partition.setPullTempData(0, 200, true, 1024, limitDlt, 10, false);\r\n    //assertEquals(0, partition.procConsumeResult(false));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\consumer\\PartitionExtTest.java",
+  "methodName" : "testPartitionExtError",
+  "sourceCode" : "@Test\r\npublic void testPartitionExtError() {\r\n    FlowCtrlRuleHandler groupFlowCtrlRuleHandler = new FlowCtrlRuleHandler(false);\r\n    FlowCtrlRuleHandler defFlowCtrlRuleHandler = new FlowCtrlRuleHandler(true);\r\n    PartitionExt partition = new PartitionExt(groupFlowCtrlRuleHandler, defFlowCtrlRuleHandler, new BrokerInfo(1, \"192.168.1.1\", 18080), \"test\", 1);\r\n    int limitDlt = 4096;\r\n    partition.setPullTempData(0, 0, false, 1024, 4096, 10, false);\r\n    //assertEquals(limitDlt, partition.procConsumeResult(false));\r\n    partition.setPullTempData(0, 404, false, 0, 4096, 10, false);\r\n    //assertEquals(limitDlt, partition.procConsumeResult(false));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\consumer\\RmtDataCacheTest.java",
+  "methodName" : "testRmtDataCache",
+  "sourceCode" : "@Test\r\npublic void testRmtDataCache() {\r\n    FlowCtrlRuleHandler groupFlowCtrlRuleHandler = new FlowCtrlRuleHandler(false);\r\n    FlowCtrlRuleHandler defFlowCtrlRuleHandler = new FlowCtrlRuleHandler(true);\r\n    List<Partition> partitions = new ArrayList<>();\r\n    BrokerInfo brokerInfo = new BrokerInfo(1, \"127.0.0.1\", 18080);\r\n    Partition expectPartition = new Partition(brokerInfo, \"test\", 1);\r\n    partitions.add(expectPartition);\r\n    RmtDataCache cache = new RmtDataCache(defFlowCtrlRuleHandler, groupFlowCtrlRuleHandler, partitions);\r\n    List<Partition> brokerPartitions = cache.getBrokerPartitionList(brokerInfo);\r\n    assertEquals(1, brokerPartitions.size());\r\n    assertEquals(expectPartition.getPartitionId(), brokerPartitions.get(0).getPartitionId());\r\n    ConcurrentLinkedQueue<Partition> partitionQueue = cache.getPartitionByBroker(brokerInfo);\r\n    assertEquals(1, partitionQueue.size());\r\n    assertEquals(expectPartition.getPartitionId(), partitionQueue.peek().getPartitionId());\r\n    Set<BrokerInfo> brokerInfos = cache.getAllRegisterBrokers();\r\n    assertEquals(1, brokerInfos.size());\r\n    assertTrue(brokerInfos.contains(brokerInfo));\r\n    assertEquals(expectPartition.getPartitionId(), cache.getPartitonByKey(\"1:test:1\").getBrokerId());\r\n    cache.addPartition(new Partition(brokerInfo, \"test\", 2), 10);\r\n    assertEquals(2, cache.getBrokerPartitionList(brokerInfo).size());\r\n    assertTrue(cache.isPartitionsReady(1000));\r\n    cache.pullSelect();\r\n    cache.pushSelect();\r\n    cache.removePartition(expectPartition);\r\n    assertEquals(1, cache.getBrokerPartitionList(brokerInfo).size());\r\n    assertEquals(1, cache.getCurPartitionInfoMap().size());\r\n    assertEquals(1, cache.getAllPartitionListWithStatus().size());\r\n    cache.resumeTimeoutConsumePartitions(1000);\r\n    Map<BrokerInfo, List<Partition>> infoMap = new HashMap<>();\r\n    cache.removeAndGetPartition(infoMap, new ArrayList<String>(), 1000, true);\r\n    cache.getSubscribeInfoList(\"test\", \"test\");\r\n    cache.errReqRelease(\"1:test:2\", 1000, true);\r\n    cache.succRspRelease(\"1:test:2\", \"test\", 1000, true, true, 1000);\r\n    cache.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\factory\\TubeBaseSessionFactoryTest.java",
+  "methodName" : "testTubeBaseSessionFactory",
+  "sourceCode" : "@Test\r\npublic void testTubeBaseSessionFactory() throws Exception {\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    ClientFactory clientFactory = mock(ClientFactory.class);\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1:18080\");\r\n    TubeBaseSessionFactory factory = new TubeBaseSessionFactory(clientFactory, config);\r\n    assertFalse(factory.isShutdown());\r\n    // Use reflection to change the producer manager to a mock one\r\n    ProducerManager mockPM = mock(ProducerManager.class);\r\n    Field field = factory.getClass().getDeclaredField(\"producerManager\");\r\n    field.setAccessible(true);\r\n    field.set(factory, mockPM);\r\n    MessageProducer producer = factory.createProducer();\r\n    assertEquals(1, factory.getCurrClients().size());\r\n    final PullMessageConsumer pullMessageConsumer = factory.createPullConsumer(new ConsumerConfig(\"127.0.0.1:18080\", \"192.168.1.1:18080\", \"test\"));\r\n    final PushMessageConsumer pushMessageConsumer = factory.createPushConsumer(new ConsumerConfig(\"127.0.0.1:18081\", \"192.168.1.1:18080\", \"test\"));\r\n    assertEquals(3, factory.getCurrClients().size());\r\n    factory.removeClient(producer);\r\n    factory.removeClient(pullMessageConsumer);\r\n    factory.removeClient(pushMessageConsumer);\r\n    assertEquals(0, factory.getCurrClients().size());\r\n    factory.shutdown();\r\n    assertTrue(factory.isShutdown());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\factory\\TubeMultiSessionFactoryTest.java",
+  "methodName" : "testTubeMultiSessionFactory",
+  "sourceCode" : "@Test\r\npublic void testTubeMultiSessionFactory() throws Exception {\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getRpcConnProcesserCnt()).thenReturn(1);\r\n    when(config.getRpcRspCallBackThreadCnt()).thenReturn(1);\r\n    when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1\");\r\n    TubeMultiSessionFactory factory = new TubeMultiSessionFactory(config);\r\n    factory.shutdown();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\factory\\TubeSingleSessionFactoryTest.java",
+  "methodName" : "testTubeSingleSessionFactory",
+  "sourceCode" : "@Test\r\npublic void testTubeSingleSessionFactory() throws Exception {\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getRpcConnProcesserCnt()).thenReturn(1);\r\n    when(config.getRpcRspCallBackThreadCnt()).thenReturn(1);\r\n    when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1\");\r\n    TubeSingleSessionFactory factory = new TubeSingleSessionFactory(config);\r\n    factory.shutdown();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\producer\\qltystats\\DefaultBrokerRcvQltyStatsTest.java",
+  "methodName" : "testStartBrokerStatistic",
+  "sourceCode" : "@Test\r\npublic void testStartBrokerStatistic() throws Exception {\r\n    RpcServiceFactory rpcServiceFactory = mock(RpcServiceFactory.class);\r\n    when(rpcServiceFactory.getForbiddenAddrMap()).thenReturn(new ConcurrentHashMap<String, Long>());\r\n    when(rpcServiceFactory.getUnavilableBrokerMap()).thenReturn(new ConcurrentHashMap<Integer, Long>());\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getSessionMaxAllowedDelayedMsgCount()).thenReturn(1000L);\r\n    DefaultBrokerRcvQltyStats stats = new DefaultBrokerRcvQltyStats(rpcServiceFactory, config);\r\n    stats.startBrokerStatistic();\r\n    assertFalse(stats.isStopped());\r\n    stats.addSendStatistic(0);\r\n    stats.addReceiveStatistic(0, true);\r\n    stats.statisticDltBrokerStatus();\r\n    // Test getAllowedBrokerPartitions\r\n    Map<Integer, List<Partition>> brokerPartList = new HashMap<>();\r\n    List<Partition> partitions = new ArrayList<>();\r\n    partitions.add(new Partition(new BrokerInfo(\"0:192.168.0.1:18080\"), \"test_topic\", 1));\r\n    brokerPartList.put(0, partitions);\r\n    List<Partition> actualPartitions = stats.getAllowedBrokerPartitions(brokerPartList);\r\n    assertEquals(1, actualPartitions.size());\r\n    assertEquals(1, actualPartitions.get(0).getPartitionId());\r\n    // Unregister and stop statistic server\r\n    stats.removeUnRegisteredBroker(new ArrayList<Integer>());\r\n    stats.stopBrokerStatistic();\r\n    assertTrue(stats.isStopped());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\producer\\RoundRobinPartitionRouterTest.java",
+  "methodName" : "testGetPartitionInvalidInput",
+  "sourceCode" : "@Test(expected = TubeClientException.class)\r\npublic void testGetPartitionInvalidInput() throws TubeClientException {\r\n    RoundRobinPartitionRouter router = new RoundRobinPartitionRouter();\r\n    Message message = new Message(\"test\", new byte[] { 1, 2, 3 });\r\n    List<Partition> partitions = new ArrayList<Partition>();\r\n    router.getPartition(message, partitions);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\producer\\RoundRobinPartitionRouterTest.java",
+  "methodName" : "testGetPartition",
+  "sourceCode" : "@Test\r\npublic void testGetPartition() throws TubeClientException {\r\n    RoundRobinPartitionRouter router = new RoundRobinPartitionRouter();\r\n    Message message = new Message(\"test\", new byte[] { 1, 2, 3 });\r\n    List<Partition> partitions = new ArrayList<Partition>();\r\n    Partition partition = new Partition(new BrokerInfo(\"0:127.0.0.1:18080\"), \"test\", 0);\r\n    partitions.add(partition);\r\n    Partition actualPartition = router.getPartition(message, partitions);\r\n    assertEquals(0, actualPartition.getPartitionId());\r\n    partition.setDelayTimeStamp(System.currentTimeMillis() + 10000000);\r\n    actualPartition = router.getPartition(message, partitions);\r\n    assertEquals(0, actualPartition.getPartitionId());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-core\\src\\test\\java\\com\\tencent\\tubemq\\corebase\\policies\\TestFlowCtrlRuleHandler.java",
+  "methodName" : "testFlowCtrlRuleHandler",
+  "sourceCode" : "@Test\r\npublic void testFlowCtrlRuleHandler() {\r\n    try {\r\n        FlowCtrlRuleHandler handler = new FlowCtrlRuleHandler(true);\r\n        handler.updateDefFlowCtrlInfo(1001, 2, 10, mockFlowCtrlInfo());\r\n        TimeZone timeZone = TimeZone.getTimeZone(\"GMT+8:00\");\r\n        Calendar rightNow = Calendar.getInstance(timeZone);\r\n        int hour = rightNow.get(Calendar.HOUR_OF_DAY);\r\n        int minu = rightNow.get(Calendar.MINUTE);\r\n        int curTime = hour * 100 + minu;\r\n        // current data limit test\r\n        FlowCtrlResult result = handler.getCurDataLimit(2000);\r\n        if (curTime >= 800 && curTime <= 1759) {\r\n            assertTrue(result.dataLtInSize == 20 * 1024 * 1024L);\r\n            assertTrue(result.freqLtInMs == 1000L);\r\n        } else if (curTime >= 1800 && curTime < 2200) {\r\n            assertTrue(result.dataLtInSize == 20 * 1024 * 1024L);\r\n            assertTrue(result.freqLtInMs == 5000L);\r\n        } else {\r\n            assertEquals(\"result should be null\", result, null);\r\n        }\r\n        result = handler.getCurDataLimit(1000);\r\n        assertEquals(\"result should be null\", result, null);\r\n        //  request frequency control\r\n        FlowCtrlItem item = handler.getFilterCtrlItem();\r\n        assertEquals(item.getDataLtInSZ(), 0);\r\n        assertEquals(item.getZeroCnt(), 400);\r\n        assertEquals(item.getFreqLtInMs(), 100);\r\n        // check ssd ctrl\r\n        SSDCtrlResult ssdResult = handler.getCurSSDStartDltInSZ();\r\n        if (curTime >= 1200) {\r\n            assertEquals(ssdResult.dataEndDLtInSz, 2048L * 1024L * 1024L);\r\n            assertEquals(ssdResult.dataStartDltInSize, 20480L * 1024L * 1024L);\r\n        } else {\r\n            assertEquals(ssdResult.dataEndDLtInSz, 0L);\r\n            assertEquals(ssdResult.dataStartDltInSize, Long.MAX_VALUE);\r\n        }\r\n        //check values\r\n        assertEquals(handler.getNormFreqInMs(), 100);\r\n        assertEquals(handler.getFlowCtrlId(), 10);\r\n        assertEquals(handler.getMinDataFreqInMs(), 400);\r\n        assertEquals(handler.getMinZeroCnt(), 3);\r\n        assertEquals(handler.getQryPriorityId(), 2);\r\n        assertEquals(handler.getSsdTranslateId(), 1001);\r\n        assertEquals(handler.getFlowCtrlId(), 10);\r\n        System.out.println();\r\n        System.out.println();\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-core\\src\\test\\java\\com\\tencent\\tubemq\\corerpc\\codec\\DataConverterUtilTest.java",
+  "methodName" : "testDataConvert",
+  "sourceCode" : "@Test\r\npublic void testDataConvert() {\r\n    // broker convert\r\n    BrokerInfo broker = new BrokerInfo(0, \"localhost\", 1200);\r\n    List<String> strInfoList = new ArrayList<String>();\r\n    strInfoList.add(\"0:localhost:1200\");\r\n    Map<Integer, BrokerInfo> brokerMap = DataConverterUtil.convertBrokerInfo(strInfoList);\r\n    assertEquals(\"broker should be equal\", broker, brokerMap.get(broker.getBrokerId()));\r\n    // partition convert\r\n    Partition partition = new Partition(broker, \"tube\", 0);\r\n    strInfoList.clear();\r\n    strInfoList.add(\"0:localhost:1200#tube:0\");\r\n    List<Partition> partitionList = DataConverterUtil.convertPartitionInfo(strInfoList);\r\n    assertEquals(\"partition should be equal\", partition, partitionList.get(0));\r\n    // SubscribeInfo convert\r\n    SubscribeInfo subscribeInfo = new SubscribeInfo(\"001\", \"group\", partition);\r\n    strInfoList.clear();\r\n    strInfoList.add(\"001@group#0:localhost:1200#tube:0\");\r\n    List<SubscribeInfo> subscribeInfoList = DataConverterUtil.convertSubInfo(strInfoList);\r\n    assertEquals(\"subscribe should be equal\", subscribeInfoEqual(subscribeInfo, subscribeInfoList.get(0)), true);\r\n    // topic convert\r\n    TopicInfo topic = new TopicInfo(broker, \"tube\", 10, 5, true, true);\r\n    strInfoList.clear();\r\n    // topic#brokerId:partitionNum:topicStoreNum\r\n    strInfoList.add(\"tube#0:10:5\");\r\n    List<TopicInfo> topicList = DataConverterUtil.convertTopicInfo(brokerMap, strInfoList);\r\n    assertEquals(\"topic should be equal\", topic, topicList.get(0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-core\\src\\test\\java\\com\\tencent\\tubemq\\corerpc\\codec\\PbEnDecoderTest.java",
+  "methodName" : "testPbEncodeAndDecoder",
+  "sourceCode" : "@Test\r\npublic void testPbEncodeAndDecoder() throws Exception {\r\n    // mock a pb object\r\n    JsonFormat jsonFormat = new JsonFormat();\r\n    ClientMaster.RegisterRequestP2M.Builder builder = ClientMaster.RegisterRequestP2M.newBuilder();\r\n    builder.setClientId(\"10001\");\r\n    builder.setBrokerCheckSum(99);\r\n    builder.setHostName(\"tube-test\");\r\n    ClientMaster.RegisterRequestP2M object = builder.build();\r\n    final String jsonOject = jsonFormat.printToString(object);\r\n    // encode pb\r\n    byte[] data = PbEnDecoder.pbEncode(object);\r\n    // decode bytes\r\n    ClientMaster.RegisterRequestP2M decodeObject = (ClientMaster.RegisterRequestP2M) PbEnDecoder.pbDecode(true, RpcConstants.RPC_MSG_MASTER_PRODUCER_REGISTER, data);\r\n    assertTrue(decodeObject.getClientId().equals(object.getClientId()));\r\n    assertTrue(decodeObject.getBrokerCheckSum() == object.getBrokerCheckSum());\r\n    assertTrue(decodeObject.getHostName().equals(object.getHostName()));\r\n    assertTrue(jsonOject.equals(jsonFormat.printToString(decodeObject)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-core\\src\\test\\java\\com\\tencent\\tubemq\\corerpc\\netty\\NettyProtocolEncoderTest.java",
+  "methodName" : "encode",
+  "sourceCode" : "@Test\r\npublic void encode() {\r\n    NettyProtocolEncoder nettyProtocolEncoder = new NettyProtocolEncoder();\r\n    // build RpcDataPack\r\n    RpcDataPack obj = new RpcDataPack();\r\n    // set serial number\r\n    obj.setSerialNo(123);\r\n    List<ByteBuffer> dataList = new LinkedList<ByteBuffer>();\r\n    dataList.add(ByteBuffer.wrap(\"abc\".getBytes()));\r\n    dataList.add(ByteBuffer.wrap(\"def\".getBytes()));\r\n    // append data list.\r\n    obj.setDataLst(dataList);\r\n    try {\r\n        // encode data\r\n        Object result = nettyProtocolEncoder.encode(null, null, obj);\r\n        ChannelBuffer buf = (ChannelBuffer) result;\r\n        // read data.\r\n        int i = buf.readInt();\r\n        i = buf.readInt();\r\n        Assert.assertTrue(i == 123);\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\broker\\metadata\\BrokerMetadataManageTest.java",
+  "methodName" : "updateBrokerTopicConfigMap",
+  "sourceCode" : "@Test\r\npublic void updateBrokerTopicConfigMap() {\r\n    brokerMetadataManage = new BrokerMetadataManage();\r\n    // topic default config\r\n    String newBrokerDefMetaConfInfo = \"1:true:true:1000:10000:0,0,6:delete,168h:1:1000:1024:1000:1000\";\r\n    List<String> newTopicMetaConfInfoList = new LinkedList<>();\r\n    // add topic custom config.\r\n    newTopicMetaConfInfoList.add(\"topic1:2:true:true:1000:10000:0,0,6:delete,168h:1:1000:1024:1000:1000:1\");\r\n    newTopicMetaConfInfoList.add(\"topic2:4:true:true:1000:10000:0,0,6:delete,168h:1:1000:1024:1000:1000:1\");\r\n    brokerMetadataManage.updateBrokerTopicConfigMap(0L, 0, newBrokerDefMetaConfInfo, newTopicMetaConfInfoList, true, new StringBuilder());\r\n    // get topic custom config.\r\n    long count = brokerMetadataManage.getNumPartitions(\"topic2\");\r\n    Assert.isTrue(count == 4);\r\n    // add topic custom config.\r\n    newTopicMetaConfInfoList.add(\"topic3:6:true:true:1000:10000:0,0,6:delete,168h:1:1000:1024:1000:1000:1\");\r\n    brokerMetadataManage.updateBrokerTopicConfigMap(0L, 1, newBrokerDefMetaConfInfo, newTopicMetaConfInfoList, true, new StringBuilder());\r\n    count = brokerMetadataManage.getNumPartitions(\"topic3\");\r\n    Assert.isTrue(count == 6);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\broker\\metadata\\BrokerMetadataManageTest.java",
+  "methodName" : "updateBrokerRemoveTopicMap",
+  "sourceCode" : "@Test\r\npublic void updateBrokerRemoveTopicMap() {\r\n    brokerMetadataManage = new BrokerMetadataManage();\r\n    String newBrokerDefMetaConfInfo = \"1:true:true:1000:10000:0,0,6:delete,168h:1:1000:1024:1000:1000\";\r\n    List<String> newTopicMetaConfInfoList = new LinkedList<>();\r\n    // add topic custom config.\r\n    newTopicMetaConfInfoList.add(\"topic1:2:true:true:1000:10000:0,0,6:delete,168h:1:1000:1024:1000:1000:1\");\r\n    newTopicMetaConfInfoList.add(\"topic2:4:true:true:1000:10000:0,0,6:delete,168h:1:1000:1024:1000:1000:1\");\r\n    brokerMetadataManage.updateBrokerTopicConfigMap(0L, 0, newBrokerDefMetaConfInfo, newTopicMetaConfInfoList, true, new StringBuilder());\r\n    Map<String, TopicMetadata> topicMetadataMap = brokerMetadataManage.getRemovedTopicConfigMap();\r\n    Assert.isTrue(topicMetadataMap.size() == 0);\r\n    List<String> rmvTopics = new LinkedList<>();\r\n    rmvTopics.add(\"topic2:4:true:true:1000:10000:0,0,6:delete,168h:1:1000:1024:1000:1000:1\");\r\n    // update topic custom config.\r\n    brokerMetadataManage.updateBrokerRemoveTopicMap(true, rmvTopics, new StringBuilder());\r\n    topicMetadataMap = brokerMetadataManage.getRemovedTopicConfigMap();\r\n    Assert.isTrue(topicMetadataMap.size() == 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\broker\\msgstore\\disk\\FileReadViewTest.java",
+  "methodName" : "read",
+  "sourceCode" : "@Test\r\npublic void read() {\r\n    File file = new File(\"src/test/resource/testdata\");\r\n    if (file.exists()) {\r\n        file.delete();\r\n    }\r\n    try {\r\n        file.createNewFile();\r\n        // create file segment\r\n        Segment segment = new FileSegment(0, file, true, SegmentType.DATA);\r\n        String data = \"abcdefghij\";\r\n        byte[] bytes = data.getBytes();\r\n        ByteBuffer buf = ByteBuffer.wrap(bytes);\r\n        // write data to FileSegment\r\n        segment.append(buf);\r\n        segment.flush(true);\r\n        FileReadView fileReadView = new FileReadView(segment, 0, 10, 10);\r\n        ByteBuffer bf = ByteBuffer.allocate(10);\r\n        // read data to bf\r\n        fileReadView.read(bf, 0);\r\n        String readData = new String(bf.array());\r\n        Assert.isTrue(readData.equals(data));\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    } finally {\r\n        if (file.exists()) {\r\n            file.delete();\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\broker\\msgstore\\disk\\FileSegmentListTest.java",
+  "methodName" : "getView",
+  "sourceCode" : "@Test\r\npublic void getView() {\r\n    File dir = new File(\"src/test/resource/data\");\r\n    dir.mkdir();\r\n    try {\r\n        File file = new File(\"src/test/resource/data\", DataStoreUtils.nameFromOffset(0L, DataStoreUtils.DATA_FILE_SUFFIX));\r\n        file.createNewFile();\r\n        // create FileSegmentList.\r\n        fileSegmentList = new FileSegmentList(dir, SegmentType.DATA, true, 0L, Long.MAX_VALUE, new StringBuilder());\r\n        Segment fileSegment = fileSegmentList.last();\r\n        String data = \"abc\";\r\n        // append data to last FileSegment.\r\n        fileSegment.append(ByteBuffer.wrap(data.getBytes()));\r\n        fileSegment.flush(true);\r\n        // get view\r\n        List<Segment> segmentList = fileSegmentList.getView();\r\n        Assert.assertTrue(segmentList.size() == 1);\r\n        file.delete();\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    } finally {\r\n        if (dir.exists()) {\r\n            dir.delete();\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\broker\\msgstore\\disk\\FileSegmentListTest.java",
+  "methodName" : "append",
+  "sourceCode" : "@Test\r\npublic void append() {\r\n    File dir = new File(\"src/test/resource/data\");\r\n    if (dir.exists()) {\r\n        File[] files = dir.listFiles();\r\n        for (File file : files) {\r\n            file.delete();\r\n        }\r\n        dir.delete();\r\n    }\r\n    dir.mkdir();\r\n    try {\r\n        File file = new File(\"src/test/resource/data\", DataStoreUtils.nameFromOffset(0L, DataStoreUtils.DATA_FILE_SUFFIX));\r\n        file.createNewFile();\r\n        // create FileSegmentList.\r\n        fileSegmentList = new FileSegmentList(dir, SegmentType.DATA, true, 0L, Long.MAX_VALUE, new StringBuilder());\r\n        Segment fileSegment = new FileSegment(100L, file, true, SegmentType.DATA);\r\n        String data = \"abc\";\r\n        // append data to last FileSegment.\r\n        fileSegment.append(ByteBuffer.wrap(data.getBytes()));\r\n        fileSegment.flush(true);\r\n        fileSegmentList.append(fileSegment);\r\n        List<Segment> segmentList = fileSegmentList.getView();\r\n        Assert.assertTrue(segmentList.size() == 2);\r\n        file.delete();\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\broker\\msgstore\\mem\\MsgMemStoreTest.java",
+  "methodName" : "appendMsg",
+  "sourceCode" : "@Test\r\npublic void appendMsg() {\r\n    int maxCacheSize = 2 * 1024 * 1024;\r\n    int maxMsgCount = 10000;\r\n    MsgMemStore msgMemStore = new MsgMemStore(maxCacheSize, maxMsgCount, null);\r\n    MsgMemStatisInfo msgMemStatisInfo = new MsgMemStatisInfo();\r\n    ByteBuffer bf = ByteBuffer.allocate(1024);\r\n    bf.put(\"abc\".getBytes());\r\n    // append data\r\n    msgMemStore.appendMsg(msgMemStatisInfo, 0, 0, System.currentTimeMillis(), 3, bf);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\broker\\msgstore\\mem\\MsgMemStoreTest.java",
+  "methodName" : "getMessages",
+  "sourceCode" : "@Test\r\npublic void getMessages() {\r\n    int maxCacheSize = 2 * 1024 * 1024;\r\n    int maxMsgCount = 10000;\r\n    MsgMemStore msgMemStore = new MsgMemStore(maxCacheSize, maxMsgCount, null);\r\n    MsgMemStatisInfo msgMemStatisInfo = new MsgMemStatisInfo();\r\n    ByteBuffer bf = ByteBuffer.allocate(1024);\r\n    bf.put(\"abc\".getBytes());\r\n    msgMemStore.appendMsg(msgMemStatisInfo, 0, 0, System.currentTimeMillis(), 3, bf);\r\n    // get messages\r\n    GetCacheMsgResult getCacheMsgResult = msgMemStore.getMessages(0, 2, 1024, 1000, 0, false, false, null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\broker\\stats\\GroupCountServiceTest.java",
+  "methodName" : "add",
+  "sourceCode" : "@Test\r\npublic void add() {\r\n    GroupCountService groupCountService = new GroupCountService(\"PutCounterGroup\", \"Producer\", 60 * 1000);\r\n    groupCountService.add(\"key\", 1L, 100);\r\n    Map<String, CountItem> items = new HashMap<>();\r\n    items.put(\"key1\", new CountItem(1L, 1024));\r\n    items.put(\"key2\", new CountItem(1L, 1024));\r\n    // add counts\r\n    groupCountService.add(items);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\broker\\utils\\DataStoreUtilsTest.java",
+  "methodName" : "getInt",
+  "sourceCode" : "@Test\r\npublic void getInt() {\r\n    ByteBuffer bf = ByteBuffer.allocate(100);\r\n    bf.putInt(123);\r\n    byte[] data = bf.array();\r\n    int offset = 0;\r\n    int val = DataStoreUtils.getInt(offset, data);\r\n    // get int by DataStoreUtils\r\n    Assert.isTrue(val == 123);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\common\\HeartbeatManagerTest.java",
+  "methodName" : "testBrokerTimeout",
+  "sourceCode" : "@Test\r\npublic void testBrokerTimeout() {\r\n    heartbeatManager.regBrokerCheckBusiness(1000, new TimeoutListener() {\r\n\r\n        @Override\r\n        public void onTimeout(final String nodeId, TimeoutInfo nodeInfo) throws Exception {\r\n            logger.info(new StringBuilder(512).append(\"[Broker Timeout] \").append(nodeId).toString());\r\n        }\r\n    });\r\n    heartbeatManager.regBrokerNode(\"node1\");\r\n    Assert.assertTrue(heartbeatManager.getBrokerRegMap().get(\"node1\").getTimeoutTime() > System.currentTimeMillis());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\common\\HeartbeatManagerTest.java",
+  "methodName" : "testConsumerTimeout",
+  "sourceCode" : "@Test\r\npublic void testConsumerTimeout() {\r\n    heartbeatManager.regConsumerCheckBusiness(1000, new TimeoutListener() {\r\n\r\n        @Override\r\n        public void onTimeout(final String nodeId, TimeoutInfo nodeInfo) throws Exception {\r\n            logger.info(new StringBuilder(512).append(\"[Broker Timeout] \").append(nodeId).toString());\r\n        }\r\n    });\r\n    heartbeatManager.regConsumerNode(\"node1\");\r\n    Assert.assertTrue(heartbeatManager.getConsumerRegMap().get(\"node1\").getTimeoutTime() > System.currentTimeMillis());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\common\\HeartbeatManagerTest.java",
+  "methodName" : "testProducerTimeout",
+  "sourceCode" : "@Test\r\npublic void testProducerTimeout() {\r\n    heartbeatManager.regProducerCheckBusiness(1000, new TimeoutListener() {\r\n\r\n        @Override\r\n        public void onTimeout(final String nodeId, TimeoutInfo nodeInfo) throws Exception {\r\n            logger.info(new StringBuilder(512).append(\"[Broker Timeout] \").append(nodeId).toString());\r\n        }\r\n    });\r\n    heartbeatManager.regProducerNode(\"node1\");\r\n    Assert.assertTrue(heartbeatManager.getProducerRegMap().get(\"node1\").getTimeoutTime() > System.currentTimeMillis());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\common\\PBParameterTest.java",
+  "methodName" : "checkProducerTopicTest",
+  "sourceCode" : "@Test\r\npublic void checkProducerTopicTest() {\r\n    ParamCheckResult result = PBParameterUtils.checkProducerTopicList(null, null);\r\n    Assert.assertEquals(result.errCode, TErrCodeConstants.BAD_REQUEST);\r\n    final List<String> topicList = new ArrayList<>();\r\n    topicList.add(\"test1\");\r\n    result = PBParameterUtils.checkProducerTopicList(topicList, new StringBuilder(128));\r\n    Assert.assertEquals(result.errCode, TErrCodeConstants.SUCCESS);\r\n    for (int i = 0; i < 1025; i++) {\r\n        topicList.add(\"test\" + i);\r\n    }\r\n    result = PBParameterUtils.checkProducerTopicList(topicList, new StringBuilder(128));\r\n    Assert.assertEquals(result.errCode, TErrCodeConstants.BAD_REQUEST);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\common\\PBParameterTest.java",
+  "methodName" : "checkConsumerTopicTest",
+  "sourceCode" : "@Test\r\npublic void checkConsumerTopicTest() {\r\n    ParamCheckResult result = PBParameterUtils.checkConsumerTopicList(null, null);\r\n    Assert.assertEquals(result.errCode, TErrCodeConstants.BAD_REQUEST);\r\n    final List<String> topicList = new ArrayList<>();\r\n    topicList.add(\"test1\");\r\n    result = PBParameterUtils.checkConsumerTopicList(topicList, new StringBuilder(128));\r\n    Assert.assertEquals(result.errCode, TErrCodeConstants.SUCCESS);\r\n    for (int i = 0; i < 1025; i++) {\r\n        topicList.add(\"test\" + i);\r\n    }\r\n    result = PBParameterUtils.checkConsumerTopicList(topicList, new StringBuilder(128));\r\n    Assert.assertEquals(result.errCode, TErrCodeConstants.BAD_REQUEST);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\common\\PBParameterTest.java",
+  "methodName" : "checkIdTest",
+  "sourceCode" : "@Test\r\npublic void checkIdTest() {\r\n    ParamCheckResult result = PBParameterUtils.checkClientId(\"100\", new StringBuilder(128));\r\n    Assert.assertEquals(result.errCode, TErrCodeConstants.SUCCESS);\r\n    result = PBParameterUtils.checkClientId(\"\", new StringBuilder(128));\r\n    Assert.assertEquals(result.errCode, TErrCodeConstants.BAD_REQUEST);\r\n    result = PBParameterUtils.checkBrokerId(\"100\", new StringBuilder(128));\r\n    Assert.assertEquals(result.errCode, TErrCodeConstants.SUCCESS);\r\n    result = PBParameterUtils.checkBrokerId(\"\", new StringBuilder(128));\r\n    Assert.assertEquals(result.errCode, TErrCodeConstants.BAD_REQUEST);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\common\\WebParameterTest.java",
+  "methodName" : "validParameterTest",
+  "sourceCode" : "@Test\r\npublic void validParameterTest() throws Exception {\r\n    long value = WebParameterUtils.validLongDataParameter(\"test\", \"100\", true, 50);\r\n    Assert.assertEquals(value, 100);\r\n    value = WebParameterUtils.validLongDataParameter(\"test\", null, false, 50);\r\n    Assert.assertEquals(value, 50);\r\n    thrown.expect(Exception.class);\r\n    thrown.expectMessage(\"Null or blank value of test parameter\");\r\n    WebParameterUtils.validLongDataParameter(\"test\", \"\", true, 50);\r\n    thrown.expect(Exception.class);\r\n    thrown.expectMessage(\"the value of test parameter must only contain numbers\");\r\n    WebParameterUtils.validLongDataParameter(\"test\", \"100.0\", true, 50);\r\n    DateFormat sdf = new SimpleDateFormat(TBaseConstants.META_TMP_DATE_VALUE);\r\n    Date date = WebParameterUtils.validDateParameter(\"test\", \"20190101012259\", 20, true, new Date());\r\n    Assert.assertEquals(date, sdf.parse(\"20190101012259\"));\r\n    String ip = WebParameterUtils.validAddressParameter(\"testIp\", \"10.1.1.1\", 20, true, \"10.0.0.0\");\r\n    Assert.assertEquals(\"10.1.1.1\", ip);\r\n    ip = WebParameterUtils.validAddressParameter(\"testIp\", \"\", 20, false, \"10.0.0.0\");\r\n    Assert.assertEquals(\"10.0.0.0\", ip);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\master\\MasterConfigTest.java",
+  "methodName" : "loadFileSectAttributes",
+  "sourceCode" : "@Test\r\npublic void loadFileSectAttributes() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\master\\nodemanage\\nodebroker\\BrokerInfoHolderTest.java",
+  "methodName" : "testBrokerInfo",
+  "sourceCode" : "@Test\r\npublic void testBrokerInfo() {\r\n    BrokerInfo brokerInfo = mock(BrokerInfo.class);\r\n    brokerInfoHolder.setBrokerInfo(1, brokerInfo);\r\n    Assert.assertEquals(brokerInfo, brokerInfoHolder.getBrokerInfo(1));\r\n    brokerInfoHolder.removeBroker(1);\r\n    Assert.assertNull(brokerInfoHolder.getBrokerInfo(1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\master\\nodemanage\\nodebroker\\TopicPSInfoManagerTest.java",
+  "methodName" : "topicSubInfo",
+  "sourceCode" : "@Test\r\npublic void topicSubInfo() {\r\n    ConcurrentHashSet<String> groupSet = new ConcurrentHashSet<>();\r\n    groupSet.add(\"group_001\");\r\n    groupSet.add(\"group_002\");\r\n    groupSet.add(\"group_003\");\r\n    topicPSInfoManager.setTopicSubInfo(\"topic001\", groupSet);\r\n    ConcurrentHashSet<String> gs1 = topicPSInfoManager.getTopicSubInfo(\"topic001\");\r\n    Assert.assertEquals(3, gs1.size());\r\n    topicPSInfoManager.removeTopicSubInfo(\"topic001\", \"group_001\");\r\n    topicPSInfoManager.removeTopicSubInfo(\"topic001\", \"group_002\");\r\n    gs1 = topicPSInfoManager.getTopicSubInfo(\"topic001\");\r\n    Assert.assertEquals(1, gs1.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\master\\nodemanage\\nodebroker\\TopicPSInfoManagerTest.java",
+  "methodName" : "topicPubInfo",
+  "sourceCode" : "@Test\r\npublic void topicPubInfo() {\r\n    HashSet<String> topicList = new HashSet<>();\r\n    topicList.add(\"topic001\");\r\n    topicList.add(\"topic002\");\r\n    topicList.add(\"topic003\");\r\n    topicPSInfoManager.addProducerTopicPubInfo(\"producer_001\", topicList);\r\n    ConcurrentHashSet<String> ti1 = topicPSInfoManager.getTopicPubInfo(\"topic001\");\r\n    Assert.assertEquals(1, ti1.size());\r\n    Assert.assertTrue(ti1.contains(\"producer_001\"));\r\n    topicPSInfoManager.rmvProducerTopicPubInfo(\"producer_001\", new HashSet<String>(Arrays.asList(\"topic001\", \"topic002\")));\r\n    ConcurrentHashSet<String> ti2 = topicPSInfoManager.getTopicPubInfo(\"topic003\");\r\n    Assert.assertEquals(1, ti2.size());\r\n    Assert.assertTrue(ti2.contains(\"producer_001\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\master\\nodemanage\\nodeconsumer\\ConsumerEventManagerTest.java",
+  "methodName" : "eventTest",
+  "sourceCode" : "@Test\r\npublic void eventTest() {\r\n    ConsumerEvent event1 = mock(ConsumerEvent.class);\r\n    consumerEventManager.addDisconnectEvent(\"consumer001\", event1);\r\n    ConsumerEvent event2 = mock(ConsumerEvent.class);\r\n    consumerEventManager.addConnectEvent(\"consumer002\", event2);\r\n    Assert.assertTrue(consumerEventManager.hasEvent());\r\n    Assert.assertEquals(2, consumerEventManager.getUnProcessedIdSet().size());\r\n    consumerEventManager.removeAll(\"consumer001\");\r\n    consumerEventManager.removeAll(\"consumer002\");\r\n    Assert.assertFalse(consumerEventManager.hasEvent());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

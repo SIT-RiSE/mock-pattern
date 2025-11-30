@@ -1,0 +1,37 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chukwa\\src\\test\\java\\org\\apache\\hadoop\\chukwa\\datacollection\\adaptor\\filetailer\\TestFileTailer.java",
+  "methodName" : "testDontSleepIfHasMoreData",
+  "sourceCode" : "@Test\r\npublic void testDontSleepIfHasMoreData() throws AlreadyRunningException, IOException, InterruptedException {\r\n    int DEFAULT_SAMPLE_PERIOD_MS = 1000 * 2;\r\n    ChukwaConfiguration cc = new ChukwaConfiguration();\r\n    // small in order to have hasMoreData=true\r\n    cc.setInt(\"chukwaAgent.fileTailingAdaptor.maxReadSize\", 18);\r\n    // (with 26 letters we should have 2 chunks)\r\n    agent = ChukwaAgent.getAgent(cc);\r\n    agent.start();\r\n    ChunkCatcherConnector chunks = new ChunkCatcherConnector();\r\n    chunks.start();\r\n    File baseDir = new File(System.getProperty(\"test.build.data\", \"/tmp\"));\r\n    // insert 26 letters on file\r\n    testFile = makeTestFile(\"testDontSleepIfHasMoreData\", 1, baseDir);\r\n    long startTime = System.currentTimeMillis();\r\n    adaptorId = agent.processAddCommand(\"add adaptor_test =\" + \"filetailer.FileTailingAdaptor testDontSleepIfHasMoreData \" + testFile.getCanonicalPath() + \" 0\");\r\n    chunks.waitForAChunk();\r\n    chunks.waitForAChunk();\r\n    long endTime = System.currentTimeMillis();\r\n    // ensure that everything finishes very fast\r\n    assertTrue(endTime - startTime < DEFAULT_SAMPLE_PERIOD_MS);\r\n    // faster than SAMPLE_PERIOD_MS (ie: we don't sleep)\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chukwa\\src\\test\\java\\org\\apache\\hadoop\\chukwa\\datacollection\\adaptor\\filetailer\\TestFileTailingAdaptorPreserveLines.java",
+  "methodName" : "testDontBreakLines",
+  "sourceCode" : "/**\r\n * Check that chunk does not break lines (which is the problem of\r\n * FileTailingAdaptor adaptor)\r\n *\r\n * @throws UnsupportedEncodingException\r\n */\r\n@Test\r\npublic void testDontBreakLines() throws UnsupportedEncodingException {\r\n    Chunk c = chunks.waitForAChunk(5000);\r\n    String data = new String(c.getData(), \"UTF-8\");\r\n    String[] lines = data.split(\"\\\\r?\\\\n\");\r\n    // Check that length of the last line is the same as the\r\n    // one of the first line. Otherwise, it means the last\r\n    // line has been cut\r\n    assertEquals(lines[0].length(), lines[lines.length - 1].length());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chukwa\\src\\test\\java\\org\\apache\\hadoop\\chukwa\\datacollection\\adaptor\\filetailer\\TestFileTailingAdaptorPreserveLines.java",
+  "methodName" : "testSecondChunkDataFollowsFirstChunkData",
+  "sourceCode" : "/**\r\n * Check that second chunk contains the data that just follow the first\r\n * chunk's data\r\n *\r\n * @throws UnsupportedEncodingException\r\n */\r\n@Test\r\npublic void testSecondChunkDataFollowsFirstChunkData() throws UnsupportedEncodingException {\r\n    Chunk c = chunks.waitForAChunk(5000);\r\n    String data = new String(c.getData(), \"UTF-8\");\r\n    String[] lines1 = data.split(\"\\\\r?\\\\n\");\r\n    c = chunks.waitForAChunk(5000);\r\n    data = new String(c.getData(), \"UTF-8\");\r\n    String[] lines2 = data.split(\"\\\\r?\\\\n\");\r\n    int numLastLineChunk1 = (int) (lines1[lines1.length - 1].charAt(0));\r\n    int numLastLineChunk2 = (int) (lines2[0].charAt(0));\r\n    // Check that lines numbers are successive between\r\n    // last line of first chunk and first line of second chunk\r\n    assertEquals(numLastLineChunk1, numLastLineChunk2 - 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chukwa\\src\\test\\java\\org\\apache\\hadoop\\chukwa\\datacollection\\adaptor\\filetailer\\TestFileTailingAdaptorPreserveLines.java",
+  "methodName" : "testOnlyOneSetRecordOffset",
+  "sourceCode" : "/**\r\n * Check that chunk only has one set record offset although it has more than 2\r\n * lines (which is the contrary of CharFileTailingAdaptorUTF8)\r\n *\r\n * @throws UnsupportedEncodingException\r\n */\r\n@Test\r\npublic void testOnlyOneSetRecordOffset() throws UnsupportedEncodingException {\r\n    Chunk c = chunks.waitForAChunk(5000);\r\n    String data = new String(c.getData(), \"UTF-8\");\r\n    String[] lines = data.split(\"\\\\r?\\\\n\");\r\n    // Check that we have more than two lines\r\n    assertTrue(lines.length > 2);\r\n    int[] offsets_i = c.getRecordOffsets();\r\n    // Check that we only have one offset\r\n    assertEquals(1, offsets_i.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chukwa\\src\\test\\java\\org\\apache\\hadoop\\chukwa\\datacollection\\adaptor\\TestOozieAdaptor.java",
+  "methodName" : "testMessageReceivedOk",
+  "sourceCode" : "@Test\r\npublic void testMessageReceivedOk() throws Exception {\r\n    OozieAdaptor oozieAdaptor = new OozieAdaptor();\r\n    oozieAdaptor.parseArgs(\"TestOozieAdaptor\", \"0\", AdaptorManager.NULL);\r\n    oozieAdaptor.start(\"id\", \"TestOozieAdaptor\", 0, this);\r\n    JSONObject json = composeMessage();\r\n    int lengthReturned = oozieAdaptor.addChunkToReceiver(json.toString().getBytes());\r\n    // 84 is the length of json string\r\n    assertEquals(84, lengthReturned);\r\n    synchronized (this) {\r\n        wait(1000);\r\n    }\r\n    assertTrue(receivedOK);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chukwa\\src\\test\\java\\org\\apache\\hadoop\\chukwa\\datacollection\\adaptor\\TestRestAdaptor.java",
+  "methodName" : "testMessageReceivedOk",
+  "sourceCode" : "@Test\r\npublic void testMessageReceivedOk() throws Exception {\r\n    RestAdaptor restAdaptor = new RestAdaptor();\r\n    restAdaptor.parseArgs(args);\r\n    restAdaptor.start(\"id\", \"TestRestAdaptor\", 0, this);\r\n    // wait for processing\r\n    Thread.sleep(2000);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

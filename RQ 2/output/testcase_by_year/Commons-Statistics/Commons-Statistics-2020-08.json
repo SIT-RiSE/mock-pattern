@@ -1,0 +1,1303 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\AbstractContinuousDistributionTest.java",
+  "methodName" : "testContinuous",
+  "sourceCode" : "@Test\r\nvoid testContinuous() {\r\n    final double x0 = 0.0;\r\n    final double x1 = 1.0;\r\n    final double x2 = 2.0;\r\n    final double x3 = 3.0;\r\n    final double p12 = 0.5;\r\n    final AbstractContinuousDistribution distribution;\r\n    distribution = new AbstractContinuousDistribution() {\r\n\r\n        private static final long serialVersionUID = 1L;\r\n\r\n        @Override\r\n        public double cumulativeProbability(final double x) {\r\n            if (x < x0 || x > x3) {\r\n                throw new DistributionException(DistributionException.OUT_OF_RANGE, x, x0, x3);\r\n            }\r\n            if (x <= x1) {\r\n                return p12 * (x - x0) / (x1 - x0);\r\n            } else if (x <= x2) {\r\n                return p12;\r\n            } else if (x <= x3) {\r\n                return p12 + (1.0 - p12) * (x - x2) / (x3 - x2);\r\n            }\r\n            return 0.0;\r\n        }\r\n\r\n        @Override\r\n        public double density(final double x) {\r\n            if (x < x0 || x > x3) {\r\n                throw new DistributionException(DistributionException.OUT_OF_RANGE, x, x0, x3);\r\n            }\r\n            if (x <= x1) {\r\n                return p12 / (x1 - x0);\r\n            } else if (x <= x2) {\r\n                return 0.0;\r\n            } else if (x <= x3) {\r\n                return (1.0 - p12) / (x3 - x2);\r\n            }\r\n            return 0.0;\r\n        }\r\n\r\n        @Override\r\n        public double getMean() {\r\n            return ((x0 + x1) * p12 + (x2 + x3) * (1.0 - p12)) / 2.0;\r\n        }\r\n\r\n        @Override\r\n        public double getVariance() {\r\n            final double meanX = getMean();\r\n            final double meanX2;\r\n            meanX2 = ((x0 * x0 + x0 * x1 + x1 * x1) * p12 + (x2 * x2 + x2 * x3 + x3 * x3) * (1.0 - p12)) / 3.0;\r\n            return meanX2 - meanX * meanX;\r\n        }\r\n\r\n        @Override\r\n        public double getSupportLowerBound() {\r\n            return x0;\r\n        }\r\n\r\n        @Override\r\n        public double getSupportUpperBound() {\r\n            return x3;\r\n        }\r\n\r\n        @Override\r\n        public boolean isSupportConnected() {\r\n            return false;\r\n        }\r\n\r\n        @Override\r\n        public double probability(final double x) {\r\n            throw new UnsupportedOperationException();\r\n        }\r\n    };\r\n    final double expected = x1;\r\n    final double actual = distribution.inverseCumulativeProbability(p12);\r\n    Assertions.assertEquals(expected, actual, 1e-8);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\AbstractContinuousDistributionTest.java",
+  "methodName" : "testDiscontinuous",
+  "sourceCode" : "@Test\r\nvoid testDiscontinuous() {\r\n    final double x0 = 0.0;\r\n    final double x1 = 0.25;\r\n    final double x2 = 0.5;\r\n    final double x3 = 0.75;\r\n    final double x4 = 1.0;\r\n    final double p12 = 1.0 / 3.0;\r\n    final double p23 = 2.0 / 3.0;\r\n    final AbstractContinuousDistribution distribution;\r\n    distribution = new AbstractContinuousDistribution() {\r\n\r\n        @Override\r\n        public double cumulativeProbability(final double x) {\r\n            if (x < x0 || x > x4) {\r\n                throw new DistributionException(DistributionException.OUT_OF_RANGE, x, x0, x4);\r\n            }\r\n            if (x <= x1) {\r\n                return p12 * (x - x0) / (x1 - x0);\r\n            } else if (x <= x2) {\r\n                return p12;\r\n            } else if (x <= x3) {\r\n                return p23;\r\n            } else {\r\n                return (1.0 - p23) * (x - x3) / (x4 - x3) + p23;\r\n            }\r\n        }\r\n\r\n        @Override\r\n        public double density(final double x) {\r\n            if (x < x0 || x > x4) {\r\n                throw new DistributionException(DistributionException.OUT_OF_RANGE, x, x0, x4);\r\n            }\r\n            if (x <= x1) {\r\n                return p12 / (x1 - x0);\r\n            } else if (x <= x2) {\r\n                return 0.0;\r\n            } else if (x <= x3) {\r\n                return 0.0;\r\n            } else {\r\n                return (1.0 - p23) / (x4 - x3);\r\n            }\r\n        }\r\n\r\n        @Override\r\n        public double getMean() {\r\n            final UnivariateFunction f = new UnivariateFunction() {\r\n\r\n                @Override\r\n                public double value(final double x) {\r\n                    return x * density(x);\r\n                }\r\n            };\r\n            final UnivariateIntegrator integrator = new RombergIntegrator();\r\n            return integrator.integrate(Integer.MAX_VALUE, f, x0, x4);\r\n        }\r\n\r\n        @Override\r\n        public double getVariance() {\r\n            final double meanX = getMean();\r\n            final UnivariateFunction f = new UnivariateFunction() {\r\n\r\n                @Override\r\n                public double value(final double x) {\r\n                    return x * x * density(x);\r\n                }\r\n            };\r\n            final UnivariateIntegrator integrator = new RombergIntegrator();\r\n            final double meanX2 = integrator.integrate(Integer.MAX_VALUE, f, x0, x4);\r\n            return meanX2 - meanX * meanX;\r\n        }\r\n\r\n        @Override\r\n        public double getSupportLowerBound() {\r\n            return x0;\r\n        }\r\n\r\n        @Override\r\n        public double getSupportUpperBound() {\r\n            return x4;\r\n        }\r\n\r\n        @Override\r\n        public boolean isSupportConnected() {\r\n            return false;\r\n        }\r\n\r\n        @Override\r\n        public double probability(final double x) {\r\n            throw new UnsupportedOperationException();\r\n        }\r\n    };\r\n    final double expected = x2;\r\n    final double actual = distribution.inverseCumulativeProbability(p23);\r\n    Assertions.assertEquals(expected, actual, 1e-8);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\AbstractDiscreteDistributionTest.java",
+  "methodName" : "testInverseCumulativeProbabilityMethod",
+  "sourceCode" : "@Test\r\nvoid testInverseCumulativeProbabilityMethod() {\r\n    final double precision = 0.000000000000001;\r\n    Assertions.assertEquals(1, diceDistribution.inverseCumulativeProbability(0));\r\n    Assertions.assertEquals(1, diceDistribution.inverseCumulativeProbability((1d - Double.MIN_VALUE) / 6d));\r\n    Assertions.assertEquals(2, diceDistribution.inverseCumulativeProbability((1d + precision) / 6d));\r\n    Assertions.assertEquals(2, diceDistribution.inverseCumulativeProbability((2d - Double.MIN_VALUE) / 6d));\r\n    Assertions.assertEquals(3, diceDistribution.inverseCumulativeProbability((2d + precision) / 6d));\r\n    Assertions.assertEquals(3, diceDistribution.inverseCumulativeProbability((3d - Double.MIN_VALUE) / 6d));\r\n    Assertions.assertEquals(4, diceDistribution.inverseCumulativeProbability((3d + precision) / 6d));\r\n    Assertions.assertEquals(4, diceDistribution.inverseCumulativeProbability((4d - Double.MIN_VALUE) / 6d));\r\n    Assertions.assertEquals(5, diceDistribution.inverseCumulativeProbability((4d + precision) / 6d));\r\n    //Can't use Double.MIN\r\n    Assertions.assertEquals(5, diceDistribution.inverseCumulativeProbability((5d - precision) / 6d));\r\n    Assertions.assertEquals(6, diceDistribution.inverseCumulativeProbability((5d + precision) / 6d));\r\n    //Can't use Double.MIN\r\n    Assertions.assertEquals(6, diceDistribution.inverseCumulativeProbability((6d - precision) / 6d));\r\n    Assertions.assertEquals(6, diceDistribution.inverseCumulativeProbability(1d));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\AbstractDiscreteDistributionTest.java",
+  "methodName" : "testCumulativeProbabilitiesSingleArguments",
+  "sourceCode" : "@Test\r\nvoid testCumulativeProbabilitiesSingleArguments() {\r\n    for (int i = 1; i < 7; i++) {\r\n        Assertions.assertEquals(p * i, diceDistribution.cumulativeProbability(i), Double.MIN_VALUE);\r\n    }\r\n    Assertions.assertEquals(0.0, diceDistribution.cumulativeProbability(0), Double.MIN_VALUE);\r\n    Assertions.assertEquals(1.0, diceDistribution.cumulativeProbability(7), Double.MIN_VALUE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\AbstractDiscreteDistributionTest.java",
+  "methodName" : "testProbabilitiesRangeArguments",
+  "sourceCode" : "@Test\r\nvoid testProbabilitiesRangeArguments() {\r\n    int lower = 0;\r\n    int upper = 6;\r\n    for (int i = 0; i < 2; i++) {\r\n        // cum(0,6) = p(0 < X <= 6) = 1, cum(1,5) = 4/6, cum(2,4) = 2/6\r\n        Assertions.assertEquals(1 - p * 2 * i, diceDistribution.probability(lower, upper), 1E-12);\r\n        lower++;\r\n        upper--;\r\n    }\r\n    for (int i = 0; i < 6; i++) {\r\n        Assertions.assertEquals(p, diceDistribution.probability(i, i + 1), 1E-12);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\AbstractDiscreteDistributionTest.java",
+  "methodName" : "testInverseCumulativeProbabilityExtremes",
+  "sourceCode" : "@Test\r\nvoid testInverseCumulativeProbabilityExtremes() {\r\n    // Require a lower bound of MIN_VALUE and the cumulative probability\r\n    // at that bound to be lower/higher than the argument cumulative probability.\r\n    final DiscreteDistribution dist = new AbstractDiscreteDistribution() {\r\n\r\n        @Override\r\n        public double probability(int x) {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public double cumulativeProbability(int x) {\r\n            return x == Integer.MIN_VALUE ? 0.1 : 1.0;\r\n        }\r\n\r\n        @Override\r\n        public double getMean() {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public double getVariance() {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public int getSupportLowerBound() {\r\n            return Integer.MIN_VALUE;\r\n        }\r\n\r\n        @Override\r\n        public int getSupportUpperBound() {\r\n            return 42;\r\n        }\r\n\r\n        @Override\r\n        public boolean isSupportConnected() {\r\n            return false;\r\n        }\r\n    };\r\n    Assertions.assertEquals(Integer.MIN_VALUE, dist.inverseCumulativeProbability(0.05));\r\n    Assertions.assertEquals(dist.getSupportUpperBound(), dist.inverseCumulativeProbability(1.0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\AbstractDiscreteDistributionTest.java",
+  "methodName" : "testInverseCumulativeProbabilityWithNaN",
+  "sourceCode" : "@Test\r\nvoid testInverseCumulativeProbabilityWithNaN() {\r\n    final DiscreteDistribution dist = new AbstractDiscreteDistribution() {\r\n\r\n        @Override\r\n        public double probability(int x) {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public double cumulativeProbability(int x) {\r\n            // NaN is not allowed\r\n            return Double.NaN;\r\n        }\r\n\r\n        @Override\r\n        public double getMean() {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public double getVariance() {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public int getSupportLowerBound() {\r\n            return Integer.MIN_VALUE;\r\n        }\r\n\r\n        @Override\r\n        public int getSupportUpperBound() {\r\n            return Integer.MAX_VALUE;\r\n        }\r\n\r\n        @Override\r\n        public boolean isSupportConnected() {\r\n            return false;\r\n        }\r\n    };\r\n    Assertions.assertThrows(IllegalStateException.class, () -> dist.inverseCumulativeProbability(0.5));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\BetaDistributionTest.java",
+  "methodName" : "testCumulative",
+  "sourceCode" : "@Test\r\nvoid testCumulative() {\r\n    final double[] x = new double[] { -0.1, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1 };\r\n    // all test data computed using R 2.5\r\n    checkCumulative(0.1, 0.1, x, new double[] { 0.0000000000, 0.0000000000, 0.4063850939, 0.4397091902, 0.4628041861, 0.4821200456, 0.5000000000, 0.5178799544, 0.5371958139, 0.5602908098, 0.5936149061, 1.0000000000, 1.0000000000 });\r\n    checkCumulative(0.1, 0.5, x, new double[] { 0.0000000000, 0.0000000000, 0.7048336221, 0.7593042194, 0.7951765304, 0.8234948385, 0.8480017124, 0.8706034370, 0.8926585878, 0.9156406404, 0.9423662883, 1.0000000000, 1.0000000000 });\r\n    checkCumulative(0.1, 1.0, x, new double[] { 0.0000000000, 0.0000000000, 0.7943282347, 0.8513399225, 0.8865681506, 0.9124435366, 0.9330329915, 0.9502002165, 0.9649610951, 0.9779327685, 0.9895192582, 1.0000000000, 1.0000000000 });\r\n    checkCumulative(0.1, 2.0, x, new double[] { 0.0000000000, 0.0000000000, 0.8658177758, 0.9194471163, 0.9486279211, 0.9671901487, 0.9796846411, 0.9882082252, 0.9939099280, 0.9974914239, 0.9994144508, 1.0000000000, 1.0000000000 });\r\n    checkCumulative(0.1, 4.0, x, new double[] { 0.0000000000, 0.0000000000, 0.9234991121, 0.9661958941, 0.9842285085, 0.9928444112, 0.9970040660, 0.9989112804, 0.9996895625, 0.9999440793, 0.9999967829, 1.0000000000, 1.0000000000 });\r\n    checkCumulative(0.5, 0.1, x, new double[] { 0.00000000000, 0.00000000000, 0.05763371168, 0.08435935962, 0.10734141216, 0.12939656302, 0.15199828760, 0.17650516146, 0.20482346963, 0.24069578055, 0.29516637795, 1.00000000000, 1.00000000000 });\r\n    checkCumulative(0.5, 0.5, x, new double[] { 0.0000000000, 0.0000000000, 0.2048327647, 0.2951672353, 0.3690101196, 0.4359057832, 0.5000000000, 0.5640942168, 0.6309898804, 0.7048327647, 0.7951672353, 1.0000000000, 1.0000000000 });\r\n    checkCumulative(0.5, 1.0, x, new double[] { 0.0000000000, 0.0000000000, 0.3162277660, 0.4472135955, 0.5477225575, 0.6324555320, 0.7071067812, 0.7745966692, 0.8366600265, 0.8944271910, 0.9486832981, 1.0000000000, 1.0000000000 });\r\n    checkCumulative(0.5, 2.0, x, new double[] { 0.0000000000, 0.0000000000, 0.4585302607, 0.6260990337, 0.7394254526, 0.8221921916, 0.8838834765, 0.9295160031, 0.9621590305, 0.9838699101, 0.9961174630, 1.0000000000, 1.0000000000 });\r\n    checkCumulative(0.5, 4.0, x, new double[] { 0.0000000000, 0.0000000000, 0.6266250826, 0.8049844719, 0.8987784842, 0.9502644369, 0.9777960959, 0.9914837366, 0.9974556254, 0.9995223859, 0.9999714889, 1.0000000000, 1.0000000000 });\r\n    checkCumulative(1.0, 0.1, x, new double[] { 0.00000000000, 0.00000000000, 0.01048074179, 0.02206723146, 0.03503890488, 0.04979978349, 0.06696700846, 0.08755646344, 0.11343184943, 0.14866007748, 0.20567176528, 1.00000000000, 1.00000000000 });\r\n    checkCumulative(1.0, 0.5, x, new double[] { 0.00000000000, 0.00000000000, 0.05131670195, 0.10557280900, 0.16333997347, 0.22540333076, 0.29289321881, 0.36754446797, 0.45227744249, 0.55278640450, 0.68377223398, 1.00000000000, 1.00000000000 });\r\n    checkCumulative(1, 1, x, new double[] { 0.0, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.0 });\r\n    checkCumulative(1, 2, x, new double[] { 0.00, 0.00, 0.19, 0.36, 0.51, 0.64, 0.75, 0.84, 0.91, 0.96, 0.99, 1.00, 1.00 });\r\n    checkCumulative(1, 4, x, new double[] { 0.0000, 0.0000, 0.3439, 0.5904, 0.7599, 0.8704, 0.9375, 0.9744, 0.9919, 0.9984, 0.9999, 1.0000, 1.0000 });\r\n    checkCumulative(2.0, 0.1, x, new double[] { 0.0000000000000, 0.0000000000000, 0.0005855492117, 0.0025085760862, 0.0060900720266, 0.0117917748341, 0.0203153588864, 0.0328098512512, 0.0513720788952, 0.0805528836776, 0.1341822241505, 1.0000000000000, 1.0000000000000 });\r\n    checkCumulative(2, 1, x, new double[] { 0.00, 0.00, 0.01, 0.04, 0.09, 0.16, 0.25, 0.36, 0.49, 0.64, 0.81, 1.00, 1.00 });\r\n    checkCumulative(2.0, 0.5, x, new double[] { 0.000000000000, 0.000000000000, 0.003882537047, 0.016130089900, 0.037840969486, 0.070483996910, 0.116116523517, 0.177807808356, 0.260574547368, 0.373900966300, 0.541469739276, 1.000000000000, 1.000000000000 });\r\n    checkCumulative(2, 2, x, new double[] { 0.000, 0.000, 0.028, 0.104, 0.216, 0.352, 0.500, 0.648, 0.784, 0.896, 0.972, 1.000, 1.000 });\r\n    checkCumulative(2, 4, x, new double[] { 0.00000, 0.00000, 0.08146, 0.26272, 0.47178, 0.66304, 0.81250, 0.91296, 0.96922, 0.99328, 0.99954, 1.00000, 1.00000 });\r\n    checkCumulative(4.0, 0.1, x, new double[] { 0.000000000e+00, 0.000000000e+00, 3.217128269e-06, 5.592070271e-05, 3.104375474e-04, 1.088719595e-03, 2.995933981e-03, 7.155588777e-03, 1.577149153e-02, 3.380410585e-02, 7.650088789e-02, 1.000000000e+00, 1.000000000e+00 });\r\n    checkCumulative(4.0, 0.5, x, new double[] { 0.000000000e+00, 0.000000000e+00, 2.851114863e-05, 4.776140576e-04, 2.544374616e-03, 8.516263371e-03, 2.220390414e-02, 4.973556312e-02, 1.012215158e-01, 1.950155281e-01, 3.733749174e-01, 1.000000000e+00, 1.000000000e+00 });\r\n    checkCumulative(4, 1, x, new double[] { 0.0000, 0.0000, 0.0001, 0.0016, 0.0081, 0.0256, 0.0625, 0.1296, 0.2401, 0.4096, 0.6561, 1.0000, 1.0000 });\r\n    checkCumulative(4, 2, x, new double[] { 0.00000, 0.00000, 0.00046, 0.00672, 0.03078, 0.08704, 0.18750, 0.33696, 0.52822, 0.73728, 0.91854, 1.00000, 1.00000 });\r\n    checkCumulative(4, 4, x, new double[] { 0.000000, 0.000000, 0.002728, 0.033344, 0.126036, 0.289792, 0.500000, 0.710208, 0.873964, 0.966656, 0.997272, 1.000000, 1.000000 });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\BetaDistributionTest.java",
+  "methodName" : "testDensity",
+  "sourceCode" : "@Test\r\nvoid testDensity() {\r\n    final double[] x = new double[] { 1e-6, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };\r\n    checkDensity(0.1, 0.1, x, new double[] { 12741.2357380649, 0.4429889586665234, 2.639378715e-01, 2.066393611e-01, 1.832401831e-01, 1.766302780e-01, 1.832404579e-01, 2.066400696e-01, 2.639396531e-01, 4.429925026e-01 });\r\n    checkDensity(0.1, 0.5, x, new double[] { 2.218377102e+04, 7.394524202e-01, 4.203020268e-01, 3.119435533e-01, 2.600787829e-01, 2.330648626e-01, 2.211408259e-01, 2.222728708e-01, 2.414013907e-01, 3.070567405e-01 });\r\n    checkDensity(0.1, 1.0, x, new double[] { 2.511886432e+04, 7.943210858e-01, 4.256680458e-01, 2.955218303e-01, 2.281103709e-01, 1.866062624e-01, 1.583664652e-01, 1.378514078e-01, 1.222414585e-01, 1.099464743e-01 });\r\n    checkDensity(0.1, 2.0, x, new double[] { 2.763072312e+04, 7.863770012e-01, 3.745874120e-01, 2.275514842e-01, 1.505525939e-01, 1.026332391e-01, 6.968107049e-02, 4.549081293e-02, 2.689298641e-02, 1.209399123e-02 });\r\n    checkDensity(0.1, 4.0, x, new double[] { 2.997927462e+04, 6.911058917e-01, 2.601128486e-01, 1.209774010e-01, 5.880564714e-02, 2.783915474e-02, 1.209657335e-02, 4.442148268e-03, 1.167143939e-03, 1.312171805e-04 });\r\n    checkDensity(0.5, 0.1, x, new double[] { 88.3152184726, 0.3070542841, 0.2414007269, 0.2222727015, 0.2211409364, 0.2330652355, 0.2600795198, 0.3119449793, 0.4203052841, 0.7394649088 });\r\n    checkDensity(0.5, 0.5, x, new double[] { 318.3100453389, 1.0610282383, 0.7957732234, 0.6946084565, 0.6497470636, 0.6366197724, 0.6497476051, 0.6946097796, 0.7957762075, 1.0610376697 });\r\n    checkDensity(0.5, 1.0, x, new double[] { 500.0000000000, 1.5811309244, 1.1180311937, 0.9128694077, 0.7905684268, 0.7071060741, 0.6454966865, 0.5976138778, 0.5590166450, 0.5270459839 });\r\n    checkDensity(0.5, 2.0, x, new double[] { 749.99925000000, 2.134537420613655, 1.34163575536, 0.95851150881, 0.71151039830, 0.53032849490, 0.38729704363, 0.26892534859, 0.16770415497, 0.07905610701 });\r\n    checkDensity(0.5, 4.0, x, new double[] { 1.093746719e+03, 2.52142232809988, 1.252190241e+00, 6.849343920e-01, 3.735417140e-01, 1.933481570e-01, 9.036885833e-02, 3.529621669e-02, 9.782644546e-03, 1.152878503e-03 });\r\n    checkDensity(1.0, 0.1, x, new double[] { 0.1000000900, 0.1099466942, 0.1222417336, 0.1378517623, 0.1583669403, 0.1866069342, 0.2281113974, 0.2955236034, 0.4256718768, 0.7943353837 });\r\n    checkDensity(1.0, 0.5, x, new double[] { 0.5000002500, 0.5270465695, 0.5590173438, 0.5976147315, 0.6454977623, 0.7071074883, 0.7905704033, 0.9128724506, 1.1180367838, 1.5811467358 });\r\n    checkDensity(1, 1, x, new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 });\r\n    checkDensity(1, 2, x, new double[] { 1.999998, 1.799998, 1.599998, 1.399998, 1.199998, 0.999998, 0.799998, 0.599998, 0.399998, 0.199998 });\r\n    checkDensity(1, 4, x, new double[] { 3.999988000012, 2.915990280011, 2.047992320010, 1.371994120008, 0.863995680007, 0.499997000006, 0.255998080005, 0.107998920004, 0.031999520002, 0.003999880001 });\r\n    checkDensity(2.0, 0.1, x, new double[] { 1.100000990e-07, 1.209425730e-02, 2.689331586e-02, 4.549123318e-02, 6.968162794e-02, 1.026340191e-01, 1.505537732e-01, 2.275534997e-01, 3.745917198e-01, 7.863929037e-01 });\r\n    checkDensity(2.0, 0.5, x, new double[] { 7.500003750e-07, 7.905777599e-02, 1.677060417e-01, 2.689275256e-01, 3.872996256e-01, 5.303316769e-01, 7.115145488e-01, 9.585174425e-01, 1.341645818e+00, 2.134537420613655 });\r\n    checkDensity(2, 1, x, new double[] { 0.000002, 0.200002, 0.400002, 0.600002, 0.800002, 1.000002, 1.200002, 1.400002, 1.600002, 1.800002 });\r\n    checkDensity(2, 2, x, new double[] { 5.9999940e-06, 5.4000480e-01, 9.6000360e-01, 1.2600024e+00, 1.4400012e+00, 1.5000000e+00, 1.4399988e+00, 1.2599976e+00, 9.5999640e-01, 5.3999520e-01 });\r\n    checkDensity(2, 4, x, new double[] { 0.00001999994, 1.45800971996, 2.04800255997, 2.05799803998, 1.72799567999, 1.24999500000, 0.76799552000, 0.37799676001, 0.12799824001, 0.01799948000 });\r\n    checkDensity(4.0, 0.1, x, new double[] { 1.193501074e-19, 1.312253162e-04, 1.167181580e-03, 4.442248535e-03, 1.209679109e-02, 2.783958903e-02, 5.880649983e-02, 1.209791638e-01, 2.601171405e-01, 6.911229392e-01 });\r\n    checkDensity(4.0, 0.5, x, new double[] { 1.093750547e-18, 1.152948959e-03, 9.782950259e-03, 3.529697305e-02, 9.037036449e-02, 1.933508639e-01, 3.735463833e-01, 6.849425461e-01, 1.252205894e+00, 2.52142232809988 });\r\n    checkDensity(4, 1, x, new double[] { 4.000000000e-18, 4.000120001e-03, 3.200048000e-02, 1.080010800e-01, 2.560019200e-01, 5.000030000e-01, 8.640043200e-01, 1.372005880e+00, 2.048007680e+00, 2.916009720e+00 });\r\n    checkDensity(4, 2, x, new double[] { 1.999998000e-17, 1.800052000e-02, 1.280017600e-01, 3.780032400e-01, 7.680044800e-01, 1.250005000e+00, 1.728004320e+00, 2.058001960e+00, 2.047997440e+00, 1.457990280e+00 });\r\n    checkDensity(4, 4, x, new double[] { 1.399995800e-16, 1.020627216e-01, 5.734464512e-01, 1.296547409e+00, 1.935364838e+00, 2.187500000e+00, 1.935355162e+00, 1.296532591e+00, 5.734335488e-01, 1.020572784e-01 });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\BetaDistributionTest.java",
+  "methodName" : "testDensityExtremes",
+  "sourceCode" : "@Test\r\nvoid testDensityExtremes() {\r\n    final BetaDistribution d = new BetaDistribution(2, 3);\r\n    Assertions.assertEquals(Double.NEGATIVE_INFINITY, d.logDensity(-0.1));\r\n    Assertions.assertEquals(Double.NEGATIVE_INFINITY, d.logDensity(1.1));\r\n    Assertions.assertEquals(0.0, d.density(-0.1));\r\n    Assertions.assertEquals(0.0, d.density(1.1));\r\n    Assertions.assertEquals(Double.NEGATIVE_INFINITY, d.logDensity(0.0));\r\n    Assertions.assertEquals(Double.NEGATIVE_INFINITY, d.logDensity(1.0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\BetaDistributionTest.java",
+  "methodName" : "testLogDensityPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testLogDensityPrecondition1() {\r\n    final BetaDistribution d = new BetaDistribution(0.5, 3);\r\n    Assertions.assertThrows(DistributionException.class, () -> d.logDensity(0.0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\BetaDistributionTest.java",
+  "methodName" : "testLogDensityPrecondition2",
+  "sourceCode" : "@Test\r\nvoid testLogDensityPrecondition2() {\r\n    final BetaDistribution d = new BetaDistribution(2, 0.5);\r\n    Assertions.assertThrows(DistributionException.class, () -> d.logDensity(1.0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\BetaDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    final double tol = 1e-9;\r\n    BetaDistribution dist;\r\n    dist = new BetaDistribution(1, 1);\r\n    Assertions.assertEquals(0.5, dist.getMean(), tol);\r\n    Assertions.assertEquals(1.0 / 12.0, dist.getVariance(), tol);\r\n    dist = new BetaDistribution(2, 5);\r\n    Assertions.assertEquals(2.0 / 7.0, dist.getMean(), tol);\r\n    Assertions.assertEquals(10.0 / (49.0 * 8.0), dist.getVariance(), tol);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\BetaDistributionTest.java",
+  "methodName" : "testMomentsSampling",
+  "sourceCode" : "@Test\r\nvoid testMomentsSampling() {\r\n    final UniformRandomProvider rng = RandomSource.create(RandomSource.WELL_1024_A, 123456789L);\r\n    final int numSamples = 1000;\r\n    for (final double alpha : ALPHA_BETAS) {\r\n        for (final double beta : ALPHA_BETAS) {\r\n            final BetaDistribution betaDistribution = new BetaDistribution(alpha, beta);\r\n            final double[] observed = AbstractContinuousDistribution.sample(numSamples, betaDistribution.createSampler(rng));\r\n            Arrays.sort(observed);\r\n            Assertions.assertEquals(betaDistribution.getMean(), StatUtils.mean(observed), EPSILON, () -> String.format(\"E[Beta(%.2f, %.2f)]\", alpha, beta));\r\n            Assertions.assertEquals(betaDistribution.getVariance(), StatUtils.variance(observed), EPSILON, () -> String.format(\"Var[Beta(%.2f, %.2f)]\", alpha, beta));\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\BetaDistributionTest.java",
+  "methodName" : "testGoodnessOfFit",
+  "sourceCode" : "@Test\r\nvoid testGoodnessOfFit() {\r\n    final UniformRandomProvider rng = RandomSource.create(RandomSource.WELL_19937_A, 123456789L);\r\n    final int numSamples = 1000;\r\n    final double level = 0.01;\r\n    for (final double alpha : ALPHA_BETAS) {\r\n        for (final double beta : ALPHA_BETAS) {\r\n            final BetaDistribution betaDistribution = new BetaDistribution(alpha, beta);\r\n            final ContinuousDistribution.Sampler sampler = betaDistribution.createSampler(rng);\r\n            final double[] observed = AbstractContinuousDistribution.sample(numSamples, sampler);\r\n            final double gT = gTest(betaDistribution, observed);\r\n            Assertions.assertFalse(gT < level, () -> \"G goodness-of-fit (\" + gT + \") test rejected null at alpha = \" + level);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\BinomialDistributionTest.java",
+  "methodName" : "testDegenerate0",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n/**\r\n * Test degenerate case p = 0\r\n */\r\n@Test\r\nvoid testDegenerate0() {\r\n    final BinomialDistribution dist = new BinomialDistribution(5, 0.0d);\r\n    setDistribution(dist);\r\n    setCumulativeTestPoints(new int[] { -1, 0, 1, 5, 10 });\r\n    setCumulativeTestValues(new double[] { 0d, 1d, 1d, 1d, 1d });\r\n    setDensityTestPoints(new int[] { -1, 0, 1, 10, 11 });\r\n    setDensityTestValues(new double[] { 0d, 1d, 0d, 0d, 0d });\r\n    setInverseCumulativeTestPoints(new double[] { 0.1d, 0.5d });\r\n    setInverseCumulativeTestValues(new int[] { 0, 0 });\r\n    verifyDensities();\r\n    verifyCumulativeProbabilities();\r\n    verifyInverseCumulativeProbabilities();\r\n    Assertions.assertEquals(0, dist.getSupportLowerBound());\r\n    Assertions.assertEquals(0, dist.getSupportUpperBound());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\BinomialDistributionTest.java",
+  "methodName" : "testDegenerate1",
+  "sourceCode" : "/**\r\n * Test degenerate case p = 1\r\n */\r\n@Test\r\nvoid testDegenerate1() {\r\n    final BinomialDistribution dist = new BinomialDistribution(5, 1.0d);\r\n    setDistribution(dist);\r\n    setCumulativeTestPoints(new int[] { -1, 0, 1, 2, 5, 10 });\r\n    setCumulativeTestValues(new double[] { 0d, 0d, 0d, 0d, 1d, 1d });\r\n    setDensityTestPoints(new int[] { -1, 0, 1, 2, 5, 10 });\r\n    setDensityTestValues(new double[] { 0d, 0d, 0d, 0d, 1d, 0d });\r\n    setInverseCumulativeTestPoints(new double[] { 0.1d, 0.5d });\r\n    setInverseCumulativeTestValues(new int[] { 5, 5 });\r\n    verifyDensities();\r\n    verifyCumulativeProbabilities();\r\n    verifyInverseCumulativeProbabilities();\r\n    Assertions.assertEquals(5, dist.getSupportLowerBound());\r\n    Assertions.assertEquals(5, dist.getSupportUpperBound());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\BinomialDistributionTest.java",
+  "methodName" : "testDegenerate2",
+  "sourceCode" : "/**\r\n * Test degenerate case n = 0\r\n */\r\n@Test\r\nvoid testDegenerate2() {\r\n    final BinomialDistribution dist = new BinomialDistribution(0, 0.01d);\r\n    setDistribution(dist);\r\n    setCumulativeTestPoints(new int[] { -1, 0, 1, 2, 5, 10 });\r\n    setCumulativeTestValues(new double[] { 0d, 1d, 1d, 1d, 1d, 1d });\r\n    setDensityTestPoints(new int[] { -1, 0, 1, 2, 5, 10 });\r\n    setDensityTestValues(new double[] { 0d, 1d, 0d, 0d, 0d, 0d });\r\n    setInverseCumulativeTestPoints(new double[] { 0.1d, 0.5d });\r\n    setInverseCumulativeTestValues(new int[] { 0, 0 });\r\n    verifyDensities();\r\n    verifyCumulativeProbabilities();\r\n    verifyInverseCumulativeProbabilities();\r\n    Assertions.assertEquals(0, dist.getSupportLowerBound());\r\n    Assertions.assertEquals(0, dist.getSupportUpperBound());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\BinomialDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "@Test\r\nvoid testParameterAccessors() {\r\n    for (final int n : new int[] { 11, 42, 999 }) {\r\n        for (final double p : new double[] { 0.1, 0.456, 0.999 }) {\r\n            final BinomialDistribution dist = new BinomialDistribution(n, p);\r\n            Assertions.assertEquals(n, dist.getNumberOfTrials());\r\n            Assertions.assertEquals(p, dist.getProbabilityOfSuccess());\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\BinomialDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new BinomialDistribution(-1, 0.1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\BinomialDistributionTest.java",
+  "methodName" : "testConstructorPrecondition2",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition2() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new BinomialDistribution(10, -0.1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\BinomialDistributionTest.java",
+  "methodName" : "testConstructorPrecondition3",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition3() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new BinomialDistribution(10, 1.1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\BinomialDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    final double tol = 1e-9;\r\n    BinomialDistribution dist;\r\n    dist = new BinomialDistribution(10, 0.5);\r\n    Assertions.assertEquals(10d * 0.5d, dist.getMean(), tol);\r\n    Assertions.assertEquals(10d * 0.5d * 0.5d, dist.getVariance(), tol);\r\n    dist = new BinomialDistribution(30, 0.3);\r\n    Assertions.assertEquals(30d * 0.3d, dist.getMean(), tol);\r\n    Assertions.assertEquals(30d * 0.3d * (1d - 0.3d), dist.getVariance(), tol);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\BinomialDistributionTest.java",
+  "methodName" : "testMath718",
+  "sourceCode" : "@Test\r\nvoid testMath718() {\r\n    // for large trials the evaluation of ContinuedFraction was inaccurate\r\n    // do a sweep over several large trials to test if the current implementation is\r\n    // numerically stable.\r\n    for (int trials = 500000; trials < 20000000; trials += 100000) {\r\n        final BinomialDistribution dist = new BinomialDistribution(trials, 0.5);\r\n        final int p = dist.inverseCumulativeProbability(0.5);\r\n        Assertions.assertEquals(trials / 2, p);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\CauchyDistributionTest.java",
+  "methodName" : "testInverseCumulativeProbabilityExtremes",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n@Test\r\nvoid testInverseCumulativeProbabilityExtremes() {\r\n    setInverseCumulativeTestPoints(new double[] { 0.0, 1.0 });\r\n    setInverseCumulativeTestValues(new double[] { Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY });\r\n    verifyInverseCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\CauchyDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "@Test\r\nvoid testParameterAccessors() {\r\n    final CauchyDistribution distribution = makeDistribution();\r\n    Assertions.assertEquals(1.2, distribution.getMedian());\r\n    Assertions.assertEquals(2.1, distribution.getScale());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\CauchyDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new CauchyDistribution(0, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\CauchyDistributionTest.java",
+  "methodName" : "testConstructorPrecondition2",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition2() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new CauchyDistribution(0, -1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\CauchyDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    CauchyDistribution dist;\r\n    dist = new CauchyDistribution(10.2, 0.15);\r\n    Assertions.assertTrue(Double.isNaN(dist.getMean()));\r\n    Assertions.assertTrue(Double.isNaN(dist.getVariance()));\r\n    dist = new CauchyDistribution(23.12, 2.12);\r\n    Assertions.assertTrue(Double.isNaN(dist.getMean()));\r\n    Assertions.assertTrue(Double.isNaN(dist.getVariance()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ChiSquaredDistributionTest.java",
+  "methodName" : "testSmallDf",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n@Test\r\nvoid testSmallDf() {\r\n    setDistribution(new ChiSquaredDistribution(0.1d));\r\n    setTolerance(1E-4);\r\n    // quantiles computed using R version 1.8.1 (linux version)\r\n    setCumulativeTestPoints(new double[] { 1.168926E-60, 1.168926E-40, 1.063132E-32, 1.144775E-26, 1.168926E-20, 5.472917, 2.175255, 1.13438, 0.5318646, 0.1526342 });\r\n    setInverseCumulativeTestValues(getCumulativeTestPoints());\r\n    setInverseCumulativeTestPoints(getCumulativeTestValues());\r\n    verifyCumulativeProbabilities();\r\n    verifyInverseCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ChiSquaredDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "@Test\r\nvoid testParameterAccessors() {\r\n    final ChiSquaredDistribution distribution = makeDistribution();\r\n    Assertions.assertEquals(5d, distribution.getDegreesOfFreedom());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ChiSquaredDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new ChiSquaredDistribution(0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ChiSquaredDistributionTest.java",
+  "methodName" : "testConstructorPrecondition2",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition2() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new ChiSquaredDistribution(-1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ChiSquaredDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    final double tol = 1e-9;\r\n    ChiSquaredDistribution dist;\r\n    dist = new ChiSquaredDistribution(1500);\r\n    Assertions.assertEquals(1500, dist.getMean(), tol);\r\n    Assertions.assertEquals(3000, dist.getVariance(), tol);\r\n    dist = new ChiSquaredDistribution(1.12);\r\n    Assertions.assertEquals(1.12, dist.getMean(), tol);\r\n    Assertions.assertEquals(2.24, dist.getVariance(), tol);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ChiSquaredDistributionTest.java",
+  "methodName" : "testDensity",
+  "sourceCode" : "@Test\r\nvoid testDensity() {\r\n    final double[] x = new double[] { -0.1, 1e-6, 0.5, 1, 2, 5 };\r\n    //R 2.5: print(dchisq(x, df=1), digits=10)\r\n    checkDensity(1, x, new double[] { 0.00000000000, 398.94208093034, 0.43939128947, 0.24197072452, 0.10377687436, 0.01464498256 });\r\n    //R 2.5: print(dchisq(x, df=0.1), digits=10)\r\n    checkDensity(0.1, x, new double[] { 0.000000000e+00, 2.486453997e+04, 7.464238732e-02, 3.009077718e-02, 9.447299159e-03, 8.827199396e-04 });\r\n    //R 2.5: print(dchisq(x, df=2), digits=10)\r\n    checkDensity(2, x, new double[] { 0.00000000000, 0.49999975000, 0.38940039154, 0.30326532986, 0.18393972059, 0.04104249931 });\r\n    //R 2.5: print(dchisq(x, df=10), digits=10)\r\n    checkDensity(10, x, new double[] { 0.000000000e+00, 1.302082682e-27, 6.337896998e-05, 7.897534632e-04, 7.664155024e-03, 6.680094289e-02 });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ConstantContinuousDistributionTest.java",
+  "methodName" : "testInverseCumulativeProbabilities",
+  "sourceCode" : "/**\r\n * Override default test, verifying that inverse cum is constant\r\n */\r\n@Override\r\n@Test\r\nvoid testInverseCumulativeProbabilities() {\r\n    final ContinuousDistribution dist = getDistribution();\r\n    for (final double x : getCumulativeTestValues()) {\r\n        Assertions.assertEquals(1, dist.inverseCumulativeProbability(x));\r\n    }\r\n}",
+  "annotations" : [ "Override", "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ConstantContinuousDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n@Test\r\nvoid testMoments() {\r\n    ConstantContinuousDistribution dist;\r\n    dist = new ConstantContinuousDistribution(-1);\r\n    Assertions.assertEquals(-1, dist.getMean());\r\n    Assertions.assertEquals(0, dist.getVariance());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ConstantContinuousDistributionTest.java",
+  "methodName" : "testSampler",
+  "sourceCode" : "@Test\r\n@Override\r\nvoid testSampler() {\r\n    final double value = 12.345;\r\n    final ContinuousDistribution.Sampler sampler = new ConstantContinuousDistribution(value).createSampler(null);\r\n    for (int i = 0; i < 10; i++) {\r\n        Assertions.assertEquals(value, sampler.sample());\r\n    }\r\n}",
+  "annotations" : [ "Test", "Override" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ContinuousDistributionAbstractTest.java",
+  "methodName" : "testCumulativeProbabilities",
+  "sourceCode" : "//------------------------ Default test cases -----------------------------\r\n/**\r\n * Verifies that cumulative probability density calculations match expected values\r\n * using default test instance data\r\n */\r\n@Test\r\nvoid testCumulativeProbabilities() {\r\n    verifyCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ContinuousDistributionAbstractTest.java",
+  "methodName" : "testInverseCumulativeProbabilities",
+  "sourceCode" : "/**\r\n * Verifies that inverse cumulative probability density calculations match expected values\r\n * using default test instance data\r\n */\r\n@Test\r\nvoid testInverseCumulativeProbabilities() {\r\n    verifyInverseCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ContinuousDistributionAbstractTest.java",
+  "methodName" : "testDensities",
+  "sourceCode" : "/**\r\n * Verifies that density calculations return expected values\r\n * for default test instance data\r\n */\r\n@Test\r\nvoid testDensities() {\r\n    verifyDensities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ContinuousDistributionAbstractTest.java",
+  "methodName" : "testLogDensities",
+  "sourceCode" : "/**\r\n * Verifies that logarithmic density calculations return expected values\r\n * for default test instance data\r\n */\r\n@Test\r\nvoid testLogDensities() {\r\n    verifyLogDensities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ContinuousDistributionAbstractTest.java",
+  "methodName" : "testConsistency",
+  "sourceCode" : "/**\r\n * Verifies that probability computations are consistent\r\n */\r\n@Test\r\nvoid testConsistency() {\r\n    for (int i = 1; i < cumulativeTestPoints.length; i++) {\r\n        // check that cdf(x, x) = 0\r\n        TestUtils.assertEquals(0d, distribution.probability(cumulativeTestPoints[i], cumulativeTestPoints[i]), tolerance);\r\n        // check that P(a < X <= b) = P(X <= b) - P(X <= a)\r\n        final double upper = Math.max(cumulativeTestPoints[i], cumulativeTestPoints[i - 1]);\r\n        final double lower = Math.min(cumulativeTestPoints[i], cumulativeTestPoints[i - 1]);\r\n        final double diff = distribution.cumulativeProbability(upper) - distribution.cumulativeProbability(lower);\r\n        final double direct = distribution.probability(lower, upper);\r\n        TestUtils.assertEquals(\"Inconsistent probability for (\" + lower + \",\" + upper + \")\", diff, direct, tolerance);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ContinuousDistributionAbstractTest.java",
+  "methodName" : "testPrecondition1",
+  "sourceCode" : "/**\r\n * Verifies that illegal arguments are correctly handled\r\n */\r\n@Test\r\nvoid testPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> distribution.probability(1, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ContinuousDistributionAbstractTest.java",
+  "methodName" : "testPrecondition2",
+  "sourceCode" : "@Test\r\nvoid testPrecondition2() {\r\n    Assertions.assertThrows(DistributionException.class, () -> distribution.inverseCumulativeProbability(-1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ContinuousDistributionAbstractTest.java",
+  "methodName" : "testPrecondition3",
+  "sourceCode" : "@Test\r\nvoid testPrecondition3() {\r\n    Assertions.assertThrows(DistributionException.class, () -> distribution.inverseCumulativeProbability(2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ContinuousDistributionAbstractTest.java",
+  "methodName" : "testOutsideSupport",
+  "sourceCode" : "@Test\r\nvoid testOutsideSupport() {\r\n    // Test various quantities when the variable is outside the support.\r\n    final double lo = distribution.getSupportLowerBound();\r\n    final double hi = distribution.getSupportUpperBound();\r\n    final double below = lo - Math.ulp(lo);\r\n    final double above = hi + Math.ulp(hi);\r\n    Assertions.assertEquals(0d, distribution.density(below));\r\n    Assertions.assertEquals(0d, distribution.density(above));\r\n    Assertions.assertEquals(Double.NEGATIVE_INFINITY, distribution.logDensity(below));\r\n    Assertions.assertEquals(Double.NEGATIVE_INFINITY, distribution.logDensity(above));\r\n    Assertions.assertEquals(0d, distribution.cumulativeProbability(below));\r\n    Assertions.assertEquals(1d, distribution.cumulativeProbability(above));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ContinuousDistributionAbstractTest.java",
+  "methodName" : "testSampler",
+  "sourceCode" : "/**\r\n * Test sampling\r\n */\r\n@Test\r\nvoid testSampler() {\r\n    final int sampleSize = 1000;\r\n    final ContinuousDistribution.Sampler sampler = distribution.createSampler(RandomSource.create(RandomSource.WELL_19937_C, 123456789L));\r\n    final double[] sample = AbstractContinuousDistribution.sample(sampleSize, sampler);\r\n    final double[] quartiles = TestUtils.getDistributionQuartiles(distribution);\r\n    final double[] expected = { 250, 250, 250, 250 };\r\n    final long[] counts = new long[4];\r\n    for (int i = 0; i < sampleSize; i++) {\r\n        TestUtils.updateCounts(sample[i], counts, quartiles);\r\n    }\r\n    TestUtils.assertChiSquareAccept(expected, counts, 0.001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ContinuousDistributionAbstractTest.java",
+  "methodName" : "testDensityIntegrals",
+  "sourceCode" : "/**\r\n * Verify that density integrals match the distribution.\r\n * The (filtered, sorted) cumulativeTestPoints array is used to source\r\n * integration limits. The integral of the density (estimated using a\r\n * Legendre-Gauss integrator) is compared with the cdf over the same\r\n * interval. Test points outside of the domain of the density function\r\n * are discarded.\r\n */\r\n@Test\r\nvoid testDensityIntegrals() {\r\n    final double tol = 1e-9;\r\n    final BaseAbstractUnivariateIntegrator integrator = new IterativeLegendreGaussIntegrator(5, 1e-12, 1e-10);\r\n    final UnivariateFunction d = new UnivariateFunction() {\r\n\r\n        @Override\r\n        public double value(double x) {\r\n            return distribution.density(x);\r\n        }\r\n    };\r\n    final ArrayList<Double> integrationTestPoints = new ArrayList<>();\r\n    for (int i = 0; i < cumulativeTestPoints.length; i++) {\r\n        if (Double.isNaN(cumulativeTestValues[i]) || cumulativeTestValues[i] < 1e-5 || cumulativeTestValues[i] > 1 - 1e-5) {\r\n            // exclude integrals outside domain.\r\n            continue;\r\n        }\r\n        integrationTestPoints.add(cumulativeTestPoints[i]);\r\n    }\r\n    Collections.sort(integrationTestPoints);\r\n    for (int i = 1; i < integrationTestPoints.size(); i++) {\r\n        Assertions.assertEquals(distribution.probability(integrationTestPoints.get(0), integrationTestPoints.get(i)), // Triangle integrals are very slow to converge\r\n        integrator.// Triangle integrals are very slow to converge\r\n        integrate(// Triangle integrals are very slow to converge\r\n        1000000, d, integrationTestPoints.get(0), integrationTestPoints.get(i)), tol);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ContinuousDistributionAbstractTest.java",
+  "methodName" : "testIsSupportConnected",
+  "sourceCode" : "/**\r\n * Test if the distribution is support connected. This test exists to ensure the support\r\n * connected property is tested. This may be evaluated in the default implementation\r\n * of {@link AbstractContinuousDistribution#inverseCumulativeProbability(double)}\r\n * depending on the data points used to test the distribution (see\r\n * {@link #makeInverseCumulativeTestPoints()}). If this default method has been overridden\r\n * then the support connected property is not used elsewhere in the standard tests.\r\n */\r\n@Test\r\nvoid testIsSupportConnected() {\r\n    Assertions.assertEquals(isSupportConnected(), distribution.isSupportConnected());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ContinuousDistributionTest.java",
+  "methodName" : "testDefaultMethods",
+  "sourceCode" : "/**\r\n * Test the default interface methods.\r\n */\r\n@Test\r\nvoid testDefaultMethods() {\r\n    final double high = 0.54;\r\n    final double low = 0.313;\r\n    final ContinuousDistribution dist = new ContinuousDistribution() {\r\n\r\n        @Override\r\n        public boolean isSupportConnected() {\r\n            return false;\r\n        }\r\n\r\n        @Override\r\n        public double inverseCumulativeProbability(double p) {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public double getVariance() {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public double getSupportUpperBound() {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public double getSupportLowerBound() {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public double getMean() {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public double density(double x) {\r\n            // Return input value for testing\r\n            return x;\r\n        }\r\n\r\n        @Override\r\n        public double cumulativeProbability(double x) {\r\n            // For the default probability(double, double) method\r\n            return x > 1 ? high : low;\r\n        }\r\n\r\n        @Override\r\n        public Sampler createSampler(UniformRandomProvider rng) {\r\n            return null;\r\n        }\r\n    };\r\n    for (final double x : new double[] { Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, 0, 1, 0.123 }) {\r\n        // Always zero\r\n        Assertions.assertEquals(0, dist.probability(x));\r\n        // Return the log of the density\r\n        Assertions.assertEquals(Math.log(x), dist.logDensity(x));\r\n    }\r\n    // Should throw for bad range\r\n    Assertions.assertThrows(DistributionException.class, () -> dist.probability(0.5, 0.4));\r\n    Assertions.assertEquals(high - low, dist.probability(0.5, 1.5));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\DiscreteDistributionAbstractTest.java",
+  "methodName" : "testDensities",
+  "sourceCode" : "//------------------------ Default test cases -----------------------------\r\n/**\r\n * Verifies that probability density calculations match expected values\r\n * using default test instance data\r\n */\r\n@Test\r\nvoid testDensities() {\r\n    verifyDensities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\DiscreteDistributionAbstractTest.java",
+  "methodName" : "testLogDensities",
+  "sourceCode" : "/**\r\n * Verifies that logarithmic probability density calculations match expected values\r\n * using default test instance data\r\n */\r\n@Test\r\nvoid testLogDensities() {\r\n    verifyLogDensities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\DiscreteDistributionAbstractTest.java",
+  "methodName" : "testCumulativeProbabilities",
+  "sourceCode" : "/**\r\n * Verifies that cumulative probability density calculations match expected values\r\n * using default test instance data\r\n */\r\n@Test\r\nvoid testCumulativeProbabilities() {\r\n    verifyCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\DiscreteDistributionAbstractTest.java",
+  "methodName" : "testInverseCumulativeProbabilities",
+  "sourceCode" : "/**\r\n * Verifies that inverse cumulative probability density calculations match expected values\r\n * using default test instance data\r\n */\r\n@Test\r\nvoid testInverseCumulativeProbabilities() {\r\n    verifyInverseCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\DiscreteDistributionAbstractTest.java",
+  "methodName" : "testConsistencyAtSupportBounds",
+  "sourceCode" : "@Test\r\nvoid testConsistencyAtSupportBounds() {\r\n    final int lower = distribution.getSupportLowerBound();\r\n    Assertions.assertEquals(0.0, distribution.cumulativeProbability(lower - 1), 0.0, \"Cumulative probability mmust be 0 below support lower bound.\");\r\n    Assertions.assertEquals(distribution.probability(lower), distribution.cumulativeProbability(lower), getTolerance(), \"Cumulative probability of support lower bound must be equal to probability mass at this point.\");\r\n    Assertions.assertEquals(lower, distribution.inverseCumulativeProbability(0.0), \"Inverse cumulative probability of 0 must be equal to support lower bound.\");\r\n    final int upper = distribution.getSupportUpperBound();\r\n    if (upper != Integer.MAX_VALUE) {\r\n        Assertions.assertEquals(1.0, distribution.cumulativeProbability(upper), 0.0, \"Cumulative probability of support upper bound must be equal to 1.\");\r\n    }\r\n    Assertions.assertEquals(upper, distribution.inverseCumulativeProbability(1.0), \"Inverse cumulative probability of 1 must be equal to support upper bound.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\DiscreteDistributionAbstractTest.java",
+  "methodName" : "testPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> distribution.probability(1, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\DiscreteDistributionAbstractTest.java",
+  "methodName" : "testPrecondition2",
+  "sourceCode" : "@Test\r\nvoid testPrecondition2() {\r\n    Assertions.assertThrows(DistributionException.class, () -> distribution.inverseCumulativeProbability(-1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\DiscreteDistributionAbstractTest.java",
+  "methodName" : "testPrecondition3",
+  "sourceCode" : "@Test\r\nvoid testPrecondition3() {\r\n    Assertions.assertThrows(DistributionException.class, () -> distribution.inverseCumulativeProbability(2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\DiscreteDistributionAbstractTest.java",
+  "methodName" : "testSampling",
+  "sourceCode" : "/**\r\n * Test sampling\r\n */\r\n@Test\r\nvoid testSampling() {\r\n    final int[] densityPoints = makeDensityTestPoints();\r\n    final double[] densityValues = makeDensityTestValues();\r\n    final int sampleSize = 1000;\r\n    final int length = TestUtils.eliminateZeroMassPoints(densityPoints, densityValues);\r\n    final AbstractDiscreteDistribution dist = (AbstractDiscreteDistribution) makeDistribution();\r\n    final double[] expectedCounts = new double[length];\r\n    final long[] observedCounts = new long[length];\r\n    for (int i = 0; i < length; i++) {\r\n        expectedCounts[i] = sampleSize * densityValues[i];\r\n    }\r\n    // Use fixed seed.\r\n    final DiscreteDistribution.Sampler sampler = dist.createSampler(RandomSource.create(RandomSource.WELL_512_A, 1000));\r\n    final int[] sample = AbstractDiscreteDistribution.sample(sampleSize, sampler);\r\n    for (int i = 0; i < sampleSize; i++) {\r\n        for (int j = 0; j < length; j++) {\r\n            if (sample[i] == densityPoints[j]) {\r\n                observedCounts[j]++;\r\n            }\r\n        }\r\n    }\r\n    TestUtils.assertChiSquareAccept(densityPoints, expectedCounts, observedCounts, .001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\DiscreteDistributionAbstractTest.java",
+  "methodName" : "testIsSupportConnected",
+  "sourceCode" : "/**\r\n * Test if the distribution is support connected. This test exists to ensure the support\r\n * connected property is tested.\r\n */\r\n@Test\r\nvoid testIsSupportConnected() {\r\n    Assertions.assertEquals(isSupportConnected(), distribution.isSupportConnected());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\DiscreteDistributionTest.java",
+  "methodName" : "testDefaultMethods",
+  "sourceCode" : "/**\r\n * Test the default interface methods.\r\n */\r\n@Test\r\nvoid testDefaultMethods() {\r\n    final DiscreteDistribution dist = new DiscreteDistribution() {\r\n\r\n        @Override\r\n        public double probability(int x) {\r\n            return x;\r\n        }\r\n\r\n        @Override\r\n        public double probability(int x0, int x1) {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public double cumulativeProbability(int x) {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public int inverseCumulativeProbability(double p) {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public double getMean() {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public double getVariance() {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public int getSupportLowerBound() {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public int getSupportUpperBound() {\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public boolean isSupportConnected() {\r\n            return false;\r\n        }\r\n\r\n        @Override\r\n        public Sampler createSampler(UniformRandomProvider rng) {\r\n            return null;\r\n        }\r\n    };\r\n    for (final int x : new int[] { Integer.MIN_VALUE, -1, 0, 1, 2, Integer.MAX_VALUE }) {\r\n        // Return the log of the density\r\n        Assertions.assertEquals(Math.log(x), dist.logProbability(x));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ExponentialDistributionTest.java",
+  "methodName" : "testCumulativeProbabilityExtremes",
+  "sourceCode" : "//------------ Additional tests -------------------------------------------\r\n@Test\r\nvoid testCumulativeProbabilityExtremes() {\r\n    setCumulativeTestPoints(new double[] { -2, 0 });\r\n    setCumulativeTestValues(new double[] { 0, 0 });\r\n    verifyCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ExponentialDistributionTest.java",
+  "methodName" : "testInverseCumulativeProbabilityExtremes",
+  "sourceCode" : "@Test\r\nvoid testInverseCumulativeProbabilityExtremes() {\r\n    setInverseCumulativeTestPoints(new double[] { 0, 1 });\r\n    setInverseCumulativeTestValues(new double[] { 0, Double.POSITIVE_INFINITY });\r\n    verifyInverseCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ExponentialDistributionTest.java",
+  "methodName" : "testCumulativeProbability2",
+  "sourceCode" : "@Test\r\nvoid testCumulativeProbability2() {\r\n    final double actual = getDistribution().probability(0.25, 0.75);\r\n    Assertions.assertEquals(0.0905214, actual, 10e-4);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ExponentialDistributionTest.java",
+  "methodName" : "testDensity",
+  "sourceCode" : "@Test\r\nvoid testDensity() {\r\n    final ExponentialDistribution d1 = new ExponentialDistribution(1);\r\n    Assertions.assertTrue(Precision.equals(0.0, d1.density(-1e-9), 1));\r\n    Assertions.assertTrue(Precision.equals(1.0, d1.density(0.0), 1));\r\n    Assertions.assertTrue(Precision.equals(0.0, d1.density(1000.0), 1));\r\n    Assertions.assertTrue(Precision.equals(Math.exp(-1), d1.density(1.0), 1));\r\n    Assertions.assertTrue(Precision.equals(Math.exp(-2), d1.density(2.0), 1));\r\n    final ExponentialDistribution d2 = new ExponentialDistribution(3);\r\n    Assertions.assertTrue(Precision.equals(1 / 3.0, d2.density(0.0), 1));\r\n    // computed using  print(dexp(1, rate=1/3), digits=10) in R 2.5\r\n    Assertions.assertEquals(0.2388437702, d2.density(1.0), 1e-8);\r\n    // computed using  print(dexp(2, rate=1/3), digits=10) in R 2.5\r\n    Assertions.assertEquals(0.1711390397, d2.density(2.0), 1e-8);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ExponentialDistributionTest.java",
+  "methodName" : "testMeanAccessors",
+  "sourceCode" : "@Test\r\nvoid testMeanAccessors() {\r\n    final ExponentialDistribution distribution = makeDistribution();\r\n    Assertions.assertEquals(5d, distribution.getMean());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ExponentialDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new ExponentialDistribution(0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ExponentialDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    final double tol = 1e-9;\r\n    ExponentialDistribution dist;\r\n    dist = new ExponentialDistribution(11d);\r\n    Assertions.assertEquals(11d, dist.getMean(), tol);\r\n    Assertions.assertEquals(11d * 11d, dist.getVariance(), tol);\r\n    dist = new ExponentialDistribution(10.5d);\r\n    Assertions.assertEquals(10.5d, dist.getMean(), tol);\r\n    Assertions.assertEquals(10.5d * 10.5d, dist.getVariance(), tol);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\FDistributionTest.java",
+  "methodName" : "testCumulativeProbabilityExtremes",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n@Test\r\nvoid testCumulativeProbabilityExtremes() {\r\n    setCumulativeTestPoints(new double[] { -2, 0 });\r\n    setCumulativeTestValues(new double[] { 0, 0 });\r\n    verifyCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\FDistributionTest.java",
+  "methodName" : "testInverseCumulativeProbabilityExtremes",
+  "sourceCode" : "@Test\r\nvoid testInverseCumulativeProbabilityExtremes() {\r\n    setInverseCumulativeTestPoints(new double[] { 0, 1 });\r\n    setInverseCumulativeTestValues(new double[] { 0, Double.POSITIVE_INFINITY });\r\n    verifyInverseCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\FDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "@Test\r\nvoid testParameterAccessors() {\r\n    final FDistribution dist = makeDistribution();\r\n    Assertions.assertEquals(5d, dist.getNumeratorDegreesOfFreedom());\r\n    Assertions.assertEquals(6d, dist.getDenominatorDegreesOfFreedom());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\FDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new FDistribution(0, 1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\FDistributionTest.java",
+  "methodName" : "testConstructorPrecondition2",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition2() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new FDistribution(1, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\FDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    final double tol = 1e-9;\r\n    FDistribution dist;\r\n    dist = new FDistribution(1, 2);\r\n    Assertions.assertTrue(Double.isNaN(dist.getMean()));\r\n    Assertions.assertTrue(Double.isNaN(dist.getVariance()));\r\n    dist = new FDistribution(1, 3);\r\n    Assertions.assertEquals(3d / (3d - 2d), dist.getMean(), tol);\r\n    Assertions.assertTrue(Double.isNaN(dist.getVariance()));\r\n    dist = new FDistribution(1, 5);\r\n    Assertions.assertEquals(5d / (5d - 2d), dist.getMean(), tol);\r\n    Assertions.assertEquals((2d * 5d * 5d * 4d) / 9d, dist.getVariance(), tol);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\FDistributionTest.java",
+  "methodName" : "testLargeDegreesOfFreedom",
+  "sourceCode" : "@Test\r\nvoid testLargeDegreesOfFreedom() {\r\n    final FDistribution fd = new FDistribution(100000, 100000);\r\n    final double p = fd.cumulativeProbability(.999);\r\n    final double x = fd.inverseCumulativeProbability(p);\r\n    Assertions.assertEquals(.999, x, 1.0e-5);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\FDistributionTest.java",
+  "methodName" : "testSmallDegreesOfFreedom",
+  "sourceCode" : "@Test\r\nvoid testSmallDegreesOfFreedom() {\r\n    FDistribution fd = new FDistribution(1, 1);\r\n    double p = fd.cumulativeProbability(0.975);\r\n    double x = fd.inverseCumulativeProbability(p);\r\n    Assertions.assertEquals(0.975, x, 1.0e-5);\r\n    fd = new FDistribution(1, 2);\r\n    p = fd.cumulativeProbability(0.975);\r\n    x = fd.inverseCumulativeProbability(p);\r\n    Assertions.assertEquals(0.975, x, 1.0e-5);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\FDistributionTest.java",
+  "methodName" : "testMath785",
+  "sourceCode" : "@Test\r\nvoid testMath785() {\r\n    // this test was failing due to inaccurate results from ContinuedFraction.\r\n    final double prob = 0.01;\r\n    final FDistribution f = new FDistribution(200000, 200000);\r\n    final double result = f.inverseCumulativeProbability(prob);\r\n    Assertions.assertTrue(result < 1.0, \"Failing to calculate inverse cumulative probability\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GammaDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n@Test\r\nvoid testParameterAccessors() {\r\n    final GammaDistribution distribution = makeDistribution();\r\n    Assertions.assertEquals(4d, distribution.getShape());\r\n    Assertions.assertEquals(2d, distribution.getScale());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GammaDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new GammaDistribution(0, 1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GammaDistributionTest.java",
+  "methodName" : "testConstructorPrecondition2",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition2() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new GammaDistribution(1, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GammaDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    final double tol = 1e-9;\r\n    GammaDistribution dist;\r\n    dist = new GammaDistribution(1, 2);\r\n    Assertions.assertEquals(2, dist.getMean(), tol);\r\n    Assertions.assertEquals(4, dist.getVariance(), tol);\r\n    dist = new GammaDistribution(1.1, 4.2);\r\n    Assertions.assertEquals(1.1d * 4.2d, dist.getMean(), tol);\r\n    Assertions.assertEquals(1.1d * 4.2d * 4.2d, dist.getVariance(), tol);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GammaDistributionTest.java",
+  "methodName" : "testProbabilities",
+  "sourceCode" : "@Test\r\nvoid testProbabilities() {\r\n    testProbability(-1.000, 4.0, 2.0, .0000);\r\n    testProbability(15.501, 4.0, 2.0, .9499);\r\n    testProbability(0.504, 4.0, 1.0, .0018);\r\n    testProbability(10.011, 1.0, 2.0, .9933);\r\n    testProbability(5.000, 2.0, 2.0, .7127);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GammaDistributionTest.java",
+  "methodName" : "testValues",
+  "sourceCode" : "@Test\r\nvoid testValues() {\r\n    testValue(15.501, 4.0, 2.0, .9499);\r\n    testValue(0.504, 4.0, 1.0, .0018);\r\n    testValue(10.011, 1.0, 2.0, .9933);\r\n    testValue(5.000, 2.0, 2.0, .7127);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GammaDistributionTest.java",
+  "methodName" : "testDensity",
+  "sourceCode" : "@Test\r\nvoid testDensity() {\r\n    final double[] x = new double[] { -0.1, 1e-6, 0.5, 1, 2, 5 };\r\n    // R2.5: print(dgamma(x, shape=1, rate=1), digits=10)\r\n    checkDensity(1, 1, x, new double[] { 0.000000000000, 0.999999000001, 0.606530659713, 0.367879441171, 0.135335283237, 0.006737946999 });\r\n    // R2.5: print(dgamma(x, shape=2, rate=1), digits=10)\r\n    checkDensity(2, 1, x, new double[] { 0.000000000000, 0.000000999999, 0.303265329856, 0.367879441171, 0.270670566473, 0.033689734995 });\r\n    // R2.5: print(dgamma(x, shape=4, rate=1), digits=10)\r\n    checkDensity(4, 1, x, new double[] { 0.000000000e+00, 1.666665000e-19, 1.263605541e-02, 6.131324020e-02, 1.804470443e-01, 1.403738958e-01 });\r\n    // R2.5: print(dgamma(x, shape=4, rate=10), digits=10)\r\n    checkDensity(4, 10, x, new double[] { 0.000000000e+00, 1.666650000e-15, 1.403738958e+00, 7.566654960e-02, 2.748204830e-05, 4.018228850e-17 });\r\n    // R2.5: print(dgamma(x, shape=.1, rate=10), digits=10)\r\n    checkDensity(0.1, 10, x, new double[] { 0.000000000e+00, 3.323953832e+04, 1.663849010e-03, 6.007786726e-06, 1.461647647e-10, 5.996008322e-24 });\r\n    // R2.5: print(dgamma(x, shape=.1, rate=20), digits=10)\r\n    checkDensity(0.1, 20, x, new double[] { 0.000000000e+00, 3.562489883e+04, 1.201557345e-05, 2.923295295e-10, 3.228910843e-19, 1.239484589e-45 });\r\n    // R2.5: print(dgamma(x, shape=.1, rate=4), digits=10)\r\n    checkDensity(0.1, 4, x, new double[] { 0.000000000e+00, 3.032938388e+04, 3.049322494e-02, 2.211502311e-03, 2.170613371e-05, 5.846590589e-11 });\r\n    // R2.5: print(dgamma(x, shape=.1, rate=1), digits=10)\r\n    checkDensity(0.1, 1, x, new double[] { 0.000000000e+00, 2.640334143e+04, 1.189704437e-01, 3.866916944e-02, 7.623306235e-03, 1.663849010e-04 });\r\n    // To force overflow condition\r\n    // R2.5: print(dgamma(x, shape=1000, rate=100), digits=10)\r\n    checkDensity(1000, 100, x, new double[] { 0.000000000e+00, 0.000000000e+00, 0.000000000e+00, 0.000000000e+00, 0.000000000e+00, 3.304830256e-84 });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GammaDistributionTest.java",
+  "methodName" : "testLogDensity",
+  "sourceCode" : "@Test\r\nvoid testLogDensity() {\r\n    final double[] x = new double[] { -0.1, 1e-6, 0.5, 1, 2, 5 };\r\n    final double inf = Double.POSITIVE_INFINITY;\r\n    // R2.5: print(dgamma(x, shape=1, rate=1, log=TRUE), digits=10)\r\n    checkLogDensity(1, 1, x, new double[] { -inf, -1e-06, -5e-01, -1e+00, -2e+00, -5e+00 });\r\n    // R2.5: print(dgamma(x, shape=2, rate=1, log=TRUE), digits=10)\r\n    checkLogDensity(2, 1, x, new double[] { -inf, -13.815511558, -1.193147181, -1.000000000, -1.306852819, -3.390562088 });\r\n    // R2.5: print(dgamma(x, shape=4, rate=1, log=TRUE), digits=10)\r\n    checkLogDensity(4, 1, x, new double[] { -inf, -43.238292143, -4.371201011, -2.791759469, -1.712317928, -1.963445732 });\r\n    // R2.5: print(dgamma(x, shape=4, rate=10, log=TRUE), digits=10)\r\n    checkLogDensity(4, 10, x, new double[] { -inf, -34.0279607711, 0.3391393611, -2.5814190973, -10.5019775556, -37.7531053599 });\r\n    // R2.5: print(dgamma(x, shape=.1, rate=10, log=TRUE), digits=10)\r\n    checkLogDensity(0.1, 10, x, new double[] { -inf, 10.41149536, -6.39862168, -12.02245414, -22.64628660, -53.47094826 });\r\n    // R2.5: print(dgamma(x, shape=.1, rate=20, log=TRUE), digits=10)\r\n    checkLogDensity(0.1, 20, x, new double[] { -inf, 10.48080008, -11.32930696, -21.95313942, -42.57697189, -103.40163355 });\r\n    // R2.5: print(dgamma(x, shape=.1, rate=4, log=TRUE), digits=10)\r\n    checkLogDensity(0.1, 4, x, new double[] { -inf, 10.319872287, -3.490250753, -6.114083216, -10.737915678, -23.562577337 });\r\n    // R2.5: print(dgamma(x, shape=.1, rate=1, log=TRUE), digits=10)\r\n    checkLogDensity(0.1, 1, x, new double[] { -inf, 10.181245850, -2.128880189, -3.252712652, -4.876545114, -8.701206773 });\r\n    // To force overflow condition\r\n    // R2.5: print(dgamma(x, shape=1000, rate=100, log=TRUE), digits=10)\r\n    checkLogDensity(1000, 100, x, new double[] { -inf, -15101.7453846, -2042.5042706, -1400.0502372, -807.5962038, -192.2217627 });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GammaDistributionTest.java",
+  "methodName" : "testInverseCumulativeProbabilityExtremes",
+  "sourceCode" : "@Test\r\nvoid testInverseCumulativeProbabilityExtremes() {\r\n    setInverseCumulativeTestPoints(new double[] { 0, 1 });\r\n    setInverseCumulativeTestValues(new double[] { 0, Double.POSITIVE_INFINITY });\r\n    verifyInverseCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GammaDistributionTest.java",
+  "methodName" : "testMath753Shape1",
+  "sourceCode" : "@Test\r\nvoid testMath753Shape1() throws IOException {\r\n    doTestMath753(1.0, 1.5, 0.5, 0.0, 0.0, \"gamma-distribution-shape-1.csv\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GammaDistributionTest.java",
+  "methodName" : "testMath753Shape8",
+  "sourceCode" : "@Test\r\nvoid testMath753Shape8() throws IOException {\r\n    doTestMath753(8.0, 1.5, 1.0, 0.0, 0.0, \"gamma-distribution-shape-8.csv\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GammaDistributionTest.java",
+  "methodName" : "testMath753Shape10",
+  "sourceCode" : "@Test\r\nvoid testMath753Shape10() throws IOException {\r\n    doTestMath753(10.0, 1.0, 1.0, 0.0, 0.0, \"gamma-distribution-shape-10.csv\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GammaDistributionTest.java",
+  "methodName" : "testMath753Shape100",
+  "sourceCode" : "@Test\r\nvoid testMath753Shape100() throws IOException {\r\n    // XXX Increased tolerance (\"1.5\" -> \"2.0\") to make test pass with JDK \"Math\"\r\n    // where CM used \"FastMath\" (cf. \"XXX\" comment in main source code).\r\n    doTestMath753(100.0, 2.0, 1.0, 0.0, 0.0, \"gamma-distribution-shape-100.csv\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GammaDistributionTest.java",
+  "methodName" : "testMath753Shape142",
+  "sourceCode" : "@Test\r\nvoid testMath753Shape142() throws IOException {\r\n    doTestMath753(142.0, 3.3, 1.6, 40.0, 40.0, \"gamma-distribution-shape-142.csv\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GammaDistributionTest.java",
+  "methodName" : "testMath753Shape1000",
+  "sourceCode" : "@Test\r\nvoid testMath753Shape1000() throws IOException {\r\n    // XXX Increased tolerance (\"220.0\" -> \"230.0\") to make test pass with JDK \"Math\"\r\n    // where CM used \"FastMath\" (cf. \"XXX\" comment in main source code).\r\n    doTestMath753(1000.0, 1.0, 1.0, 160.0, 230.0, \"gamma-distribution-shape-1000.csv\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GeometricDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n@Test\r\nvoid testParameterAccessors() {\r\n    for (final double x : new double[] { 0.1, 0.456, 0.999 }) {\r\n        final GeometricDistribution dist = new GeometricDistribution(x);\r\n        Assertions.assertEquals(x, dist.getProbabilityOfSuccess());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GeometricDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new GeometricDistribution(-0.1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GeometricDistributionTest.java",
+  "methodName" : "testConstructorPrecondition2",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition2() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new GeometricDistribution(1.1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GeometricDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    final double tol = 1e-9;\r\n    GeometricDistribution dist;\r\n    dist = new GeometricDistribution(0.5);\r\n    Assertions.assertEquals((1.0d - 0.5d) / 0.5d, dist.getMean(), tol);\r\n    Assertions.assertEquals((1.0d - 0.5d) / (0.5d * 0.5d), dist.getVariance(), tol);\r\n    dist = new GeometricDistribution(0.3);\r\n    Assertions.assertEquals((1.0d - 0.3d) / 0.3d, dist.getMean(), tol);\r\n    Assertions.assertEquals((1.0d - 0.3d) / (0.3d * 0.3d), dist.getVariance(), tol);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GumbelDistributionTest.java",
+  "methodName" : "testInverseCumulativeProbabilityExtremes",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n@Test\r\nvoid testInverseCumulativeProbabilityExtremes() {\r\n    setInverseCumulativeTestPoints(new double[] { 0.0, 1.0 });\r\n    setInverseCumulativeTestValues(new double[] { Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY });\r\n    verifyInverseCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GumbelDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "@Test\r\nvoid testParameterAccessors() {\r\n    final GumbelDistribution d = makeDistribution();\r\n    Assertions.assertEquals(0.5, d.getLocation());\r\n    Assertions.assertEquals(2, d.getScale());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GumbelDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new GumbelDistribution(10, -0.1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GumbelDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    final double tol = 1e-9;\r\n    GumbelDistribution dist;\r\n    dist = new GumbelDistribution(10, 0.5);\r\n    Assertions.assertEquals(10 + (Math.PI / (2 * Math.E)) * 0.5, dist.getMean(), tol);\r\n    Assertions.assertEquals((Math.PI * Math.PI / 6) * 0.5 * 0.5, dist.getVariance(), tol);\r\n    dist = new GumbelDistribution(30, 0.3);\r\n    Assertions.assertEquals(30 + (Math.PI / (2 * Math.E)) * 0.3, dist.getMean(), tol);\r\n    Assertions.assertEquals((Math.PI * Math.PI / 6) * 0.3 * 0.3, dist.getVariance(), tol);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\GumbelDistributionTest.java",
+  "methodName" : "testSupport",
+  "sourceCode" : "@Test\r\nvoid testSupport() {\r\n    final GumbelDistribution d = makeDistribution();\r\n    Assertions.assertEquals(Double.NEGATIVE_INFINITY, d.getSupportLowerBound());\r\n    Assertions.assertEquals(Double.POSITIVE_INFINITY, d.getSupportUpperBound());\r\n    Assertions.assertTrue(d.isSupportConnected());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\HypergeometricDistributionTest.java",
+  "methodName" : "testDegenerateNoFailures",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n/**\r\n * Verify that if there are no failures, mass is concentrated on sampleSize\r\n */\r\n@Test\r\nvoid testDegenerateNoFailures() {\r\n    final HypergeometricDistribution dist = new HypergeometricDistribution(5, 5, 3);\r\n    setDistribution(dist);\r\n    setCumulativeTestPoints(new int[] { -1, 0, 1, 3, 10 });\r\n    setCumulativeTestValues(new double[] { 0d, 0d, 0d, 1d, 1d });\r\n    setDensityTestPoints(new int[] { -1, 0, 1, 3, 10 });\r\n    setDensityTestValues(new double[] { 0d, 0d, 0d, 1d, 0d });\r\n    setInverseCumulativeTestPoints(new double[] { 0.1d, 0.5d });\r\n    setInverseCumulativeTestValues(new int[] { 3, 3 });\r\n    verifyDensities();\r\n    verifyCumulativeProbabilities();\r\n    verifyInverseCumulativeProbabilities();\r\n    Assertions.assertEquals(3, dist.getSupportLowerBound());\r\n    Assertions.assertEquals(3, dist.getSupportUpperBound());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\HypergeometricDistributionTest.java",
+  "methodName" : "testDegenerateNoSuccesses",
+  "sourceCode" : "/**\r\n * Verify that if there are no successes, mass is concentrated on 0\r\n */\r\n@Test\r\nvoid testDegenerateNoSuccesses() {\r\n    final HypergeometricDistribution dist = new HypergeometricDistribution(5, 0, 3);\r\n    setDistribution(dist);\r\n    setCumulativeTestPoints(new int[] { -1, 0, 1, 3, 10 });\r\n    setCumulativeTestValues(new double[] { 0d, 1d, 1d, 1d, 1d });\r\n    setDensityTestPoints(new int[] { -1, 0, 1, 3, 10 });\r\n    setDensityTestValues(new double[] { 0d, 1d, 0d, 0d, 0d });\r\n    setInverseCumulativeTestPoints(new double[] { 0.1d, 0.5d });\r\n    setInverseCumulativeTestValues(new int[] { 0, 0 });\r\n    verifyDensities();\r\n    verifyCumulativeProbabilities();\r\n    verifyInverseCumulativeProbabilities();\r\n    Assertions.assertEquals(0, dist.getSupportLowerBound());\r\n    Assertions.assertEquals(0, dist.getSupportUpperBound());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\HypergeometricDistributionTest.java",
+  "methodName" : "testDegenerateFullSample",
+  "sourceCode" : "/**\r\n * Verify that if sampleSize = populationSize, mass is concentrated on numberOfSuccesses\r\n */\r\n@Test\r\nvoid testDegenerateFullSample() {\r\n    final HypergeometricDistribution dist = new HypergeometricDistribution(5, 3, 5);\r\n    setDistribution(dist);\r\n    setCumulativeTestPoints(new int[] { -1, 0, 1, 3, 10 });\r\n    setCumulativeTestValues(new double[] { 0d, 0d, 0d, 1d, 1d });\r\n    setDensityTestPoints(new int[] { -1, 0, 1, 3, 10 });\r\n    setDensityTestValues(new double[] { 0d, 0d, 0d, 1d, 0d });\r\n    setInverseCumulativeTestPoints(new double[] { 0.1d, 0.5d });\r\n    setInverseCumulativeTestValues(new int[] { 3, 3 });\r\n    verifyDensities();\r\n    verifyCumulativeProbabilities();\r\n    verifyInverseCumulativeProbabilities();\r\n    Assertions.assertEquals(3, dist.getSupportLowerBound());\r\n    Assertions.assertEquals(3, dist.getSupportUpperBound());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\HypergeometricDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "@Test\r\nvoid testParameterAccessors() {\r\n    final HypergeometricDistribution dist = new HypergeometricDistribution(5, 3, 4);\r\n    Assertions.assertEquals(5, dist.getPopulationSize());\r\n    Assertions.assertEquals(3, dist.getNumberOfSuccesses());\r\n    Assertions.assertEquals(4, dist.getSampleSize());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\HypergeometricDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new HypergeometricDistribution(0, 3, 5));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\HypergeometricDistributionTest.java",
+  "methodName" : "testConstructorPrecondition2",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition2() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new HypergeometricDistribution(5, -1, 5));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\HypergeometricDistributionTest.java",
+  "methodName" : "testConstructorPrecondition3",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition3() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new HypergeometricDistribution(5, 3, -1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\HypergeometricDistributionTest.java",
+  "methodName" : "testConstructorPrecondition4",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition4() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new HypergeometricDistribution(5, 6, 5));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\HypergeometricDistributionTest.java",
+  "methodName" : "testConstructorPrecondition5",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition5() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new HypergeometricDistribution(5, 3, 6));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\HypergeometricDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    final double tol = 1e-9;\r\n    HypergeometricDistribution dist;\r\n    dist = new HypergeometricDistribution(1500, 40, 100);\r\n    Assertions.assertEquals(40d * 100d / 1500d, dist.getMean(), tol);\r\n    Assertions.assertEquals((100d * 40d * (1500d - 100d) * (1500d - 40d)) / ((1500d * 1500d * 1499d)), dist.getVariance(), tol);\r\n    dist = new HypergeometricDistribution(3000, 55, 200);\r\n    Assertions.assertEquals(55d * 200d / 3000d, dist.getMean(), tol);\r\n    Assertions.assertEquals((200d * 55d * (3000d - 200d) * (3000d - 55d)) / ((3000d * 3000d * 2999d)), dist.getVariance(), tol);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\HypergeometricDistributionTest.java",
+  "methodName" : "testLargeValues",
+  "sourceCode" : "@Test\r\nvoid testLargeValues() {\r\n    final int populationSize = 3456;\r\n    final int sampleSize = 789;\r\n    final int numberOfSucceses = 101;\r\n    final double[][] data = { { 0.0, 2.75646034603961e-12, 2.75646034603961e-12, 1.0 }, { 1.0, 8.55705370142386e-11, 8.83269973602783e-11, 0.999999999997244 }, { 2.0, 1.31288129219665e-9, 1.40120828955693e-9, 0.999999999911673 }, { 3.0, 1.32724172984193e-8, 1.46736255879763e-8, 0.999999998598792 }, { 4.0, 9.94501711734089e-8, 1.14123796761385e-7, 0.999999985326375 }, { 5.0, 5.89080768883643e-7, 7.03204565645028e-7, 0.999999885876203 }, { 20.0, 0.0760051397707708, 0.27349758476299, 0.802507555007781 }, { 21.0, 0.087144222047629, 0.360641806810619, 0.72650241523701 }, { 22.0, 0.0940378846881819, 0.454679691498801, 0.639358193189381 }, { 23.0, 0.0956897500614809, 0.550369441560282, 0.545320308501199 }, { 24.0, 0.0919766921922999, 0.642346133752582, 0.449630558439718 }, { 25.0, 0.083641637261095, 0.725987771013677, 0.357653866247418 }, { 96.0, 5.93849188852098e-57, 1.0, 6.01900244560712e-57 }, { 97.0, 7.96593036832547e-59, 1.0, 8.05105570861321e-59 }, { 98.0, 8.44582921934367e-61, 1.0, 8.5125340287733e-61 }, { 99.0, 6.63604297068222e-63, 1.0, 6.670480942963e-63 }, { 100.0, 3.43501099007557e-65, 1.0, 3.4437972280786e-65 }, { 101.0, 8.78623800302957e-68, 1.0, 8.78623800302957e-68 }, // Out of domain\r\n    { sampleSize + 1, 0, 1.0, 0 } };\r\n    testHypergeometricDistributionProbabilities(populationSize, sampleSize, numberOfSucceses, data);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\HypergeometricDistributionTest.java",
+  "methodName" : "testMoreLargeValues",
+  "sourceCode" : "@Test\r\nvoid testMoreLargeValues() {\r\n    final int populationSize = 26896;\r\n    final int sampleSize = 895;\r\n    final int numberOfSucceses = 55;\r\n    final double[][] data = { { 0.0, 0.155168304750504, 0.155168304750504, 1.0 }, { 1.0, 0.29437545000746, 0.449543754757964, 0.844831695249496 }, { 2.0, 0.273841321577003, 0.723385076334967, 0.550456245242036 }, { 3.0, 0.166488572570786, 0.889873648905753, 0.276614923665033 }, { 4.0, 0.0743969744713231, 0.964270623377076, 0.110126351094247 }, { 5.0, 0.0260542785784855, 0.990324901955562, 0.0357293766229237 }, { 20.0, 3.57101101678792e-16, 1.0, 3.78252101622096e-16 }, { 21.0, 2.00551638598312e-17, 1.0, 2.11509999433041e-17 }, { 22.0, 1.04317070180562e-18, 1.0, 1.09583608347287e-18 }, { 23.0, 5.03153504903308e-20, 1.0, 5.266538166725e-20 }, { 24.0, 2.2525984149695e-21, 1.0, 2.35003117691919e-21 }, { 25.0, 9.3677424515947e-23, 1.0, 9.74327619496943e-23 }, { 50.0, 9.83633962945521e-69, 1.0, 9.8677629437617e-69 }, { 51.0, 3.13448949497553e-71, 1.0, 3.14233143064882e-71 }, { 52.0, 7.82755221928122e-74, 1.0, 7.84193567329055e-74 }, { 53.0, 1.43662126065532e-76, 1.0, 1.43834540093295e-76 }, { 54.0, 1.72312692517348e-79, 1.0, 1.7241402776278e-79 }, { 55.0, 1.01335245432581e-82, 1.0, 1.01335245432581e-82 } };\r\n    testHypergeometricDistributionProbabilities(populationSize, sampleSize, numberOfSucceses, data);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\HypergeometricDistributionTest.java",
+  "methodName" : "testMath644",
+  "sourceCode" : "@Test\r\nvoid testMath644() {\r\n    // population\r\n    final int N = 14761461;\r\n    // successes in population\r\n    final int m = 1035;\r\n    // number of trials\r\n    final int n = 1841;\r\n    final int k = 0;\r\n    final HypergeometricDistribution dist = new HypergeometricDistribution(N, m, n);\r\n    Assertions.assertEquals(0, Precision.compareTo(1.0, dist.upperCumulativeProbability(k), 1));\r\n    Assertions.assertTrue(Precision.compareTo(dist.cumulativeProbability(k), 0.0, 1) > 0);\r\n    // another way to calculate the upper cumulative probability\r\n    final double upper = 1.0 - dist.cumulativeProbability(k) + dist.probability(k);\r\n    Assertions.assertEquals(0, Precision.compareTo(1.0, upper, 1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\HypergeometricDistributionTest.java",
+  "methodName" : "testZeroTrial",
+  "sourceCode" : "@Test\r\nvoid testZeroTrial() {\r\n    // population\r\n    final int n = 11;\r\n    // successes in population\r\n    final int m = 4;\r\n    // number of trials\r\n    final int s = 0;\r\n    final HypergeometricDistribution dist = new HypergeometricDistribution(n, m, 0);\r\n    for (int i = 1; i <= n; i++) {\r\n        final double p = dist.probability(i);\r\n        Assertions.assertEquals(0, p, () -> \"p=\" + p);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\HypergeometricDistributionTest.java",
+  "methodName" : "testMath1356",
+  "sourceCode" : "@Test\r\nvoid testMath1356() {\r\n    // population\r\n    final int n = 11;\r\n    // successes in population\r\n    final int m = 11;\r\n    for (int s = 0; s <= n; s++) {\r\n        final HypergeometricDistribution dist = new HypergeometricDistribution(n, m, s);\r\n        final double p = dist.probability(s);\r\n        Assertions.assertEquals(1, p, () -> \"p=\" + p);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\HypergeometricDistributionTest.java",
+  "methodName" : "testMath1021",
+  "sourceCode" : "@Test\r\nvoid testMath1021() {\r\n    final int N = 43130568;\r\n    final int m = 42976365;\r\n    final int n = 50;\r\n    final DiscreteDistribution.Sampler dist = new HypergeometricDistribution(N, m, n).createSampler(RandomSource.create(RandomSource.WELL_512_A));\r\n    for (int i = 0; i < 100; i++) {\r\n        final int sample = dist.sample();\r\n        Assertions.assertTrue(0 <= sample, () -> \"sample=\" + sample);\r\n        Assertions.assertTrue(sample <= n, () -> \"sample=\" + sample);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LaplaceDistributionTest.java",
+  "methodName" : "testInverseCumulativeProbabilityExtremes",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n@Test\r\nvoid testInverseCumulativeProbabilityExtremes() {\r\n    setInverseCumulativeTestPoints(new double[] { 0.0, 1.0 });\r\n    setInverseCumulativeTestValues(new double[] { Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY });\r\n    verifyInverseCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LaplaceDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "@Test\r\nvoid testParameterAccessors() {\r\n    final LaplaceDistribution d = makeDistribution();\r\n    Assertions.assertEquals(0, d.getLocation());\r\n    Assertions.assertEquals(1, d.getScale());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LaplaceDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new LaplaceDistribution(0, -0.1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LaplaceDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    LaplaceDistribution dist;\r\n    dist = new LaplaceDistribution(0.5, 1.0);\r\n    Assertions.assertEquals(0.5, dist.getMean());\r\n    Assertions.assertEquals(2.0 * 1.0 * 1.0, dist.getVariance());\r\n    dist = new LaplaceDistribution(-0.3, 2.5);\r\n    Assertions.assertEquals(-0.3, dist.getMean());\r\n    Assertions.assertEquals(2.0 * 2.5 * 2.5, dist.getVariance());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LaplaceDistributionTest.java",
+  "methodName" : "testSupport",
+  "sourceCode" : "@Test\r\nvoid testSupport() {\r\n    final LaplaceDistribution d = makeDistribution();\r\n    Assertions.assertEquals(Double.NEGATIVE_INFINITY, d.getSupportLowerBound());\r\n    Assertions.assertEquals(Double.POSITIVE_INFINITY, d.getSupportUpperBound());\r\n    Assertions.assertTrue(d.isSupportConnected());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LevyDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n@Test\r\nvoid testParameterAccessors() {\r\n    final LevyDistribution d = makeDistribution();\r\n    Assertions.assertEquals(1.2, d.getLocation());\r\n    Assertions.assertEquals(0.4, d.getScale());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LevyDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    LevyDistribution dist;\r\n    dist = new LevyDistribution(0, 0.5);\r\n    Assertions.assertEquals(Double.POSITIVE_INFINITY, dist.getMean());\r\n    Assertions.assertEquals(Double.POSITIVE_INFINITY, dist.getVariance());\r\n    dist = new LevyDistribution(0, 1);\r\n    Assertions.assertEquals(Double.POSITIVE_INFINITY, dist.getMean());\r\n    Assertions.assertEquals(Double.POSITIVE_INFINITY, dist.getVariance());\r\n    dist = new LevyDistribution(-3, 2);\r\n    Assertions.assertEquals(Double.POSITIVE_INFINITY, dist.getMean());\r\n    Assertions.assertEquals(Double.POSITIVE_INFINITY, dist.getVariance());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LevyDistributionTest.java",
+  "methodName" : "testSupport",
+  "sourceCode" : "@Test\r\nvoid testSupport() {\r\n    final LevyDistribution d = makeDistribution();\r\n    Assertions.assertEquals(d.getLocation(), d.getSupportLowerBound());\r\n    Assertions.assertEquals(Double.POSITIVE_INFINITY, d.getSupportUpperBound());\r\n    Assertions.assertTrue(d.isSupportConnected());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LogisticsDistributionTest.java",
+  "methodName" : "testInverseCumulativeProbabilityExtremes",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n@Test\r\nvoid testInverseCumulativeProbabilityExtremes() {\r\n    setInverseCumulativeTestPoints(new double[] { 0, 1 });\r\n    setInverseCumulativeTestValues(new double[] { 0, Double.POSITIVE_INFINITY });\r\n    verifyInverseCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LogisticsDistributionTest.java",
+  "methodName" : "testParametersAccessors",
+  "sourceCode" : "@Test\r\nvoid testParametersAccessors() {\r\n    final LogisticDistribution d = makeDistribution();\r\n    Assertions.assertEquals(2, d.getLocation());\r\n    Assertions.assertEquals(5, d.getScale());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LogisticsDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new LogisticDistribution(1, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LogisticsDistributionTest.java",
+  "methodName" : "testMeanAndVariance",
+  "sourceCode" : "@Test\r\nvoid testMeanAndVariance() {\r\n    final LogisticDistribution d = makeDistribution();\r\n    // Constructor 'location' parameter = mean\r\n    Assertions.assertEquals(2.0, d.getMean());\r\n    // Variance = (s^2 * pi^2) / 3\r\n    // Constructor 'scale' parameter = s\r\n    Assertions.assertEquals(5 * 5 * Math.PI * Math.PI / 3, d.getVariance());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LogisticsDistributionTest.java",
+  "methodName" : "testSupport",
+  "sourceCode" : "@Test\r\nvoid testSupport() {\r\n    final LogisticDistribution d = makeDistribution();\r\n    Assertions.assertEquals(Double.NEGATIVE_INFINITY, d.getSupportLowerBound());\r\n    Assertions.assertEquals(Double.POSITIVE_INFINITY, d.getSupportUpperBound());\r\n    Assertions.assertTrue(d.isSupportConnected());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LogNormalDistributionTest.java",
+  "methodName" : "testQuantiles",
+  "sourceCode" : "@Test\r\nvoid testQuantiles() {\r\n    setCumulativeTestValues(new double[] { 0, 0.0396495152787, 0.16601209243, 0.272533253269, 0.357618409638, 0.426488363093, 0.483255136841, 0.530823013877 });\r\n    setDensityTestValues(new double[] { 0, 0.0873055825147, 0.0847676303432, 0.0677935186237, 0.0544105523058, 0.0444614628804, 0.0369750288945, 0.0312206409653 });\r\n    verifyQuantiles();\r\n    verifyDensities();\r\n    setDistribution(new LogNormalDistribution(0, 1));\r\n    setCumulativeTestValues(new double[] { 0, 0, 0, 0.5, 0.755891404214, 0.864031392359, 0.917171480998, 0.946239689548 });\r\n    setDensityTestValues(new double[] { 0, 0, 0, 0.398942280401, 0.156874019279, 0.07272825614, 0.0381534565119, 0.0218507148303 });\r\n    verifyQuantiles();\r\n    verifyDensities();\r\n    setDistribution(new LogNormalDistribution(0, 0.1));\r\n    setCumulativeTestValues(new double[] { 0, 0, 0, 1.28417563064e-117, 1.39679883412e-58, 1.09839325447e-33, 2.52587961726e-20, 2.0824223487e-12 });\r\n    setDensityTestValues(new double[] { 0, 0, 0, 2.96247992535e-114, 1.1283370232e-55, 4.43812313223e-31, 5.85346445002e-18, 2.9446618076e-10 });\r\n    verifyQuantiles();\r\n    verifyDensities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LogNormalDistributionTest.java",
+  "methodName" : "testInverseCumulativeProbabilityExtremes",
+  "sourceCode" : "@Test\r\nvoid testInverseCumulativeProbabilityExtremes() {\r\n    setInverseCumulativeTestPoints(new double[] { 0, 1 });\r\n    setInverseCumulativeTestValues(new double[] { 0, Double.POSITIVE_INFINITY });\r\n    verifyInverseCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LogNormalDistributionTest.java",
+  "methodName" : "testCumulativeProbabilityExtremes",
+  "sourceCode" : "@Test\r\nvoid testCumulativeProbabilityExtremes() {\r\n    // Use a small shape parameter so that we can exceed 40 * shape\r\n    setDistribution(new LogNormalDistribution(1, 0.0001));\r\n    setCumulativeTestPoints(new double[] { 0.5, 10 });\r\n    setCumulativeTestValues(new double[] { 0, 1.0 });\r\n    verifyCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LogNormalDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "@Test\r\nvoid testParameterAccessors() {\r\n    final LogNormalDistribution distribution = (LogNormalDistribution) getDistribution();\r\n    Assertions.assertEquals(2.1, distribution.getScale());\r\n    Assertions.assertEquals(1.4, distribution.getShape());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LogNormalDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new LogNormalDistribution(1, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LogNormalDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    final double tol = 1e-9;\r\n    LogNormalDistribution dist;\r\n    dist = new LogNormalDistribution(0, 1);\r\n    Assertions.assertEquals(1.6487212707001282, dist.getMean(), tol);\r\n    Assertions.assertEquals(4.670774270471604, dist.getVariance(), tol);\r\n    dist = new LogNormalDistribution(2.2, 1.4);\r\n    Assertions.assertEquals(24.046753552064498, dist.getMean(), tol);\r\n    Assertions.assertEquals(3526.913651880464, dist.getVariance(), tol);\r\n    dist = new LogNormalDistribution(-2000.9, 10.4);\r\n    Assertions.assertEquals(0.0, dist.getMean(), tol);\r\n    Assertions.assertEquals(0.0, dist.getVariance(), tol);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LogNormalDistributionTest.java",
+  "methodName" : "testDensity",
+  "sourceCode" : "@Test\r\nvoid testDensity() {\r\n    final double[] x = new double[] { -2, -1, 0, 1, 2 };\r\n    // R 2.13: print(dlnorm(c(-2,-1,0,1,2)), digits=10)\r\n    checkDensity(0, 1, x, new double[] { 0.0000000000, 0.0000000000, 0.0000000000, 0.3989422804, 0.1568740193 });\r\n    // R 2.13: print(dlnorm(c(-2,-1,0,1,2), mean=1.1), digits=10)\r\n    checkDensity(1.1, 1, x, new double[] { 0.0000000000, 0.0000000000, 0.0000000000, 0.2178521770, 0.1836267118 });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LogNormalDistributionTest.java",
+  "methodName" : "testExtremeValues",
+  "sourceCode" : "/**\r\n * Check to make sure top-coding of extreme values works correctly.\r\n * Verifies fixes for JIRA MATH-167, MATH-414\r\n */\r\n@Test\r\nvoid testExtremeValues() {\r\n    final LogNormalDistribution d = new LogNormalDistribution(0, 1);\r\n    for (int i = 0; i < 1e5; i++) {\r\n        // make sure no convergence exception\r\n        final double upperTail = d.cumulativeProbability(i);\r\n        if (i <= 72) {\r\n            // make sure not top-coded\r\n            Assertions.assertTrue(upperTail < 1.0d);\r\n        } else {\r\n            // make sure top coding not reversed\r\n            Assertions.assertTrue(upperTail > 0.99999);\r\n        }\r\n    }\r\n    Assertions.assertEquals(1, d.cumulativeProbability(Double.MAX_VALUE));\r\n    Assertions.assertEquals(0, d.cumulativeProbability(-Double.MAX_VALUE));\r\n    Assertions.assertEquals(1, d.cumulativeProbability(Double.POSITIVE_INFINITY));\r\n    Assertions.assertEquals(0, d.cumulativeProbability(Double.NEGATIVE_INFINITY));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\LogNormalDistributionTest.java",
+  "methodName" : "testTinyVariance",
+  "sourceCode" : "@Test\r\nvoid testTinyVariance() {\r\n    final LogNormalDistribution dist = new LogNormalDistribution(0, 1e-9);\r\n    final double t = dist.getVariance();\r\n    Assertions.assertEquals(1e-18, t, 1e-20);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\NakagamiDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n@Test\r\nvoid testParameterAccessors() {\r\n    final NakagamiDistribution d = makeDistribution();\r\n    Assertions.assertEquals(0.5, d.getShape());\r\n    Assertions.assertEquals(1, d.getScale());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\NakagamiDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new NakagamiDistribution(0.4999, 1.0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\NakagamiDistributionTest.java",
+  "methodName" : "testConstructorPrecondition2",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition2() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new NakagamiDistribution(0.5, 0.0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\NakagamiDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    // Values obtained using Matlab, e.g.\r\n    // format long;\r\n    // pd = makedist('Nakagami','mu',0.5,'omega',1.0);\r\n    // disp([pd.mean, pd.var])\r\n    NakagamiDistribution dist;\r\n    final double eps = 1e-9;\r\n    dist = new NakagamiDistribution(0.5, 1.0);\r\n    Assertions.assertEquals(0.797884560802866, dist.getMean(), eps);\r\n    Assertions.assertEquals(0.363380227632418, dist.getVariance(), eps);\r\n    dist = new NakagamiDistribution(1.23, 2.5);\r\n    Assertions.assertEquals(1.431786259006201, dist.getMean(), eps);\r\n    Assertions.assertEquals(0.449988108521028, dist.getVariance(), eps);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\NakagamiDistributionTest.java",
+  "methodName" : "testSupport",
+  "sourceCode" : "@Test\r\nvoid testSupport() {\r\n    final NakagamiDistribution d = makeDistribution();\r\n    Assertions.assertEquals(0, d.getSupportLowerBound());\r\n    Assertions.assertEquals(Double.POSITIVE_INFINITY, d.getSupportUpperBound());\r\n    Assertions.assertTrue(d.isSupportConnected());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\NormalDistributionTest.java",
+  "methodName" : "testQuantiles",
+  "sourceCode" : "@Test\r\nvoid testQuantiles() {\r\n    setDensityTestValues(new double[] { 0.0385649760808, 0.172836231799, 0.284958771715, 0.172836231799, 0.0385649760808, 0.00316560600853, 9.55930184035e-05, 1.06194251052e-06 });\r\n    verifyQuantiles();\r\n    verifyDensities();\r\n    setDistribution(new NormalDistribution(0, 1));\r\n    setDensityTestValues(new double[] { 0.0539909665132, 0.241970724519, 0.398942280401, 0.241970724519, 0.0539909665132, 0.00443184841194, 0.000133830225765, 1.48671951473e-06 });\r\n    verifyQuantiles();\r\n    verifyDensities();\r\n    setDistribution(new NormalDistribution(0, 0.1));\r\n    setDensityTestValues(new double[] { 0.539909665132, 2.41970724519, 3.98942280401, 2.41970724519, 0.539909665132, 0.0443184841194, 0.00133830225765, 1.48671951473e-05 });\r\n    verifyQuantiles();\r\n    verifyDensities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\NormalDistributionTest.java",
+  "methodName" : "testInverseCumulativeProbabilityExtremes",
+  "sourceCode" : "@Test\r\nvoid testInverseCumulativeProbabilityExtremes() {\r\n    setInverseCumulativeTestPoints(new double[] { 0, 1 });\r\n    setInverseCumulativeTestValues(new double[] { Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY });\r\n    verifyInverseCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\NormalDistributionTest.java",
+  "methodName" : "testCumulativeProbability",
+  "sourceCode" : "// MATH-1257\r\n@Test\r\nvoid testCumulativeProbability() {\r\n    final ContinuousDistribution dist = new NormalDistribution(0, 1);\r\n    final double x = -10;\r\n    final double expected = 7.61985e-24;\r\n    final double v = dist.cumulativeProbability(x);\r\n    final double tol = 1e-5;\r\n    Assertions.assertEquals(1, v / expected, 1e-5);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\NormalDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "@Test\r\nvoid testParameterAccessors() {\r\n    final NormalDistribution distribution = makeDistribution();\r\n    Assertions.assertEquals(2.1, distribution.getMean());\r\n    Assertions.assertEquals(1.4, distribution.getStandardDeviation());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\NormalDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new NormalDistribution(1, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\NormalDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    final double tol = 1e-9;\r\n    NormalDistribution dist;\r\n    dist = new NormalDistribution(0, 1);\r\n    Assertions.assertEquals(0, dist.getMean(), tol);\r\n    Assertions.assertEquals(1, dist.getVariance(), tol);\r\n    dist = new NormalDistribution(2.2, 1.4);\r\n    Assertions.assertEquals(2.2, dist.getMean(), tol);\r\n    Assertions.assertEquals(1.4 * 1.4, dist.getVariance(), tol);\r\n    dist = new NormalDistribution(-2000.9, 10.4);\r\n    Assertions.assertEquals(-2000.9, dist.getMean(), tol);\r\n    Assertions.assertEquals(10.4 * 10.4, dist.getVariance(), tol);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\NormalDistributionTest.java",
+  "methodName" : "testDensity",
+  "sourceCode" : "@Test\r\nvoid testDensity() {\r\n    final double[] x = new double[] { -2, -1, 0, 1, 2 };\r\n    // R 2.5: print(dnorm(c(-2,-1,0,1,2)), digits=10)\r\n    checkDensity(0, 1, x, new double[] { 0.05399096651, 0.24197072452, 0.39894228040, 0.24197072452, 0.05399096651 });\r\n    // R 2.5: print(dnorm(c(-2,-1,0,1,2), mean=1.1), digits=10)\r\n    checkDensity(1.1, 1, x, new double[] { 0.003266819056, 0.043983595980, 0.217852177033, 0.396952547477, 0.266085249899 });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\NormalDistributionTest.java",
+  "methodName" : "testLowerTail",
+  "sourceCode" : "/**\r\n * Check to make sure top-coding of extreme values works correctly.\r\n * Verifies fixes for JIRA MATH-167, MATH-414\r\n */\r\n@Test\r\nvoid testLowerTail() {\r\n    final NormalDistribution distribution = new NormalDistribution(0, 1);\r\n    for (int i = 0; i < 100; i++) {\r\n        // make sure no convergence exception\r\n        final double lowerTail = distribution.cumulativeProbability(-i);\r\n        if (i < 39) {\r\n            // make sure not top-coded\r\n            Assertions.assertTrue(lowerTail > 0);\r\n        } else {\r\n            // make sure top coding not reversed\r\n            Assertions.assertEquals(0, lowerTail);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\NormalDistributionTest.java",
+  "methodName" : "testUpperTail",
+  "sourceCode" : "/**\r\n * Check to make sure top-coding of extreme values works correctly.\r\n * Verifies fixes for JIRA MATH-167, MATH-414\r\n */\r\n@Test\r\nvoid testUpperTail() {\r\n    final NormalDistribution distribution = new NormalDistribution(0, 1);\r\n    for (int i = 0; i < 100; i++) {\r\n        // make sure no convergence exception\r\n        final double upperTail = distribution.cumulativeProbability(i);\r\n        if (i < 9) {\r\n            // make sure not top-coded\r\n            Assertions.assertTrue(upperTail < 1);\r\n        } else {\r\n            // make sure top coding not reversed\r\n            Assertions.assertEquals(1, upperTail);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\NormalDistributionTest.java",
+  "methodName" : "testExtremeValues",
+  "sourceCode" : "@Test\r\nvoid testExtremeValues() {\r\n    final NormalDistribution distribution = new NormalDistribution(0, 1);\r\n    Assertions.assertEquals(1, distribution.cumulativeProbability(Double.MAX_VALUE));\r\n    Assertions.assertEquals(0, distribution.cumulativeProbability(-Double.MAX_VALUE));\r\n    Assertions.assertEquals(1, distribution.cumulativeProbability(Double.POSITIVE_INFINITY));\r\n    Assertions.assertEquals(0, distribution.cumulativeProbability(Double.NEGATIVE_INFINITY));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\NormalDistributionTest.java",
+  "methodName" : "testMath280",
+  "sourceCode" : "@Test\r\nvoid testMath280() {\r\n    final NormalDistribution normal = new NormalDistribution(0, 1);\r\n    double result = normal.inverseCumulativeProbability(0.9986501019683698);\r\n    Assertions.assertEquals(3.0, result, DEFAULT_TOLERANCE);\r\n    result = normal.inverseCumulativeProbability(0.841344746068543);\r\n    Assertions.assertEquals(1.0, result, DEFAULT_TOLERANCE);\r\n    result = normal.inverseCumulativeProbability(0.9999683287581673);\r\n    Assertions.assertEquals(4.0, result, DEFAULT_TOLERANCE);\r\n    result = normal.inverseCumulativeProbability(0.9772498680518209);\r\n    Assertions.assertEquals(2.0, result, DEFAULT_TOLERANCE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ParetoDistributionTest.java",
+  "methodName" : "testQuantiles",
+  "sourceCode" : "@Test\r\nvoid testQuantiles() {\r\n    setCumulativeTestValues(new double[] { 0, 0, 0, 0.510884134236, 0.694625688662, 0.785201995008, 0.837811522357, 0.871634279326 });\r\n    setDensityTestValues(new double[] { 0, 0, 0.666666666, 0.195646346305, 0.0872498032394, 0.0477328899983, 0.0294888141169, 0.0197485724114 });\r\n    verifyQuantiles();\r\n    verifyDensities();\r\n    setDistribution(new ParetoDistribution(1, 1));\r\n    setCumulativeTestValues(new double[] { 0, 0, 0, 0.5, 0.666666666667, 0.75, 0.8, 0.833333333333 });\r\n    setDensityTestValues(new double[] { 0, 0, 1.0, 0.25, 0.111111111111, 0.0625, 0.04, 0.0277777777778 });\r\n    verifyQuantiles();\r\n    verifyDensities();\r\n    setDistribution(new ParetoDistribution(0.1, 0.1));\r\n    setCumulativeTestValues(new double[] { 0, 0, 0, 0.0669670084632, 0.104041540159, 0.129449436704, 0.148660077479, 0.164041197922 });\r\n    setDensityTestValues(new double[] { 0, 0, 1.0, 0.466516495768, 0.298652819947, 0.217637640824, 0.170267984504, 0.139326467013 });\r\n    verifyQuantiles();\r\n    verifyDensities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ParetoDistributionTest.java",
+  "methodName" : "testInverseCumulativeProbabilityExtremes",
+  "sourceCode" : "@Test\r\nvoid testInverseCumulativeProbabilityExtremes() {\r\n    setInverseCumulativeTestPoints(new double[] { 0, 1 });\r\n    setInverseCumulativeTestValues(new double[] { 2.1, Double.POSITIVE_INFINITY });\r\n    verifyInverseCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ParetoDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "@Test\r\nvoid testParameterAccessors() {\r\n    final ParetoDistribution distribution = (ParetoDistribution) getDistribution();\r\n    Assertions.assertEquals(2.1, distribution.getScale());\r\n    Assertions.assertEquals(1.4, distribution.getShape());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ParetoDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new ParetoDistribution(1, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ParetoDistributionTest.java",
+  "methodName" : "testConstructorPrecondition2",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition2() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new ParetoDistribution(0, 1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ParetoDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    final double tol = 1e-9;\r\n    ParetoDistribution dist;\r\n    dist = new ParetoDistribution(1, 1);\r\n    Assertions.assertEquals(Double.POSITIVE_INFINITY, dist.getMean(), tol);\r\n    Assertions.assertEquals(Double.POSITIVE_INFINITY, dist.getVariance(), tol);\r\n    dist = new ParetoDistribution(2.2, 2.4);\r\n    Assertions.assertEquals(3.771428571428, dist.getMean(), tol);\r\n    Assertions.assertEquals(14.816326530, dist.getVariance(), tol);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ParetoDistributionTest.java",
+  "methodName" : "testDensity",
+  "sourceCode" : "@Test\r\nvoid testDensity() {\r\n    final double[] x = new double[] { -2, -1, 0, 1, 2 };\r\n    // R 2.14: print(dpareto(c(-2,-1,0,1,2), scale=1, shape=1), digits=10)\r\n    checkDensity(1, 1, x, new double[] { 0.00, 0.00, 0.00, 1.00, 0.25 });\r\n    // R 2.14: print(dpareto(c(-2,-1,0,1,2), scale=1.1, shape=1), digits=10)\r\n    checkDensity(1.1, 1, x, new double[] { 0.000, 0.000, 0.000, 0.000, 0.275 });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ParetoDistributionTest.java",
+  "methodName" : "testExtremeValues",
+  "sourceCode" : "/**\r\n * Check to make sure top-coding of extreme values works correctly.\r\n */\r\n@Test\r\nvoid testExtremeValues() {\r\n    final ParetoDistribution d = new ParetoDistribution(1, 1);\r\n    for (int i = 0; i < 1e5; i++) {\r\n        // make sure no convergence exception\r\n        final double upperTail = d.cumulativeProbability(i);\r\n        if (i <= 1000) {\r\n            // make sure not top-coded\r\n            Assertions.assertTrue(upperTail < 1.0d);\r\n        } else {\r\n            // make sure top coding not reversed\r\n            Assertions.assertTrue(upperTail > 0.999);\r\n        }\r\n    }\r\n    Assertions.assertEquals(1, d.cumulativeProbability(Double.MAX_VALUE));\r\n    Assertions.assertEquals(0, d.cumulativeProbability(-Double.MAX_VALUE));\r\n    Assertions.assertEquals(1, d.cumulativeProbability(Double.POSITIVE_INFINITY));\r\n    Assertions.assertEquals(0, d.cumulativeProbability(Double.NEGATIVE_INFINITY));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\PascalDistributionTest.java",
+  "methodName" : "testDegenerate0",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n/**\r\n * Test degenerate case p = 0\r\n */\r\n@Test\r\nvoid testDegenerate0() {\r\n    setDistribution(new PascalDistribution(5, 0.0d));\r\n    setCumulativeTestPoints(new int[] { -1, 0, 1, 5, 10 });\r\n    setCumulativeTestValues(new double[] { 0d, 0d, 0d, 0d, 0d });\r\n    setDensityTestPoints(new int[] { -1, 0, 1, 10, 11 });\r\n    setDensityTestValues(new double[] { 0d, 0d, 0d, 0d, 0d });\r\n    setInverseCumulativeTestPoints(new double[] { 0.1d, 0.5d });\r\n    setInverseCumulativeTestValues(new int[] { Integer.MAX_VALUE, Integer.MAX_VALUE });\r\n    verifyDensities();\r\n    verifyCumulativeProbabilities();\r\n    verifyInverseCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\PascalDistributionTest.java",
+  "methodName" : "testDegenerate1",
+  "sourceCode" : "/**\r\n * Test degenerate case p = 1\r\n */\r\n@Test\r\nvoid testDegenerate1() {\r\n    setDistribution(new PascalDistribution(5, 1.0d));\r\n    setCumulativeTestPoints(new int[] { -1, 0, 1, 2, 5, 10 });\r\n    setCumulativeTestValues(new double[] { 0d, 1d, 1d, 1d, 1d, 1d });\r\n    setDensityTestPoints(new int[] { -1, 0, 1, 2, 5, 10 });\r\n    setDensityTestValues(new double[] { 0d, 1d, 0d, 0d, 0d, 0d });\r\n    setInverseCumulativeTestPoints(new double[] { 0.1d, 0.5d });\r\n    setInverseCumulativeTestValues(new int[] { 0, 0 });\r\n    verifyDensities();\r\n    verifyCumulativeProbabilities();\r\n    verifyInverseCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\PascalDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "@Test\r\nvoid testParameterAccessors() {\r\n    final PascalDistribution distribution = makeDistribution();\r\n    Assertions.assertEquals(10, distribution.getNumberOfSuccesses());\r\n    Assertions.assertEquals(0.7, distribution.getProbabilityOfSuccess());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\PascalDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new PascalDistribution(0, 0.5));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\PascalDistributionTest.java",
+  "methodName" : "testConstructorPrecondition2",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition2() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new PascalDistribution(3, -0.1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\PascalDistributionTest.java",
+  "methodName" : "testConstructorPrecondition3",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition3() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new PascalDistribution(3, 1.1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\PascalDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    final double tol = 1e-9;\r\n    PascalDistribution dist;\r\n    dist = new PascalDistribution(10, 0.5);\r\n    Assertions.assertEquals((10d * 0.5d) / 0.5d, dist.getMean(), tol);\r\n    Assertions.assertEquals((10d * 0.5d) / (0.5d * 0.5d), dist.getVariance(), tol);\r\n    dist = new PascalDistribution(25, 0.7);\r\n    Assertions.assertEquals((25d * 0.3d) / 0.7d, dist.getMean(), tol);\r\n    Assertions.assertEquals((25d * 0.3d) / (0.7d * 0.7d), dist.getVariance(), tol);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\PoissonDistributionTest.java",
+  "methodName" : "testNormalApproximateProbability",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n/**\r\n * Test the normal approximation of the Poisson distribution by\r\n * calculating P(90 &le; X &le; 110) for X = Po(100) and\r\n * P(9900 &le; X &le; 10200) for X  = Po(10000)\r\n */\r\n@Test\r\nvoid testNormalApproximateProbability() {\r\n    PoissonDistribution dist = new PoissonDistribution(100);\r\n    double result = dist.normalApproximateProbability(110) - dist.normalApproximateProbability(89);\r\n    Assertions.assertEquals(0.706281887248, result, 1e-10);\r\n    dist = new PoissonDistribution(10000);\r\n    result = dist.normalApproximateProbability(10200) - dist.normalApproximateProbability(9899);\r\n    Assertions.assertEquals(0.820070051552, result, 1E-10);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\PoissonDistributionTest.java",
+  "methodName" : "testDegenerateInverseCumulativeProbability",
+  "sourceCode" : "/**\r\n * Test the degenerate cases of a 0.0 and 1.0 inverse cumulative probability.\r\n */\r\n@Test\r\nvoid testDegenerateInverseCumulativeProbability() {\r\n    final PoissonDistribution dist = new PoissonDistribution(DEFAULT_TEST_POISSON_PARAMETER);\r\n    Assertions.assertEquals(Integer.MAX_VALUE, dist.inverseCumulativeProbability(1.0d));\r\n    Assertions.assertEquals(0, dist.inverseCumulativeProbability(0d));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\PoissonDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "@Test\r\nvoid testParameterAccessors() {\r\n    final PoissonDistribution dist = new PoissonDistribution(10.0);\r\n    Assertions.assertEquals(10.0, dist.getMean());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\PoissonDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new PoissonDistribution(-1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\PoissonDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    final double tol = 1e-9;\r\n    PoissonDistribution dist;\r\n    dist = new PoissonDistribution(1);\r\n    Assertions.assertEquals(1, dist.getMean(), tol);\r\n    Assertions.assertEquals(1, dist.getVariance(), tol);\r\n    dist = new PoissonDistribution(11.23);\r\n    Assertions.assertEquals(11.23, dist.getMean(), tol);\r\n    Assertions.assertEquals(11.23, dist.getVariance(), tol);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\PoissonDistributionTest.java",
+  "methodName" : "testLargeMeanCumulativeProbability",
+  "sourceCode" : "@Test\r\nvoid testLargeMeanCumulativeProbability() {\r\n    double mean = 1.0;\r\n    while (mean <= 10000000.0) {\r\n        final PoissonDistribution dist = new PoissonDistribution(mean);\r\n        double x = mean * 2.0;\r\n        final double dx = x / 10.0;\r\n        double p = Double.NaN;\r\n        final double sigma = Math.sqrt(mean);\r\n        while (x >= 0) {\r\n            try {\r\n                p = dist.cumulativeProbability((int) x);\r\n                Assertions.assertFalse(Double.isNaN(p), \"NaN cumulative probability\");\r\n                if (x > mean - 2 * sigma) {\r\n                    Assertions.assertTrue(p > 0, \"Zero cumulative probaility\");\r\n                }\r\n            } catch (final AssertionError ex) {\r\n                Assertions.fail(\"mean of \" + mean + \" and x of \" + x + \" caused \" + ex.getMessage());\r\n            }\r\n            x -= dx;\r\n        }\r\n        mean *= 10.0;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\PoissonDistributionTest.java",
+  "methodName" : "testCumulativeProbabilitySpecial",
+  "sourceCode" : "/**\r\n * JIRA: MATH-282\r\n */\r\n@Test\r\nvoid testCumulativeProbabilitySpecial() {\r\n    PoissonDistribution dist;\r\n    dist = new PoissonDistribution(9120);\r\n    checkProbability(dist, 9075);\r\n    checkProbability(dist, 9102);\r\n    dist = new PoissonDistribution(5058);\r\n    checkProbability(dist, 5044);\r\n    dist = new PoissonDistribution(6986);\r\n    checkProbability(dist, 6950);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\PoissonDistributionTest.java",
+  "methodName" : "testLargeMeanInverseCumulativeProbability",
+  "sourceCode" : "@Test\r\nvoid testLargeMeanInverseCumulativeProbability() {\r\n    double mean = 1.0;\r\n    while (mean <= 100000.0) {\r\n        // Extended test value: 1E7.  Reduced to limit run time.\r\n        final PoissonDistribution dist = new PoissonDistribution(mean);\r\n        double p = 0.1;\r\n        final double dp = p;\r\n        while (p < .99) {\r\n            try {\r\n                final int ret = dist.inverseCumulativeProbability(p);\r\n                // Verify that returned value satisties definition\r\n                Assertions.assertTrue(p <= dist.cumulativeProbability(ret));\r\n                Assertions.assertTrue(p > dist.cumulativeProbability(ret - 1));\r\n            } catch (final AssertionError ex) {\r\n                Assertions.fail(\"mean of \" + mean + \" and p of \" + p + \" caused \" + ex.getMessage());\r\n            }\r\n            p += dp;\r\n        }\r\n        mean *= 10.0;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\TDistributionTest.java",
+  "methodName" : "testCumulativeProbabilityAgainstStackOverflow",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n/**\r\n * @see <a href=\"https://issues.apache.orgg/bugzilla/show_bug.cgi?id=27243\">\r\n *      Bug report that prompted this unit test.</a>\r\n */\r\n@Test\r\nvoid testCumulativeProbabilityAgainstStackOverflow() {\r\n    Assertions.assertDoesNotThrow(() -> {\r\n        final TDistribution td = new TDistribution(5.);\r\n        td.cumulativeProbability(.1);\r\n        td.cumulativeProbability(.01);\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\TDistributionTest.java",
+  "methodName" : "testSmallDf",
+  "sourceCode" : "@Test\r\nvoid testSmallDf() {\r\n    setDistribution(new TDistribution(1d));\r\n    // quantiles computed using R version 2.9.2\r\n    setCumulativeTestPoints(new double[] { -318.308838986, -31.8205159538, -12.7062047362, -6.31375151468, -3.07768353718, 318.308838986, 31.8205159538, 12.7062047362, 6.31375151468, 3.07768353718 });\r\n    setDensityTestValues(new double[] { 3.14158231817e-06, 0.000314055924703, 0.00195946145194, 0.00778959736375, 0.0303958893917, 3.14158231817e-06, 0.000314055924703, 0.00195946145194, 0.00778959736375, 0.0303958893917 });\r\n    setInverseCumulativeTestValues(getCumulativeTestPoints());\r\n    verifyCumulativeProbabilities();\r\n    verifyInverseCumulativeProbabilities();\r\n    verifyDensities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\TDistributionTest.java",
+  "methodName" : "testInverseCumulativeProbabilityExtremes",
+  "sourceCode" : "@Test\r\nvoid testInverseCumulativeProbabilityExtremes() {\r\n    setInverseCumulativeTestPoints(new double[] { 0, 1 });\r\n    setInverseCumulativeTestValues(new double[] { Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY });\r\n    verifyInverseCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\TDistributionTest.java",
+  "methodName" : "testCumulativeProbablilityExtremes",
+  "sourceCode" : "@Test\r\nvoid testCumulativeProbablilityExtremes() {\r\n    TDistribution dist;\r\n    for (int i = 1; i < 11; i++) {\r\n        dist = new TDistribution(i * 5);\r\n        Assertions.assertEquals(1, dist.cumulativeProbability(Double.POSITIVE_INFINITY), Double.MIN_VALUE);\r\n        Assertions.assertEquals(0, dist.cumulativeProbability(Double.NEGATIVE_INFINITY), Double.MIN_VALUE);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\TDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "@Test\r\nvoid testParameterAccessors() {\r\n    final TDistribution dist = makeDistribution();\r\n    Assertions.assertEquals(5d, dist.getDegreesOfFreedom());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\TDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new TDistribution(0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\TDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    final double tol = 1e-9;\r\n    TDistribution dist;\r\n    dist = new TDistribution(1);\r\n    Assertions.assertTrue(Double.isNaN(dist.getMean()));\r\n    Assertions.assertTrue(Double.isNaN(dist.getVariance()));\r\n    dist = new TDistribution(1.5);\r\n    Assertions.assertEquals(0, dist.getMean(), tol);\r\n    Assertions.assertEquals(Double.POSITIVE_INFINITY, dist.getVariance());\r\n    dist = new TDistribution(5);\r\n    Assertions.assertEquals(0, dist.getMean(), tol);\r\n    Assertions.assertEquals(5d / (5d - 2d), dist.getVariance(), tol);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\TDistributionTest.java",
+  "methodName" : "nistData",
+  "sourceCode" : "/*\r\n     * Adding this test to benchmark against tables published by NIST\r\n     * http://itl.nist.gov/div898/handbook/eda/section3/eda3672.htm\r\n     * Have chosen tabulated results for degrees of freedom 2,10,30,100\r\n     * Have chosen problevels from 0.10 to 0.001\r\n     */\r\n@Test\r\nvoid nistData() {\r\n    final double[] prob = new double[] { 0.10, 0.05, 0.025, 0.01, 0.005, 0.001 };\r\n    final double[] args2 = new double[] { 1.886, 2.920, 4.303, 6.965, 9.925, 22.327 };\r\n    final double[] args10 = new double[] { 1.372, 1.812, 2.228, 2.764, 3.169, 4.143 };\r\n    final double[] args30 = new double[] { 1.310, 1.697, 2.042, 2.457, 2.750, 3.385 };\r\n    final double[] args100 = new double[] { 1.290, 1.660, 1.984, 2.364, 2.626, 3.174 };\r\n    TestUtils.assertEquals(prob, makeNistResults(args2, 2), 1.0e-4);\r\n    TestUtils.assertEquals(prob, makeNistResults(args10, 10), 1.0e-4);\r\n    TestUtils.assertEquals(prob, makeNistResults(args30, 30), 1.0e-4);\r\n    TestUtils.assertEquals(prob, makeNistResults(args100, 100), 1.0e-4);\r\n    return;\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\TriangularDistributionTest.java",
+  "methodName" : "testGetLowerBound",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n/**\r\n * Test lower bound getter.\r\n */\r\n@Test\r\nvoid testGetLowerBound() {\r\n    final TriangularDistribution distribution = makeDistribution();\r\n    Assertions.assertEquals(-3.0, distribution.getSupportLowerBound());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\TriangularDistributionTest.java",
+  "methodName" : "testGetUpperBound",
+  "sourceCode" : "/**\r\n * Test upper bound getter.\r\n */\r\n@Test\r\nvoid testGetUpperBound() {\r\n    final TriangularDistribution distribution = makeDistribution();\r\n    Assertions.assertEquals(12.0, distribution.getSupportUpperBound());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\TriangularDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "@Test\r\nvoid testParameterAccessors() {\r\n    for (final double x : new double[] { 0.1, 0.2, 0.45 }) {\r\n        final TriangularDistribution dist = new TriangularDistribution(0, x, 1.0);\r\n        Assertions.assertEquals(x, dist.getMode());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\TriangularDistributionTest.java",
+  "methodName" : "testConstructorPreconditions1",
+  "sourceCode" : "/**\r\n * Test pre-condition for equal lower/upper limit.\r\n */\r\n@Test\r\nvoid testConstructorPreconditions1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new TriangularDistribution(0, 0, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\TriangularDistributionTest.java",
+  "methodName" : "testConstructorPreconditions2",
+  "sourceCode" : "/**\r\n * Test pre-condition for lower limit larger than upper limit.\r\n */\r\n@Test\r\nvoid testConstructorPreconditions2() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new TriangularDistribution(1, 1, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\TriangularDistributionTest.java",
+  "methodName" : "testConstructorPreconditions3",
+  "sourceCode" : "/**\r\n * Test pre-condition for mode larger than upper limit.\r\n */\r\n@Test\r\nvoid testConstructorPreconditions3() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new TriangularDistribution(0, 2, 1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\TriangularDistributionTest.java",
+  "methodName" : "testConstructorPreconditions4",
+  "sourceCode" : "/**\r\n * Test pre-condition for mode smaller than lower limit.\r\n */\r\n@Test\r\nvoid testConstructorPreconditions4() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new TriangularDistribution(2, 1, 3));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\TriangularDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    TriangularDistribution dist;\r\n    dist = new TriangularDistribution(0, 0.5, 1.0);\r\n    Assertions.assertEquals(0.5, dist.getMean());\r\n    Assertions.assertEquals(1 / 24.0, dist.getVariance());\r\n    dist = new TriangularDistribution(0, 1, 1);\r\n    Assertions.assertEquals(2 / 3.0, dist.getMean());\r\n    Assertions.assertEquals(1 / 18.0, dist.getVariance());\r\n    dist = new TriangularDistribution(-3, 2, 12);\r\n    Assertions.assertEquals(3 + (2 / 3.0), dist.getMean());\r\n    Assertions.assertEquals(175 / 18.0, dist.getVariance());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\UniformContinuousDistributionTest.java",
+  "methodName" : "testGetLowerBound",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n/**\r\n * Test lower bound getter.\r\n */\r\n@Test\r\nvoid testGetLowerBound() {\r\n    final UniformContinuousDistribution distribution = makeDistribution();\r\n    Assertions.assertEquals(-0.5, distribution.getSupportLowerBound());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\UniformContinuousDistributionTest.java",
+  "methodName" : "testGetUpperBound",
+  "sourceCode" : "/**\r\n * Test upper bound getter.\r\n */\r\n@Test\r\nvoid testGetUpperBound() {\r\n    final UniformContinuousDistribution distribution = makeDistribution();\r\n    Assertions.assertEquals(1.25, distribution.getSupportUpperBound());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\UniformContinuousDistributionTest.java",
+  "methodName" : "testConstructorPreconditions1",
+  "sourceCode" : "/**\r\n * Test pre-condition for equal lower/upper bound.\r\n */\r\n@Test\r\nvoid testConstructorPreconditions1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new UniformContinuousDistribution(0, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\UniformContinuousDistributionTest.java",
+  "methodName" : "testConstructorPreconditions2",
+  "sourceCode" : "/**\r\n * Test pre-condition for lower bound larger than upper bound.\r\n */\r\n@Test\r\nvoid testConstructorPreconditions2() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new UniformContinuousDistribution(1, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\UniformContinuousDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    UniformContinuousDistribution dist;\r\n    dist = new UniformContinuousDistribution(0, 1);\r\n    Assertions.assertEquals(0.5, dist.getMean());\r\n    Assertions.assertEquals(1 / 12.0, dist.getVariance());\r\n    dist = new UniformContinuousDistribution(-1.5, 0.6);\r\n    Assertions.assertEquals(-0.45, dist.getMean());\r\n    Assertions.assertEquals(0.3675, dist.getVariance());\r\n    dist = new UniformContinuousDistribution(-0.5, 1.25);\r\n    Assertions.assertEquals(0.375, dist.getMean());\r\n    Assertions.assertEquals(0.2552083333333333, dist.getVariance());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\UniformContinuousDistributionTest.java",
+  "methodName" : "testInverseCumulativeDistribution",
+  "sourceCode" : "/**\r\n * Check accuracy of analytical inverse CDF. Fails if a solver is used\r\n * with the default accuracy.\r\n */\r\n@Test\r\nvoid testInverseCumulativeDistribution() {\r\n    final UniformContinuousDistribution dist = new UniformContinuousDistribution(0, 1e-9);\r\n    Assertions.assertEquals(2.5e-10, dist.inverseCumulativeProbability(0.25));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\UniformDiscreteDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n/**\r\n * Test mean/variance.\r\n */\r\n@Test\r\nvoid testMoments() {\r\n    UniformDiscreteDistribution dist;\r\n    dist = new UniformDiscreteDistribution(0, 5);\r\n    Assertions.assertEquals(2.5, dist.getMean());\r\n    Assertions.assertEquals(35 / 12.0, dist.getVariance());\r\n    dist = new UniformDiscreteDistribution(0, 1);\r\n    Assertions.assertEquals(0.5, dist.getMean());\r\n    Assertions.assertEquals(3 / 12.0, dist.getVariance());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\UniformDiscreteDistributionTest.java",
+  "methodName" : "testPreconditionUpperBoundInclusive1",
+  "sourceCode" : "// MATH-1141\r\n@Test\r\nvoid testPreconditionUpperBoundInclusive1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new UniformDiscreteDistribution(1, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\UniformDiscreteDistributionTest.java",
+  "methodName" : "testPreconditionUpperBoundInclusive2",
+  "sourceCode" : "// MATH-1141\r\n@Test\r\nvoid testPreconditionUpperBoundInclusive2() {\r\n    // Degenerate case is allowed.\r\n    Assertions.assertDoesNotThrow(() -> new UniformDiscreteDistribution(0, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\UniformDiscreteDistributionTest.java",
+  "methodName" : "testLargeRangeSubtractionOverflow",
+  "sourceCode" : "// MATH-1396\r\n@Test\r\nvoid testLargeRangeSubtractionOverflow() {\r\n    final int hi = Integer.MAX_VALUE / 2 + 10;\r\n    final UniformDiscreteDistribution dist = new UniformDiscreteDistribution(-hi, hi - 1);\r\n    final double tol = Math.ulp(1d);\r\n    Assertions.assertEquals(0.5 / hi, dist.probability(123456), tol);\r\n    Assertions.assertEquals(0.5, dist.cumulativeProbability(-1), tol);\r\n    Assertions.assertTrue(Precision.equals((Math.pow(2d * hi, 2) - 1) / 12, dist.getVariance(), 1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\UniformDiscreteDistributionTest.java",
+  "methodName" : "testLargeRangeAdditionOverflow",
+  "sourceCode" : "// MATH-1396\r\n@Test\r\nvoid testLargeRangeAdditionOverflow() {\r\n    final int hi = Integer.MAX_VALUE / 2 + 10;\r\n    final UniformDiscreteDistribution dist = new UniformDiscreteDistribution(hi - 1, hi + 1);\r\n    final double tol = Math.ulp(1d);\r\n    Assertions.assertEquals(1d / 3d, dist.probability(hi), tol);\r\n    Assertions.assertEquals(2d / 3d, dist.cumulativeProbability(hi), tol);\r\n    Assertions.assertTrue(Precision.equals(hi, dist.getMean(), 1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\WeibullDistributionTest.java",
+  "methodName" : "testInverseCumulativeProbabilitySmallPAccuracy",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n@Test\r\nvoid testInverseCumulativeProbabilitySmallPAccuracy() {\r\n    final WeibullDistribution dist = new WeibullDistribution(2, 3);\r\n    final double t = dist.inverseCumulativeProbability(1e-17);\r\n    // Analytically, answer is solution to 1e-17 = 1-exp(-(x/3)^2)\r\n    // x = sqrt(-9*log(1-1e-17))\r\n    // If we're not careful, answer will be 0. Answer below is computed with care in Octave:\r\n    Assertions.assertEquals(9.48683298050514e-9, t, 1e-17);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\WeibullDistributionTest.java",
+  "methodName" : "testInverseCumulativeProbabilityExtremes",
+  "sourceCode" : "@Test\r\nvoid testInverseCumulativeProbabilityExtremes() {\r\n    setInverseCumulativeTestPoints(new double[] { 0.0, 1.0 });\r\n    setInverseCumulativeTestValues(new double[] { 0.0, Double.POSITIVE_INFINITY });\r\n    verifyInverseCumulativeProbabilities();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\WeibullDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "@Test\r\nvoid testParameterAccessors() {\r\n    final WeibullDistribution dist = new WeibullDistribution(1, 2);\r\n    Assertions.assertEquals(1, dist.getShape());\r\n    Assertions.assertEquals(2, dist.getScale());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\WeibullDistributionTest.java",
+  "methodName" : "testConstructorPrecondition1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new WeibullDistribution(0, 2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\WeibullDistributionTest.java",
+  "methodName" : "testConstructorPrecondition2",
+  "sourceCode" : "@Test\r\nvoid testConstructorPrecondition2() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new WeibullDistribution(1, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\WeibullDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    final double tol = 1e-9;\r\n    WeibullDistribution dist;\r\n    dist = new WeibullDistribution(2.5, 3.5);\r\n    // In R: 3.5*gamma(1+(1/2.5)) (or empirically: mean(rweibull(10000, 2.5, 3.5)))\r\n    Assertions.assertEquals(3.5 * Math.exp(LogGamma.value(1 + (1 / 2.5))), dist.getMean(), tol);\r\n    Assertions.assertEquals((3.5 * 3.5) * Math.exp(LogGamma.value(1 + (2 / 2.5))) - (dist.getMean() * dist.getMean()), dist.getVariance(), tol);\r\n    dist = new WeibullDistribution(10.4, 2.222);\r\n    Assertions.assertEquals(2.222 * Math.exp(LogGamma.value(1 + (1 / 10.4))), dist.getMean(), tol);\r\n    Assertions.assertEquals((2.222 * 2.222) * Math.exp(LogGamma.value(1 + (2 / 10.4))) - (dist.getMean() * dist.getMean()), dist.getVariance(), tol);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ZipfDistributionTest.java",
+  "methodName" : "testParameterAccessors",
+  "sourceCode" : "//-------------------- Additional test cases -------------------------------\r\n@Test\r\nvoid testParameterAccessors() {\r\n    final ZipfDistribution distribution = makeDistribution();\r\n    Assertions.assertEquals(10, distribution.getNumberOfElements());\r\n    Assertions.assertEquals(1.0, distribution.getExponent());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ZipfDistributionTest.java",
+  "methodName" : "testConstructorPreconditions1",
+  "sourceCode" : "@Test\r\nvoid testConstructorPreconditions1() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new ZipfDistribution(0, 1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ZipfDistributionTest.java",
+  "methodName" : "testConstructorPreconditions2",
+  "sourceCode" : "@Test\r\nvoid testConstructorPreconditions2() {\r\n    Assertions.assertThrows(DistributionException.class, () -> new ZipfDistribution(1, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ZipfDistributionTest.java",
+  "methodName" : "testMoments",
+  "sourceCode" : "@Test\r\nvoid testMoments() {\r\n    final double tol = 1e-9;\r\n    ZipfDistribution dist;\r\n    dist = new ZipfDistribution(2, 0.5);\r\n    Assertions.assertEquals(Math.sqrt(2), dist.getMean(), tol);\r\n    Assertions.assertEquals(0.24264068711928521, dist.getVariance(), tol);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Statistics\\commons-statistics-distribution\\src\\test\\java\\org\\apache\\commons\\statistics\\distribution\\ZipfDistributionTest.java",
+  "methodName" : "testSamplingExtended",
+  "sourceCode" : "/**\r\n * Test sampling for various number of points and exponents.\r\n */\r\n@Test\r\nvoid testSamplingExtended() {\r\n    final int sampleSize = 1000;\r\n    final int[] numPointsValues = { 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100 };\r\n    final double[] exponentValues = { 1e-10, 1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 2e-1, 5e-1, 1. - 1e-9, 1.0, 1. + 1e-9, 1.1, 1.2, 1.3, 1.5, 1.6, 1.7, 1.8, 2.0, 2.5, 3.0, 4., 5., 6., 7., 8., 9., 10., 20., 30., 100., 150. };\r\n    for (final int numPoints : numPointsValues) {\r\n        for (final double exponent : exponentValues) {\r\n            double weightSum = 0.;\r\n            final double[] weights = new double[numPoints];\r\n            for (int i = numPoints; i >= 1; i -= 1) {\r\n                weights[i - 1] = Math.pow(i, -exponent);\r\n                weightSum += weights[i - 1];\r\n            }\r\n            // Use fixed seed, the test is expected to fail for more than 50% of all\r\n            // seeds because each test case can fail with probability 0.001, the chance\r\n            // that all test cases do not fail is 0.999^(32*22) = 0.49442874426\r\n            final DiscreteDistribution.Sampler distribution = new ZipfDistribution(numPoints, exponent).createSampler(RandomSource.create(RandomSource.WELL_19937_C, 6));\r\n            final double[] expectedCounts = new double[numPoints];\r\n            final long[] observedCounts = new long[numPoints];\r\n            for (int i = 0; i < numPoints; i++) {\r\n                expectedCounts[i] = sampleSize * (weights[i] / weightSum);\r\n            }\r\n            final int[] sample = AbstractDiscreteDistribution.sample(sampleSize, distribution);\r\n            for (final int s : sample) {\r\n                observedCounts[s - 1]++;\r\n            }\r\n            TestUtils.assertChiSquareAccept(expectedCounts, observedCounts, 0.001);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+} ]

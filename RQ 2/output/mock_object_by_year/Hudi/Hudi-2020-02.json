@@ -1,0 +1,785 @@
+[
+  {
+    "rawMockObjectId": 1,
+    "variableName": "hoodieWriteConfig",
+    "variableType": "HoodieWriteConfig",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.hudi.func",
+      "filePath": "C:\\Java_projects\\temp_projects\\Hudi\\hudi-client\\src\\test\\java\\org\\apache\\hudi\\func\\TestBoundedInMemoryExecutor.java"
+    },
+    "statements": [
+      {
+        "code": "HoodieWriteConfig hoodieWriteConfig = mock(HoodieWriteConfig.class);",
+        "line": 63,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testExecutor",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testExecutor() {\r\n    final List<HoodieRecord> hoodieRecords = dataGen.generateInserts(commitTime, 100);\r\n    HoodieWriteConfig hoodieWriteConfig = mock(HoodieWriteConfig.class);\r\n    when(hoodieWriteConfig.getWriteBufferLimitBytes()).thenReturn(1024);\r\n    BoundedInMemoryQueueConsumer<HoodieInsertValueGenResult<HoodieRecord>, Integer> consumer = new BoundedInMemoryQueueConsumer<HoodieInsertValueGenResult<HoodieRecord>, Integer>() {\r\n\r\n        private int count = 0;\r\n\r\n        @Override\r\n        protected void consumeOneRecord(HoodieInsertValueGenResult<HoodieRecord> record) {\r\n            count++;\r\n        }\r\n\r\n        @Override\r\n        protected void finish() {\r\n        }\r\n\r\n        @Override\r\n        protected Integer getResult() {\r\n            return count;\r\n        }\r\n    };\r\n    SparkBoundedInMemoryExecutor<HoodieRecord, Tuple2<HoodieRecord, Option<IndexedRecord>>, Integer> executor = null;\r\n    try {\r\n        executor = new SparkBoundedInMemoryExecutor(hoodieWriteConfig, hoodieRecords.iterator(), consumer, getTransformFunction(HoodieTestDataGenerator.AVRO_SCHEMA));\r\n        int result = executor.execute();\r\n        // It should buffer and write 100 records\r\n        Assert.assertEquals(result, 100);\r\n        // There should be no remaining records in the buffer\r\n        Assert.assertFalse(executor.isRemaining());\r\n    } finally {\r\n        if (executor != null) {\r\n            executor.shutdownNow();\r\n        }\r\n    }\r\n}"
+        }
+      },
+      {
+        "code": "when(hoodieWriteConfig.getWriteBufferLimitBytes()).thenReturn(1024);",
+        "line": 64,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testExecutor",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testExecutor() {\r\n    final List<HoodieRecord> hoodieRecords = dataGen.generateInserts(commitTime, 100);\r\n    HoodieWriteConfig hoodieWriteConfig = mock(HoodieWriteConfig.class);\r\n    when(hoodieWriteConfig.getWriteBufferLimitBytes()).thenReturn(1024);\r\n    BoundedInMemoryQueueConsumer<HoodieInsertValueGenResult<HoodieRecord>, Integer> consumer = new BoundedInMemoryQueueConsumer<HoodieInsertValueGenResult<HoodieRecord>, Integer>() {\r\n\r\n        private int count = 0;\r\n\r\n        @Override\r\n        protected void consumeOneRecord(HoodieInsertValueGenResult<HoodieRecord> record) {\r\n            count++;\r\n        }\r\n\r\n        @Override\r\n        protected void finish() {\r\n        }\r\n\r\n        @Override\r\n        protected Integer getResult() {\r\n            return count;\r\n        }\r\n    };\r\n    SparkBoundedInMemoryExecutor<HoodieRecord, Tuple2<HoodieRecord, Option<IndexedRecord>>, Integer> executor = null;\r\n    try {\r\n        executor = new SparkBoundedInMemoryExecutor(hoodieWriteConfig, hoodieRecords.iterator(), consumer, getTransformFunction(HoodieTestDataGenerator.AVRO_SCHEMA));\r\n        int result = executor.execute();\r\n        // It should buffer and write 100 records\r\n        Assert.assertEquals(result, 100);\r\n        // There should be no remaining records in the buffer\r\n        Assert.assertFalse(executor.isRemaining());\r\n    } finally {\r\n        if (executor != null) {\r\n            executor.shutdownNow();\r\n        }\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 2,
+    "variableName": "mockHoodieRecordsIterator",
+    "variableType": "Iterator<HoodieRecord>",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.hudi.func",
+      "filePath": "C:\\Java_projects\\temp_projects\\Hudi\\hudi-client\\src\\test\\java\\org\\apache\\hudi\\func\\TestBoundedInMemoryQueue.java"
+    },
+    "statements": [
+      {
+        "code": "final Iterator<HoodieRecord> mockHoodieRecordsIterator = mock(Iterator.class);",
+        "line": 300,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testException",
+          "methodAnnotations": [
+            "SuppressWarnings",
+            "Test"
+          ],
+          "methodRawCode": "// Test to ensure that exception in either queueing thread or BufferedIterator-reader thread\r\n// is propagated to\r\n// another thread.\r\n@SuppressWarnings(\"unchecked\")\r\n@Test(timeout = 60000)\r\npublic void testException() throws Exception {\r\n    final int numRecords = 256;\r\n    final List<HoodieRecord> hoodieRecords = dataGen.generateInserts(commitTime, numRecords);\r\n    final SizeEstimator<Tuple2<HoodieRecord, Option<IndexedRecord>>> sizeEstimator = new DefaultSizeEstimator<>();\r\n    // queue memory limit\r\n    HoodieInsertValueGenResult<HoodieRecord> payload = getTransformFunction(HoodieTestDataGenerator.AVRO_SCHEMA).apply(hoodieRecords.get(0));\r\n    final long objSize = sizeEstimator.sizeEstimate(new Tuple2<>(payload.record, payload.insertValue));\r\n    final long memoryLimitInBytes = 4 * objSize;\r\n    // first let us throw exception from queueIterator reader and test that queueing thread\r\n    // stops and throws\r\n    // correct exception back.\r\n    BoundedInMemoryQueue<HoodieRecord, Tuple2<HoodieRecord, Option<IndexedRecord>>> queue1 = new BoundedInMemoryQueue(memoryLimitInBytes, getTransformFunction(HoodieTestDataGenerator.AVRO_SCHEMA));\r\n    // Produce\r\n    Future<Boolean> resFuture = executorService.submit(() -> {\r\n        new IteratorBasedQueueProducer<>(hoodieRecords.iterator()).produce(queue1);\r\n        return true;\r\n    });\r\n    // waiting for permits to expire.\r\n    while (!isQueueFull(queue1.rateLimiter)) {\r\n        Thread.sleep(10);\r\n    }\r\n    // notify queueing thread of an exception and ensure that it exits.\r\n    final Exception e = new Exception(\"Failing it :)\");\r\n    queue1.markAsFailed(e);\r\n    try {\r\n        resFuture.get();\r\n        Assert.fail(\"exception is expected\");\r\n    } catch (ExecutionException e1) {\r\n        Assert.assertEquals(HoodieException.class, e1.getCause().getClass());\r\n        Assert.assertEquals(e, e1.getCause().getCause());\r\n    }\r\n    // second let us raise an exception while doing record queueing. this exception should get\r\n    // propagated to\r\n    // queue iterator reader.\r\n    final RuntimeException expectedException = new RuntimeException(\"failing record reading\");\r\n    final Iterator<HoodieRecord> mockHoodieRecordsIterator = mock(Iterator.class);\r\n    when(mockHoodieRecordsIterator.hasNext()).thenReturn(true);\r\n    when(mockHoodieRecordsIterator.next()).thenThrow(expectedException);\r\n    BoundedInMemoryQueue<HoodieRecord, Tuple2<HoodieRecord, Option<IndexedRecord>>> queue2 = new BoundedInMemoryQueue(memoryLimitInBytes, getTransformFunction(HoodieTestDataGenerator.AVRO_SCHEMA));\r\n    // Produce\r\n    Future<Boolean> res = executorService.submit(() -> {\r\n        try {\r\n            new IteratorBasedQueueProducer<>(mockHoodieRecordsIterator).produce(queue2);\r\n        } catch (Exception ex) {\r\n            queue2.markAsFailed(ex);\r\n            throw ex;\r\n        }\r\n        return true;\r\n    });\r\n    try {\r\n        queue2.iterator().hasNext();\r\n        Assert.fail(\"exception is expected\");\r\n    } catch (Exception e1) {\r\n        Assert.assertEquals(expectedException, e1.getCause());\r\n    }\r\n    // queueing thread should also have exited. make sure that it is not running.\r\n    try {\r\n        res.get();\r\n        Assert.fail(\"exception is expected\");\r\n    } catch (ExecutionException e2) {\r\n        Assert.assertEquals(expectedException, e2.getCause());\r\n    }\r\n}"
+        }
+      },
+      {
+        "code": "when(mockHoodieRecordsIterator.hasNext()).thenReturn(true);",
+        "line": 301,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testException",
+          "methodAnnotations": [
+            "SuppressWarnings",
+            "Test"
+          ],
+          "methodRawCode": "// Test to ensure that exception in either queueing thread or BufferedIterator-reader thread\r\n// is propagated to\r\n// another thread.\r\n@SuppressWarnings(\"unchecked\")\r\n@Test(timeout = 60000)\r\npublic void testException() throws Exception {\r\n    final int numRecords = 256;\r\n    final List<HoodieRecord> hoodieRecords = dataGen.generateInserts(commitTime, numRecords);\r\n    final SizeEstimator<Tuple2<HoodieRecord, Option<IndexedRecord>>> sizeEstimator = new DefaultSizeEstimator<>();\r\n    // queue memory limit\r\n    HoodieInsertValueGenResult<HoodieRecord> payload = getTransformFunction(HoodieTestDataGenerator.AVRO_SCHEMA).apply(hoodieRecords.get(0));\r\n    final long objSize = sizeEstimator.sizeEstimate(new Tuple2<>(payload.record, payload.insertValue));\r\n    final long memoryLimitInBytes = 4 * objSize;\r\n    // first let us throw exception from queueIterator reader and test that queueing thread\r\n    // stops and throws\r\n    // correct exception back.\r\n    BoundedInMemoryQueue<HoodieRecord, Tuple2<HoodieRecord, Option<IndexedRecord>>> queue1 = new BoundedInMemoryQueue(memoryLimitInBytes, getTransformFunction(HoodieTestDataGenerator.AVRO_SCHEMA));\r\n    // Produce\r\n    Future<Boolean> resFuture = executorService.submit(() -> {\r\n        new IteratorBasedQueueProducer<>(hoodieRecords.iterator()).produce(queue1);\r\n        return true;\r\n    });\r\n    // waiting for permits to expire.\r\n    while (!isQueueFull(queue1.rateLimiter)) {\r\n        Thread.sleep(10);\r\n    }\r\n    // notify queueing thread of an exception and ensure that it exits.\r\n    final Exception e = new Exception(\"Failing it :)\");\r\n    queue1.markAsFailed(e);\r\n    try {\r\n        resFuture.get();\r\n        Assert.fail(\"exception is expected\");\r\n    } catch (ExecutionException e1) {\r\n        Assert.assertEquals(HoodieException.class, e1.getCause().getClass());\r\n        Assert.assertEquals(e, e1.getCause().getCause());\r\n    }\r\n    // second let us raise an exception while doing record queueing. this exception should get\r\n    // propagated to\r\n    // queue iterator reader.\r\n    final RuntimeException expectedException = new RuntimeException(\"failing record reading\");\r\n    final Iterator<HoodieRecord> mockHoodieRecordsIterator = mock(Iterator.class);\r\n    when(mockHoodieRecordsIterator.hasNext()).thenReturn(true);\r\n    when(mockHoodieRecordsIterator.next()).thenThrow(expectedException);\r\n    BoundedInMemoryQueue<HoodieRecord, Tuple2<HoodieRecord, Option<IndexedRecord>>> queue2 = new BoundedInMemoryQueue(memoryLimitInBytes, getTransformFunction(HoodieTestDataGenerator.AVRO_SCHEMA));\r\n    // Produce\r\n    Future<Boolean> res = executorService.submit(() -> {\r\n        try {\r\n            new IteratorBasedQueueProducer<>(mockHoodieRecordsIterator).produce(queue2);\r\n        } catch (Exception ex) {\r\n            queue2.markAsFailed(ex);\r\n            throw ex;\r\n        }\r\n        return true;\r\n    });\r\n    try {\r\n        queue2.iterator().hasNext();\r\n        Assert.fail(\"exception is expected\");\r\n    } catch (Exception e1) {\r\n        Assert.assertEquals(expectedException, e1.getCause());\r\n    }\r\n    // queueing thread should also have exited. make sure that it is not running.\r\n    try {\r\n        res.get();\r\n        Assert.fail(\"exception is expected\");\r\n    } catch (ExecutionException e2) {\r\n        Assert.assertEquals(expectedException, e2.getCause());\r\n    }\r\n}"
+        }
+      },
+      {
+        "code": "when(mockHoodieRecordsIterator.next()).thenThrow(expectedException);",
+        "line": 302,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testException",
+          "methodAnnotations": [
+            "SuppressWarnings",
+            "Test"
+          ],
+          "methodRawCode": "// Test to ensure that exception in either queueing thread or BufferedIterator-reader thread\r\n// is propagated to\r\n// another thread.\r\n@SuppressWarnings(\"unchecked\")\r\n@Test(timeout = 60000)\r\npublic void testException() throws Exception {\r\n    final int numRecords = 256;\r\n    final List<HoodieRecord> hoodieRecords = dataGen.generateInserts(commitTime, numRecords);\r\n    final SizeEstimator<Tuple2<HoodieRecord, Option<IndexedRecord>>> sizeEstimator = new DefaultSizeEstimator<>();\r\n    // queue memory limit\r\n    HoodieInsertValueGenResult<HoodieRecord> payload = getTransformFunction(HoodieTestDataGenerator.AVRO_SCHEMA).apply(hoodieRecords.get(0));\r\n    final long objSize = sizeEstimator.sizeEstimate(new Tuple2<>(payload.record, payload.insertValue));\r\n    final long memoryLimitInBytes = 4 * objSize;\r\n    // first let us throw exception from queueIterator reader and test that queueing thread\r\n    // stops and throws\r\n    // correct exception back.\r\n    BoundedInMemoryQueue<HoodieRecord, Tuple2<HoodieRecord, Option<IndexedRecord>>> queue1 = new BoundedInMemoryQueue(memoryLimitInBytes, getTransformFunction(HoodieTestDataGenerator.AVRO_SCHEMA));\r\n    // Produce\r\n    Future<Boolean> resFuture = executorService.submit(() -> {\r\n        new IteratorBasedQueueProducer<>(hoodieRecords.iterator()).produce(queue1);\r\n        return true;\r\n    });\r\n    // waiting for permits to expire.\r\n    while (!isQueueFull(queue1.rateLimiter)) {\r\n        Thread.sleep(10);\r\n    }\r\n    // notify queueing thread of an exception and ensure that it exits.\r\n    final Exception e = new Exception(\"Failing it :)\");\r\n    queue1.markAsFailed(e);\r\n    try {\r\n        resFuture.get();\r\n        Assert.fail(\"exception is expected\");\r\n    } catch (ExecutionException e1) {\r\n        Assert.assertEquals(HoodieException.class, e1.getCause().getClass());\r\n        Assert.assertEquals(e, e1.getCause().getCause());\r\n    }\r\n    // second let us raise an exception while doing record queueing. this exception should get\r\n    // propagated to\r\n    // queue iterator reader.\r\n    final RuntimeException expectedException = new RuntimeException(\"failing record reading\");\r\n    final Iterator<HoodieRecord> mockHoodieRecordsIterator = mock(Iterator.class);\r\n    when(mockHoodieRecordsIterator.hasNext()).thenReturn(true);\r\n    when(mockHoodieRecordsIterator.next()).thenThrow(expectedException);\r\n    BoundedInMemoryQueue<HoodieRecord, Tuple2<HoodieRecord, Option<IndexedRecord>>> queue2 = new BoundedInMemoryQueue(memoryLimitInBytes, getTransformFunction(HoodieTestDataGenerator.AVRO_SCHEMA));\r\n    // Produce\r\n    Future<Boolean> res = executorService.submit(() -> {\r\n        try {\r\n            new IteratorBasedQueueProducer<>(mockHoodieRecordsIterator).produce(queue2);\r\n        } catch (Exception ex) {\r\n            queue2.markAsFailed(ex);\r\n            throw ex;\r\n        }\r\n        return true;\r\n    });\r\n    try {\r\n        queue2.iterator().hasNext();\r\n        Assert.fail(\"exception is expected\");\r\n    } catch (Exception e1) {\r\n        Assert.assertEquals(expectedException, e1.getCause());\r\n    }\r\n    // queueing thread should also have exited. make sure that it is not running.\r\n    try {\r\n        res.get();\r\n        Assert.fail(\"exception is expected\");\r\n    } catch (ExecutionException e2) {\r\n        Assert.assertEquals(expectedException, e2.getCause());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 3,
+    "variableName": "reader",
+    "variableType": "ParquetReader",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.hudi.func",
+      "filePath": "C:\\Java_projects\\temp_projects\\Hudi\\hudi-client\\src\\test\\java\\org\\apache\\hudi\\func\\TestParquetReaderIterator.java"
+    },
+    "statements": [
+      {
+        "code": "ParquetReader reader = mock(ParquetReader.class);",
+        "line": 36,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testParquetIteratorIdempotency",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testParquetIteratorIdempotency() throws IOException {\r\n    ParquetReader reader = mock(ParquetReader.class);\r\n    // only 1 record in reader\r\n    when(reader.read()).thenReturn(1).thenReturn(null);\r\n    ParquetReaderIterator<Integer> iterator = new ParquetReaderIterator<>(reader);\r\n    int idempotencyCheckCounter = 0;\r\n    // call hasNext() 3 times\r\n    while (idempotencyCheckCounter < 3) {\r\n        Assert.assertTrue(iterator.hasNext());\r\n        idempotencyCheckCounter++;\r\n    }\r\n}"
+        }
+      },
+      {
+        "code": "// only 1 record in reader\r\nwhen(reader.read()).thenReturn(1).thenReturn(null);",
+        "line": 38,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testParquetIteratorIdempotency",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testParquetIteratorIdempotency() throws IOException {\r\n    ParquetReader reader = mock(ParquetReader.class);\r\n    // only 1 record in reader\r\n    when(reader.read()).thenReturn(1).thenReturn(null);\r\n    ParquetReaderIterator<Integer> iterator = new ParquetReaderIterator<>(reader);\r\n    int idempotencyCheckCounter = 0;\r\n    // call hasNext() 3 times\r\n    while (idempotencyCheckCounter < 3) {\r\n        Assert.assertTrue(iterator.hasNext());\r\n        idempotencyCheckCounter++;\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 4,
+    "variableName": "reader",
+    "variableType": "ParquetReader",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.hudi.func",
+      "filePath": "C:\\Java_projects\\temp_projects\\Hudi\\hudi-client\\src\\test\\java\\org\\apache\\hudi\\func\\TestParquetReaderIterator.java"
+    },
+    "statements": [
+      {
+        "code": "ParquetReader reader = mock(ParquetReader.class);",
+        "line": 51,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testParquetIterator",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testParquetIterator() throws IOException {\r\n    ParquetReader reader = mock(ParquetReader.class);\r\n    // only one record to read\r\n    when(reader.read()).thenReturn(1).thenReturn(null);\r\n    ParquetReaderIterator<Integer> iterator = new ParquetReaderIterator<>(reader);\r\n    // should return value even though hasNext() hasn't been called\r\n    Assert.assertTrue(iterator.next() == 1);\r\n    // no more entries to iterate on\r\n    Assert.assertFalse(iterator.hasNext());\r\n    try {\r\n        iterator.next();\r\n    } catch (HoodieIOException e) {\r\n        // should throw an exception since there is only 1 record\r\n    }\r\n}"
+        }
+      },
+      {
+        "code": "// only one record to read\r\nwhen(reader.read()).thenReturn(1).thenReturn(null);",
+        "line": 53,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testParquetIterator",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testParquetIterator() throws IOException {\r\n    ParquetReader reader = mock(ParquetReader.class);\r\n    // only one record to read\r\n    when(reader.read()).thenReturn(1).thenReturn(null);\r\n    ParquetReaderIterator<Integer> iterator = new ParquetReaderIterator<>(reader);\r\n    // should return value even though hasNext() hasn't been called\r\n    Assert.assertTrue(iterator.next() == 1);\r\n    // no more entries to iterate on\r\n    Assert.assertFalse(iterator.hasNext());\r\n    try {\r\n        iterator.next();\r\n    } catch (HoodieIOException e) {\r\n        // should throw an exception since there is only 1 record\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 5,
+    "variableName": "hbaseConnection",
+    "variableType": "Connection",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.hudi.index",
+      "filePath": "C:\\Java_projects\\temp_projects\\Hudi\\hudi-client\\src\\test\\java\\org\\apache\\hudi\\index\\TestHbaseIndex.java"
+    },
+    "statements": [
+      {
+        "code": "// Mock hbaseConnection and related entities\r\nConnection hbaseConnection = Mockito.mock(Connection.class);",
+        "line": 251,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTotalGetsBatching",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTotalGetsBatching() throws Exception {\r\n    HoodieWriteConfig config = getConfig();\r\n    HBaseIndex index = new HBaseIndex(config);\r\n    // Mock hbaseConnection and related entities\r\n    Connection hbaseConnection = Mockito.mock(Connection.class);\r\n    HTable table = Mockito.mock(HTable.class);\r\n    Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);\r\n    Mockito.when(table.get((List<Get>) anyObject())).thenReturn(new Result[0]);\r\n    // only for test, set the hbaseConnection to mocked object\r\n    index.setHbaseConnection(hbaseConnection);\r\n    HoodieWriteClient writeClient = getWriteClient(config);\r\n    // start a commit and generate test data\r\n    String newCommitTime = writeClient.startCommit();\r\n    List<HoodieRecord> records = dataGen.generateInserts(newCommitTime, 250);\r\n    JavaRDD<HoodieRecord> writeRecords = jsc.parallelize(records, 1);\r\n    metaClient = HoodieTableMetaClient.reload(metaClient);\r\n    HoodieTable hoodieTable = HoodieTable.getHoodieTable(metaClient, config, jsc);\r\n    // Insert 250 records\r\n    JavaRDD<WriteStatus> writeStatues = writeClient.upsert(writeRecords, newCommitTime);\r\n    assertNoWriteErrors(writeStatues.collect());\r\n    // Now tagLocation for these records, hbaseIndex should tag them\r\n    index.tagLocation(writeRecords, jsc, hoodieTable);\r\n    // 3 batches should be executed given batchSize = 100 and parallelism = 1\r\n    Mockito.verify(table, times(3)).get((List<Get>) anyObject());\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);",
+        "line": 253,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTotalGetsBatching",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTotalGetsBatching() throws Exception {\r\n    HoodieWriteConfig config = getConfig();\r\n    HBaseIndex index = new HBaseIndex(config);\r\n    // Mock hbaseConnection and related entities\r\n    Connection hbaseConnection = Mockito.mock(Connection.class);\r\n    HTable table = Mockito.mock(HTable.class);\r\n    Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);\r\n    Mockito.when(table.get((List<Get>) anyObject())).thenReturn(new Result[0]);\r\n    // only for test, set the hbaseConnection to mocked object\r\n    index.setHbaseConnection(hbaseConnection);\r\n    HoodieWriteClient writeClient = getWriteClient(config);\r\n    // start a commit and generate test data\r\n    String newCommitTime = writeClient.startCommit();\r\n    List<HoodieRecord> records = dataGen.generateInserts(newCommitTime, 250);\r\n    JavaRDD<HoodieRecord> writeRecords = jsc.parallelize(records, 1);\r\n    metaClient = HoodieTableMetaClient.reload(metaClient);\r\n    HoodieTable hoodieTable = HoodieTable.getHoodieTable(metaClient, config, jsc);\r\n    // Insert 250 records\r\n    JavaRDD<WriteStatus> writeStatues = writeClient.upsert(writeRecords, newCommitTime);\r\n    assertNoWriteErrors(writeStatues.collect());\r\n    // Now tagLocation for these records, hbaseIndex should tag them\r\n    index.tagLocation(writeRecords, jsc, hoodieTable);\r\n    // 3 batches should be executed given batchSize = 100 and parallelism = 1\r\n    Mockito.verify(table, times(3)).get((List<Get>) anyObject());\r\n}"
+        }
+      },
+      {
+        "code": "// only for test, set the hbaseConnection to mocked object\r\nindex.setHbaseConnection(hbaseConnection);",
+        "line": 257,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTotalGetsBatching",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTotalGetsBatching() throws Exception {\r\n    HoodieWriteConfig config = getConfig();\r\n    HBaseIndex index = new HBaseIndex(config);\r\n    // Mock hbaseConnection and related entities\r\n    Connection hbaseConnection = Mockito.mock(Connection.class);\r\n    HTable table = Mockito.mock(HTable.class);\r\n    Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);\r\n    Mockito.when(table.get((List<Get>) anyObject())).thenReturn(new Result[0]);\r\n    // only for test, set the hbaseConnection to mocked object\r\n    index.setHbaseConnection(hbaseConnection);\r\n    HoodieWriteClient writeClient = getWriteClient(config);\r\n    // start a commit and generate test data\r\n    String newCommitTime = writeClient.startCommit();\r\n    List<HoodieRecord> records = dataGen.generateInserts(newCommitTime, 250);\r\n    JavaRDD<HoodieRecord> writeRecords = jsc.parallelize(records, 1);\r\n    metaClient = HoodieTableMetaClient.reload(metaClient);\r\n    HoodieTable hoodieTable = HoodieTable.getHoodieTable(metaClient, config, jsc);\r\n    // Insert 250 records\r\n    JavaRDD<WriteStatus> writeStatues = writeClient.upsert(writeRecords, newCommitTime);\r\n    assertNoWriteErrors(writeStatues.collect());\r\n    // Now tagLocation for these records, hbaseIndex should tag them\r\n    index.tagLocation(writeRecords, jsc, hoodieTable);\r\n    // 3 batches should be executed given batchSize = 100 and parallelism = 1\r\n    Mockito.verify(table, times(3)).get((List<Get>) anyObject());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 6,
+    "variableName": "table",
+    "variableType": "HTable",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.hudi.index",
+      "filePath": "C:\\Java_projects\\temp_projects\\Hudi\\hudi-client\\src\\test\\java\\org\\apache\\hudi\\index\\TestHbaseIndex.java"
+    },
+    "statements": [
+      {
+        "code": "HTable table = Mockito.mock(HTable.class);",
+        "line": 252,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTotalGetsBatching",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTotalGetsBatching() throws Exception {\r\n    HoodieWriteConfig config = getConfig();\r\n    HBaseIndex index = new HBaseIndex(config);\r\n    // Mock hbaseConnection and related entities\r\n    Connection hbaseConnection = Mockito.mock(Connection.class);\r\n    HTable table = Mockito.mock(HTable.class);\r\n    Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);\r\n    Mockito.when(table.get((List<Get>) anyObject())).thenReturn(new Result[0]);\r\n    // only for test, set the hbaseConnection to mocked object\r\n    index.setHbaseConnection(hbaseConnection);\r\n    HoodieWriteClient writeClient = getWriteClient(config);\r\n    // start a commit and generate test data\r\n    String newCommitTime = writeClient.startCommit();\r\n    List<HoodieRecord> records = dataGen.generateInserts(newCommitTime, 250);\r\n    JavaRDD<HoodieRecord> writeRecords = jsc.parallelize(records, 1);\r\n    metaClient = HoodieTableMetaClient.reload(metaClient);\r\n    HoodieTable hoodieTable = HoodieTable.getHoodieTable(metaClient, config, jsc);\r\n    // Insert 250 records\r\n    JavaRDD<WriteStatus> writeStatues = writeClient.upsert(writeRecords, newCommitTime);\r\n    assertNoWriteErrors(writeStatues.collect());\r\n    // Now tagLocation for these records, hbaseIndex should tag them\r\n    index.tagLocation(writeRecords, jsc, hoodieTable);\r\n    // 3 batches should be executed given batchSize = 100 and parallelism = 1\r\n    Mockito.verify(table, times(3)).get((List<Get>) anyObject());\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);",
+        "line": 253,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTotalGetsBatching",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTotalGetsBatching() throws Exception {\r\n    HoodieWriteConfig config = getConfig();\r\n    HBaseIndex index = new HBaseIndex(config);\r\n    // Mock hbaseConnection and related entities\r\n    Connection hbaseConnection = Mockito.mock(Connection.class);\r\n    HTable table = Mockito.mock(HTable.class);\r\n    Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);\r\n    Mockito.when(table.get((List<Get>) anyObject())).thenReturn(new Result[0]);\r\n    // only for test, set the hbaseConnection to mocked object\r\n    index.setHbaseConnection(hbaseConnection);\r\n    HoodieWriteClient writeClient = getWriteClient(config);\r\n    // start a commit and generate test data\r\n    String newCommitTime = writeClient.startCommit();\r\n    List<HoodieRecord> records = dataGen.generateInserts(newCommitTime, 250);\r\n    JavaRDD<HoodieRecord> writeRecords = jsc.parallelize(records, 1);\r\n    metaClient = HoodieTableMetaClient.reload(metaClient);\r\n    HoodieTable hoodieTable = HoodieTable.getHoodieTable(metaClient, config, jsc);\r\n    // Insert 250 records\r\n    JavaRDD<WriteStatus> writeStatues = writeClient.upsert(writeRecords, newCommitTime);\r\n    assertNoWriteErrors(writeStatues.collect());\r\n    // Now tagLocation for these records, hbaseIndex should tag them\r\n    index.tagLocation(writeRecords, jsc, hoodieTable);\r\n    // 3 batches should be executed given batchSize = 100 and parallelism = 1\r\n    Mockito.verify(table, times(3)).get((List<Get>) anyObject());\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(table.get((List<Get>) anyObject())).thenReturn(new Result[0]);",
+        "line": 254,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTotalGetsBatching",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTotalGetsBatching() throws Exception {\r\n    HoodieWriteConfig config = getConfig();\r\n    HBaseIndex index = new HBaseIndex(config);\r\n    // Mock hbaseConnection and related entities\r\n    Connection hbaseConnection = Mockito.mock(Connection.class);\r\n    HTable table = Mockito.mock(HTable.class);\r\n    Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);\r\n    Mockito.when(table.get((List<Get>) anyObject())).thenReturn(new Result[0]);\r\n    // only for test, set the hbaseConnection to mocked object\r\n    index.setHbaseConnection(hbaseConnection);\r\n    HoodieWriteClient writeClient = getWriteClient(config);\r\n    // start a commit and generate test data\r\n    String newCommitTime = writeClient.startCommit();\r\n    List<HoodieRecord> records = dataGen.generateInserts(newCommitTime, 250);\r\n    JavaRDD<HoodieRecord> writeRecords = jsc.parallelize(records, 1);\r\n    metaClient = HoodieTableMetaClient.reload(metaClient);\r\n    HoodieTable hoodieTable = HoodieTable.getHoodieTable(metaClient, config, jsc);\r\n    // Insert 250 records\r\n    JavaRDD<WriteStatus> writeStatues = writeClient.upsert(writeRecords, newCommitTime);\r\n    assertNoWriteErrors(writeStatues.collect());\r\n    // Now tagLocation for these records, hbaseIndex should tag them\r\n    index.tagLocation(writeRecords, jsc, hoodieTable);\r\n    // 3 batches should be executed given batchSize = 100 and parallelism = 1\r\n    Mockito.verify(table, times(3)).get((List<Get>) anyObject());\r\n}"
+        }
+      },
+      {
+        "code": "// 3 batches should be executed given batchSize = 100 and parallelism = 1\r\nMockito.verify(table, times(3)).get((List<Get>) anyObject());",
+        "line": 276,
+        "type": "VERIFICATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTotalGetsBatching",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTotalGetsBatching() throws Exception {\r\n    HoodieWriteConfig config = getConfig();\r\n    HBaseIndex index = new HBaseIndex(config);\r\n    // Mock hbaseConnection and related entities\r\n    Connection hbaseConnection = Mockito.mock(Connection.class);\r\n    HTable table = Mockito.mock(HTable.class);\r\n    Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);\r\n    Mockito.when(table.get((List<Get>) anyObject())).thenReturn(new Result[0]);\r\n    // only for test, set the hbaseConnection to mocked object\r\n    index.setHbaseConnection(hbaseConnection);\r\n    HoodieWriteClient writeClient = getWriteClient(config);\r\n    // start a commit and generate test data\r\n    String newCommitTime = writeClient.startCommit();\r\n    List<HoodieRecord> records = dataGen.generateInserts(newCommitTime, 250);\r\n    JavaRDD<HoodieRecord> writeRecords = jsc.parallelize(records, 1);\r\n    metaClient = HoodieTableMetaClient.reload(metaClient);\r\n    HoodieTable hoodieTable = HoodieTable.getHoodieTable(metaClient, config, jsc);\r\n    // Insert 250 records\r\n    JavaRDD<WriteStatus> writeStatues = writeClient.upsert(writeRecords, newCommitTime);\r\n    assertNoWriteErrors(writeStatues.collect());\r\n    // Now tagLocation for these records, hbaseIndex should tag them\r\n    index.tagLocation(writeRecords, jsc, hoodieTable);\r\n    // 3 batches should be executed given batchSize = 100 and parallelism = 1\r\n    Mockito.verify(table, times(3)).get((List<Get>) anyObject());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 7,
+    "variableName": "hbaseConnection",
+    "variableType": "Connection",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.hudi.index",
+      "filePath": "C:\\Java_projects\\temp_projects\\Hudi\\hudi-client\\src\\test\\java\\org\\apache\\hudi\\index\\TestHbaseIndex.java"
+    },
+    "statements": [
+      {
+        "code": "// Mock hbaseConnection and related entities\r\nConnection hbaseConnection = Mockito.mock(Connection.class);",
+        "line": 300,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTotalPutsBatching",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTotalPutsBatching() throws Exception {\r\n    HoodieWriteConfig config = getConfig();\r\n    HBaseIndex index = new HBaseIndex(config);\r\n    HoodieWriteClient writeClient = getWriteClient(config);\r\n    // start a commit and generate test data\r\n    String newCommitTime = writeClient.startCommit();\r\n    List<HoodieRecord> records = dataGen.generateInserts(newCommitTime, 250);\r\n    JavaRDD<HoodieRecord> writeRecords = jsc.parallelize(records, 1);\r\n    metaClient = HoodieTableMetaClient.reload(metaClient);\r\n    HoodieTable hoodieTable = HoodieTable.getHoodieTable(metaClient, config, jsc);\r\n    // Insert 200 records\r\n    JavaRDD<WriteStatus> writeStatues = writeClient.upsert(writeRecords, newCommitTime);\r\n    // commit this upsert\r\n    writeClient.commit(newCommitTime, writeStatues);\r\n    // Mock hbaseConnection and related entities\r\n    Connection hbaseConnection = Mockito.mock(Connection.class);\r\n    HTable table = Mockito.mock(HTable.class);\r\n    Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);\r\n    Mockito.when(table.get((List<Get>) anyObject())).thenReturn(new Result[0]);\r\n    // only for test, set the hbaseConnection to mocked object\r\n    index.setHbaseConnection(hbaseConnection);\r\n    // Get all the files generated\r\n    int numberOfDataFileIds = (int) writeStatues.map(status -> status.getFileId()).distinct().count();\r\n    index.updateLocation(writeStatues, jsc, hoodieTable);\r\n    // 3 batches should be executed given batchSize = 100 and <=numberOfDataFileIds getting updated,\r\n    // so each fileId ideally gets updates\r\n    Mockito.verify(table, atMost(numberOfDataFileIds)).put((List<Put>) anyObject());\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);",
+        "line": 302,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTotalPutsBatching",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTotalPutsBatching() throws Exception {\r\n    HoodieWriteConfig config = getConfig();\r\n    HBaseIndex index = new HBaseIndex(config);\r\n    HoodieWriteClient writeClient = getWriteClient(config);\r\n    // start a commit and generate test data\r\n    String newCommitTime = writeClient.startCommit();\r\n    List<HoodieRecord> records = dataGen.generateInserts(newCommitTime, 250);\r\n    JavaRDD<HoodieRecord> writeRecords = jsc.parallelize(records, 1);\r\n    metaClient = HoodieTableMetaClient.reload(metaClient);\r\n    HoodieTable hoodieTable = HoodieTable.getHoodieTable(metaClient, config, jsc);\r\n    // Insert 200 records\r\n    JavaRDD<WriteStatus> writeStatues = writeClient.upsert(writeRecords, newCommitTime);\r\n    // commit this upsert\r\n    writeClient.commit(newCommitTime, writeStatues);\r\n    // Mock hbaseConnection and related entities\r\n    Connection hbaseConnection = Mockito.mock(Connection.class);\r\n    HTable table = Mockito.mock(HTable.class);\r\n    Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);\r\n    Mockito.when(table.get((List<Get>) anyObject())).thenReturn(new Result[0]);\r\n    // only for test, set the hbaseConnection to mocked object\r\n    index.setHbaseConnection(hbaseConnection);\r\n    // Get all the files generated\r\n    int numberOfDataFileIds = (int) writeStatues.map(status -> status.getFileId()).distinct().count();\r\n    index.updateLocation(writeStatues, jsc, hoodieTable);\r\n    // 3 batches should be executed given batchSize = 100 and <=numberOfDataFileIds getting updated,\r\n    // so each fileId ideally gets updates\r\n    Mockito.verify(table, atMost(numberOfDataFileIds)).put((List<Put>) anyObject());\r\n}"
+        }
+      },
+      {
+        "code": "// only for test, set the hbaseConnection to mocked object\r\nindex.setHbaseConnection(hbaseConnection);",
+        "line": 306,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTotalPutsBatching",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTotalPutsBatching() throws Exception {\r\n    HoodieWriteConfig config = getConfig();\r\n    HBaseIndex index = new HBaseIndex(config);\r\n    HoodieWriteClient writeClient = getWriteClient(config);\r\n    // start a commit and generate test data\r\n    String newCommitTime = writeClient.startCommit();\r\n    List<HoodieRecord> records = dataGen.generateInserts(newCommitTime, 250);\r\n    JavaRDD<HoodieRecord> writeRecords = jsc.parallelize(records, 1);\r\n    metaClient = HoodieTableMetaClient.reload(metaClient);\r\n    HoodieTable hoodieTable = HoodieTable.getHoodieTable(metaClient, config, jsc);\r\n    // Insert 200 records\r\n    JavaRDD<WriteStatus> writeStatues = writeClient.upsert(writeRecords, newCommitTime);\r\n    // commit this upsert\r\n    writeClient.commit(newCommitTime, writeStatues);\r\n    // Mock hbaseConnection and related entities\r\n    Connection hbaseConnection = Mockito.mock(Connection.class);\r\n    HTable table = Mockito.mock(HTable.class);\r\n    Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);\r\n    Mockito.when(table.get((List<Get>) anyObject())).thenReturn(new Result[0]);\r\n    // only for test, set the hbaseConnection to mocked object\r\n    index.setHbaseConnection(hbaseConnection);\r\n    // Get all the files generated\r\n    int numberOfDataFileIds = (int) writeStatues.map(status -> status.getFileId()).distinct().count();\r\n    index.updateLocation(writeStatues, jsc, hoodieTable);\r\n    // 3 batches should be executed given batchSize = 100 and <=numberOfDataFileIds getting updated,\r\n    // so each fileId ideally gets updates\r\n    Mockito.verify(table, atMost(numberOfDataFileIds)).put((List<Put>) anyObject());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 8,
+    "variableName": "table",
+    "variableType": "HTable",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.hudi.index",
+      "filePath": "C:\\Java_projects\\temp_projects\\Hudi\\hudi-client\\src\\test\\java\\org\\apache\\hudi\\index\\TestHbaseIndex.java"
+    },
+    "statements": [
+      {
+        "code": "HTable table = Mockito.mock(HTable.class);",
+        "line": 301,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTotalPutsBatching",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTotalPutsBatching() throws Exception {\r\n    HoodieWriteConfig config = getConfig();\r\n    HBaseIndex index = new HBaseIndex(config);\r\n    HoodieWriteClient writeClient = getWriteClient(config);\r\n    // start a commit and generate test data\r\n    String newCommitTime = writeClient.startCommit();\r\n    List<HoodieRecord> records = dataGen.generateInserts(newCommitTime, 250);\r\n    JavaRDD<HoodieRecord> writeRecords = jsc.parallelize(records, 1);\r\n    metaClient = HoodieTableMetaClient.reload(metaClient);\r\n    HoodieTable hoodieTable = HoodieTable.getHoodieTable(metaClient, config, jsc);\r\n    // Insert 200 records\r\n    JavaRDD<WriteStatus> writeStatues = writeClient.upsert(writeRecords, newCommitTime);\r\n    // commit this upsert\r\n    writeClient.commit(newCommitTime, writeStatues);\r\n    // Mock hbaseConnection and related entities\r\n    Connection hbaseConnection = Mockito.mock(Connection.class);\r\n    HTable table = Mockito.mock(HTable.class);\r\n    Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);\r\n    Mockito.when(table.get((List<Get>) anyObject())).thenReturn(new Result[0]);\r\n    // only for test, set the hbaseConnection to mocked object\r\n    index.setHbaseConnection(hbaseConnection);\r\n    // Get all the files generated\r\n    int numberOfDataFileIds = (int) writeStatues.map(status -> status.getFileId()).distinct().count();\r\n    index.updateLocation(writeStatues, jsc, hoodieTable);\r\n    // 3 batches should be executed given batchSize = 100 and <=numberOfDataFileIds getting updated,\r\n    // so each fileId ideally gets updates\r\n    Mockito.verify(table, atMost(numberOfDataFileIds)).put((List<Put>) anyObject());\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);",
+        "line": 302,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTotalPutsBatching",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTotalPutsBatching() throws Exception {\r\n    HoodieWriteConfig config = getConfig();\r\n    HBaseIndex index = new HBaseIndex(config);\r\n    HoodieWriteClient writeClient = getWriteClient(config);\r\n    // start a commit and generate test data\r\n    String newCommitTime = writeClient.startCommit();\r\n    List<HoodieRecord> records = dataGen.generateInserts(newCommitTime, 250);\r\n    JavaRDD<HoodieRecord> writeRecords = jsc.parallelize(records, 1);\r\n    metaClient = HoodieTableMetaClient.reload(metaClient);\r\n    HoodieTable hoodieTable = HoodieTable.getHoodieTable(metaClient, config, jsc);\r\n    // Insert 200 records\r\n    JavaRDD<WriteStatus> writeStatues = writeClient.upsert(writeRecords, newCommitTime);\r\n    // commit this upsert\r\n    writeClient.commit(newCommitTime, writeStatues);\r\n    // Mock hbaseConnection and related entities\r\n    Connection hbaseConnection = Mockito.mock(Connection.class);\r\n    HTable table = Mockito.mock(HTable.class);\r\n    Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);\r\n    Mockito.when(table.get((List<Get>) anyObject())).thenReturn(new Result[0]);\r\n    // only for test, set the hbaseConnection to mocked object\r\n    index.setHbaseConnection(hbaseConnection);\r\n    // Get all the files generated\r\n    int numberOfDataFileIds = (int) writeStatues.map(status -> status.getFileId()).distinct().count();\r\n    index.updateLocation(writeStatues, jsc, hoodieTable);\r\n    // 3 batches should be executed given batchSize = 100 and <=numberOfDataFileIds getting updated,\r\n    // so each fileId ideally gets updates\r\n    Mockito.verify(table, atMost(numberOfDataFileIds)).put((List<Put>) anyObject());\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(table.get((List<Get>) anyObject())).thenReturn(new Result[0]);",
+        "line": 303,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTotalPutsBatching",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTotalPutsBatching() throws Exception {\r\n    HoodieWriteConfig config = getConfig();\r\n    HBaseIndex index = new HBaseIndex(config);\r\n    HoodieWriteClient writeClient = getWriteClient(config);\r\n    // start a commit and generate test data\r\n    String newCommitTime = writeClient.startCommit();\r\n    List<HoodieRecord> records = dataGen.generateInserts(newCommitTime, 250);\r\n    JavaRDD<HoodieRecord> writeRecords = jsc.parallelize(records, 1);\r\n    metaClient = HoodieTableMetaClient.reload(metaClient);\r\n    HoodieTable hoodieTable = HoodieTable.getHoodieTable(metaClient, config, jsc);\r\n    // Insert 200 records\r\n    JavaRDD<WriteStatus> writeStatues = writeClient.upsert(writeRecords, newCommitTime);\r\n    // commit this upsert\r\n    writeClient.commit(newCommitTime, writeStatues);\r\n    // Mock hbaseConnection and related entities\r\n    Connection hbaseConnection = Mockito.mock(Connection.class);\r\n    HTable table = Mockito.mock(HTable.class);\r\n    Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);\r\n    Mockito.when(table.get((List<Get>) anyObject())).thenReturn(new Result[0]);\r\n    // only for test, set the hbaseConnection to mocked object\r\n    index.setHbaseConnection(hbaseConnection);\r\n    // Get all the files generated\r\n    int numberOfDataFileIds = (int) writeStatues.map(status -> status.getFileId()).distinct().count();\r\n    index.updateLocation(writeStatues, jsc, hoodieTable);\r\n    // 3 batches should be executed given batchSize = 100 and <=numberOfDataFileIds getting updated,\r\n    // so each fileId ideally gets updates\r\n    Mockito.verify(table, atMost(numberOfDataFileIds)).put((List<Put>) anyObject());\r\n}"
+        }
+      },
+      {
+        "code": "// 3 batches should be executed given batchSize = 100 and <=numberOfDataFileIds getting updated,\r\n// so each fileId ideally gets updates\r\nMockito.verify(table, atMost(numberOfDataFileIds)).put((List<Put>) anyObject());",
+        "line": 314,
+        "type": "VERIFICATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTotalPutsBatching",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTotalPutsBatching() throws Exception {\r\n    HoodieWriteConfig config = getConfig();\r\n    HBaseIndex index = new HBaseIndex(config);\r\n    HoodieWriteClient writeClient = getWriteClient(config);\r\n    // start a commit and generate test data\r\n    String newCommitTime = writeClient.startCommit();\r\n    List<HoodieRecord> records = dataGen.generateInserts(newCommitTime, 250);\r\n    JavaRDD<HoodieRecord> writeRecords = jsc.parallelize(records, 1);\r\n    metaClient = HoodieTableMetaClient.reload(metaClient);\r\n    HoodieTable hoodieTable = HoodieTable.getHoodieTable(metaClient, config, jsc);\r\n    // Insert 200 records\r\n    JavaRDD<WriteStatus> writeStatues = writeClient.upsert(writeRecords, newCommitTime);\r\n    // commit this upsert\r\n    writeClient.commit(newCommitTime, writeStatues);\r\n    // Mock hbaseConnection and related entities\r\n    Connection hbaseConnection = Mockito.mock(Connection.class);\r\n    HTable table = Mockito.mock(HTable.class);\r\n    Mockito.when(hbaseConnection.getTable(TableName.valueOf(tableName))).thenReturn(table);\r\n    Mockito.when(table.get((List<Get>) anyObject())).thenReturn(new Result[0]);\r\n    // only for test, set the hbaseConnection to mocked object\r\n    index.setHbaseConnection(hbaseConnection);\r\n    // Get all the files generated\r\n    int numberOfDataFileIds = (int) writeStatues.map(status -> status.getFileId()).distinct().count();\r\n    index.updateLocation(writeStatues, jsc, hoodieTable);\r\n    // 3 batches should be executed given batchSize = 100 and <=numberOfDataFileIds getting updated,\r\n    // so each fileId ideally gets updates\r\n    Mockito.verify(table, atMost(numberOfDataFileIds)).put((List<Put>) anyObject());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 9,
+    "variableName": "config",
+    "variableType": "HoodieWriteConfig",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.hudi.metrics",
+      "filePath": "C:\\Java_projects\\temp_projects\\Hudi\\hudi-client\\src\\test\\java\\org\\apache\\hudi\\metrics\\TestHoodieJmxMetrics.java"
+    },
+    "statements": [
+      {
+        "code": "HoodieWriteConfig config = mock(HoodieWriteConfig.class);",
+        "line": 38,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "start",
+          "methodAnnotations": [
+            "Override"
+          ],
+          "methodRawCode": "@Override\r\npublic void start() {\r\n    HoodieWriteConfig config = mock(HoodieWriteConfig.class);\r\n    when(config.isMetricsOn()).thenReturn(true);\r\n    when(config.getMetricsReporterType()).thenReturn(MetricsReporterType.JMX);\r\n    when(config.getJmxHost()).thenReturn(HoodieMetricsConfig.DEFAULT_JMX_HOST);\r\n    when(config.getJmxPort()).thenReturn(HoodieMetricsConfig.DEFAULT_JMX_PORT);\r\n    new HoodieMetrics(config, \"raw_table\");\r\n}"
+        }
+      },
+      {
+        "code": "when(config.isMetricsOn()).thenReturn(true);",
+        "line": 39,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "start",
+          "methodAnnotations": [
+            "Override"
+          ],
+          "methodRawCode": "@Override\r\npublic void start() {\r\n    HoodieWriteConfig config = mock(HoodieWriteConfig.class);\r\n    when(config.isMetricsOn()).thenReturn(true);\r\n    when(config.getMetricsReporterType()).thenReturn(MetricsReporterType.JMX);\r\n    when(config.getJmxHost()).thenReturn(HoodieMetricsConfig.DEFAULT_JMX_HOST);\r\n    when(config.getJmxPort()).thenReturn(HoodieMetricsConfig.DEFAULT_JMX_PORT);\r\n    new HoodieMetrics(config, \"raw_table\");\r\n}"
+        }
+      },
+      {
+        "code": "when(config.getMetricsReporterType()).thenReturn(MetricsReporterType.JMX);",
+        "line": 40,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "start",
+          "methodAnnotations": [
+            "Override"
+          ],
+          "methodRawCode": "@Override\r\npublic void start() {\r\n    HoodieWriteConfig config = mock(HoodieWriteConfig.class);\r\n    when(config.isMetricsOn()).thenReturn(true);\r\n    when(config.getMetricsReporterType()).thenReturn(MetricsReporterType.JMX);\r\n    when(config.getJmxHost()).thenReturn(HoodieMetricsConfig.DEFAULT_JMX_HOST);\r\n    when(config.getJmxPort()).thenReturn(HoodieMetricsConfig.DEFAULT_JMX_PORT);\r\n    new HoodieMetrics(config, \"raw_table\");\r\n}"
+        }
+      },
+      {
+        "code": "when(config.getJmxHost()).thenReturn(HoodieMetricsConfig.DEFAULT_JMX_HOST);",
+        "line": 41,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "start",
+          "methodAnnotations": [
+            "Override"
+          ],
+          "methodRawCode": "@Override\r\npublic void start() {\r\n    HoodieWriteConfig config = mock(HoodieWriteConfig.class);\r\n    when(config.isMetricsOn()).thenReturn(true);\r\n    when(config.getMetricsReporterType()).thenReturn(MetricsReporterType.JMX);\r\n    when(config.getJmxHost()).thenReturn(HoodieMetricsConfig.DEFAULT_JMX_HOST);\r\n    when(config.getJmxPort()).thenReturn(HoodieMetricsConfig.DEFAULT_JMX_PORT);\r\n    new HoodieMetrics(config, \"raw_table\");\r\n}"
+        }
+      },
+      {
+        "code": "when(config.getJmxPort()).thenReturn(HoodieMetricsConfig.DEFAULT_JMX_PORT);",
+        "line": 42,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "start",
+          "methodAnnotations": [
+            "Override"
+          ],
+          "methodRawCode": "@Override\r\npublic void start() {\r\n    HoodieWriteConfig config = mock(HoodieWriteConfig.class);\r\n    when(config.isMetricsOn()).thenReturn(true);\r\n    when(config.getMetricsReporterType()).thenReturn(MetricsReporterType.JMX);\r\n    when(config.getJmxHost()).thenReturn(HoodieMetricsConfig.DEFAULT_JMX_HOST);\r\n    when(config.getJmxPort()).thenReturn(HoodieMetricsConfig.DEFAULT_JMX_PORT);\r\n    new HoodieMetrics(config, \"raw_table\");\r\n}"
+        }
+      },
+      {
+        "code": "new HoodieMetrics(config, \"raw_table\");",
+        "line": 43,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "start",
+          "methodAnnotations": [
+            "Override"
+          ],
+          "methodRawCode": "@Override\r\npublic void start() {\r\n    HoodieWriteConfig config = mock(HoodieWriteConfig.class);\r\n    when(config.isMetricsOn()).thenReturn(true);\r\n    when(config.getMetricsReporterType()).thenReturn(MetricsReporterType.JMX);\r\n    when(config.getJmxHost()).thenReturn(HoodieMetricsConfig.DEFAULT_JMX_HOST);\r\n    when(config.getJmxPort()).thenReturn(HoodieMetricsConfig.DEFAULT_JMX_PORT);\r\n    new HoodieMetrics(config, \"raw_table\");\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 10,
+    "variableName": "config",
+    "variableType": "HoodieWriteConfig",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.hudi.metrics",
+      "filePath": "C:\\Java_projects\\temp_projects\\Hudi\\hudi-client\\src\\test\\java\\org\\apache\\hudi\\metrics\\TestHoodieMetrics.java"
+    },
+    "statements": [
+      {
+        "code": "HoodieWriteConfig config = mock(HoodieWriteConfig.class);",
+        "line": 35,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "start",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void start() {\r\n    HoodieWriteConfig config = mock(HoodieWriteConfig.class);\r\n    when(config.isMetricsOn()).thenReturn(true);\r\n    when(config.getMetricsReporterType()).thenReturn(MetricsReporterType.INMEMORY);\r\n    new HoodieMetrics(config, \"raw_table\");\r\n}"
+        }
+      },
+      {
+        "code": "when(config.isMetricsOn()).thenReturn(true);",
+        "line": 36,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "start",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void start() {\r\n    HoodieWriteConfig config = mock(HoodieWriteConfig.class);\r\n    when(config.isMetricsOn()).thenReturn(true);\r\n    when(config.getMetricsReporterType()).thenReturn(MetricsReporterType.INMEMORY);\r\n    new HoodieMetrics(config, \"raw_table\");\r\n}"
+        }
+      },
+      {
+        "code": "when(config.getMetricsReporterType()).thenReturn(MetricsReporterType.INMEMORY);",
+        "line": 37,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "start",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void start() {\r\n    HoodieWriteConfig config = mock(HoodieWriteConfig.class);\r\n    when(config.isMetricsOn()).thenReturn(true);\r\n    when(config.getMetricsReporterType()).thenReturn(MetricsReporterType.INMEMORY);\r\n    new HoodieMetrics(config, \"raw_table\");\r\n}"
+        }
+      },
+      {
+        "code": "new HoodieMetrics(config, \"raw_table\");",
+        "line": 38,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "start",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void start() {\r\n    HoodieWriteConfig config = mock(HoodieWriteConfig.class);\r\n    when(config.isMetricsOn()).thenReturn(true);\r\n    when(config.getMetricsReporterType()).thenReturn(MetricsReporterType.INMEMORY);\r\n    new HoodieMetrics(config, \"raw_table\");\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 11,
+    "variableName": "commitTimeLine",
+    "variableType": "HoodieTimeline",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.hudi.table",
+      "filePath": "C:\\Java_projects\\temp_projects\\Hudi\\hudi-client\\src\\test\\java\\org\\apache\\hudi\\table\\TestHoodieRecordSizing.java"
+    },
+    "statements": [
+      {
+        "code": "HoodieTimeline commitTimeLine = mock(HoodieTimeline.class);",
+        "line": 98,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testAverageBytesPerRecordForNonEmptyCommitTimeLine",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testAverageBytesPerRecordForNonEmptyCommitTimeLine() throws Exception {\r\n    HoodieTimeline commitTimeLine = mock(HoodieTimeline.class);\r\n    when(commitTimeLine.empty()).thenReturn(false);\r\n    when(commitTimeLine.getReverseOrderedInstants()).thenReturn(setupHoodieInstants().stream());\r\n    LinkedList<Option<byte[]>> commits = generateCommitMetadataList();\r\n    when(commitTimeLine.getInstantDetails(any(HoodieInstant.class))).thenAnswer(invocationOnMock -> commits.pop());\r\n    long expectAvgSize = (long) Math.ceil((1.0 * 7500) / 1500);\r\n    long actualAvgSize = averageBytesPerRecord(commitTimeLine, 1234);\r\n    assertEquals(expectAvgSize, actualAvgSize);\r\n}"
+        }
+      },
+      {
+        "code": "when(commitTimeLine.empty()).thenReturn(false);",
+        "line": 99,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testAverageBytesPerRecordForNonEmptyCommitTimeLine",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testAverageBytesPerRecordForNonEmptyCommitTimeLine() throws Exception {\r\n    HoodieTimeline commitTimeLine = mock(HoodieTimeline.class);\r\n    when(commitTimeLine.empty()).thenReturn(false);\r\n    when(commitTimeLine.getReverseOrderedInstants()).thenReturn(setupHoodieInstants().stream());\r\n    LinkedList<Option<byte[]>> commits = generateCommitMetadataList();\r\n    when(commitTimeLine.getInstantDetails(any(HoodieInstant.class))).thenAnswer(invocationOnMock -> commits.pop());\r\n    long expectAvgSize = (long) Math.ceil((1.0 * 7500) / 1500);\r\n    long actualAvgSize = averageBytesPerRecord(commitTimeLine, 1234);\r\n    assertEquals(expectAvgSize, actualAvgSize);\r\n}"
+        }
+      },
+      {
+        "code": "when(commitTimeLine.getReverseOrderedInstants()).thenReturn(setupHoodieInstants().stream());",
+        "line": 100,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testAverageBytesPerRecordForNonEmptyCommitTimeLine",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testAverageBytesPerRecordForNonEmptyCommitTimeLine() throws Exception {\r\n    HoodieTimeline commitTimeLine = mock(HoodieTimeline.class);\r\n    when(commitTimeLine.empty()).thenReturn(false);\r\n    when(commitTimeLine.getReverseOrderedInstants()).thenReturn(setupHoodieInstants().stream());\r\n    LinkedList<Option<byte[]>> commits = generateCommitMetadataList();\r\n    when(commitTimeLine.getInstantDetails(any(HoodieInstant.class))).thenAnswer(invocationOnMock -> commits.pop());\r\n    long expectAvgSize = (long) Math.ceil((1.0 * 7500) / 1500);\r\n    long actualAvgSize = averageBytesPerRecord(commitTimeLine, 1234);\r\n    assertEquals(expectAvgSize, actualAvgSize);\r\n}"
+        }
+      },
+      {
+        "code": "when(commitTimeLine.getInstantDetails(any(HoodieInstant.class))).thenAnswer(invocationOnMock -> commits.pop());",
+        "line": 102,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testAverageBytesPerRecordForNonEmptyCommitTimeLine",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testAverageBytesPerRecordForNonEmptyCommitTimeLine() throws Exception {\r\n    HoodieTimeline commitTimeLine = mock(HoodieTimeline.class);\r\n    when(commitTimeLine.empty()).thenReturn(false);\r\n    when(commitTimeLine.getReverseOrderedInstants()).thenReturn(setupHoodieInstants().stream());\r\n    LinkedList<Option<byte[]>> commits = generateCommitMetadataList();\r\n    when(commitTimeLine.getInstantDetails(any(HoodieInstant.class))).thenAnswer(invocationOnMock -> commits.pop());\r\n    long expectAvgSize = (long) Math.ceil((1.0 * 7500) / 1500);\r\n    long actualAvgSize = averageBytesPerRecord(commitTimeLine, 1234);\r\n    assertEquals(expectAvgSize, actualAvgSize);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 12,
+    "variableName": "commitTimeLine",
+    "variableType": "HoodieTimeline",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.hudi.table",
+      "filePath": "C:\\Java_projects\\temp_projects\\Hudi\\hudi-client\\src\\test\\java\\org\\apache\\hudi\\table\\TestHoodieRecordSizing.java"
+    },
+    "statements": [
+      {
+        "code": "HoodieTimeline commitTimeLine = mock(HoodieTimeline.class);",
+        "line": 110,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testAverageBytesPerRecordForEmptyCommitTimeLine",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testAverageBytesPerRecordForEmptyCommitTimeLine() {\r\n    HoodieTimeline commitTimeLine = mock(HoodieTimeline.class);\r\n    when(commitTimeLine.empty()).thenReturn(true);\r\n    long expectAvgSize = 2345;\r\n    long actualAvgSize = averageBytesPerRecord(commitTimeLine, 2345);\r\n    assertEquals(expectAvgSize, actualAvgSize);\r\n}"
+        }
+      },
+      {
+        "code": "when(commitTimeLine.empty()).thenReturn(true);",
+        "line": 111,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testAverageBytesPerRecordForEmptyCommitTimeLine",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testAverageBytesPerRecordForEmptyCommitTimeLine() {\r\n    HoodieTimeline commitTimeLine = mock(HoodieTimeline.class);\r\n    when(commitTimeLine.empty()).thenReturn(true);\r\n    long expectAvgSize = 2345;\r\n    long actualAvgSize = averageBytesPerRecord(commitTimeLine, 2345);\r\n    assertEquals(expectAvgSize, actualAvgSize);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 13,
+    "variableName": "index",
+    "variableType": "HoodieIndex",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.hudi",
+      "filePath": "C:\\Java_projects\\temp_projects\\Hudi\\hudi-client\\src\\test\\java\\org\\apache\\hudi\\TestHoodieClientOnCopyOnWriteStorage.java"
+    },
+    "statements": [
+      {
+        "code": "HoodieIndex index = mock(HoodieIndex.class);",
+        "line": 242,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "getWriteClientWithDummyIndex",
+          "methodAnnotations": [],
+          "methodRawCode": "/**\r\n * Build a test Hoodie WriteClient with dummy index to configure isGlobal flag.\r\n *\r\n * @param isGlobal Flag to control HoodieIndex.isGlobal\r\n * @return Hoodie Write Client\r\n * @throws Exception in case of error\r\n */\r\nprivate HoodieWriteClient getWriteClientWithDummyIndex(final boolean isGlobal) {\r\n    HoodieIndex index = mock(HoodieIndex.class);\r\n    when(index.isGlobal()).thenReturn(isGlobal);\r\n    return getHoodieWriteClient(getConfigBuilder().build(), false, index);\r\n}"
+        }
+      },
+      {
+        "code": "when(index.isGlobal()).thenReturn(isGlobal);",
+        "line": 243,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "getWriteClientWithDummyIndex",
+          "methodAnnotations": [],
+          "methodRawCode": "/**\r\n * Build a test Hoodie WriteClient with dummy index to configure isGlobal flag.\r\n *\r\n * @param isGlobal Flag to control HoodieIndex.isGlobal\r\n * @return Hoodie Write Client\r\n * @throws Exception in case of error\r\n */\r\nprivate HoodieWriteClient getWriteClientWithDummyIndex(final boolean isGlobal) {\r\n    HoodieIndex index = mock(HoodieIndex.class);\r\n    when(index.isGlobal()).thenReturn(isGlobal);\r\n    return getHoodieWriteClient(getConfigBuilder().build(), false, index);\r\n}"
+        }
+      }
+    ]
+  }
+]

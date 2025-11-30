@@ -1,0 +1,1003 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\MD5GeneratorTest.java",
+  "methodName" : "testGenerateValue",
+  "sourceCode" : "@Test\r\npublic void testGenerateValue() throws Exception {\r\n    ValueGenerator g = new MD5Generator();\r\n    Assert.assertNotNull(g.generateValue());\r\n    Assert.assertNotNull(g.generateValue(\"test\"));\r\n    try {\r\n        g.generateValue(null);\r\n        fail(\"Exception not thrown\");\r\n    } catch (OAuthSystemException e) {\r\n        //ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\OAuthIssuerImplTest.java",
+  "methodName" : "testAccessToken",
+  "sourceCode" : "@Test\r\npublic void testAccessToken() throws Exception {\r\n    Assert.assertNotNull(issuer.accessToken());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\OAuthIssuerImplTest.java",
+  "methodName" : "testRefreshToken",
+  "sourceCode" : "@Test\r\npublic void testRefreshToken() throws Exception {\r\n    Assert.assertNotNull(issuer.refreshToken());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\OAuthIssuerImplTest.java",
+  "methodName" : "testAuthorizationCode",
+  "sourceCode" : "@Test\r\npublic void testAuthorizationCode() throws Exception {\r\n    Assert.assertNotNull(issuer.authorizationCode());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\OAuthRequestTest.java",
+  "methodName" : "testWrongResponseGetRequestParam",
+  "sourceCode" : "@Test\r\npublic void testWrongResponseGetRequestParam() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_RESPONSE_TYPE)).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://www.example.com/red\");\r\n    expect(request.getParameter(\"param\")).andStubReturn(\"someparam\");\r\n    replay(request);\r\n    try {\r\n        new OAuthAuthzRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_RESPONSE_TYPE)).andStubReturn(null);\r\n    expect(request.getParameter(\"param\")).andStubReturn(\"someparam\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://www.example.com/red\");\r\n    replay(request);\r\n    try {\r\n        new OAuthAuthzRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\OAuthRequestTest.java",
+  "methodName" : "testCodeRequestInvalidMethod",
+  "sourceCode" : "@Test\r\npublic void testCodeRequestInvalidMethod() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_RESPONSE_TYPE)).andStubReturn(ResponseType.CODE.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.PUT);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"test_client\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    replay(request);\r\n    OAuthRequest req = null;\r\n    try {\r\n        new OAuthAuthzRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\OAuthRequestTest.java",
+  "methodName" : "testCodeRequestMissingParameter",
+  "sourceCode" : "@Test\r\npublic void testCodeRequestMissingParameter() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_RESPONSE_TYPE)).andStubReturn(ResponseType.CODE.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.GET);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(null);\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    replay(request);\r\n    OAuthRequest req = null;\r\n    try {\r\n        new OAuthAuthzRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\OAuthRequestTest.java",
+  "methodName" : "testValidCodeRequest",
+  "sourceCode" : "@Test\r\npublic void testValidCodeRequest() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_RESPONSE_TYPE)).andStubReturn(ResponseType.CODE.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.GET);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"test_client\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    replay(request);\r\n    OAuthRequest req = null;\r\n    try {\r\n        new OAuthAuthzRequest(request);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_RESPONSE_TYPE)).andStubReturn(ResponseType.CODE.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"test_client\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    replay(request);\r\n    try {\r\n        new OAuthAuthzRequest(request);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\OAuthRequestTest.java",
+  "methodName" : "testTokenWrongGrantType",
+  "sourceCode" : "@Test\r\npublic void testTokenWrongGrantType() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://www.example.com/red\");\r\n    expect(request.getParameter(\"param\")).andStubReturn(\"someparam\");\r\n    replay(request);\r\n    OAuthRequest req = null;\r\n    try {\r\n        req = new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(null);\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://www.example.com/red\");\r\n    expect(request.getParameter(\"param\")).andStubReturn(\"someparam\");\r\n    replay(request);\r\n    try {\r\n        req = new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\OAuthRequestTest.java",
+  "methodName" : "testTokenRequestInvalidMethod",
+  "sourceCode" : "@Test\r\npublic void testTokenRequestInvalidMethod() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.AUTHORIZATION_CODE.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.GET);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"test_client\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.ASSERTION.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.GET);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"test_client\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.PASSWORD.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.GET);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"test_client\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.REFRESH_TOKEN.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.GET);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"test_client\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.NONE.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.GET);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"test_client\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\OAuthRequestTest.java",
+  "methodName" : "testTokenRequestInvalidContentType",
+  "sourceCode" : "@Test\r\npublic void testTokenRequestInvalidContentType() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.AUTHORIZATION_CODE.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.JSON);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"test_client\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.ASSERTION.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.JSON);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"test_client\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.PASSWORD.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.JSON);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"test_client\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.REFRESH_TOKEN.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.JSON);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"test_client\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.NONE.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.JSON);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"test_client\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\OAuthRequestTest.java",
+  "methodName" : "testTokenAuthCodeRequestMissingParameter",
+  "sourceCode" : "@Test\r\npublic void testTokenAuthCodeRequestMissingParameter() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.AUTHORIZATION_CODE.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(null);\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    expect(request.getParameter(OAuth.OAUTH_CODE)).andStubReturn(\"test_code\");\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_SECRET)).andStubReturn(\"secret\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.AUTHORIZATION_CODE.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"client_id\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(null);\r\n    expect(request.getParameter(OAuth.OAUTH_CODE)).andStubReturn(\"test_code\");\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_SECRET)).andStubReturn(\"secret\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.AUTHORIZATION_CODE.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"client_id\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    expect(request.getParameter(OAuth.OAUTH_CODE)).andStubReturn(null);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_SECRET)).andStubReturn(\"secret\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\OAuthRequestTest.java",
+  "methodName" : "testTokenPasswordRequestMissingParameter",
+  "sourceCode" : "@Test\r\npublic void testTokenPasswordRequestMissingParameter() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.PASSWORD.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://www.example.com/red\");\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"client_id\");\r\n    expect(request.getParameter(OAuth.OAUTH_USERNAME)).andStubReturn(null);\r\n    expect(request.getParameter(OAuth.OAUTH_PASSWORD)).andStubReturn(\"test_password\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.PASSWORD.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"client_id\");\r\n    expect(request.getParameter(OAuth.OAUTH_USERNAME)).andStubReturn(\"test_username\");\r\n    expect(request.getParameter(OAuth.OAUTH_PASSWORD)).andStubReturn(\"\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://www.example.com/red\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.PASSWORD.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://www.example.com/red\");\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(null);\r\n    expect(request.getParameter(OAuth.OAUTH_USERNAME)).andStubReturn(\"test_username\");\r\n    expect(request.getParameter(OAuth.OAUTH_PASSWORD)).andStubReturn(\"test_password\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\OAuthRequestTest.java",
+  "methodName" : "testTokenAssertionRequestMissingParameter",
+  "sourceCode" : "@Test\r\npublic void testTokenAssertionRequestMissingParameter() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.ASSERTION.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://www.example.com/red\");\r\n    expect(request.getParameter(OAuth.OAUTH_ASSERTION)).andStubReturn(null);\r\n    expect(request.getParameter(OAuth.OAUTH_ASSERTION_TYPE)).andStubReturn(\"test_type\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.ASSERTION.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://www.example.com/red\");\r\n    expect(request.getParameter(OAuth.OAUTH_ASSERTION)).andStubReturn(\"test_assertion\");\r\n    expect(request.getParameter(OAuth.OAUTH_ASSERTION_TYPE)).andStubReturn(null);\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.ASSERTION.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://www.example.com/red\");\r\n    expect(request.getParameter(OAuth.OAUTH_ASSERTION)).andStubReturn(\"\");\r\n    expect(request.getParameter(OAuth.OAUTH_ASSERTION_TYPE)).andStubReturn(\"\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\OAuthRequestTest.java",
+  "methodName" : "testRefreshTokenRequestMissingParameter",
+  "sourceCode" : "@Test\r\npublic void testRefreshTokenRequestMissingParameter() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.REFRESH_TOKEN.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://www.example.com/red\");\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"client_id\");\r\n    expect(request.getParameter(OAuth.OAUTH_REFRESH_TOKEN)).andStubReturn(null);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_SECRET)).andStubReturn(\"secret\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.REFRESH_TOKEN.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://www.example.com/red\");\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"\");\r\n    expect(request.getParameter(OAuth.OAUTH_REFRESH_TOKEN)).andStubReturn(\"refresh_token\");\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_SECRET)).andStubReturn(\"secret\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.REFRESH_TOKEN.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://www.example.com/red\");\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(null);\r\n    expect(request.getParameter(OAuth.OAUTH_REFRESH_TOKEN)).andStubReturn(null);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_SECRET)).andStubReturn(\"secret\");\r\n    replay(request);\r\n    try {\r\n        new OAuthTokenRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\OAuthRequestTest.java",
+  "methodName" : "testValidTokenRequest",
+  "sourceCode" : "@Test\r\npublic void testValidTokenRequest() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.AUTHORIZATION_CODE.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"test_client\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    expect(request.getParameter(OAuth.OAUTH_CODE)).andStubReturn(\"test_code\");\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_SECRET)).andStubReturn(\"test_secret\");\r\n    replay(request);\r\n    OAuthTokenRequest req = null;\r\n    try {\r\n        req = new OAuthTokenRequest(request);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    Assert.assertEquals(GrantType.AUTHORIZATION_CODE.toString(), req.getGrantType());\r\n    Assert.assertEquals(\"test_client\", req.getClientId());\r\n    Assert.assertEquals(\"http://example.com/callback\", req.getRedirectURI());\r\n    Assert.assertEquals(\"test_code\", req.getCode());\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.PASSWORD.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"client_id\");\r\n    expect(request.getParameter(OAuth.OAUTH_USERNAME)).andStubReturn(\"username_test\");\r\n    expect(request.getParameter(OAuth.OAUTH_PASSWORD)).andStubReturn(\"test_password\");\r\n    replay(request);\r\n    try {\r\n        req = new OAuthTokenRequest(request);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    Assert.assertEquals(\"client_id\", req.getClientId());\r\n    Assert.assertEquals(\"username_test\", req.getUsername());\r\n    Assert.assertEquals(\"test_password\", req.getPassword());\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.ASSERTION.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_ASSERTION)).andStubReturn(\"test_assertion\");\r\n    expect(request.getParameter(OAuth.OAUTH_ASSERTION_TYPE)).andStubReturn(\"test_type\");\r\n    replay(request);\r\n    try {\r\n        req = new OAuthTokenRequest(request);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    Assert.assertEquals(\"test_assertion\", req.getAssertion());\r\n    Assert.assertEquals(\"test_type\", req.getAssertionType());\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getParameter(OAuth.OAUTH_GRANT_TYPE)).andStubReturn(GrantType.REFRESH_TOKEN.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"client_id\");\r\n    expect(request.getParameter(OAuth.OAUTH_REFRESH_TOKEN)).andStubReturn(\"refresh_token\");\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_SECRET)).andStubReturn(\"secret\");\r\n    replay(request);\r\n    try {\r\n        req = new OAuthTokenRequest(request);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    Assert.assertEquals(\"client_id\", req.getClientId());\r\n    Assert.assertEquals(\"refresh_token\", req.getRefreshToken());\r\n    Assert.assertEquals(\"secret\", req.getClientSecret());\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\OAuthRequestTest.java",
+  "methodName" : "testScopes",
+  "sourceCode" : "@Test\r\npublic void testScopes() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_RESPONSE_TYPE)).andStubReturn(ResponseType.CODE.toString());\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.GET);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"test_client\");\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    expect(request.getParameter(OAuth.OAUTH_SCOPE)).andStubReturn(\"album photo\");\r\n    replay(request);\r\n    OAuthRequest req = null;\r\n    try {\r\n        req = new OAuthAuthzRequest(request);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    Set<String> scopes = req.getScopes();\r\n    Assert.assertTrue(findScope(scopes, \"album\"));\r\n    Assert.assertTrue(findScope(scopes, \"photo\"));\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\response\\OAuthASResponseTest.java",
+  "methodName" : "testAuthzResponse",
+  "sourceCode" : "@Test\r\npublic void testAuthzResponse() throws Exception {\r\n    OAuthResponse oAuthResponse = OAuthASResponse.authorizationResponse(200).location(\"http://www.example.com\").setCode(\"code\").setAccessToken(\"access_111\").setExpiresIn(\"400\").setState(\"ok\").setParam(\"testValue\", \"value2\").buildQueryMessage();\r\n    String url = oAuthResponse.getLocationUri();\r\n    Assert.assertEquals(\"http://www.example.com?testValue=value2&code=code\" + \"#access_token=access_111&state=ok&expires_in=400\", url);\r\n    Assert.assertEquals(200, oAuthResponse.getResponseStatus());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\response\\OAuthASResponseTest.java",
+  "methodName" : "testTokenResponse",
+  "sourceCode" : "@Test\r\npublic void testTokenResponse() throws Exception {\r\n    OAuthResponse oAuthResponse = OAuthASResponse.tokenResponse(200).setAccessToken(\"access_token\").setExpiresIn(\"200\").setRefreshToken(\"refresh_token2\").buildBodyMessage();\r\n    String body = oAuthResponse.getBody();\r\n    Assert.assertEquals(\"expires_in=200&refresh_token=refresh_token2&access_token=access_token\", body);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\response\\OAuthASResponseTest.java",
+  "methodName" : "testTokenResponseAdditionalParam",
+  "sourceCode" : "@Test\r\npublic void testTokenResponseAdditionalParam() throws Exception {\r\n    OAuthResponse oAuthResponse = OAuthASResponse.tokenResponse(200).setAccessToken(\"access_token\").setExpiresIn(\"200\").setRefreshToken(\"refresh_token2\").setParam(\"some_param\", \"new_param\").buildBodyMessage();\r\n    String body = oAuthResponse.getBody();\r\n    Assert.assertEquals(\"some_param=new_param&expires_in=200&refresh_token=refresh_token2&access_token=access_token\", body);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\response\\OAuthASResponseTest.java",
+  "methodName" : "testErrorResponse",
+  "sourceCode" : "@Test\r\npublic void testErrorResponse() throws Exception {\r\n    OAuthProblemException ex = OAuthProblemException.error(OAuthError.CodeResponse.ACCESS_DENIED, \"Access denied\").setParameter(\"testparameter\", \"testparameter_value\").scope(\"album\").uri(\"http://www.example.com/error\");\r\n    OAuthResponse oAuthResponse = OAuthResponse.errorResponse(400).error(ex).buildJSONMessage();\r\n    Assert.assertEquals(\"{\\\"error_uri\\\":\\\"http:\\\\/\\\\/www.example.com\\\\/error\\\",\\\"error\\\":\\\"access_denied\\\",\\\"\" + \"error_description\\\":\\\"Access denied\\\"}\", oAuthResponse.getBody());\r\n    oAuthResponse = OAuthResponse.errorResponse(500).location(\"http://www.example.com/redirect?param2=true\").error(ex).buildQueryMessage();\r\n    Assert.assertEquals(\"http://www.example.com/redirect?param2=true&error_uri=http%3A%2F%2Fwww.example.com%2Ferror\" + \"&error=access_denied&error_description=Access+denied\", oAuthResponse.getLocationUri());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\response\\OAuthASResponseTest.java",
+  "methodName" : "testErrorResponse2",
+  "sourceCode" : "@Test\r\npublic void testErrorResponse2() throws Exception {\r\n    OAuthProblemException ex = OAuthProblemException.error(OAuthError.CodeResponse.ACCESS_DENIED, \"Access denied\").setParameter(\"testparameter\", \"testparameter_value\").scope(\"album\").uri(\"http://www.example.com/error\");\r\n    OAuthResponse oAuthResponse = OAuthResponse.errorResponse(500).location(\"http://www.example.com/redirect?param2=true\").error(ex).buildQueryMessage();\r\n    Assert.assertEquals(\"http://www.example.com/redirect?param2=true&error_uri=http%3A%2F%2Fwww.example.com%2Ferror\" + \"&error=access_denied&error_description=Access+denied\", oAuthResponse.getLocationUri());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\response\\OAuthASResponseTest.java",
+  "methodName" : "testHeaderResponse",
+  "sourceCode" : "@Test\r\npublic void testHeaderResponse() throws Exception {\r\n    OAuthResponse oAuthResponse = OAuthASResponse.authorizationResponse(400).setCode(\"oauth_code\").setState(\"state_ok\").buildHeaderMessage();\r\n    String header = oAuthResponse.getHeader(OAuth.HeaderType.WWW_AUTHENTICATE);\r\n    Assert.assertEquals(\"OAuth state=\\\"state_ok\\\",code=\\\"oauth_code\\\"\", header);\r\n    header = oAuthResponse.getHeaders().get(OAuth.HeaderType.WWW_AUTHENTICATE);\r\n    Assert.assertEquals(\"OAuth state=\\\"state_ok\\\",code=\\\"oauth_code\\\"\", header);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\UUIDValueGeneratorTest.java",
+  "methodName" : "testGenerateValue",
+  "sourceCode" : "@Test\r\npublic void testGenerateValue() throws Exception {\r\n    UUIDValueGenerator uvg = new UUIDValueGenerator();\r\n    Assert.assertNotNull(uvg.generateValue());\r\n    Assert.assertNotNull(uvg.generateValue(\"test\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\validator\\TokenValidatorTest.java",
+  "methodName" : "testValidateMethod",
+  "sourceCode" : "@Test\r\npublic void testValidateMethod() throws Exception {\r\n    HttpServletRequest request = createStrictMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.GET);\r\n    replay(request);\r\n    TokenValidator validator = new TokenValidator();\r\n    validator.validateMethod(request);\r\n    verify(request);\r\n    reset(request);\r\n    request = createStrictMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    replay(request);\r\n    validator = new TokenValidator();\r\n    validator.validateMethod(request);\r\n    verify(request);\r\n    reset(request);\r\n    request = createStrictMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.DELETE);\r\n    replay(request);\r\n    validator = new TokenValidator();\r\n    try {\r\n        validator.validateMethod(request);\r\n        Assert.fail(\"Expected validation exception\");\r\n    } catch (OAuthProblemException e) {\r\n        //ok, expected\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-authzserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\as\\validator\\TokenValidatorTest.java",
+  "methodName" : "testRequiredParams",
+  "sourceCode" : "@Test\r\npublic void testRequiredParams() throws Exception {\r\n    HttpServletRequest request = createStrictMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.GET);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_REDIRECT_URI)).andStubReturn(\"http://example.com/callback\");\r\n    expect(request.getParameter(OAuth.OAUTH_RESPONSE_TYPE)).andStubReturn(\"response_type\");\r\n    expect(request.getParameter(OAuth.OAUTH_CLIENT_ID)).andStubReturn(\"client_id\");\r\n    replay(request);\r\n    TokenValidator validator = new TokenValidator();\r\n    validator.performAllValidations(request);\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\OAuthClientTest.java",
+  "methodName" : "dummyTest",
+  "sourceCode" : "@Test\r\npublic void dummyTest() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\GitHubTokenResponseTest.java",
+  "methodName" : "testGetAccessToken",
+  "sourceCode" : "@Test\r\npublic void testGetAccessToken() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\GitHubTokenResponseTest.java",
+  "methodName" : "testGetExpiresIn",
+  "sourceCode" : "@Test\r\npublic void testGetExpiresIn() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\GitHubTokenResponseTest.java",
+  "methodName" : "testGetRefreshToken",
+  "sourceCode" : "@Test\r\npublic void testGetRefreshToken() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\GitHubTokenResponseTest.java",
+  "methodName" : "testGetScope",
+  "sourceCode" : "@Test\r\npublic void testGetScope() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\GitHubTokenResponseTest.java",
+  "methodName" : "testGet",
+  "sourceCode" : "@Test\r\npublic void testGet() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\GitHubTokenResponseTest.java",
+  "methodName" : "testGetError",
+  "sourceCode" : "@Test\r\npublic void testGetError() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\OAuthAuthorizationResponseImplTest.java",
+  "methodName" : "testGetAccessToken",
+  "sourceCode" : "@Test\r\npublic void testGetAccessToken() throws Exception {\r\n    HttpServletRequest request = createStrictMock(HttpServletRequest.class);\r\n    //check valid request\r\n    TestUtils.expectNoErrorParameters(request);\r\n    Map<String, String[]> parameters = new HashMap<String, String[]>();\r\n    parameters.put(OAuth.OAUTH_ACCESS_TOKEN, new String[] { \"test_access_token\" });\r\n    parameters.put(OAuth.OAUTH_CODE, null);\r\n    parameters.put(OAuth.OAUTH_SCOPE, null);\r\n    parameters.put(OAuth.OAUTH_EXPIRES_IN, null);\r\n    expect(request.getParameterMap()).andStubReturn(parameters);\r\n    replay(request);\r\n    OAuthAuthzResponse r = null;\r\n    try {\r\n        r = OAuthAuthzResponse.oauthTokenAuthzResponse(request);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    String token = r.getAccessToken();\r\n    Assert.assertNotNull(token);\r\n    verify(request);\r\n    reset(request);\r\n    //both parameters code and access token\r\n    TestUtils.expectNoErrorParameters(request);\r\n    parameters.put(OAuth.OAUTH_CODE, new String[] { \"code\" });\r\n    parameters.put(OAuth.OAUTH_ACCESS_TOKEN, null);\r\n    parameters.put(OAuth.OAUTH_SCOPE, null);\r\n    parameters.put(OAuth.OAUTH_EXPIRES_IN, null);\r\n    expect(request.getParameterMap()).andReturn(parameters);\r\n    replay(request);\r\n    r = OAuthAuthzResponse.oauthCodeAuthzResponse(request);\r\n    token = r.getAccessToken();\r\n    Assert.assertNull(token);\r\n    verify(request);\r\n    reset(request);\r\n    //both parameters code and access token\r\n    TestUtils.expectNoErrorParameters(request);\r\n    parameters.put(OAuth.OAUTH_CODE, new String[] { \"test_code\" });\r\n    parameters.put(OAuth.OAUTH_ACCESS_TOKEN, new String[] { \"test_access_token\" });\r\n    parameters.put(OAuth.OAUTH_SCOPE, null);\r\n    parameters.put(OAuth.OAUTH_EXPIRES_IN, null);\r\n    expect(request.getParameterMap()).andReturn(parameters);\r\n    replay(request);\r\n    try {\r\n        OAuthAuthzResponse.oauthTokenAuthzResponse(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertTrue(e.getError().equals(OAuthError.TokenResponse.INVALID_REQUEST));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\OAuthAuthorizationResponseImplTest.java",
+  "methodName" : "testGetExpiresIn",
+  "sourceCode" : "@Test\r\npublic void testGetExpiresIn() throws Exception {\r\n    HttpServletRequest request = createStrictMock(HttpServletRequest.class);\r\n    TestUtils.expectNoErrorParameters(request);\r\n    Map<String, String[]> parameters = new HashMap<String, String[]>();\r\n    parameters.put(OAuth.OAUTH_CODE, new String[] { \"test_code\" });\r\n    parameters.put(OAuth.OAUTH_ACCESS_TOKEN, null);\r\n    parameters.put(OAuth.OAUTH_SCOPE, new String[] { \"test_scope\" });\r\n    parameters.put(OAuth.OAUTH_EXPIRES_IN, new String[] { \"test_expires_in\" });\r\n    expect(request.getParameterMap()).andStubReturn(parameters);\r\n    replay(request);\r\n    OAuthAuthzResponse r = null;\r\n    try {\r\n        OAuthAuthzResponse.oauthCodeAuthzResponse(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertTrue(e.getError().equals(OAuthError.TokenResponse.INVALID_REQUEST));\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    TestUtils.expectNoErrorParameters(request);\r\n    parameters.put(OAuth.OAUTH_CODE, null);\r\n    parameters.put(OAuth.OAUTH_ACCESS_TOKEN, new String[] { \"token\" });\r\n    parameters.put(OAuth.OAUTH_SCOPE, new String[] { \"test_scope\" });\r\n    parameters.put(OAuth.OAUTH_EXPIRES_IN, new String[] { \"3600\" });\r\n    expect(request.getParameterMap()).andStubReturn(parameters);\r\n    replay(request);\r\n    try {\r\n        r = OAuthAuthzResponse.oauthTokenAuthzResponse(request);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    Assert.assertNotNull(r.getExpiresIn());\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\OAuthAuthorizationResponseImplTest.java",
+  "methodName" : "testGetScope",
+  "sourceCode" : "@Test\r\npublic void testGetScope() throws Exception {\r\n    HttpServletRequest request = createStrictMock(HttpServletRequest.class);\r\n    TestUtils.expectNoErrorParameters(request);\r\n    Map<String, String[]> parameters = new HashMap<String, String[]>();\r\n    parameters.put(OAuth.OAUTH_CODE, new String[] { \"test_code\" });\r\n    parameters.put(OAuth.OAUTH_ACCESS_TOKEN, null);\r\n    parameters.put(OAuth.OAUTH_SCOPE, new String[] { \"test_scope\" });\r\n    parameters.put(OAuth.OAUTH_EXPIRES_IN, new String[] { \"3600\" });\r\n    expect(request.getParameterMap()).andStubReturn(parameters);\r\n    replay(request);\r\n    OAuthAuthzResponse r = null;\r\n    try {\r\n        OAuthAuthzResponse.oauthCodeAuthzResponse(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertTrue(e.getError().equals(OAuthError.TokenResponse.INVALID_REQUEST));\r\n    }\r\n    verify(request);\r\n    reset(request);\r\n    TestUtils.expectNoErrorParameters(request);\r\n    parameters.put(OAuth.OAUTH_CODE, null);\r\n    parameters.put(OAuth.OAUTH_ACCESS_TOKEN, new String[] { \"token\" });\r\n    parameters.put(OAuth.OAUTH_SCOPE, new String[] { \"test_scope\" });\r\n    parameters.put(OAuth.OAUTH_EXPIRES_IN, new String[] { \"3600\" });\r\n    expect(request.getParameterMap()).andStubReturn(parameters);\r\n    replay(request);\r\n    try {\r\n        r = OAuthAuthzResponse.oauthTokenAuthzResponse(request);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    Assert.assertNotNull(r.getScope());\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\OAuthAuthorizationResponseImplTest.java",
+  "methodName" : "testGetCode",
+  "sourceCode" : "@Test\r\npublic void testGetCode() throws Exception {\r\n    HttpServletRequest request = createStrictMock(HttpServletRequest.class);\r\n    //check valid request\r\n    TestUtils.expectNoErrorParameters(request);\r\n    Map<String, String[]> parameters = new HashMap<String, String[]>();\r\n    parameters.put(OAuth.OAUTH_CODE, null);\r\n    parameters.put(OAuth.OAUTH_ACCESS_TOKEN, new String[] { \"test_access_token\" });\r\n    parameters.put(OAuth.OAUTH_SCOPE, new String[] { null });\r\n    parameters.put(OAuth.OAUTH_EXPIRES_IN, new String[] { null });\r\n    expect(request.getParameterMap()).andStubReturn(parameters);\r\n    replay(request);\r\n    OAuthAuthzResponse r = OAuthAuthzResponse.oauthTokenAuthzResponse(request);\r\n    String code = r.getCode();\r\n    Assert.assertNull(code);\r\n    verify(request);\r\n    reset(request);\r\n    //both parameters code and access token\r\n    TestUtils.expectNoErrorParameters(request);\r\n    parameters.put(OAuth.OAUTH_CODE, new String[] { \"code\" });\r\n    parameters.put(OAuth.OAUTH_ACCESS_TOKEN, null);\r\n    parameters.put(OAuth.OAUTH_SCOPE, new String[] { null });\r\n    parameters.put(OAuth.OAUTH_EXPIRES_IN, new String[] { null });\r\n    expect(request.getParameterMap()).andStubReturn(parameters);\r\n    replay(request);\r\n    r = OAuthAuthzResponse.oauthCodeAuthzResponse(request);\r\n    code = r.getCode();\r\n    Assert.assertNotNull(code);\r\n    verify(request);\r\n    reset(request);\r\n    //both parameters code and access token\r\n    TestUtils.expectNoErrorParameters(request);\r\n    parameters.put(OAuth.OAUTH_CODE, new String[] { \"test_code\" });\r\n    parameters.put(OAuth.OAUTH_ACCESS_TOKEN, new String[] { \"test_access_token\" });\r\n    parameters.put(OAuth.OAUTH_SCOPE, new String[] { null });\r\n    parameters.put(OAuth.OAUTH_EXPIRES_IN, new String[] { null });\r\n    expect(request.getParameterMap()).andStubReturn(parameters);\r\n    replay(request);\r\n    try {\r\n        OAuthAuthzResponse.oauthCodeAuthzResponse(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertTrue(e.getError().equals(OAuthError.TokenResponse.INVALID_REQUEST));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\OAuthAuthorizationResponseImplTest.java",
+  "methodName" : "testGetState",
+  "sourceCode" : "@Test\r\npublic void testGetState() throws Exception {\r\n    HttpServletRequest request = createStrictMock(HttpServletRequest.class);\r\n    //check valid request\r\n    TestUtils.expectNoErrorParameters(request);\r\n    Map<String, String[]> parameters = new HashMap<String, String[]>();\r\n    parameters.put(OAuth.OAUTH_CODE, new String[] { \"test_code\" });\r\n    parameters.put(OAuth.OAUTH_ACCESS_TOKEN, null);\r\n    parameters.put(OAuth.OAUTH_SCOPE, new String[] { null });\r\n    parameters.put(OAuth.OAUTH_STATE, new String[] { \"test_state\" });\r\n    parameters.put(OAuth.OAUTH_EXPIRES_IN, new String[] { null });\r\n    expect(request.getParameterMap()).andStubReturn(parameters);\r\n    replay(request);\r\n    OAuthAuthzResponse r = OAuthAuthzResponse.oauthCodeAuthzResponse(request);\r\n    String state = r.getState();\r\n    Assert.assertNotNull(state);\r\n    verify(request);\r\n    reset(request);\r\n    //check valid request\r\n    TestUtils.expectNoErrorParameters(request);\r\n    parameters.put(OAuth.OAUTH_CODE, new String[] { null });\r\n    parameters.put(OAuth.OAUTH_ACCESS_TOKEN, new String[] { \"test_access_token\" });\r\n    parameters.put(OAuth.OAUTH_SCOPE, new String[] { null });\r\n    parameters.put(OAuth.OAUTH_STATE, new String[] { \"test_state\" });\r\n    parameters.put(OAuth.OAUTH_EXPIRES_IN, new String[] { null });\r\n    expect(request.getParameterMap()).andStubReturn(parameters);\r\n    replay(request);\r\n    r = OAuthAuthzResponse.oauthTokenAuthzResponse(request);\r\n    state = r.getState();\r\n    Assert.assertNotNull(state);\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\OAuthClientResponseFactoryTest.java",
+  "methodName" : "testCreateGitHubTokenResponse",
+  "sourceCode" : "@Test\r\npublic void testCreateGitHubTokenResponse() throws Exception {\r\n    OAuthClientResponse gitHubTokenResponse = OAuthClientResponseFactory.createGitHubTokenResponse(\"access_token=123\", OAuth.ContentType.URL_ENCODED, 200);\r\n    Assert.assertNotNull(gitHubTokenResponse);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\OAuthClientResponseFactoryTest.java",
+  "methodName" : "testCreateJSONTokenResponse",
+  "sourceCode" : "@Test\r\npublic void testCreateJSONTokenResponse() throws Exception {\r\n    OAuthClientResponse jsonTokenResponse = OAuthClientResponseFactory.createJSONTokenResponse(\"{'access_token':'123'}\", OAuth.ContentType.JSON, 200);\r\n    Assert.assertNotNull(jsonTokenResponse);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\OAuthClientResponseFactoryTest.java",
+  "methodName" : "testCreateCustomResponse",
+  "sourceCode" : "@Test\r\npublic void testCreateCustomResponse() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\OAuthJSONAccessTokenResponseTest.java",
+  "methodName" : "testGetAccessToken",
+  "sourceCode" : "@Test\r\npublic void testGetAccessToken() throws Exception {\r\n    logger.info(\"Running test: testGetAccessToken \" + this.getClass().getName());\r\n    OAuthJSONAccessTokenResponse r = null;\r\n    try {\r\n        r = new OAuthJSONAccessTokenResponse();\r\n        r.init(TestUtils.VALID_JSON_RESPONSE, OAuth.ContentType.JSON, 200);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    Assert.assertEquals(TestUtils.ACCESS_TOKEN, r.getAccessToken());\r\n    try {\r\n        r = new OAuthJSONAccessTokenResponse();\r\n        r.init(TestUtils.ERROR_JSON_BODY, OAuth.ContentType.JSON, 200);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertNotNull(e.getError());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\OAuthJSONAccessTokenResponseTest.java",
+  "methodName" : "testGetExpiresIn",
+  "sourceCode" : "@Test\r\npublic void testGetExpiresIn() throws Exception {\r\n    OAuthJSONAccessTokenResponse r = null;\r\n    try {\r\n        r = new OAuthJSONAccessTokenResponse();\r\n        r.init(TestUtils.VALID_JSON_RESPONSE, OAuth.ContentType.JSON, 200);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    Assert.assertEquals(TestUtils.EXPIRES_IN, r.getExpiresIn());\r\n    try {\r\n        new OAuthJSONAccessTokenResponse();\r\n        r.init(TestUtils.ERROR_JSON_BODY, OAuth.ContentType.JSON, 200);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertNotNull(e.getError());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\OAuthJSONAccessTokenResponseTest.java",
+  "methodName" : "testGetScope",
+  "sourceCode" : "@Test\r\npublic void testGetScope() throws Exception {\r\n    OAuthJSONAccessTokenResponse r = null;\r\n    try {\r\n        r = new OAuthJSONAccessTokenResponse();\r\n        r.init(TestUtils.VALID_JSON_RESPONSE, OAuth.ContentType.JSON, 200);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    Assert.assertEquals(TestUtils.SCOPE, r.getScope());\r\n    try {\r\n        new OAuthJSONAccessTokenResponse();\r\n        r.init(TestUtils.ERROR_JSON_BODY, OAuth.ContentType.JSON, 200);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertNotNull(e.getError());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\OAuthJSONAccessTokenResponseTest.java",
+  "methodName" : "testGetRefreshToken",
+  "sourceCode" : "@Test\r\npublic void testGetRefreshToken() throws Exception {\r\n    OAuthJSONAccessTokenResponse r = null;\r\n    try {\r\n        r = new OAuthJSONAccessTokenResponse();\r\n        r.init(TestUtils.VALID_JSON_RESPONSE, OAuth.ContentType.JSON, 200);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    Assert.assertEquals(TestUtils.REFRESH_TOKEN, r.getRefreshToken());\r\n    try {\r\n        new OAuthJSONAccessTokenResponse();\r\n        r.init(TestUtils.ERROR_JSON_BODY, OAuth.ContentType.JSON, 200);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertNotNull(e.getError());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\response\\OAuthJSONAccessTokenResponseTest.java",
+  "methodName" : "testSetBody",
+  "sourceCode" : "@Test\r\npublic void testSetBody() throws Exception {\r\n    OAuthJSONAccessTokenResponse r = null;\r\n    try {\r\n        r = new OAuthJSONAccessTokenResponse();\r\n        r.init(TestUtils.VALID_JSON_RESPONSE, OAuth.ContentType.JSON, 200);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    String accessToken = r.getAccessToken();\r\n    String expiresIn = r.getExpiresIn();\r\n    Assert.assertEquals(TestUtils.EXPIRES_IN, expiresIn);\r\n    Assert.assertEquals(TestUtils.ACCESS_TOKEN, accessToken);\r\n    try {\r\n        new OAuthJSONAccessTokenResponse();\r\n        r.init(TestUtils.ERROR_JSON_BODY, OAuth.ContentType.JSON, 200);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\validator\\CodeTokenValidatorTest.java",
+  "methodName" : "testValidator",
+  "sourceCode" : "@Test\r\npublic void testValidator() {\r\n    OAuthClientValidator validator = new CodeTokenValidator();\r\n    Assert.assertNotNull(validator.requiredParams);\r\n    Assert.assertEquals(2, validator.requiredParams.size());\r\n    Assert.assertArrayEquals(new String[] {}, validator.requiredParams.get(OAuth.OAUTH_CODE));\r\n    Assert.assertArrayEquals(new String[] {}, validator.requiredParams.get(OAuth.OAUTH_ACCESS_TOKEN));\r\n    Assert.assertNotNull(validator.notAllowedParams);\r\n    Assert.assertEquals(1, validator.notAllowedParams.size());\r\n    Assert.assertTrue(validator.notAllowedParams.contains(OAuth.OAUTH_ACCESS_TOKEN));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\validator\\CodeValidatorTest.java",
+  "methodName" : "testValidator",
+  "sourceCode" : "@Test\r\npublic void testValidator() {\r\n    OAuthClientValidator validator = new CodeValidator();\r\n    Assert.assertNotNull(validator.requiredParams);\r\n    Assert.assertEquals(1, validator.requiredParams.size());\r\n    Assert.assertArrayEquals(new String[] {}, validator.requiredParams.get(OAuth.OAUTH_CODE));\r\n    Assert.assertNotNull(validator.notAllowedParams);\r\n    Assert.assertEquals(2, validator.notAllowedParams.size());\r\n    Assert.assertTrue(validator.notAllowedParams.contains(OAuth.OAUTH_ACCESS_TOKEN));\r\n    Assert.assertTrue(validator.notAllowedParams.contains(OAuth.OAUTH_EXPIRES_IN));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-client\\src\\test\\java\\org\\apache\\amber\\oauth2\\client\\validator\\TokenValidatorTest.java",
+  "methodName" : "testValidator",
+  "sourceCode" : "@Test\r\npublic void testValidator() {\r\n    OAuthClientValidator validator = new TokenValidator();\r\n    Assert.assertNotNull(validator.requiredParams);\r\n    Assert.assertEquals(1, validator.requiredParams.size());\r\n    Assert.assertArrayEquals(new String[] {}, validator.requiredParams.get(OAuth.OAUTH_ACCESS_TOKEN));\r\n    Assert.assertNotNull(validator.notAllowedParams);\r\n    Assert.assertEquals(1, validator.notAllowedParams.size());\r\n    Assert.assertTrue(validator.notAllowedParams.contains(OAuth.OAUTH_CODE));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\domain\\BasicClientInfoBuilderTest.java",
+  "methodName" : "testNewClientInfo",
+  "sourceCode" : "@Test\r\npublic void testNewClientInfo() throws Exception {\r\n    BasicClientInfo basicClientInfo = BasicClientInfoBuilder.clientInfo().setClientId(CLIENT_ID).setClientSecret(CLIENT_SECRET).setRedirectUri(REDIRECT_URI).setName(NAME).setIconUri(ICON_URI).setExpiresIn(EXPIRES_IN).setIssuedAt(ISSUED_AT).build();\r\n    Assert.assertNotNull(basicClientInfo);\r\n    Assert.assertEquals(CLIENT_ID, basicClientInfo.getClientId());\r\n    Assert.assertEquals(CLIENT_SECRET, basicClientInfo.getClientSecret());\r\n    Assert.assertEquals(REDIRECT_URI, basicClientInfo.getRedirectUri());\r\n    Assert.assertEquals(NAME, basicClientInfo.getName());\r\n    Assert.assertEquals(ICON_URI, basicClientInfo.getIconUri());\r\n    Assert.assertEquals(EXPIRES_IN, basicClientInfo.getExpiresIn());\r\n    Assert.assertEquals(ISSUED_AT, basicClientInfo.getIssuedAt());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\message\\OAuthResponseTest.java",
+  "methodName" : "testErrorResponse",
+  "sourceCode" : "@Test\r\npublic void testErrorResponse() throws Exception {\r\n    OAuthResponse oAuthResponse = OAuthResponse.errorResponse(400).setError(\"error\").setRealm(\"album\").setState(\"ok\").setErrorDescription(\"error_description\").setErrorUri(\"http://example-uri\").setParam(\"param\", \"value\").buildJSONMessage();\r\n    String body = oAuthResponse.getBody();\r\n    Assert.assertEquals(\"{\\\"error_uri\\\":\\\"http:\\\\/\\\\/example-uri\\\",\\\"error\\\":\\\"error\\\",\\\"param\\\":\\\"value\\\",\" + \"\\\"realm\\\":\\\"album\\\",\\\"state\\\":\\\"ok\\\",\\\"error_description\\\":\\\"error_description\\\"}\", body);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\OAuthUtilsTest.java",
+  "methodName" : "testBuildJSON",
+  "sourceCode" : "@Test\r\npublic void testBuildJSON() throws Exception {\r\n    Map<String, String> params = new HashMap<String, String>();\r\n    params.put(OAuthError.OAUTH_ERROR, OAuthError.TokenResponse.INVALID_REQUEST);\r\n    String json = JSONUtils.buildJSON(params);\r\n    JSONObject obj = new JSONObject(json);\r\n    AbstractXMLStreamReader reader = new MappedXMLStreamReader(obj);\r\n    assertEquals(XMLStreamReader.START_ELEMENT, reader.next());\r\n    assertEquals(OAuthError.OAUTH_ERROR, reader.getName().getLocalPart());\r\n    assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, reader.getText());\r\n    assertEquals(XMLStreamReader.CHARACTERS, reader.next());\r\n    assertEquals(XMLStreamReader.END_ELEMENT, reader.next());\r\n    assertEquals(XMLStreamReader.END_DOCUMENT, reader.next());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\OAuthUtilsTest.java",
+  "methodName" : "testEncodeOAuthHeader",
+  "sourceCode" : "@Test\r\npublic void testEncodeOAuthHeader() throws Exception {\r\n    Map<String, String> entries = new HashMap<String, String>();\r\n    entries.put(\"realm\", \"Some Example Realm\");\r\n    entries.put(\"error\", \"invalid_token\");\r\n    String header = OAuthUtils.encodeOAuthHeader(entries);\r\n    assertEquals(\"OAuth error=\\\"invalid_token\\\",realm=\\\"Some Example Realm\\\"\", header);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\parameters\\BodyURLEncodedParametersApplierTest.java",
+  "methodName" : "testApplyOAuthParameters",
+  "sourceCode" : "@Test\r\npublic void testApplyOAuthParameters() throws Exception {\r\n    OAuthParametersApplier app = new BodyURLEncodedParametersApplier();\r\n    Map<String, String> params = new HashMap<String, String>();\r\n    params.put(OAuth.OAUTH_EXPIRES_IN, \"3600\");\r\n    params.put(OAuth.OAUTH_ACCESS_TOKEN, \"token_authz\");\r\n    params.put(OAuth.OAUTH_CODE, \"code_\");\r\n    params.put(OAuth.OAUTH_SCOPE, \"read\");\r\n    params.put(OAuth.OAUTH_STATE, \"state\");\r\n    params.put(\"empty_param\", \"\");\r\n    params.put(\"null_param\", null);\r\n    params.put(\"\", \"some_value\");\r\n    params.put(null, \"some_value\");\r\n    OAuthMessage message = new DummyOAuthMessage(\"http://www.example.com/rd\", 200);\r\n    app.applyOAuthParameters(message, params);\r\n    String body = message.getBody();\r\n    Assert.assertTrue(body.contains(\"3600\"));\r\n    Assert.assertTrue(body.contains(\"token_authz\"));\r\n    Assert.assertTrue(body.contains(\"code_\"));\r\n    Assert.assertTrue(body.contains(\"read\"));\r\n    Assert.assertTrue(body.contains(\"state\"));\r\n    Assert.assertFalse(body.contains(\"empty_param\"));\r\n    Assert.assertFalse(body.contains(\"null_param\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\parameters\\JSONBodyParametersApplierTest.java",
+  "methodName" : "testApplyOAuthParameters",
+  "sourceCode" : "@Test\r\npublic void testApplyOAuthParameters() throws Exception {\r\n    OAuthParametersApplier app = new JSONBodyParametersApplier();\r\n    Map<String, String> params = new HashMap<String, String>();\r\n    params.put(OAuth.OAUTH_EXPIRES_IN, \"3600\");\r\n    params.put(OAuth.OAUTH_ACCESS_TOKEN, \"token_authz\");\r\n    params.put(OAuth.OAUTH_CODE, \"code_\");\r\n    params.put(OAuth.OAUTH_SCOPE, \"read\");\r\n    params.put(OAuth.OAUTH_STATE, \"state\");\r\n    params.put(\"empty_param\", \"\");\r\n    params.put(\"null_param\", null);\r\n    params.put(\"\", \"some_value\");\r\n    params.put(null, \"some_value\");\r\n    OAuthMessage message = new DummyOAuthMessage(\"http://www.example.com/rd\", 200);\r\n    app.applyOAuthParameters(message, params);\r\n    String msgBody = message.getBody();\r\n    Map<String, String> map = JSONUtils.parseJSON(msgBody);\r\n    Assert.assertEquals(\"3600\", map.get(OAuth.OAUTH_EXPIRES_IN));\r\n    Assert.assertEquals(\"token_authz\", map.get(OAuth.OAUTH_ACCESS_TOKEN));\r\n    Assert.assertEquals(\"code_\", map.get(OAuth.OAUTH_CODE));\r\n    Assert.assertEquals(\"read\", map.get(OAuth.OAUTH_SCOPE));\r\n    Assert.assertEquals(\"state\", map.get(OAuth.OAUTH_STATE));\r\n    Assert.assertNull(map.get(\"empty_param\"));\r\n    Assert.assertNull(map.get(\"null_param\"));\r\n    Assert.assertNull(map.get(\"\"));\r\n    Assert.assertNull(map.get(null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\parameters\\QueryParameterApplierTest.java",
+  "methodName" : "testApplyOAuthParameters",
+  "sourceCode" : "@Test\r\npublic void testApplyOAuthParameters() throws Exception {\r\n    OAuthParametersApplier app = new QueryParameterApplier();\r\n    Map<String, String> params = new HashMap<String, String>();\r\n    params.put(OAuth.OAUTH_EXPIRES_IN, \"3600\");\r\n    params.put(OAuth.OAUTH_ACCESS_TOKEN, \"token_authz\");\r\n    params.put(OAuth.OAUTH_CODE, \"code_\");\r\n    params.put(OAuth.OAUTH_SCOPE, \"read\");\r\n    params.put(OAuth.OAUTH_STATE, \"state\");\r\n    params.put(\"empty_param\", \"\");\r\n    params.put(\"null_param\", null);\r\n    OAuthMessage message = new DummyOAuthMessage(\"http://www.example.com/rd\", 200);\r\n    app.applyOAuthParameters(message, params);\r\n    String locationURI = message.getLocationUri();\r\n    Assert.assertTrue(locationURI.contains(\"3600\"));\r\n    Assert.assertTrue(locationURI.contains(\"token_authz\"));\r\n    Assert.assertTrue(locationURI.contains(\"code_\"));\r\n    Assert.assertTrue(locationURI.contains(\"read\"));\r\n    Assert.assertTrue(locationURI.contains(\"state\"));\r\n    Assert.assertTrue(!locationURI.contains(\"empty_param\"));\r\n    Assert.assertTrue(!locationURI.contains(\"null_param\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\parameters\\WWWAuthHeaderParametersApplierTest.java",
+  "methodName" : "testApplyOAuthParameters",
+  "sourceCode" : "@Test\r\npublic void testApplyOAuthParameters() throws Exception {\r\n    Map<String, String> params = new HashMap<String, String>();\r\n    params.put(\"error\", \"invalid_token\");\r\n    params.put(\"error_uri\", \"http://www.example.com/error\");\r\n    params.put(\"scope\", \"s1 s2 s3\");\r\n    params.put(\"empty_param\", \"\");\r\n    params.put(\"null_param\", null);\r\n    params.put(\"\", \"some_value\");\r\n    params.put(null, \"some_value\");\r\n    OAuthResponse res = OAuthResponse.status(200).location(\"\").buildQueryMessage();\r\n    OAuthParametersApplier applier = new WWWAuthHeaderParametersApplier();\r\n    res = (OAuthResponse) applier.applyOAuthParameters(res, params);\r\n    Assert.assertNotNull(res);\r\n    String header = res.getHeader(OAuth.HeaderType.WWW_AUTHENTICATE);\r\n    Assert.assertNotNull(header);\r\n    Assert.assertEquals(OAuth.OAUTH_HEADER_NAME + \" scope=\\\"s1 s2 s3\\\",error_uri=\\\"http://www.example.com/error\\\",error=\\\"invalid_token\\\"\", header);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\JSONUtilsTest.java",
+  "methodName" : "testBuildJSON",
+  "sourceCode" : "@Test\r\npublic void testBuildJSON() throws Exception {\r\n    Map<String, String> params = new HashMap<String, String>();\r\n    params.put(OAuthError.OAUTH_ERROR, OAuthError.TokenResponse.INVALID_REQUEST);\r\n    String json = JSONUtils.buildJSON(params);\r\n    JSONObject obj = new JSONObject(json);\r\n    AbstractXMLStreamReader reader = new MappedXMLStreamReader(obj);\r\n    Assert.assertEquals(XMLStreamReader.START_ELEMENT, reader.next());\r\n    Assert.assertEquals(OAuthError.OAUTH_ERROR, reader.getName().getLocalPart());\r\n    Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, reader.getText());\r\n    Assert.assertEquals(XMLStreamReader.CHARACTERS, reader.next());\r\n    Assert.assertEquals(XMLStreamReader.END_ELEMENT, reader.next());\r\n    Assert.assertEquals(XMLStreamReader.END_DOCUMENT, reader.next());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\JSONUtilsTest.java",
+  "methodName" : "testParseJson",
+  "sourceCode" : "@Test\r\npublic void testParseJson() throws Exception {\r\n    Map<String, String> jsonParams = new HashMap<String, String>();\r\n    jsonParams.put(\"author\", \"John B. Smith\");\r\n    jsonParams.put(\"year\", \"2000\");\r\n    String s = JSONUtils.buildJSON(jsonParams);\r\n    Map<String, String> map = JSONUtils.parseJSON(s);\r\n    Assert.assertEquals(\"John B. Smith\", map.get(\"author\"));\r\n    Assert.assertEquals(\"2000\", map.get(\"year\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testFormat",
+  "sourceCode" : "@Test\r\npublic void testFormat() throws Exception {\r\n    Map<String, String> parameters = new HashMap<String, String>();\r\n    parameters.put(\"movie\", \"Kiler\");\r\n    parameters.put(\"director\", \"Machulski\");\r\n    String format = OAuthUtils.format(parameters.entrySet(), \"UTF-8\");\r\n    Assert.assertEquals(\"movie=Kiler&director=Machulski\", format);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testSaveStreamAsString",
+  "sourceCode" : "@Test\r\npublic void testSaveStreamAsString() throws Exception {\r\n    String sampleTest = \"It is raining again today\";\r\n    InputStream is = new ByteArrayInputStream(sampleTest.getBytes(\"UTF-8\"));\r\n    Assert.assertEquals(sampleTest, OAuthUtils.saveStreamAsString(is));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testHandleOAuthProblemException",
+  "sourceCode" : "@Test\r\npublic void testHandleOAuthProblemException() throws Exception {\r\n    OAuthProblemException exception = OAuthUtils.handleOAuthProblemException(\"missing parameter\");\r\n    Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, exception.getError());\r\n    Assert.assertEquals(\"missing parameter\", exception.getDescription());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testHandleMissingParameters",
+  "sourceCode" : "@Test\r\npublic void testHandleMissingParameters() throws Exception {\r\n    Set<String> missingParameters = new HashSet<String>();\r\n    missingParameters.add(OAuth.OAUTH_CLIENT_ID);\r\n    missingParameters.add(OAuth.OAUTH_CLIENT_SECRET);\r\n    OAuthUtils.handleMissingParameters(missingParameters);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testHandleNotAllowedParametersOAuthException",
+  "sourceCode" : "@Test\r\npublic void testHandleNotAllowedParametersOAuthException() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testDecodeForm",
+  "sourceCode" : "@Test\r\npublic void testDecodeForm() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testIsFormEncoded",
+  "sourceCode" : "@Test\r\npublic void testIsFormEncoded() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testDecodePercent",
+  "sourceCode" : "@Test\r\npublic void testDecodePercent() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testPercentEncode",
+  "sourceCode" : "@Test\r\npublic void testPercentEncode() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testInstantiateClass",
+  "sourceCode" : "@Test\r\npublic void testInstantiateClass() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testInstantiateClassWithParameters",
+  "sourceCode" : "@Test\r\npublic void testInstantiateClassWithParameters() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testGetAuthHeaderField",
+  "sourceCode" : "@Test\r\npublic void testGetAuthHeaderField() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testDecodeOAuthHeader",
+  "sourceCode" : "@Test\r\npublic void testDecodeOAuthHeader() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testEncodeOAuthHeader",
+  "sourceCode" : "@Test\r\npublic void testEncodeOAuthHeader() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testIsEmpty",
+  "sourceCode" : "@Test\r\npublic void testIsEmpty() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testHasEmptyValues",
+  "sourceCode" : "@Test\r\npublic void testHasEmptyValues() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testGetAuthzMethod",
+  "sourceCode" : "@Test\r\npublic void testGetAuthzMethod() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testHandleOAuthError",
+  "sourceCode" : "@Test\r\npublic void testHandleOAuthError() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testDecodeScopes",
+  "sourceCode" : "@Test\r\npublic void testDecodeScopes() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testEncodeScopes",
+  "sourceCode" : "@Test\r\npublic void testEncodeScopes() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testIsExpired",
+  "sourceCode" : "@Test\r\npublic void testIsExpired() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testGetIssuedTimeInSec",
+  "sourceCode" : "@Test\r\npublic void testGetIssuedTimeInSec() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testIsMultipart",
+  "sourceCode" : "@Test\r\npublic void testIsMultipart() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\utils\\OAuthUtilsTest.java",
+  "methodName" : "testHasContentType",
+  "sourceCode" : "@Test\r\npublic void testHasContentType() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\validators\\AbstractValidatorTest.java",
+  "methodName" : "testValidateContentType",
+  "sourceCode" : "@Test\r\npublic void testValidateContentType() throws Exception {\r\n    HttpServletRequest request = createStrictMock(HttpServletRequest.class);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    replay(request);\r\n    AbstractValidator validator = new AbstractValidatorImpl();\r\n    validator.validateContentType(request);\r\n    verify(request);\r\n    reset(request);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED + \";utf-8\");\r\n    replay(request);\r\n    validator = new AbstractValidatorImpl();\r\n    validator.validateContentType(request);\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-common\\src\\test\\java\\org\\apache\\amber\\oauth2\\common\\validators\\AbstractValidatorTest.java",
+  "methodName" : "testInvalidContentType",
+  "sourceCode" : "@Test(expected = OAuthProblemException.class)\r\npublic void testInvalidContentType() throws Exception {\r\n    HttpServletRequest request = createStrictMock(HttpServletRequest.class);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.JSON);\r\n    replay(request);\r\n    AbstractValidator validator = new AbstractValidatorImpl();\r\n    validator.validateContentType(request);\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-dynamicreg-server\\src\\test\\java\\org\\apache\\amber\\oauth2\\ext\\dynamicreg\\server\\request\\OAuthServerRegistrationRequestTest.java",
+  "methodName" : "testValidOAuthPushRequest",
+  "sourceCode" : "@Test\r\npublic void testValidOAuthPushRequest() throws Exception {\r\n    final String validJson = FileUtils.readTextFileAsString(\"json/push_valid.json\");\r\n    MockHttpServletRequest request = new MockHttpServletRequest(\"POST\", \"/oauth/register\");\r\n    request.setContentType(OAuth.ContentType.JSON);\r\n    request.setContent(validJson.getBytes(\"UTF-8\"));\r\n    final JSONHttpServletRequestWrapper jsonWrapper = new JSONHttpServletRequestWrapper(request);\r\n    OAuthServerRegistrationRequest registrationRequest = new OAuthServerRegistrationRequest(jsonWrapper);\r\n    Assert.assertEquals(\"Uploading and also editing capabilities!\", registrationRequest.getClientDescription());\r\n    Assert.assertEquals(\"http://onlinephotogallery.com/icon.png\", registrationRequest.getClientIcon());\r\n    Assert.assertEquals(\"Online Photo Gallery\", registrationRequest.getClientName());\r\n    Assert.assertEquals(\"https://onlinephotogallery.com/client_reg\", registrationRequest.getRedirectURI());\r\n    Assert.assertEquals(\"push\", registrationRequest.getType());\r\n    Assert.assertEquals(\"http://onlinephotogallery.com\", registrationRequest.getClientUrl());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-dynamicreg-server\\src\\test\\java\\org\\apache\\amber\\oauth2\\ext\\dynamicreg\\server\\request\\OAuthServerRegistrationRequestTest.java",
+  "methodName" : "testInvalidContentTypePushRequest",
+  "sourceCode" : "@Test(expected = OAuthProblemException.class)\r\npublic void testInvalidContentTypePushRequest() throws Exception {\r\n    MockHttpServletRequest request = new MockHttpServletRequest(\"POST\", \"/oauth/register\");\r\n    request.setContentType(OAuth.ContentType.URL_ENCODED);\r\n    final JSONHttpServletRequestWrapper jsonWrapper = new JSONHttpServletRequestWrapper(request);\r\n    OAuthServerRegistrationRequest registrationRequest = new OAuthServerRegistrationRequest(jsonWrapper);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-dynamicreg-server\\src\\test\\java\\org\\apache\\amber\\oauth2\\ext\\dynamicreg\\server\\request\\OAuthServerRegistrationRequestTest.java",
+  "methodName" : "testInvalidMethodPushRequest",
+  "sourceCode" : "@Test(expected = OAuthProblemException.class)\r\npublic void testInvalidMethodPushRequest() throws Exception {\r\n    MockHttpServletRequest request = new MockHttpServletRequest(\"GET\", \"/oauth/register\");\r\n    request.setContentType(OAuth.ContentType.JSON);\r\n    final JSONHttpServletRequestWrapper jsonWrapper = new JSONHttpServletRequestWrapper(request);\r\n    OAuthServerRegistrationRequest registrationRequest = new OAuthServerRegistrationRequest(jsonWrapper);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-dynamicreg-server\\src\\test\\java\\org\\apache\\amber\\oauth2\\ext\\dynamicreg\\server\\request\\OAuthServerRegistrationRequestTest.java",
+  "methodName" : "testInvalidBodyPushRequest",
+  "sourceCode" : "@Test(expected = OAuthProblemException.class)\r\npublic void testInvalidBodyPushRequest() throws Exception {\r\n    final String inValidJson = FileUtils.readTextFileAsString(\"json/push_invalid.json\");\r\n    MockHttpServletRequest request = new MockHttpServletRequest(\"POST\", \"/oauth/register\");\r\n    request.setContentType(OAuth.ContentType.JSON);\r\n    request.setContent(inValidJson.getBytes(\"UTF-8\"));\r\n    final JSONHttpServletRequestWrapper jsonWrapper = new JSONHttpServletRequestWrapper(request);\r\n    OAuthServerRegistrationRequest registrationRequest = new OAuthServerRegistrationRequest(jsonWrapper);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\AccessTokenAssertion.java",
+  "methodName" : "testSuccessfullAccesToken",
+  "sourceCode" : "@Test\r\npublic void testSuccessfullAccesToken() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRequest.tokenLocation(Common.ACCESS_TOKEN_ENDPOINT).setGrantType(GrantType.ASSERTION).setAssertion(Common.ASSERTION).setAssertionType(Common.ASSERTION_TYPE).buildBodyMessage();\r\n    OAuthClient oAuthClient = new OAuthClient(new HttpClient4());\r\n    OAuthAccessTokenResponse response = null;\r\n    try {\r\n        response = oAuthClient.accessToken(request);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"exception not expected\");\r\n    }\r\n    assertNotNull(response.getAccessToken());\r\n    assertNotNull(response.getExpiresIn());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\AccessTokenAssertion.java",
+  "methodName" : "testInvalidRequest",
+  "sourceCode" : "@Test\r\npublic void testInvalidRequest() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRequest.tokenLocation(Common.ACCESS_TOKEN_ENDPOINT).setGrantType(GrantType.ASSERTION).setAssertionType(Common.ASSERTION_TYPE).buildBodyMessage();\r\n    OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());\r\n    OAuthAccessTokenResponse response = null;\r\n    try {\r\n        oAuthClient.accessToken(request);\r\n        fail(\"exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\AccessTokenAssertion.java",
+  "methodName" : "testInvalidRequest2",
+  "sourceCode" : "@Test\r\npublic void testInvalidRequest2() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRequest.tokenLocation(Common.ACCESS_TOKEN_ENDPOINT).setGrantType(GrantType.ASSERTION).buildBodyMessage();\r\n    OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());\r\n    OAuthClientResponse response = null;\r\n    try {\r\n        oAuthClient.accessToken(request);\r\n        fail(\"exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\AccessTokenPasswordCredentialsTest.java",
+  "methodName" : "testSuccessfullAccesToken",
+  "sourceCode" : "@Test\r\npublic void testSuccessfullAccesToken() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRequest.tokenLocation(Common.ACCESS_TOKEN_ENDPOINT).setGrantType(GrantType.PASSWORD).setClientId(Common.CLIENT_ID).setClientSecret(Common.CLIENT_SECRET).setUsername(Common.USERNAME).setPassword(Common.PASSWORD).buildBodyMessage();\r\n    OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());\r\n    OAuthJSONAccessTokenResponse response = oAuthClient.accessToken(request);\r\n    assertNotNull(response.getAccessToken());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\AccessTokenPasswordCredentialsTest.java",
+  "methodName" : "testInvalidRequest",
+  "sourceCode" : "@Test\r\npublic void testInvalidRequest() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRequest.tokenLocation(Common.ACCESS_TOKEN_ENDPOINT).setGrantType(GrantType.PASSWORD).setClientId(Common.CLIENT_ID).buildBodyMessage();\r\n    OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());\r\n    OAuthClientResponse response = null;\r\n    try {\r\n        oAuthClient.accessToken(request);\r\n        fail(\"exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\AccessTokenPasswordCredentialsTest.java",
+  "methodName" : "testInvalidClient",
+  "sourceCode" : "@Test\r\npublic void testInvalidClient() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRequest.tokenLocation(Common.ACCESS_TOKEN_ENDPOINT).setGrantType(GrantType.PASSWORD).setClientId(\"wrong_client_id\").setClientSecret(Common.CLIENT_SECRET).setUsername(Common.USERNAME).setPassword(Common.PASSWORD).buildBodyMessage();\r\n    OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());\r\n    OAuthClientResponse response = null;\r\n    try {\r\n        oAuthClient.accessToken(request);\r\n        fail(\"exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        assertEquals(OAuthError.TokenResponse.INVALID_CLIENT, e.getError());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\AccessTokenTestAuthCodeTest.java",
+  "methodName" : "testSuccessfullAccesToken",
+  "sourceCode" : "@Test\r\npublic void testSuccessfullAccesToken() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRequest.tokenLocation(Common.ACCESS_TOKEN_ENDPOINT).setGrantType(GrantType.AUTHORIZATION_CODE).setCode(Common.AUTHORIZATION_CODE).setRedirectURI(Common.REDIRECT_URL).setClientId(Common.CLIENT_ID).setClientSecret(Common.CLIENT_SECRET).buildBodyMessage();\r\n    OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());\r\n    OAuthAccessTokenResponse response = oAuthClient.accessToken(request);\r\n    assertNotNull(response.getAccessToken());\r\n    assertNotNull(response.getExpiresIn());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\AccessTokenTestAuthCodeTest.java",
+  "methodName" : "testSuccessfullAccesTokenGETMethod",
+  "sourceCode" : "@Test\r\npublic void testSuccessfullAccesTokenGETMethod() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRequest.tokenLocation(Common.ACCESS_TOKEN_ENDPOINT).setGrantType(GrantType.AUTHORIZATION_CODE).setCode(Common.AUTHORIZATION_CODE).setRedirectURI(Common.REDIRECT_URL).setClientId(Common.CLIENT_ID).setClientSecret(Common.CLIENT_SECRET).buildQueryMessage();\r\n    OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());\r\n    OAuthAccessTokenResponse response = oAuthClient.accessToken(request, OAuth.HttpMethod.GET);\r\n    assertNotNull(response.getAccessToken());\r\n    assertNotNull(response.getExpiresIn());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\AccessTokenTestAuthCodeTest.java",
+  "methodName" : "testNoneGrantType",
+  "sourceCode" : "@Test\r\npublic void testNoneGrantType() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRequest.tokenLocation(Common.ACCESS_TOKEN_ENDPOINT).setGrantType(GrantType.NONE).setClientId(Common.CLIENT_ID).buildBodyMessage();\r\n    OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());\r\n    try {\r\n        oAuthClient.accessToken(request);\r\n        fail(\"exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\AccessTokenTestAuthCodeTest.java",
+  "methodName" : "testInvalidRequest",
+  "sourceCode" : "@Test\r\npublic void testInvalidRequest() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRequest.tokenLocation(Common.ACCESS_TOKEN_ENDPOINT).setClientId(Common.CLIENT_ID).buildBodyMessage();\r\n    OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());\r\n    try {\r\n        oAuthClient.accessToken(request);\r\n        fail(\"exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\AccessTokenTestAuthCodeTest.java",
+  "methodName" : "testInvalidClient",
+  "sourceCode" : "@Test\r\npublic void testInvalidClient() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRequest.tokenLocation(Common.ACCESS_TOKEN_ENDPOINT).setGrantType(GrantType.AUTHORIZATION_CODE).setCode(Common.AUTHORIZATION_CODE).setClientId(\"unknownid\").setRedirectURI(Common.REDIRECT_URL).buildBodyMessage();\r\n    OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());\r\n    try {\r\n        oAuthClient.accessToken(request);\r\n        fail(\"exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\AccessTokenTestAuthCodeTest.java",
+  "methodName" : "testInvalidGrantType",
+  "sourceCode" : "@Test\r\npublic void testInvalidGrantType() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRequest.tokenLocation(Common.ACCESS_TOKEN_ENDPOINT).setParameter(OAuth.OAUTH_GRANT_TYPE, \"unknown_grant_type\").setCode(Common.AUTHORIZATION_CODE).setRedirectURI(Common.REDIRECT_URL).setClientId(Common.CLIENT_ID).buildBodyMessage();\r\n    OAuthClient oAuthclient = new OAuthClient(new URLConnectionClient());\r\n    try {\r\n        oAuthclient.accessToken(request);\r\n        fail(\"exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\AccessTokenTestAuthCodeTest.java",
+  "methodName" : "testInvalidCode",
+  "sourceCode" : "@Test\r\npublic void testInvalidCode() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRequest.tokenLocation(Common.ACCESS_TOKEN_ENDPOINT).setGrantType(GrantType.AUTHORIZATION_CODE).setRedirectURI(Common.REDIRECT_URL).setCode(\"unknown_code\").setClientId(Common.CLIENT_ID).buildBodyMessage();\r\n    OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());\r\n    try {\r\n        oAuthClient.accessToken(request);\r\n        fail(\"exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\ClientRegistrationTest.java",
+  "methodName" : "testPushMetadataRegistration",
+  "sourceCode" : "@Test\r\npublic void testPushMetadataRegistration() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRegistrationRequest.location(CommonExt.REGISTRATION_ENDPOINT, OAuthRegistration.Type.PUSH).setName(CommonExt.APP_NAME).setUrl(CommonExt.APP_URL).setDescription(CommonExt.APP_DESCRIPTION).setIcon(CommonExt.APP_ICON).setRedirectURL(CommonExt.APP_REDIRECT_URI).buildJSONMessage();\r\n    OAuthRegistrationClient oauthclient = new OAuthRegistrationClient(new URLConnectionClient());\r\n    OAuthClientRegistrationResponse response = oauthclient.clientInfo(request);\r\n    assertEquals(CommonExt.CLIENT_ID, response.getClientId());\r\n    assertEquals(CommonExt.CLIENT_SECRET, response.getClientSecret());\r\n    assertEquals(CommonExt.EXPIRES_IN, response.getExpiresIn());\r\n    assertEquals(CommonExt.ISSUED_AT, response.getIssuedAt());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\ClientRegistrationTest.java",
+  "methodName" : "testInvalidType",
+  "sourceCode" : "@Test\r\npublic void testInvalidType() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRegistrationRequest.location(CommonExt.REGISTRATION_ENDPOINT, \"unknown_type\").setName(CommonExt.APP_NAME).setUrl(CommonExt.APP_URL).setDescription(CommonExt.APP_DESCRIPTION).setIcon(CommonExt.APP_ICON).setRedirectURL(CommonExt.APP_REDIRECT_URI).buildBodyMessage();\r\n    OAuthRegistrationClient oauthclient = new OAuthRegistrationClient(new URLConnectionClient());\r\n    try {\r\n        OAuthClientRegistrationResponse response = oauthclient.clientInfo(request);\r\n        fail(\"exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        assertNotNull(e.getError());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\EndUserAuthorizationTest.java",
+  "methodName" : "testWrongParametersEndUserAuthorization",
+  "sourceCode" : "@Test\r\npublic void testWrongParametersEndUserAuthorization() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRequest.authorizationLocation(Common.AUTHORIZATION_ENPOINT).setClientId(Common.CLIENT_ID).setRedirectURI(Common.REDIRECT_URL).buildQueryMessage();\r\n    Common.doRequest(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\EndUserAuthorizationTest.java",
+  "methodName" : "testCorrectParametersEndUserAuthorization",
+  "sourceCode" : "@Test\r\npublic void testCorrectParametersEndUserAuthorization() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRequest.authorizationLocation(Common.AUTHORIZATION_ENPOINT).setClientId(Common.CLIENT_ID).setRedirectURI(Common.REDIRECT_URL + \"1\").setResponseType(ResponseType.CODE.toString()).buildQueryMessage();\r\n    Common.doRequest(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\EndUserAuthorizationTest.java",
+  "methodName" : "testTokenResponse",
+  "sourceCode" : "@Test\r\npublic void testTokenResponse() throws Exception {\r\n    OAuthClientRequest request = OAuthClientRequest.authorizationLocation(Common.AUTHORIZATION_ENPOINT).setClientId(Common.CLIENT_ID).setRedirectURI(Common.REDIRECT_URL + \"2\").setResponseType(ResponseType.TOKEN.toString()).buildQueryMessage();\r\n    HttpURLConnection c = Common.doRequest(request);\r\n    String fragment = c.getURL().toURI().getFragment();\r\n    Map<String, String> map = OAuthUtils.decodeForm(fragment);\r\n    assertNotNull(map.get(OAuth.OAUTH_EXPIRES_IN));\r\n    assertNotNull(map.get(OAuth.OAUTH_ACCESS_TOKEN));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\ResourceTest.java",
+  "methodName" : "testResourceAccessBodyValidToken",
+  "sourceCode" : "@Test\r\npublic void testResourceAccessBodyValidToken() throws Exception {\r\n    URL url = new URL(Common.RESOURCE_SERVER + Common.PROTECTED_RESOURCE_BODY);\r\n    URLConnection c = url.openConnection();\r\n    if (c instanceof HttpURLConnection) {\r\n        HttpURLConnection httpURLConnection = (HttpURLConnection) c;\r\n        httpURLConnection.setRequestMethod(\"POST\");\r\n        httpURLConnection.setDoOutput(true);\r\n        httpURLConnection.setAllowUserInteraction(false);\r\n        httpURLConnection.setRequestProperty(\"Content-Type\", \"application/x-www-form-urlencoded\");\r\n        httpURLConnection.setRequestProperty(\"Content-Length\", Integer.toString(Common.BODY_OAUTH2.length()));\r\n        OutputStream ost = httpURLConnection.getOutputStream();\r\n        PrintWriter pw = new PrintWriter(ost);\r\n        pw.print(Common.BODY_OAUTH2);\r\n        pw.flush();\r\n        pw.close();\r\n        testValidTokenResponse(httpURLConnection);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\ResourceTest.java",
+  "methodName" : "testResourceAccessBodyInvalidToken",
+  "sourceCode" : "@Test\r\npublic void testResourceAccessBodyInvalidToken() throws Exception {\r\n    URL url = new URL(Common.RESOURCE_SERVER + Common.PROTECTED_RESOURCE_BODY);\r\n    URLConnection c = url.openConnection();\r\n    if (c instanceof HttpURLConnection) {\r\n        HttpURLConnection httpURLConnection = (HttpURLConnection) c;\r\n        httpURLConnection.setRequestMethod(\"POST\");\r\n        httpURLConnection.setDoOutput(true);\r\n        httpURLConnection.setAllowUserInteraction(false);\r\n        httpURLConnection.setRequestProperty(\"Content-Type\", \"application/x-www-form-urlencoded\");\r\n        httpURLConnection.setRequestProperty(\"Content-Length\", Integer.toString(\"oauth_token=randominvalidtoken\".length()));\r\n        OutputStream ost = httpURLConnection.getOutputStream();\r\n        PrintWriter pw = new PrintWriter(ost);\r\n        pw.print(\"oauth_token=randominvalidtoken\");\r\n        pw.flush();\r\n        pw.close();\r\n        testInvalidTokenResponse(httpURLConnection);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\ResourceTest.java",
+  "methodName" : "testResourceAccessBodyNoToken",
+  "sourceCode" : "@Test\r\npublic void testResourceAccessBodyNoToken() throws Exception {\r\n    URL url = new URL(Common.RESOURCE_SERVER + Common.PROTECTED_RESOURCE_BODY);\r\n    URLConnection c = url.openConnection();\r\n    if (c instanceof HttpURLConnection) {\r\n        HttpURLConnection httpURLConnection = (HttpURLConnection) c;\r\n        httpURLConnection.setRequestMethod(\"POST\");\r\n        httpURLConnection.setAllowUserInteraction(false);\r\n        httpURLConnection.setRequestProperty(\"Content-Type\", \"application/x-www-form-urlencoded\");\r\n        testNoTokenResponse(httpURLConnection);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\ResourceTest.java",
+  "methodName" : "testResourceAccessBodyOAuthWrongVersionToken",
+  "sourceCode" : "@Test\r\npublic void testResourceAccessBodyOAuthWrongVersionToken() throws Exception {\r\n    URL url = new URL(Common.RESOURCE_SERVER + Common.PROTECTED_RESOURCE_BODY);\r\n    URLConnection c = url.openConnection();\r\n    if (c instanceof HttpURLConnection) {\r\n        HttpURLConnection httpURLConnection = (HttpURLConnection) c;\r\n        httpURLConnection.setRequestMethod(\"POST\");\r\n        httpURLConnection.setDoOutput(true);\r\n        httpURLConnection.setAllowUserInteraction(false);\r\n        httpURLConnection.setRequestProperty(\"Content-Type\", \"application/x-www-form-urlencoded\");\r\n        httpURLConnection.setRequestProperty(\"Content-Length\", Integer.toString(\"oauth_token=randominvalidtoken&oauth_signature_method=HMAC-SHA1\".length()));\r\n        OutputStream ost = httpURLConnection.getOutputStream();\r\n        PrintWriter pw = new PrintWriter(ost);\r\n        pw.print(\"oauth_token=randominvalidtoken&oauth_signature_method=HMAC-SHA1\");\r\n        pw.flush();\r\n        pw.close();\r\n        testWrongOAuthVersionResponse(httpURLConnection);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\ResourceTest.java",
+  "methodName" : "testResourceAccessBodyExpiredToken",
+  "sourceCode" : "@Test\r\npublic void testResourceAccessBodyExpiredToken() throws Exception {\r\n    URL url = new URL(Common.RESOURCE_SERVER + Common.PROTECTED_RESOURCE_BODY);\r\n    URLConnection c = url.openConnection();\r\n    if (c instanceof HttpURLConnection) {\r\n        HttpURLConnection httpURLConnection = (HttpURLConnection) c;\r\n        httpURLConnection.setRequestMethod(\"POST\");\r\n        httpURLConnection.setDoOutput(true);\r\n        httpURLConnection.setAllowUserInteraction(false);\r\n        httpURLConnection.setRequestProperty(\"Content-Type\", \"application/x-www-form-urlencoded\");\r\n        httpURLConnection.setRequestProperty(\"Content-Length\", Integer.toString(Common.BODY_OAUTH2_EXPIRED.length()));\r\n        OutputStream ost = httpURLConnection.getOutputStream();\r\n        PrintWriter pw = new PrintWriter(ost);\r\n        pw.print(Common.BODY_OAUTH2_EXPIRED);\r\n        pw.flush();\r\n        pw.close();\r\n        testExpiredTokenResponse(httpURLConnection);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\ResourceTest.java",
+  "methodName" : "testResourceAccessBodyInsufficientToken",
+  "sourceCode" : "@Test\r\npublic void testResourceAccessBodyInsufficientToken() throws Exception {\r\n    URL url = new URL(Common.RESOURCE_SERVER + Common.PROTECTED_RESOURCE_BODY);\r\n    URLConnection c = url.openConnection();\r\n    if (c instanceof HttpURLConnection) {\r\n        HttpURLConnection httpURLConnection = (HttpURLConnection) c;\r\n        httpURLConnection.setRequestMethod(\"POST\");\r\n        httpURLConnection.setDoOutput(true);\r\n        httpURLConnection.setAllowUserInteraction(false);\r\n        httpURLConnection.setRequestProperty(\"Content-Type\", \"application/x-www-form-urlencoded\");\r\n        httpURLConnection.setRequestProperty(\"Content-Length\", Integer.toString(Common.BODY_OAUTH2_INSUFFICIENT.length()));\r\n        OutputStream ost = httpURLConnection.getOutputStream();\r\n        PrintWriter pw = new PrintWriter(ost);\r\n        pw.print(Common.BODY_OAUTH2_INSUFFICIENT);\r\n        pw.flush();\r\n        pw.close();\r\n        testInsufficientScopeResponse(httpURLConnection);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\ResourceTest.java",
+  "methodName" : "testResourceAccessQueryValidToken",
+  "sourceCode" : "@Test\r\npublic void testResourceAccessQueryValidToken() throws Exception {\r\n    URL url = new URL(Common.RESOURCE_SERVER + Common.PROTECTED_RESOURCE_QUERY + \"?\" + Common.QUERY_OAUTH2);\r\n    URLConnection c = url.openConnection();\r\n    if (c instanceof HttpURLConnection) {\r\n        HttpURLConnection httpURLConnection = (HttpURLConnection) c;\r\n        httpURLConnection.setRequestMethod(\"GET\");\r\n        InputStream inputStream = null;\r\n        if (httpURLConnection.getResponseCode() == 400) {\r\n            inputStream = httpURLConnection.getErrorStream();\r\n        } else {\r\n            inputStream = httpURLConnection.getInputStream();\r\n        }\r\n        String responseBody = OAuthUtils.saveStreamAsString(inputStream);\r\n        assertEquals(Common.ACCESS_TOKEN_VALID, responseBody);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\ResourceTest.java",
+  "methodName" : "testResourceAccessQueryInvalidToken",
+  "sourceCode" : "@Test\r\npublic void testResourceAccessQueryInvalidToken() throws Exception {\r\n    URL url = new URL(Common.RESOURCE_SERVER + Common.PROTECTED_RESOURCE_QUERY + \"?\" + \"oauth_token=randominvalidtoken\");\r\n    URLConnection c = url.openConnection();\r\n    if (c instanceof HttpURLConnection) {\r\n        HttpURLConnection httpURLConnection = (HttpURLConnection) c;\r\n        httpURLConnection.setRequestMethod(\"GET\");\r\n        testInvalidTokenResponse(httpURLConnection);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\ResourceTest.java",
+  "methodName" : "testResourceAccessQueryNoToken",
+  "sourceCode" : "@Test\r\npublic void testResourceAccessQueryNoToken() throws Exception {\r\n    URL url = new URL(Common.RESOURCE_SERVER + Common.PROTECTED_RESOURCE_QUERY);\r\n    URLConnection c = url.openConnection();\r\n    if (c instanceof HttpURLConnection) {\r\n        HttpURLConnection httpURLConnection = (HttpURLConnection) c;\r\n        httpURLConnection.setRequestMethod(\"GET\");\r\n        testNoTokenResponse(httpURLConnection);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\ResourceTest.java",
+  "methodName" : "testResourceAccessHeaderValidToken",
+  "sourceCode" : "@Test\r\npublic void testResourceAccessHeaderValidToken() throws Exception {\r\n    URL url = new URL(Common.RESOURCE_SERVER + Common.PROTECTED_RESOURCE_HEADER);\r\n    URLConnection c = url.openConnection();\r\n    c.addRequestProperty(Common.HEADER_AUTHORIZATION, Common.AUTHORIZATION_HEADER_OAUTH2);\r\n    if (c instanceof HttpURLConnection) {\r\n        HttpURLConnection httpURLConnection = (HttpURLConnection) c;\r\n        httpURLConnection.setRequestMethod(\"GET\");\r\n        testValidTokenResponse(httpURLConnection);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-integration-tests\\src\\test\\java\\org\\apache\\amber\\oauth2\\integration\\ResourceTest.java",
+  "methodName" : "testResourceAccessHeaderNoToken",
+  "sourceCode" : "@Test\r\npublic void testResourceAccessHeaderNoToken() throws Exception {\r\n    URL url = new URL(Common.RESOURCE_SERVER + Common.PROTECTED_RESOURCE_HEADER);\r\n    URLConnection c = url.openConnection();\r\n    if (c instanceof HttpURLConnection) {\r\n        HttpURLConnection httpURLConnection = (HttpURLConnection) c;\r\n        httpURLConnection.setRequestMethod(\"GET\");\r\n        testNoTokenResponse(httpURLConnection);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\extractor\\BodyTokenExtractorTest.java",
+  "methodName" : "testGetAccessToken",
+  "sourceCode" : "@Test\r\npublic void testGetAccessToken() throws Exception {\r\n    HttpServletRequest request = createStrictMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_TOKEN)).andStubReturn(\"sometoken\");\r\n    replay(request);\r\n    BodyTokenExtractor bte = new BodyTokenExtractor();\r\n    Assert.assertEquals(\"sometoken\", bte.getAccessToken(request));\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\extractor\\BodyTokenExtractorTest.java",
+  "methodName" : "testGetAccessTokenNull",
+  "sourceCode" : "@Test\r\npublic void testGetAccessTokenNull() throws Exception {\r\n    HttpServletRequest request = createStrictMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_TOKEN)).andStubReturn(null);\r\n    replay(request);\r\n    BodyTokenExtractor bte = new BodyTokenExtractor();\r\n    Assert.assertNull(bte.getAccessToken(request));\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\extractor\\HeaderTokenExtractorTest.java",
+  "methodName" : "testGetAccessToken",
+  "sourceCode" : "@Test\r\npublic void testGetAccessToken() throws Exception {\r\n    HttpServletRequest request = createStrictMock(HttpServletRequest.class);\r\n    expect(request.getHeader(OAuth.HeaderType.AUTHORIZATION)).andStubReturn(\"OAuth sometoken\");\r\n    replay(request);\r\n    HeaderTokenExtractor hte = new HeaderTokenExtractor();\r\n    Assert.assertEquals(\"sometoken\", hte.getAccessToken(request));\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\extractor\\HeaderTokenExtractorTest.java",
+  "methodName" : "testGetAccessTokenNull",
+  "sourceCode" : "@Test\r\npublic void testGetAccessTokenNull() throws Exception {\r\n    HttpServletRequest request = createStrictMock(HttpServletRequest.class);\r\n    expect(request.getHeader(OAuth.HeaderType.AUTHORIZATION)).andStubReturn(null);\r\n    replay(request);\r\n    HeaderTokenExtractor hte = new HeaderTokenExtractor();\r\n    Assert.assertNull(hte.getAccessToken(request));\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\extractor\\QueryTokenExtractorTest.java",
+  "methodName" : "testGetAccessToken",
+  "sourceCode" : "@Test\r\npublic void testGetAccessToken() throws Exception {\r\n    HttpServletRequest request = createStrictMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_TOKEN)).andStubReturn(\"sometoken\");\r\n    replay(request);\r\n    QueryTokenExtractor qte = new QueryTokenExtractor();\r\n    Assert.assertEquals(\"sometoken\", qte.getAccessToken(request));\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\extractor\\QueryTokenExtractorTest.java",
+  "methodName" : "testGetAccessTokenNull",
+  "sourceCode" : "@Test\r\npublic void testGetAccessTokenNull() throws Exception {\r\n    HttpServletRequest request = createStrictMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_TOKEN)).andStubReturn(null);\r\n    replay(request);\r\n    QueryTokenExtractor qte = new QueryTokenExtractor();\r\n    Assert.assertNull(qte.getAccessToken(request));\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testCreateNoHeaderRequest",
+  "sourceCode" : "@Test\r\npublic void testCreateNoHeaderRequest() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.JSON);\r\n    expect(request.getHeader(OAuth.HeaderType.AUTHORIZATION)).andStubReturn(null);\r\n    replay(request);\r\n    OAuthAccessResourceRequest req = null;\r\n    try {\r\n        new OAuthAccessResourceRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(\"Missing authorization header.\", e.getDescription());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testCreateWrongHeaderRequest",
+  "sourceCode" : "@Test\r\npublic void testCreateWrongHeaderRequest() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.JSON);\r\n    expect(request.getHeader(OAuth.HeaderType.AUTHORIZATION)).andStubReturn(\"Basic assdafasfd\");\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(\"Incorrect authorization method.\", e.getDescription());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testCreateHeaderMissingFieldRequest",
+  "sourceCode" : "@Test\r\npublic void testCreateHeaderMissingFieldRequest() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.JSON);\r\n    expect(request.getHeader(OAuth.HeaderType.AUTHORIZATION)).andStubReturn(\"OAuth \");\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertTrue(OAuthError.TokenResponse.INVALID_REQUEST.equals(e.getError()));\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testCreateHeaderWrongVersionRequest",
+  "sourceCode" : "@Test\r\npublic void testCreateHeaderWrongVersionRequest() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.JSON);\r\n    expect(request.getHeader(OAuth.HeaderType.AUTHORIZATION)).andStubReturn(\"OAuth sadfasfd,oauth_signature_method=\\\"HMAC-SHA1\\\"\");\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertTrue(OAuthError.TokenResponse.INVALID_REQUEST.equals(e.getError()));\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testCreateValidHeaderRequest",
+  "sourceCode" : "@Test\r\npublic void testCreateValidHeaderRequest() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.JSON);\r\n    expect(request.getHeader(OAuth.HeaderType.AUTHORIZATION)).andStubReturn(\"OAuth token\");\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testCreateBodyWrongMethod",
+  "sourceCode" : "@Test\r\npublic void testCreateBodyWrongMethod() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.GET);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"sometoken\" });\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request, ParameterStyle.BODY);\r\n        fail(\"Exception expeted\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertTrue(OAuthError.TokenResponse.INVALID_REQUEST.equals(e.getError()));\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testCreateBodyInvalidEncoding",
+  "sourceCode" : "@Test\r\npublic void testCreateBodyInvalidEncoding() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.JSON);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"sometoken\" });\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request, ParameterStyle.BODY);\r\n        fail(\"Exception expeted\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertTrue(OAuthError.TokenResponse.INVALID_REQUEST.equals(e.getError()));\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testCreateBodyWrongOAuthVersion",
+  "sourceCode" : "@Test\r\npublic void testCreateBodyWrongOAuthVersion() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"sometoken\" });\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(\"HMAC-SHA1\");\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request, ParameterStyle.BODY);\r\n        fail(\"Exception expeted\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertTrue(OAuthError.TokenResponse.INVALID_REQUEST.equals(e.getError()));\r\n        Assert.assertEquals(\"Incorrect OAuth version. Found OAuth V1.0.\", e.getDescription());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testCreateBodyHeaderMixedTokens",
+  "sourceCode" : "@Test\r\npublic void testCreateBodyHeaderMixedTokens() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"sometoken\" });\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    expect(request.getHeader(OAuth.HeaderType.AUTHORIZATION)).andStubReturn(\"OAuth sadfasfd,oauth_signature_method=\\\"HMAC-SHA1\\\"\");\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request, ParameterStyle.BODY, ParameterStyle.HEADER);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertTrue(OAuthError.TokenResponse.INVALID_REQUEST.equals(e.getError()));\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testCreateBodyNoToken",
+  "sourceCode" : "@Test\r\npublic void testCreateBodyNoToken() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(null);\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request, ParameterStyle.BODY);\r\n        fail(\"Exception expeted\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertNotNull(e);\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testCreateBodyMultipleTokens",
+  "sourceCode" : "@Test\r\npublic void testCreateBodyMultipleTokens() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"sometoken\", \"othertoken\" });\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request, ParameterStyle.BODY);\r\n        fail(\"Exception expeted\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertTrue(OAuthError.TokenResponse.INVALID_REQUEST.equals(e.getError()));\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testCreateBodyValidRequest",
+  "sourceCode" : "@Test\r\npublic void testCreateBodyValidRequest() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"sometoken\" });\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request, ParameterStyle.BODY);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testCreateQueryNoToken",
+  "sourceCode" : "@Test\r\npublic void testCreateQueryNoToken() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.GET);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(null);\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request, ParameterStyle.QUERY);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertNull(e.getError());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testCreateQueryWrongVersion",
+  "sourceCode" : "@Test\r\npublic void testCreateQueryWrongVersion() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.GET);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"sometoken\" });\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(\"HMAC-SHA1\");\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request, ParameterStyle.QUERY);\r\n        fail(\"Exception expeted\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertTrue(OAuthError.TokenResponse.INVALID_REQUEST.equals(e.getError()));\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testCreateQueryMultipleTokens",
+  "sourceCode" : "@Test\r\npublic void testCreateQueryMultipleTokens() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.GET);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"sometoken\", \"othertoken\" });\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request, ParameterStyle.QUERY);\r\n        fail(\"Exception expeted\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertTrue(OAuthError.TokenResponse.INVALID_REQUEST.equals(e.getError()));\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testCreateQueryValidRequest",
+  "sourceCode" : "@Test\r\npublic void testCreateQueryValidRequest() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.GET);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"sometoken\" });\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request, ParameterStyle.QUERY);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testGetAccessTokenWrongQueryRequest",
+  "sourceCode" : "@Test\r\npublic void testGetAccessTokenWrongQueryRequest() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_TOKEN)).andStubReturn(null);\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { null });\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request, ParameterStyle.QUERY);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertNull(e.getError());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testGetAccessTokenWrongHeaderRequest",
+  "sourceCode" : "@Test\r\npublic void testGetAccessTokenWrongHeaderRequest() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_TOKEN)).andStubReturn(null);\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    expect(request.getHeader(\"Authorization\")).andStubReturn(null);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { null });\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(\"Missing authorization header.\", e.getDescription());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testGetAccessTokenWrongBodyRequest",
+  "sourceCode" : "@Test\r\npublic void testGetAccessTokenWrongBodyRequest() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_TOKEN)).andStubReturn(null);\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { null });\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request, ParameterStyle.BODY);\r\n        fail(\"Exception expected\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(\"Missing OAuth token.\", e.getDescription());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testGetAccessCorrectRequest",
+  "sourceCode" : "@Test\r\npublic void testGetAccessCorrectRequest() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    //test body\r\n    expect(request.getParameter(OAuth.OAUTH_TOKEN)).andStubReturn(\"sometoken\");\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"sometoken\" });\r\n    replay(request);\r\n    OAuthAccessResourceRequest req = null;\r\n    try {\r\n        req = new OAuthAccessResourceRequest(request, ParameterStyle.BODY);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    Assert.assertEquals(\"sometoken\", req.getAccessToken());\r\n    verify(request);\r\n    reset(request);\r\n    //test header\r\n    expect(request.getParameter(OAuth.OAUTH_TOKEN)).andStubReturn(\"sometoken\");\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    expect(request.getHeader(\"Authorization\")).andStubReturn(AUTHORIZATION_HEADER_OAUTH2);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"sometoken\" });\r\n    replay(request);\r\n    try {\r\n        req = new OAuthAccessResourceRequest(request);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    Assert.assertEquals(\"sometoken\", req.getAccessToken());\r\n    verify(request);\r\n    reset(request);\r\n    //test uri query\r\n    expect(request.getParameter(OAuth.OAUTH_TOKEN)).andStubReturn(\"sometoken\");\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"sometoken\" });\r\n    replay(request);\r\n    req = new OAuthAccessResourceRequest(request, ParameterStyle.QUERY);\r\n    Assert.assertEquals(\"sometoken\", req.getAccessToken());\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testMultipleStylesValidRequest",
+  "sourceCode" : "@Test\r\npublic void testMultipleStylesValidRequest() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_TOKEN)).andStubReturn(null);\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { null });\r\n    expect(request.getHeader(\"Authorization\")).andStubReturn(AUTHORIZATION_HEADER_OAUTH2);\r\n    replay(request);\r\n    try {\r\n        new OAuthAccessResourceRequest(request, ParameterStyle.QUERY, ParameterStyle.BODY, ParameterStyle.HEADER);\r\n    } catch (OAuthProblemException e) {\r\n        fail(\"Exception not expected\");\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\OAuthAccessResourceRequestTest.java",
+  "methodName" : "testMultipleStylesInvalidRequest",
+  "sourceCode" : "@Test\r\npublic void testMultipleStylesInvalidRequest() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_TOKEN)).andStubReturn(\"sometoken\");\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"sometoken\" });\r\n    expect(request.getHeader(\"Authorization\")).andStubReturn(AUTHORIZATION_HEADER_OAUTH2);\r\n    replay(request);\r\n    OAuthAccessResourceRequest req = null;\r\n    try {\r\n        new OAuthAccessResourceRequest(request, ParameterStyle.BODY, ParameterStyle.QUERY, ParameterStyle.HEADER);\r\n        fail(\"Exception expeted\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertTrue(OAuthError.TokenResponse.INVALID_REQUEST.equals(e.getError()));\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\validator\\BodyOAuthValidatorTest.java",
+  "methodName" : "testValidateInvalidMethod",
+  "sourceCode" : "@Test\r\npublic void testValidateInvalidMethod() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(\"GET\");\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    replay(request);\r\n    try {\r\n        BodyOAuthValidator bov = new BodyOAuthValidator();\r\n        bov.performAllValidations(request);\r\n        Assert.fail(\"Exception not thrown.\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n        Assert.assertEquals(\"Incorrect method. POST, PUT, DELETE are supported.\", e.getDescription());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\validator\\BodyOAuthValidatorTest.java",
+  "methodName" : "tesValidateMultipartMessage",
+  "sourceCode" : "@Test\r\npublic void tesValidateMultipartMessage() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(\"multipart/form-data\");\r\n    replay(request);\r\n    try {\r\n        BodyOAuthValidator bov = new BodyOAuthValidator();\r\n        bov.performAllValidations(request);\r\n        Assert.fail(\"Exception not thrown.\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.CodeResponse.INVALID_REQUEST, e.getError());\r\n        Assert.assertEquals(\"Request is not single part.\", e.getDescription());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\validator\\BodyOAuthValidatorTest.java",
+  "methodName" : "tesValidateInvalidEncoding",
+  "sourceCode" : "@Test\r\npublic void tesValidateInvalidEncoding() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.JSON);\r\n    replay(request);\r\n    try {\r\n        BodyOAuthValidator bov = new BodyOAuthValidator();\r\n        bov.performAllValidations(request);\r\n        Assert.fail(\"Exception not thrown.\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n        Assert.assertEquals(\"Bad request content type. Expecting: application/x-www-form-urlencoded\", e.getDescription());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\validator\\BodyOAuthValidatorTest.java",
+  "methodName" : "tesValidateInvalidOAuthVersion",
+  "sourceCode" : "@Test\r\npublic void tesValidateInvalidOAuthVersion() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(\"HMAC-SHA1\");\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"access_token\" });\r\n    replay(request);\r\n    try {\r\n        BodyOAuthValidator bov = new BodyOAuthValidator();\r\n        bov.performAllValidations(request);\r\n        Assert.fail(\"Exception not thrown.\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n        Assert.assertEquals(\"Incorrect OAuth version. Found OAuth V1.0.\", e.getDescription());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\validator\\BodyOAuthValidatorTest.java",
+  "methodName" : "tesValidateTokenMissing",
+  "sourceCode" : "@Test\r\npublic void tesValidateTokenMissing() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(null);\r\n    replay(request);\r\n    try {\r\n        BodyOAuthValidator bov = new BodyOAuthValidator();\r\n        bov.performAllValidations(request);\r\n        Assert.fail(\"Exception not thrown.\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(null, e.getError());\r\n        Assert.assertEquals(\"Missing OAuth token.\", e.getDescription());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\validator\\BodyOAuthValidatorTest.java",
+  "methodName" : "tesValidateMultipleTokens",
+  "sourceCode" : "@Test\r\npublic void tesValidateMultipleTokens() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"access_token1\", \"access_token2\" });\r\n    replay(request);\r\n    try {\r\n        BodyOAuthValidator bov = new BodyOAuthValidator();\r\n        bov.performAllValidations(request);\r\n        Assert.fail(\"Exception not thrown.\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n        Assert.assertEquals(\"Multiple tokens attached.\", e.getDescription());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\validator\\BodyOAuthValidatorTest.java",
+  "methodName" : "tesValidateValidMessage",
+  "sourceCode" : "@Test\r\npublic void tesValidateValidMessage() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getMethod()).andStubReturn(OAuth.HttpMethod.POST);\r\n    expect(request.getContentType()).andStubReturn(OAuth.ContentType.URL_ENCODED);\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"access_token\" });\r\n    replay(request);\r\n    BodyOAuthValidator bov = new BodyOAuthValidator();\r\n    bov.performAllValidations(request);\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\validator\\HeaderOAuthValidatorTest.java",
+  "methodName" : "testValidateNoHeader",
+  "sourceCode" : "@Test\r\npublic void testValidateNoHeader() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getHeader(OAuth.HeaderType.AUTHORIZATION)).andStubReturn(null);\r\n    replay(request);\r\n    try {\r\n        HeaderOAuthValidator bov = new HeaderOAuthValidator();\r\n        bov.performAllValidations(request);\r\n        Assert.fail(\"Exception not thrown.\");\r\n    } catch (OAuthProblemException e) {\r\n        org.junit.Assert.assertTrue(OAuthUtils.isEmpty(e.getError()));\r\n        Assert.assertEquals(\"Missing authorization header.\", e.getDescription());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\validator\\HeaderOAuthValidatorTest.java",
+  "methodName" : "testValidateInvalidHeader",
+  "sourceCode" : "@Test\r\npublic void testValidateInvalidHeader() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getHeader(OAuth.HeaderType.AUTHORIZATION)).andStubReturn(\"Basic arawersadf\");\r\n    replay(request);\r\n    try {\r\n        HeaderOAuthValidator bov = new HeaderOAuthValidator();\r\n        bov.performAllValidations(request);\r\n        Assert.fail(\"Exception not thrown.\");\r\n    } catch (OAuthProblemException e) {\r\n        org.junit.Assert.assertTrue(OAuthUtils.isEmpty(e.getError()));\r\n        Assert.assertEquals(\"Incorrect authorization method.\", e.getDescription());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\validator\\HeaderOAuthValidatorTest.java",
+  "methodName" : "testValidateValidHeaderMissingField",
+  "sourceCode" : "@Test\r\npublic void testValidateValidHeaderMissingField() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getHeader(OAuth.HeaderType.AUTHORIZATION)).andStubReturn(\"OAuth  \");\r\n    replay(request);\r\n    try {\r\n        HeaderOAuthValidator bov = new HeaderOAuthValidator();\r\n        bov.performAllValidations(request);\r\n        Assert.fail(\"Exception not thrown.\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n        Assert.assertEquals(\"Missing required parameter.\", e.getDescription());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\validator\\HeaderOAuthValidatorTest.java",
+  "methodName" : "testValidateValidHeaderWrongVersion",
+  "sourceCode" : "@Test\r\npublic void testValidateValidHeaderWrongVersion() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getHeader(OAuth.HeaderType.AUTHORIZATION)).andStubReturn(\"OAuth sdfsadfsadf,oauth_signature_method=\\\"HMAC-SHA1\\\"\");\r\n    replay(request);\r\n    try {\r\n        HeaderOAuthValidator bov = new HeaderOAuthValidator();\r\n        bov.performAllValidations(request);\r\n        Assert.fail(\"Exception not thrown.\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n        Assert.assertEquals(\"Incorrect OAuth version. Found OAuth V1.0.\", e.getDescription());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\validator\\HeaderOAuthValidatorTest.java",
+  "methodName" : "testValidateValidHeader",
+  "sourceCode" : "@Test\r\npublic void testValidateValidHeader() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getHeader(OAuth.HeaderType.AUTHORIZATION)).andStubReturn(\"OAuth sdfsadfsadf\");\r\n    replay(request);\r\n    HeaderOAuthValidator bov = new HeaderOAuthValidator();\r\n    bov.performAllValidations(request);\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\validator\\QueryOAuthValidatorTest.java",
+  "methodName" : "testValidateWrongVersion",
+  "sourceCode" : "@Test\r\npublic void testValidateWrongVersion() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(\"HMAC-SHA1\");\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"access_token\" });\r\n    replay(request);\r\n    try {\r\n        QueryOAuthValidator qov = new QueryOAuthValidator();\r\n        qov.performAllValidations(request);\r\n        Assert.fail(\"Exception not thrown.\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n        Assert.assertEquals(\"Incorrect OAuth version. Found OAuth V1.0.\", e.getDescription());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\validator\\QueryOAuthValidatorTest.java",
+  "methodName" : "testValidateNoQuery",
+  "sourceCode" : "@Test\r\npublic void testValidateNoQuery() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(null);\r\n    replay(request);\r\n    try {\r\n        QueryOAuthValidator qov = new QueryOAuthValidator();\r\n        qov.performAllValidations(request);\r\n        Assert.fail(\"Exception not thrown.\");\r\n    } catch (OAuthProblemException e) {\r\n        org.junit.Assert.assertTrue(OAuthUtils.isEmpty(e.getError()));\r\n        Assert.assertEquals(\"Missing OAuth token.\", e.getDescription());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\validator\\QueryOAuthValidatorTest.java",
+  "methodName" : "testValidateMultipleTokens",
+  "sourceCode" : "@Test\r\npublic void testValidateMultipleTokens() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"access_token1\", \"access_token2\" });\r\n    replay(request);\r\n    try {\r\n        QueryOAuthValidator qov = new QueryOAuthValidator();\r\n        qov.performAllValidations(request);\r\n        Assert.fail(\"Exception not thrown.\");\r\n    } catch (OAuthProblemException e) {\r\n        Assert.assertEquals(OAuthError.TokenResponse.INVALID_REQUEST, e.getError());\r\n        Assert.assertEquals(\"Multiple tokens attached.\", e.getDescription());\r\n    }\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\oauth-2.0\\oauth2-resourceserver\\src\\test\\java\\org\\apache\\amber\\oauth2\\rs\\validator\\QueryOAuthValidatorTest.java",
+  "methodName" : "testValidateToken",
+  "sourceCode" : "@Test\r\npublic void testValidateToken() throws Exception {\r\n    HttpServletRequest request = createMock(HttpServletRequest.class);\r\n    expect(request.getParameter(OAuth.OAUTH_VERSION_DIFFER)).andStubReturn(null);\r\n    expect(request.getParameterValues(OAuth.OAUTH_TOKEN)).andStubReturn(new String[] { \"access_token1\" });\r\n    replay(request);\r\n    QueryOAuthValidator qov = new QueryOAuthValidator();\r\n    qov.performAllValidations(request);\r\n    verify(request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\server\\src\\test\\java\\org\\apache\\amber\\server\\AccessTest.java",
+  "methodName" : "matchingEqualsHashTest",
+  "sourceCode" : "@Test\r\npublic void matchingEqualsHashTest() {\r\n    Access access1 = new Access(123456, \"313121\");\r\n    Access access2 = new Access(123456, \"313121\");\r\n    assertTrue(!access1.equals(null));\r\n    assertTrue(access1.equals(access2) && access1.hashCode() == access2.hashCode());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\server\\src\\test\\java\\org\\apache\\amber\\server\\AccessTest.java",
+  "methodName" : "notMatchingEqualsHashTest",
+  "sourceCode" : "@Test\r\npublic void notMatchingEqualsHashTest() {\r\n    Access access1 = new Access(123456, \"313121\");\r\n    Access access2 = new Access(123446, \"313121\");\r\n    Access access3 = new Access(123456, \"313122\");\r\n    Access access4 = new Access(123456, \"313121\");\r\n    access4.addNonce(\"313122\");\r\n    assertTrue(!access1.equals(access2) && access1.hashCode() != access2.hashCode());\r\n    assertTrue(!access1.equals(access3) && access1.hashCode() != access3.hashCode());\r\n    assertTrue(!access1.equals(access4) && access1.hashCode() != access4.hashCode());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\signature-api\\src\\test\\java\\org\\apache\\amber\\signature\\hmac\\HmacSha1MethodTestCase.java",
+  "methodName" : "verifyHmacSha1MethodAlgorithm",
+  "sourceCode" : "@Test\r\npublic void verifyHmacSha1MethodAlgorithm() throws Exception {\r\n    this.verifySignature(new BasicKey(\"kd94hf93k423kf44\"), new HmacSha1Method(), \"tR3+Ty81lMeYAr/Fid0kMTYa/WM=\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\signature-api\\src\\test\\java\\org\\apache\\amber\\signature\\plaintext\\PlaintextMethodTestCase.java",
+  "methodName" : "verifyHmacSha1MethodAlgorithm",
+  "sourceCode" : "@Test\r\npublic void verifyHmacSha1MethodAlgorithm() throws Exception {\r\n    this.verifySignature(new BasicKey(\"kd94hf93k423kf44\"), new PlaintextMethod(), \"kd94hf93k423kf44&pfkkdhi9sl3r4s00\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Oltu-Parent\\signature-api\\src\\test\\java\\org\\apache\\amber\\signature\\rsa\\RsaSha1MethodTestCase.java",
+  "methodName" : "doNothing",
+  "sourceCode" : "// TODO delete me once next test will be re-enabled\r\n@Test\r\npublic void doNothing() {\r\n    // do nothing\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

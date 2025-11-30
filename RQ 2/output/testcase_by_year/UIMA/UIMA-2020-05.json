@@ -1,0 +1,229 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\flow\\impl\\CapabilityLanguageFlowControllerTest.java",
+  "methodName" : "thatGeneratedDefaultFlowDescriptionIsEqualToXmlDescription",
+  "sourceCode" : "@Test\r\npublic void thatGeneratedDefaultFlowDescriptionIsEqualToXmlDescription() throws Exception {\r\n    FlowControllerDescription desc1 = CapabilityLanguageFlowController.getDescription();\r\n    FlowControllerDescription desc2 = getXMLParser().parseFlowControllerDescription(new XMLInputSource(\"src/test/resources/CapabilityLanguageFlowControllerTest/CapabilityLanguageFlowController.xml\"));\r\n    StringWriter desc1Writer = new StringWriter();\r\n    desc1.toXML(desc1Writer);\r\n    StringWriter desc2Writer = new StringWriter();\r\n    desc2.toXML(desc2Writer);\r\n    assertThat(desc2.toString()).isEqualTo(desc1.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\flow\\impl\\CapabilityLanguageFlowControllerTest.java",
+  "methodName" : "thatChangesToDefaultFlowControllerDoNotCarryOver",
+  "sourceCode" : "@Test\r\npublic void thatChangesToDefaultFlowControllerDoNotCarryOver() throws Exception {\r\n    FlowControllerDescription desc1 = CapabilityLanguageFlowController.getDescription();\r\n    desc1.setImplementationName(\"otherImplementation\");\r\n    desc1.getMetaData().setName(\"otherName\");\r\n    FlowControllerDescription desc2 = CapabilityLanguageFlowController.getDescription();\r\n    assertThat(desc2.getImplementationName()).isEqualTo(CapabilityLanguageFlowController.class.getName());\r\n    assertThat(desc2.getMetaData().getName()).isEqualTo(\"Capability Language Flow Controller\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\flow\\impl\\FixedFlowControllerTest.java",
+  "methodName" : "testComputeFlow",
+  "sourceCode" : "@Test\r\npublic void testComputeFlow() throws Exception {\r\n    CAS cas1 = CasCreationUtils.createCas(new TypeSystemDescription_impl(), null, null);\r\n    CAS cas2 = CasCreationUtils.createCas(new TypeSystemDescription_impl(), null, null);\r\n    Flow flow1 = fixedFlowController.computeFlow(cas1);\r\n    Flow flow2 = fixedFlowController.computeFlow(cas2);\r\n    //two steps in flow 1\r\n    Step step = flow1.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key1\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    step = flow1.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key2\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    //one step in flow 2\r\n    step = flow2.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key1\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    //third step in flow 1\r\n    step = flow1.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key3\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    //one step in flow 2\r\n    step = flow2.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key2\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    //finish flow 1\r\n    step = flow1.next();\r\n    assertTrue(step instanceof FinalStep);\r\n    //finish flow 2\r\n    step = flow2.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key3\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    step = flow2.next();\r\n    assertTrue(step instanceof FinalStep);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\flow\\impl\\FixedFlowControllerTest.java",
+  "methodName" : "testAddAnalysisEngines",
+  "sourceCode" : "@Test\r\npublic void testAddAnalysisEngines() throws Exception {\r\n    CAS cas = CasCreationUtils.createCas(new TypeSystemDescription_impl(), null, null);\r\n    Flow flow = fixedFlowController.computeFlow(cas);\r\n    //two steps in flow\r\n    Step step = flow.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key1\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    step = flow.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key2\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    //now add two new AEs\r\n    //first update AE metadata map\r\n    AnalysisEngineMetaData delegateMd = new AnalysisEngineMetaData_impl();\r\n    delegateMd.setOperationalProperties(new OperationalProperties_impl());\r\n    analysisEngineMetaDataMap.put(\"key4\", delegateMd);\r\n    analysisEngineMetaDataMap.put(\"key5\", delegateMd);\r\n    //then notify FC\r\n    List<String> newAeKeys = new ArrayList<String>();\r\n    newAeKeys.add(\"key4\");\r\n    newAeKeys.add(\"key5\");\r\n    fixedFlowController.addAnalysisEngines(newAeKeys);\r\n    //finish flow\r\n    step = flow.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key3\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    step = flow.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key4\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    step = flow.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key5\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    step = flow.next();\r\n    assertTrue(step instanceof FinalStep);\r\n    //test new flow\r\n    flow = fixedFlowController.computeFlow(cas);\r\n    step = flow.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key1\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    step = flow.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key2\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    step = flow.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key3\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    step = flow.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key4\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    step = flow.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key5\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    step = flow.next();\r\n    assertTrue(step instanceof FinalStep);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\flow\\impl\\FixedFlowControllerTest.java",
+  "methodName" : "testRemoveAnalysisEngines",
+  "sourceCode" : "@Test\r\npublic void testRemoveAnalysisEngines() throws Exception {\r\n    CAS cas = CasCreationUtils.createCas(new TypeSystemDescription_impl(), null, null);\r\n    Flow flow = fixedFlowController.computeFlow(cas);\r\n    //one step in flow\r\n    Step step = flow.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key1\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    //remove \"key2\"\r\n    analysisEngineMetaDataMap.remove(\"key2\");\r\n    List<String> removedKeys = new ArrayList<String>();\r\n    removedKeys.add(\"key2\");\r\n    fixedFlowController.removeAnalysisEngines(removedKeys);\r\n    //finish flow\r\n    step = flow.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key3\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    step = flow.next();\r\n    assertTrue(step instanceof FinalStep);\r\n    //test new flow\r\n    flow = fixedFlowController.computeFlow(cas);\r\n    step = flow.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key1\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    step = flow.next();\r\n    assertTrue(step instanceof SimpleStep);\r\n    assertEquals(\"key3\", ((SimpleStep) step).getAnalysisEngineKey());\r\n    step = flow.next();\r\n    assertTrue(step instanceof FinalStep);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\flow\\impl\\FixedFlowControllerTest.java",
+  "methodName" : "thatGeneratedDefaultFlowDescriptionIsEqualToXmlDescription",
+  "sourceCode" : "@Test\r\npublic void thatGeneratedDefaultFlowDescriptionIsEqualToXmlDescription() throws Exception {\r\n    FlowControllerDescription desc1 = FixedFlowController.getDescription();\r\n    FlowControllerDescription desc2 = getXMLParser().parseFlowControllerDescription(new XMLInputSource(\"src/test/resources/FixedFlowControllerTest/FixedFlowController.xml\"));\r\n    StringWriter desc1Writer = new StringWriter();\r\n    desc1.toXML(desc1Writer);\r\n    StringWriter desc2Writer = new StringWriter();\r\n    desc2.toXML(desc2Writer);\r\n    assertThat(desc2.toString()).isEqualTo(desc1.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\flow\\impl\\FixedFlowControllerTest.java",
+  "methodName" : "thatChangesToDefaultFlowControllerDoNotCarryOver",
+  "sourceCode" : "@Test\r\npublic void thatChangesToDefaultFlowControllerDoNotCarryOver() throws Exception {\r\n    FlowControllerDescription desc1 = FixedFlowController.getDescription();\r\n    desc1.setImplementationName(\"otherImplementation\");\r\n    desc1.getMetaData().setName(\"otherName\");\r\n    FlowControllerDescription desc2 = FixedFlowController.getDescription();\r\n    assertThat(desc2.getImplementationName()).isEqualTo(FixedFlowController.class.getName());\r\n    assertThat(desc2.getMetaData().getName()).isEqualTo(\"Fixed Flow Controller\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\pear\\util\\TestPearInstallationVerification.java",
+  "methodName" : "testAePearVerification",
+  "sourceCode" : "@Test\r\npublic void testAePearVerification() throws Exception {\r\n    assertThatPearInstalls(getFile(\"pearTests/analysisEngine.pear\"), temp.newFolder(\"pear_verification_test_tmp\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\pear\\util\\TestPearInstallationVerification.java",
+  "methodName" : "testCcPearVerification",
+  "sourceCode" : "@Test\r\npublic void testCcPearVerification() throws Exception {\r\n    assertThatPearInstalls(getFile(\"pearTests/casConsumer.pear\"), temp.newFolder(\"pear_verification_test_tmp\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\pear\\util\\TestPearInstallationVerification.java",
+  "methodName" : "testTsPearVerification",
+  "sourceCode" : "@Test\r\npublic void testTsPearVerification() throws Exception {\r\n    assertThatPearInstalls(getFile(\"pearTests/typeSystem.pear\"), temp.newFolder(\"pear_verification_test_tmp\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\pear\\util\\TestPearInstallationVerification.java",
+  "methodName" : "thatSpecialXmlCharactersInTargetPathDoNotBreakInstallation",
+  "sourceCode" : "// TODO: create testcases for ci, cr, cpe pear packages\r\n@Test\r\npublic void thatSpecialXmlCharactersInTargetPathDoNotBreakInstallation() throws Exception {\r\n    assertThatPearInstalls(getFile(\"pearTests/analysisEngine.pear\"), temp.newFolder(\"<>'\\\"&\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\model\\dotcorpus\\AnnotationStyleTest.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "/**\r\n * Tests the {@link AnnotationStyle#equals(Object)} method.\r\n */\r\n@Test\r\npublic void testEquals() {\r\n    AnnotationStyle a = new AnnotationStyle(\"testType\", AnnotationStyle.Style.BRACKET, new Color(255, 255, 0), 0);\r\n    AnnotationStyle b = new AnnotationStyle(\"testType\", AnnotationStyle.Style.BRACKET, new Color(255, 255, 0), 0);\r\n    assertEquals(a, b);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\model\\dotcorpus\\DotCorpusSerializerTest.java",
+  "methodName" : "testSerializeAndCreate",
+  "sourceCode" : "/**\r\n * Tests if serialization and recreations creates and object that is equal to the original.\r\n *\r\n * @throws CoreException -\r\n */\r\n@Test\r\npublic void testSerializeAndCreate() throws CoreException {\r\n    DotCorpus original = new DotCorpus();\r\n    original.setTypeSystemFilename(\"typesystem\");\r\n    original.addCasProcessorFolder(\"uima processor folder\");\r\n    original.setStyle(new AnnotationStyle(\"test\", Style.BRACKET, new Color(255, 255, 0), 0));\r\n    original.addCorpusFolder(\"corpus\");\r\n    ByteArrayOutputStream out = new ByteArrayOutputStream();\r\n    DotCorpusSerializer.serialize(original, out);\r\n    InputStream in = new ByteArrayInputStream(out.toByteArray());\r\n    DotCorpus recreated = DotCorpusSerializer.parseDotCorpus(in);\r\n    assertEquals(original, recreated);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "/**\r\n * Test the Span.equals() method.\r\n */\r\n@Test\r\npublic void testEquals() {\r\n    Span a = new Span(100, 1000);\r\n    Span b = new Span(100, 1000);\r\n    assertEquals(a.equals(b), true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testEqualsWithAnotherObject",
+  "sourceCode" : "/**\r\n * Test the Span.equals() method.\r\n */\r\n@Test\r\npublic void testEqualsWithAnotherObject() {\r\n    Span a = new Span(0, 0);\r\n    assertFalse(Boolean.TRUE.equals(a));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testEqualsWithNull",
+  "sourceCode" : "/**\r\n * Test the Span.equals() method.\r\n */\r\n@Test\r\npublic void testEqualsWithNull() {\r\n    Span a = new Span(0, 0);\r\n    assertEquals(a.equals(null), false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testCompareToWithBiggerSpan",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToWithBiggerSpan() {\r\n    Span a = new Span(100, 1000);\r\n    Span b = new Span(5000, 900);\r\n    assertEquals(true, a.compareTo(b) > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testCompareToWithBiggerIntersectSpan",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToWithBiggerIntersectSpan() {\r\n    Span a = new Span(100, 1000);\r\n    Span b = new Span(900, 900);\r\n    assertEquals(true, a.compareTo(b) > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testCompareToWithLowerSpan",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToWithLowerSpan() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(100, 1000);\r\n    assertEquals(true, a.compareTo(b) < 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testCompareToWithLowerIntersectSpan",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToWithLowerIntersectSpan() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(4900, 1000);\r\n    assertEquals(true, a.compareTo(b) < 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testCompareToEquals",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToEquals() {\r\n    Span a = new Span(4900, 1000);\r\n    Span b = new Span(4900, 1000);\r\n    assertEquals(true, a.compareTo(b) == 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testIsContaining",
+  "sourceCode" : "/**\r\n * Test the Span.IsContaining(Span) method.\r\n */\r\n@Test\r\npublic void testIsContaining() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(5200, 600);\r\n    assertEquals(true, a.isContaining(b));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testIsContainingWithEqual",
+  "sourceCode" : "/**\r\n * Test the Span.IsContaining(Span) method.\r\n */\r\n@Test\r\npublic void testIsContainingWithEqual() {\r\n    Span a = new Span(5000, 900);\r\n    assertEquals(true, a.isContaining(a));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testIsContainingWithLowerIntersect",
+  "sourceCode" : "/**\r\n * Test the Span.IsContaining(Span) method.\r\n */\r\n@Test\r\npublic void testIsContainingWithLowerIntersect() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(4500, 1000);\r\n    assertEquals(false, a.isContaining(b));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testIsContainingWithHigherIntersect",
+  "sourceCode" : "/**\r\n * Test the Span.IsContaining(Span) method.\r\n */\r\n@Test\r\npublic void testIsContainingWithHigherIntersect() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(5000, 1000);\r\n    assertEquals(false, a.isContaining(b));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\AnnotationStyleTest.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "/**\r\n * Tests the {@link AnnotationStyle#equals(Object)} method.\r\n */\r\n@Test\r\npublic void testEquals() {\r\n    AnnotationStyle a = new AnnotationStyle(\"testType\", AnnotationStyle.Style.BRACKET, new Color(255, 255, 0), 0);\r\n    AnnotationStyle b = new AnnotationStyle(\"testType\", AnnotationStyle.Style.BRACKET, new Color(255, 255, 0), 0);\r\n    assertEquals(a, b);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "/**\r\n * Test the Span.equals() method.\r\n */\r\n@Test\r\npublic void testEquals() {\r\n    Span a = new Span(100, 1000);\r\n    Span b = new Span(100, 1000);\r\n    assertEquals(a.equals(b), true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testEqualsWithAnotherObject",
+  "sourceCode" : "/**\r\n * Test the Span.equals() method.\r\n */\r\n@Test\r\npublic void testEqualsWithAnotherObject() {\r\n    Span a = new Span(0, 0);\r\n    assertFalse(Boolean.TRUE.equals(a));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testEqualsWithNull",
+  "sourceCode" : "/**\r\n * Test the Span.equals() method.\r\n */\r\n@Test\r\npublic void testEqualsWithNull() {\r\n    Span a = new Span(0, 0);\r\n    assertEquals(a.equals(null), false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testCompareToWithBiggerSpan",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToWithBiggerSpan() {\r\n    Span a = new Span(100, 1000);\r\n    Span b = new Span(5000, 900);\r\n    assertEquals(true, a.compareTo(b) > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testCompareToWithBiggerIntersectSpan",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToWithBiggerIntersectSpan() {\r\n    Span a = new Span(100, 1000);\r\n    Span b = new Span(900, 900);\r\n    assertEquals(true, a.compareTo(b) > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testCompareToWithLowerSpan",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToWithLowerSpan() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(100, 1000);\r\n    assertEquals(true, a.compareTo(b) < 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testCompareToWithLowerIntersectSpan",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToWithLowerIntersectSpan() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(4900, 1000);\r\n    assertEquals(true, a.compareTo(b) < 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testCompareToEquals",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToEquals() {\r\n    Span a = new Span(4900, 1000);\r\n    Span b = new Span(4900, 1000);\r\n    assertEquals(true, a.compareTo(b) == 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testIsContaining",
+  "sourceCode" : "/**\r\n * Test the Span.IsContaining(Span) method.\r\n */\r\n@Test\r\npublic void testIsContaining() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(5200, 600);\r\n    assertEquals(true, a.isContaining(b));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testIsContainingWithEqual",
+  "sourceCode" : "/**\r\n * Test the Span.IsContaining(Span) method.\r\n */\r\n@Test\r\npublic void testIsContainingWithEqual() {\r\n    Span a = new Span(5000, 900);\r\n    assertEquals(true, a.isContaining(a));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testIsContainingWithLowerIntersect",
+  "sourceCode" : "/**\r\n * Test the Span.IsContaining(Span) method.\r\n */\r\n@Test\r\npublic void testIsContainingWithLowerIntersect() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(4500, 1000);\r\n    assertEquals(false, a.isContaining(b));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testIsContainingWithHigherIntersect",
+  "sourceCode" : "/**\r\n * Test the Span.IsContaining(Span) method.\r\n */\r\n@Test\r\npublic void testIsContainingWithHigherIntersect() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(5000, 1000);\r\n    assertEquals(false, a.isContaining(b));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

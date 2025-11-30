@@ -1,0 +1,727 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\AttributesTest.java",
+  "methodName" : "testGetString",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Attributes#get(java.lang.String)}.\r\n */\r\n@Test\r\npublic void testGetString() {\r\n    Attributes attributes = new Attributes();\r\n    Object val = attributes.get(\"unexisting\");\r\n    assertEquals(null, val);\r\n    attributes.set(\"test\", Integer.valueOf(123));\r\n    val = attributes.get(\"test\");\r\n    assertEquals(Integer.valueOf(123), val);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\AttributesTest.java",
+  "methodName" : "testSet",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Attributes#set(java.lang.String, java.lang.Object)}.\r\n */\r\n@Test\r\npublic void testSet() {\r\n    Attributes attributes = new Attributes();\r\n    attributes.set(null, null);\r\n    assertEquals(null, attributes.get(null));\r\n    attributes.set(\"\", null);\r\n    assertEquals(null, attributes.get(\"\"));\r\n    attributes.set(\"test\", null);\r\n    assertEquals(null, attributes.get(\"test\"));\r\n    attributes.set(\"test\", Integer.valueOf(456));\r\n    assertEquals(Integer.valueOf(456), attributes.get(\"test\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\AttributesTest.java",
+  "methodName" : "testAddXml",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Attributes#addXml(org.w3c.dom.Element, long)}.\r\n * @throws ParserConfigurationException\r\n */\r\n@Test\r\npublic void testAddXml() throws ParserConfigurationException {\r\n    Attributes attributes = new Attributes();\r\n    attributes.set(\"test\", \"testvalue\");\r\n    attributes.set(\"test2\", \"testvalue2\");\r\n    DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();\r\n    Document doc = builder.newDocument();\r\n    Element root = doc.createElement(\"root\");\r\n    doc.appendChild(root);\r\n    // value should be ignored\r\n    Random random = new Random();\r\n    attributes.addXml(root, random.nextInt());\r\n    root.getAttribute(\"test\").equals(\"testvalue\");\r\n    root.getAttribute(\"test2\").equals(\"testvalue2\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\DateUtilsTest.java",
+  "methodName" : "testGetDateNow",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.DateUtils#getDateNow()}.\r\n */\r\n@Test\r\npublic void testGetDateNow() {\r\n    Date now = DateUtils.getDateNow();\r\n    Calendar cal = Calendar.getInstance();\r\n    cal.setTime(now);\r\n    assertEquals(0, cal.get(Calendar.HOUR_OF_DAY));\r\n    assertEquals(0, cal.get(Calendar.MINUTE));\r\n    assertEquals(0, cal.get(Calendar.SECOND));\r\n    assertEquals(0, cal.get(Calendar.MILLISECOND));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\DateUtilsTest.java",
+  "methodName" : "testGetTimeNow",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.DateUtils#getTimeNow()}.\r\n */\r\n@Test\r\npublic void testGetTimeNow() {\r\n    Calendar cal = Calendar.getInstance();\r\n    // TODO can't the implementation of this be simpler?\r\n    Date date = DateUtils.getTimeNow();\r\n    // less than one sec difference\r\n    assertTrue(date.getTime() - cal.getTimeInMillis() < 1000);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\DateUtilsTest.java",
+  "methodName" : "testAddDate",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.DateUtils#addDate(java.util.Date, int, int, int)}.\r\n */\r\n@Test\r\npublic void testAddDate() {\r\n    Calendar now = Calendar.getInstance();\r\n    Date date = now.getTime();\r\n    Date pastDate = DateUtils.addDate(date, -1, -2, -3);\r\n    Calendar past = Calendar.getInstance();\r\n    past.setTime(pastDate);\r\n    Calendar copy = (Calendar) now.clone();\r\n    copy.add(Calendar.YEAR, -1);\r\n    copy.add(Calendar.MONTH, -2);\r\n    copy.add(Calendar.DAY_OF_MONTH, -3);\r\n    assertEquals(past.get(Calendar.YEAR), copy.get(Calendar.YEAR));\r\n    assertEquals(past.get(Calendar.MONTH), copy.get(Calendar.MONTH));\r\n    assertEquals(past.get(Calendar.DAY_OF_MONTH), copy.get(Calendar.DAY_OF_MONTH));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\DateUtilsTest.java",
+  "methodName" : "testSetDate",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.DateUtils#setDate(java.util.Date, int, int, int)}.\r\n */\r\n@Test\r\npublic void testSetDate() {\r\n    Calendar now = Calendar.getInstance();\r\n    Date date = now.getTime();\r\n    Date pastDate = DateUtils.setDate(date, 1952, 11, 21);\r\n    Calendar past = Calendar.getInstance();\r\n    past.setTime(pastDate);\r\n    assertEquals(1952, past.get(Calendar.YEAR));\r\n    assertEquals(11, past.get(Calendar.MONTH));\r\n    assertEquals(21, past.get(Calendar.DAY_OF_MONTH));\r\n    assertEquals(now.get(Calendar.HOUR_OF_DAY), past.get(Calendar.HOUR_OF_DAY));\r\n    assertEquals(now.get(Calendar.MINUTE), past.get(Calendar.MINUTE));\r\n    assertEquals(now.get(Calendar.SECOND), past.get(Calendar.SECOND));\r\n    assertEquals(now.get(Calendar.MILLISECOND), past.get(Calendar.MILLISECOND));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\DateUtilsTest.java",
+  "methodName" : "testGetDate",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.DateUtils#getDate(int, int, int)}.\r\n */\r\n@Test\r\npublic void testGetDate() {\r\n    Date date = DateUtils.getDate(1, 2, 3);\r\n    Calendar cal = Calendar.getInstance();\r\n    cal.setTime(date);\r\n    assertEquals(1, cal.get(Calendar.YEAR));\r\n    assertEquals(2, cal.get(Calendar.MONTH));\r\n    assertEquals(3, cal.get(Calendar.DAY_OF_MONTH));\r\n    assertEquals(0, cal.get(Calendar.HOUR_OF_DAY));\r\n    assertEquals(0, cal.get(Calendar.MINUTE));\r\n    assertEquals(0, cal.get(Calendar.SECOND));\r\n    assertEquals(0, cal.get(Calendar.MILLISECOND));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\DateUtilsTest.java",
+  "methodName" : "testSetTime",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.DateUtils#setTime(java.util.Date, int, int, int, int)}.\r\n */\r\n@Test\r\npublic void testSetTime() {\r\n    Calendar now = Calendar.getInstance();\r\n    Date date = now.getTime();\r\n    Date newDate = DateUtils.setTime(date, 1, 2, 3, 4);\r\n    Calendar cal = Calendar.getInstance();\r\n    cal.setTime(newDate);\r\n    assertEquals(now.get(Calendar.YEAR), cal.get(Calendar.YEAR));\r\n    assertEquals(now.get(Calendar.MONTH), cal.get(Calendar.MONTH));\r\n    assertEquals(now.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.DAY_OF_MONTH));\r\n    assertEquals(1, cal.get(Calendar.HOUR_OF_DAY));\r\n    assertEquals(2, cal.get(Calendar.MINUTE));\r\n    assertEquals(3, cal.get(Calendar.SECOND));\r\n    assertEquals(4, cal.get(Calendar.MILLISECOND));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\DateUtilsTest.java",
+  "methodName" : "testGetDateOnly",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.DateUtils#getDateOnly(java.util.Date)}.\r\n */\r\n@Test\r\npublic void testGetDateOnly() {\r\n    Calendar now = Calendar.getInstance();\r\n    Date date = now.getTime();\r\n    Date newDate = DateUtils.getDateOnly(date);\r\n    Calendar cal = Calendar.getInstance();\r\n    cal.setTime(newDate);\r\n    assertEquals(now.get(Calendar.YEAR), cal.get(Calendar.YEAR));\r\n    assertEquals(now.get(Calendar.MONTH), cal.get(Calendar.MONTH));\r\n    assertEquals(now.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.DAY_OF_MONTH));\r\n    assertEquals(0, cal.get(Calendar.HOUR_OF_DAY));\r\n    assertEquals(0, cal.get(Calendar.MINUTE));\r\n    assertEquals(0, cal.get(Calendar.SECOND));\r\n    assertEquals(0, cal.get(Calendar.MILLISECOND));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\DateUtilsTest.java",
+  "methodName" : "testParseDate",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.DateUtils#parseDate(java.lang.String, java.util.Locale)}.\r\n */\r\n@Test\r\npublic void testParseDate() {\r\n    // french has day first\r\n    Date date = DateUtils.parseDate(\"2/10/2008\", Locale.FRANCE);\r\n    Calendar cal = Calendar.getInstance();\r\n    cal.setTime(date);\r\n    assertEquals(2008, cal.get(Calendar.YEAR));\r\n    assertEquals(9, cal.get(Calendar.MONTH));\r\n    assertEquals(2, cal.get(Calendar.DAY_OF_MONTH));\r\n    assertEquals(0, cal.get(Calendar.HOUR_OF_DAY));\r\n    assertEquals(0, cal.get(Calendar.MINUTE));\r\n    assertEquals(0, cal.get(Calendar.SECOND));\r\n    assertEquals(0, cal.get(Calendar.MILLISECOND));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\DateUtilsTest.java",
+  "methodName" : "testFormatDate",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.DateUtils#formatDate(java.util.Date, java.util.Locale)}.\r\n */\r\n@Test\r\npublic void testFormatDate() {\r\n    Calendar cal = simpleCalendar();\r\n    String formatted = DateUtils.formatDate(cal.getTime(), Locale.FRANCE);\r\n    assertEquals(\"3 mars 0001\", formatted);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\DateUtilsTest.java",
+  "methodName" : "testFormatTime",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.DateUtils#formatTime(java.util.Date, java.util.Locale, boolean)}.\r\n */\r\n@Test\r\npublic void testFormatTime() {\r\n    Calendar cal = simpleCalendar();\r\n    String formatted = DateUtils.formatTime(cal.getTime(), Locale.FRANCE, true);\r\n    assertEquals(\"04:05:06\", formatted);\r\n    formatted = DateUtils.formatTime(cal.getTime(), Locale.FRANCE, false);\r\n    assertEquals(\"04:05\", formatted);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\DateUtilsTest.java",
+  "methodName" : "testFormatDayOfWeek",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.DateUtils#formatDayOfWeek(java.util.Date, java.util.Locale, boolean)}.\r\n */\r\n@Test\r\npublic void testFormatDayOfWeek() {\r\n    Calendar cal = simpleCalendar();\r\n    String formatted = DateUtils.formatDayOfWeek(cal.getTime(), Locale.FRANCE, true);\r\n    assertEquals(\"jeudi\", formatted);\r\n    formatted = DateUtils.formatDayOfWeek(cal.getTime(), Locale.FRANCE, false);\r\n    assertEquals(\"jeu.\", formatted);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\DateUtilsTest.java",
+  "methodName" : "testFormatMonthDateLocaleBoolean",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.DateUtils#formatMonth(java.util.Date, java.util.Locale, boolean)}.\r\n */\r\n@Test\r\npublic void testFormatMonthDateLocaleBoolean() {\r\n    Calendar cal = simpleCalendar();\r\n    String formatted = DateUtils.formatMonth(cal.getTime(), Locale.ITALY, true);\r\n    assertEquals(\"marzo\", formatted);\r\n    formatted = DateUtils.formatMonth(cal.getTime(), Locale.ITALY, false);\r\n    assertEquals(\"mar\", formatted);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\DateUtilsTest.java",
+  "methodName" : "testGetWeekOfYear",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.DateUtils#getWeekOfYear(java.util.Date, java.util.Locale)}.\r\n */\r\n@Test\r\npublic void testGetWeekOfYear() {\r\n    Calendar cal = simpleCalendar();\r\n    int weekOfYear = DateUtils.getWeekOfYear(cal.getTime(), Locale.ITALY);\r\n    assertEquals(9, weekOfYear);\r\n    weekOfYear = DateUtils.getWeekOfYear(cal.getTime(), Locale.CHINA);\r\n    assertEquals(10, weekOfYear);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\DateUtilsTest.java",
+  "methodName" : "testFormatMonthIntLocaleBoolean",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.DateUtils#formatMonth(int, java.util.Locale, boolean)}.\r\n */\r\n@Test\r\npublic void testFormatMonthIntLocaleBoolean() {\r\n    // month to big -> return \"\"\r\n    String formatted = DateUtils.formatMonth(12, Locale.ITALY, true);\r\n    assertEquals(\"\", formatted);\r\n    formatted = DateUtils.formatMonth(8, Locale.ITALY, true);\r\n    assertEquals(\"settembre\", formatted);\r\n    formatted = DateUtils.formatMonth(5, Locale.ITALY, false);\r\n    assertEquals(\"giu\", formatted);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\DateUtilsTest.java",
+  "methodName" : "testFormatYear",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.DateUtils#formatYear(java.util.Date, java.util.Locale)}.\r\n */\r\n@Test\r\npublic void testFormatYear() {\r\n    Calendar cal = simpleCalendar();\r\n    String formatted = DateUtils.formatYear(cal.getTime(), Locale.GERMANY);\r\n    assertEquals(\"0001\", formatted);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ErrorsTest.java",
+  "methodName" : "testInvalidArgumentException",
+  "sourceCode" : "@Test\r\npublic void testInvalidArgumentException() {\r\n    try {\r\n        // Test InvalidArg\r\n        throw new InvalidArgumentException(\"testparam\", \"testvalue\");\r\n    } catch (EmpireException e) {\r\n        assertEquals(e.getMessage(), \"Invalid Argument testvalue for parameter testparam.\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ErrorsTest.java",
+  "methodName" : "testInternalException",
+  "sourceCode" : "@Test\r\npublic void testInternalException() {\r\n    try {\r\n        // Test InvalidArg\r\n        throw new InternalException(cause);\r\n    } catch (EmpireException e) {\r\n        assertEquals(e.getErrorParams()[0], \"RuntimeException\");\r\n        assertEquals(e.getErrorParams()[1], ROOT_EXCEPTION_MSG);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ErrorTypeTest.java",
+  "methodName" : "testErrorType",
+  "sourceCode" : "@Test\r\npublic void testErrorType() {\r\n    // TODO maybe we should find the highest param as some might not be in use (regex)\r\n    ErrorType errorType = new ErrorType(\"key\", \" {0} and {1} and {3} is {2}\");\r\n    assertEquals(4, errorType.getNumParams());\r\n    assertEquals(\"key\", errorType.getKey());\r\n    assertEquals(\" {0} and {1} and {3} is {2}\", errorType.getMessagePattern());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testIsEmpty",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#isEmpty(java.lang.Object)}.\r\n */\r\n@Test\r\npublic void testIsEmpty() {\r\n    assertTrue(ObjectUtils.isEmpty(ObjectUtils.NO_VALUE));\r\n    assertTrue(ObjectUtils.isEmpty(\"\"));\r\n    assertTrue(ObjectUtils.isEmpty(null));\r\n    assertFalse(ObjectUtils.isEmpty(\" \"));\r\n    assertFalse(ObjectUtils.isEmpty(new Object()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testCompareEqual",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#compareEqual(java.lang.Object, java.lang.Object)}\r\n * .\r\n */\r\n@Test\r\npublic void testCompareEqual() {\r\n    assertTrue(ObjectUtils.compareEqual(null, null));\r\n    Object object = new Object();\r\n    assertTrue(ObjectUtils.compareEqual(object, object));\r\n    assertTrue(ObjectUtils.compareEqual(\"\", \"\"));\r\n    assertTrue(ObjectUtils.compareEqual(\"abc\", String.valueOf(\"abc\")));\r\n    assertTrue(ObjectUtils.compareEqual(\"abc\", new String(\"abc\")));\r\n    assertTrue(ObjectUtils.compareEqual(\"\", null));\r\n    assertTrue(ObjectUtils.compareEqual(null, \"\"));\r\n    assertFalse(ObjectUtils.compareEqual(\"\", \" \"));\r\n    assertTrue(ObjectUtils.compareEqual(Long.valueOf(100), Integer.valueOf(100)));\r\n    assertTrue(ObjectUtils.compareEqual(Float.valueOf(100), Integer.valueOf(100)));\r\n    assertTrue(ObjectUtils.compareEqual(Float.valueOf(100.0123f), Double.valueOf(100.0123f)));\r\n    assertFalse(ObjectUtils.compareEqual(Float.valueOf(100.0123f), Long.valueOf(100)));\r\n    Date date = new Date();\r\n    Date dateEq = new Date(date.getTime());\r\n    Date dateDiff = new Date(123);\r\n    assertTrue(ObjectUtils.compareEqual(date, dateEq));\r\n    assertFalse(ObjectUtils.compareEqual(date, dateDiff));\r\n    // now test toString() equals\r\n    Object o1 = new Object() {\r\n\r\n        @Override\r\n        public String toString() {\r\n            return \"JUnit\";\r\n        }\r\n    };\r\n    Object oEq = new Object() {\r\n\r\n        @Override\r\n        public String toString() {\r\n            return \"JUnit\";\r\n        }\r\n    };\r\n    Object oDiff = new Object() {\r\n\r\n        @Override\r\n        public String toString() {\r\n            return \"JUnitDiff\";\r\n        }\r\n    };\r\n    assertTrue(ObjectUtils.compareEqual(o1, oEq));\r\n    assertFalse(ObjectUtils.compareEqual(o1, oDiff));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testCoalesce",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#coalesce(java.lang.Object, java.lang.Object)}\r\n * .\r\n */\r\n@Test\r\npublic void testCoalesce() {\r\n    assertNull(ObjectUtils.coalesce(null, null));\r\n    assertEquals(\"preferred\", ObjectUtils.coalesce(\"preferred\", null));\r\n    assertEquals(\"preferred\", ObjectUtils.coalesce(\"preferred\", \"alternative\"));\r\n    assertEquals(\"alternative\", ObjectUtils.coalesce(null, \"alternative\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testGetIntegerObjectInt",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#getInteger(java.lang.Object, int)}\r\n * .\r\n */\r\n@Test\r\npublic void testGetIntegerObjectInt() {\r\n    assertEquals(Integer.MAX_VALUE, ObjectUtils.getInteger(null, Integer.MAX_VALUE));\r\n    assertEquals(Integer.MIN_VALUE, ObjectUtils.getInteger(\"\", Integer.MIN_VALUE));\r\n    assertEquals(123, ObjectUtils.getInteger(\"JUnit\", 123));\r\n    assertEquals(456, ObjectUtils.getInteger(456, 123));\r\n    assertEquals(456, ObjectUtils.getInteger(\"456\", 123));\r\n    assertEquals(456, ObjectUtils.getInteger(Long.valueOf(456), 123));\r\n    assertEquals(456, ObjectUtils.getInteger(Integer.valueOf(456), 123));\r\n    assertEquals(456, ObjectUtils.getInteger(Float.valueOf(456), 123));\r\n    assertEquals(456, ObjectUtils.getInteger(Double.valueOf(456), 123));\r\n    // TODO check if this is the wanted result\r\n    assertEquals(456, ObjectUtils.getInteger(Double.valueOf(456.456), 123));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testGetIntegerObject",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#getInteger(java.lang.Object)}\r\n * .\r\n */\r\n@Test\r\npublic void testGetIntegerObject() {\r\n    assertEquals(0, ObjectUtils.getInteger(null));\r\n    assertEquals(0, ObjectUtils.getInteger(\"\"));\r\n    assertEquals(0, ObjectUtils.getInteger(\"JUnit\"));\r\n    assertEquals(456, ObjectUtils.getInteger(\"456\"));\r\n    assertEquals(456, ObjectUtils.getInteger(Long.valueOf(456)));\r\n    assertEquals(456, ObjectUtils.getInteger(Integer.valueOf(456)));\r\n    assertEquals(456, ObjectUtils.getInteger(Float.valueOf(456)));\r\n    assertEquals(456, ObjectUtils.getInteger(Double.valueOf(456)));\r\n    // TODO check if this is the wanted result\r\n    assertEquals(456, ObjectUtils.getInteger(Double.valueOf(456.456)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testGetLongObjectLong",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#getLong(java.lang.Object, long)}\r\n * .\r\n */\r\n@Test\r\npublic void testGetLongObjectLong() {\r\n    assertEquals(Long.MAX_VALUE, ObjectUtils.getLong(null, Long.MAX_VALUE));\r\n    assertEquals(Long.MIN_VALUE, ObjectUtils.getLong(\"\", Long.MIN_VALUE));\r\n    assertEquals(123L, ObjectUtils.getLong(\"JUnit\", 123L));\r\n    assertEquals(456L, ObjectUtils.getLong(456L, Long.MAX_VALUE));\r\n    assertEquals(456L, ObjectUtils.getLong(\"456\", Long.MAX_VALUE));\r\n    assertEquals(456L, ObjectUtils.getLong(Long.valueOf(456L), Long.MAX_VALUE));\r\n    assertEquals(456L, ObjectUtils.getLong(Integer.valueOf(456), Long.MAX_VALUE));\r\n    assertEquals(456L, ObjectUtils.getLong(Float.valueOf(456), Long.MAX_VALUE));\r\n    assertEquals(456L, ObjectUtils.getLong(Double.valueOf(456), Long.MAX_VALUE));\r\n    // TODO check if this is the wanted result\r\n    assertEquals(456L, ObjectUtils.getLong(Double.valueOf(456.456), Long.MAX_VALUE));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testGetLongObject",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#getLong(java.lang.Object)}.\r\n */\r\n@Test\r\npublic void testGetLongObject() {\r\n    assertEquals(0, ObjectUtils.getLong(null));\r\n    assertEquals(0, ObjectUtils.getLong(\"\"));\r\n    assertEquals(0, ObjectUtils.getLong(\"JUnit\"));\r\n    assertEquals(456L, ObjectUtils.getLong(\"456\"));\r\n    assertEquals(456L, ObjectUtils.getLong(Long.valueOf(456)));\r\n    assertEquals(456L, ObjectUtils.getLong(Integer.valueOf(456)));\r\n    assertEquals(456L, ObjectUtils.getLong(Float.valueOf(456)));\r\n    assertEquals(456L, ObjectUtils.getLong(Double.valueOf(456)));\r\n    // TODO check if this is the wanted result\r\n    assertEquals(456L, ObjectUtils.getLong(Double.valueOf(456.456)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testGetDoubleObjectDouble",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#getDouble(java.lang.Object, double)}\r\n * .\r\n */\r\n@Test\r\npublic void testGetDoubleObjectDouble() {\r\n    assertEquals(Double.MAX_VALUE, ObjectUtils.getDouble(null, Double.MAX_VALUE), 0);\r\n    assertEquals(Double.MIN_VALUE, ObjectUtils.getDouble(\"\", Double.MIN_VALUE), 0);\r\n    assertEquals(123d, ObjectUtils.getDouble(\"JUnit\", 123L), 0);\r\n    assertEquals(456d, ObjectUtils.getDouble(456L, Double.MAX_VALUE), 0);\r\n    assertEquals(456d, ObjectUtils.getDouble(\"456\", Double.MAX_VALUE), 0);\r\n    assertEquals(456d, ObjectUtils.getDouble(Long.valueOf(456L), Double.MAX_VALUE), 0);\r\n    assertEquals(456d, ObjectUtils.getDouble(Integer.valueOf(456), Double.MAX_VALUE), 0);\r\n    assertEquals(456d, ObjectUtils.getDouble(Float.valueOf(456), Double.MAX_VALUE), 0.001);\r\n    assertEquals(456d, ObjectUtils.getDouble(Double.valueOf(456), Double.MAX_VALUE), 0.001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testGetDoubleObject",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#getDouble(java.lang.Object)}\r\n * .\r\n */\r\n@Test\r\npublic void testGetDoubleObject() {\r\n    assertEquals(0, ObjectUtils.getDouble(null), 0);\r\n    assertEquals(0, ObjectUtils.getDouble(\"\"), 0);\r\n    assertEquals(0, ObjectUtils.getDouble(\"JUnit\"), 0);\r\n    assertEquals(456.123d, ObjectUtils.getDouble(\"456.123\"), 0);\r\n    assertEquals(456d, ObjectUtils.getDouble(Long.valueOf(456)), 0);\r\n    assertEquals(456d, ObjectUtils.getDouble(Integer.valueOf(456)), 0);\r\n    assertEquals(456.123d, ObjectUtils.getDouble(Float.valueOf(456.123f)), 0.001);\r\n    assertEquals(456.123d, ObjectUtils.getDouble(Double.valueOf(456.123)), 0.001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testGetBoolean",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#getBoolean(java.lang.Object)}\r\n * .\r\n */\r\n@Test\r\npublic void testGetBoolean() {\r\n    assertTrue(ObjectUtils.getBoolean(true));\r\n    assertTrue(ObjectUtils.getBoolean(Boolean.TRUE));\r\n    assertTrue(ObjectUtils.getBoolean(new Boolean(\"true\")));\r\n    assertTrue(ObjectUtils.getBoolean(Boolean.valueOf(true)));\r\n    assertTrue(ObjectUtils.getBoolean(1));\r\n    assertTrue(ObjectUtils.getBoolean(-123));\r\n    assertTrue(ObjectUtils.getBoolean(\"Y\"));\r\n    assertTrue(ObjectUtils.getBoolean(\"y\"));\r\n    assertTrue(ObjectUtils.getBoolean(\"TrUe\"));\r\n    assertTrue(ObjectUtils.getBoolean(\"true\"));\r\n    assertTrue(ObjectUtils.getBoolean(\"TRUE\"));\r\n    assertFalse(ObjectUtils.getBoolean(null));\r\n    assertFalse(ObjectUtils.getBoolean(false));\r\n    assertFalse(ObjectUtils.getBoolean(Boolean.FALSE));\r\n    assertFalse(ObjectUtils.getBoolean(new Boolean(\"false\")));\r\n    assertFalse(ObjectUtils.getBoolean(Boolean.valueOf(false)));\r\n    assertFalse(ObjectUtils.getBoolean(0));\r\n    assertFalse(ObjectUtils.getBoolean(Float.valueOf(0)));\r\n    assertFalse(ObjectUtils.getBoolean(new Object()));\r\n    assertFalse(ObjectUtils.getBoolean(\"JUnit\"));\r\n    assertFalse(ObjectUtils.getBoolean(\"false\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testGetDateObjectLocale",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#getDate(java.lang.Object, java.util.Locale)}\r\n * .\r\n */\r\n@Test\r\n@Ignore(\"fix multithreaded stuff\")\r\npublic void testGetDateObjectLocale() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testGetDateObject",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#getDate(java.lang.Object)}.\r\n */\r\n@Test\r\n@Ignore(\"fix multithreaded stuff\")\r\npublic void testGetDateObject() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testFormatDate",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#formatDate(java.util.Date, boolean)}\r\n * .\r\n */\r\n@Test\r\n@Ignore(\"fix multithreaded stuff\")\r\npublic void testFormatDate() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testConvertClassOfTObject",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#convert(java.lang.Class, java.lang.Object)}\r\n * .\r\n */\r\n@Test\r\npublic void testConvertClassOfTObject() {\r\n    Object object = new Object();\r\n    assertNull(ObjectUtils.convert(Void.class, (Object) null));\r\n    assertEquals(\"JUnit\", ObjectUtils.convert(String.class, \"JUnit\"));\r\n    assertEquals(Integer.valueOf(123), ObjectUtils.convert(Integer.class, \"123\"));\r\n    assertEquals(Long.valueOf(123), ObjectUtils.convert(Long.class, \"123\"));\r\n    assertEquals(object.toString(), ObjectUtils.convert(String.class, object));\r\n    assertEquals(Boolean.TRUE, ObjectUtils.convert(Boolean.class, 123));\r\n    assertEquals(Long.valueOf(Long.MAX_VALUE), ObjectUtils.convert(Long.class, Long.MAX_VALUE));\r\n    assertEquals(Float.valueOf(123.123f), ObjectUtils.convert(Float.class, 123.123f));\r\n    assertEquals(Integer.valueOf(123), ObjectUtils.convert(Integer.class, 123.123));\r\n    assertEquals(\"JUnit\", ObjectUtils.convert(Object.class, \"JUnit\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testIsAssignmentCompatible",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#isAssignmentCompatible(java.lang.Class, java.lang.Class)}\r\n * .\r\n */\r\n@Test\r\npublic void testIsAssignmentCompatible() {\r\n    // TODO handle null?\r\n    assertTrue(ObjectUtils.isAssignmentCompatible(Object.class, String.class));\r\n    assertTrue(ObjectUtils.isAssignmentCompatible(String.class, String.class));\r\n    assertTrue(ObjectUtils.isAssignmentCompatible(Long.class, long.class));\r\n    assertTrue(ObjectUtils.isAssignmentCompatible(long.class, Long.class));\r\n    assertTrue(ObjectUtils.isAssignmentCompatible(long.class, Integer.class));\r\n    assertTrue(ObjectUtils.isAssignmentCompatible(float.class, double.class));\r\n    assertTrue(ObjectUtils.isAssignmentCompatible(DateFormat.class, SimpleDateFormat.class));\r\n    assertFalse(ObjectUtils.isAssignmentCompatible(SimpleDateFormat.class, DateFormat.class));\r\n    assertFalse(ObjectUtils.isAssignmentCompatible(String.class, Object.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testConvertClassOfTCollectionOfQextendsT",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#convert(java.lang.Class, java.util.Collection)}\r\n * .\r\n */\r\n@Test\r\npublic void testConvertClassOfTCollectionOfQextendsT() {\r\n    List<String> objectList = new ArrayList<String>();\r\n    objectList.add(\"JUnit\");\r\n    objectList.add(\"JUnit2\");\r\n    Collection<Object> results = ObjectUtils.convert(Object.class, objectList);\r\n    assertEquals(2, objectList.size());\r\n    Iterator<Object> it = results.iterator();\r\n    assertEquals(\"JUnit\", it.next());\r\n    assertEquals(\"JUnit2\", it.next());\r\n    assertFalse(it.hasNext());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testToStringArray",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#toStringArray(java.lang.Object[], java.lang.String)}\r\n * .\r\n */\r\n@Test\r\npublic void testToStringArray() {\r\n    assertNull(ObjectUtils.toStringArray(null, null));\r\n    assertNull(ObjectUtils.toStringArray(null, \"JUnit\"));\r\n    Object object = new Object();\r\n    Object[] test = new Object[] { null, \"\", object, Integer.valueOf(123456) };\r\n    String[] expected = new String[] { \"DEFAULT\", \"\", object.toString(), \"123456\" };\r\n    assertArrayEquals(expected, ObjectUtils.toStringArray(test, \"DEFAULT\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\ObjectUtilsTest.java",
+  "methodName" : "testContains",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.empire.commons.ObjectUtils#contains(Object[], Object)}\r\n * .\r\n */\r\n@Test\r\npublic void testContains() {\r\n    Float toFind = new Float(456f);\r\n    Float other = Float.valueOf(123f);\r\n    Float[] empty = new Float[] {};\r\n    Float[] one = new Float[] { toFind };\r\n    Float[] both = new Float[] { toFind, other };\r\n    assertTrue(ObjectUtils.contains(both, toFind));\r\n    assertTrue(ObjectUtils.contains(both, other));\r\n    assertTrue(ObjectUtils.contains(both, new Float(123f)));\r\n    assertTrue(ObjectUtils.contains(both, new Float(456f)));\r\n    assertTrue(ObjectUtils.contains(one, toFind));\r\n    assertFalse(ObjectUtils.contains(one, other));\r\n    assertFalse(ObjectUtils.contains(empty, toFind));\r\n    assertFalse(ObjectUtils.contains(empty, other));\r\n    assertFalse(ObjectUtils.contains(null, null));\r\n    assertFalse(ObjectUtils.contains(null, other));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionEntryTest.java",
+  "methodName" : "testOptionEntry",
+  "sourceCode" : "@Test\r\npublic void testOptionEntry() {\r\n    OptionEntry entry = new OptionEntry(Boolean.TRUE, \"junit\");\r\n    assertEquals(Boolean.TRUE, entry.getValue());\r\n    assertEquals(\"junit\", entry.getText());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionEntryTest.java",
+  "methodName" : "testGetValueString",
+  "sourceCode" : "@Test\r\npublic void testGetValueString() {\r\n    OptionEntry entry = new OptionEntry(Boolean.TRUE, \"junit\");\r\n    assertEquals(\"true\", entry.getValueString());\r\n    entry = new OptionEntry(null, \"junit\");\r\n    assertEquals(\"\", entry.getValueString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionEntryTest.java",
+  "methodName" : "testGetSetText",
+  "sourceCode" : "@Test\r\npublic void testGetSetText() {\r\n    OptionEntry entry = new OptionEntry(Boolean.TRUE, \"junit\");\r\n    entry.setText(null);\r\n    assertEquals(null, entry.getText());\r\n    entry.setText(\"updated\");\r\n    assertEquals(\"updated\", entry.getText());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testSize",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#size()}.\r\n */\r\n@Test\r\npublic void testSize() {\r\n    Options options = new Options();\r\n    assertEquals(0, options.size());\r\n    options.add(new Object(), \"text\", true);\r\n    assertEquals(1, options.size());\r\n    options.add(new Object(), \"text\", true);\r\n    assertEquals(2, options.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testIsEmpty",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#isEmpty()}.\r\n */\r\n@Test\r\npublic void testIsEmpty() {\r\n    Options options = new Options();\r\n    assertTrue(options.isEmpty());\r\n    options.add(new Object(), \"text\", true);\r\n    assertFalse(options.isEmpty());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testClear",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#clear()}.\r\n */\r\n@Test\r\npublic void testClear() {\r\n    Options options = new Options();\r\n    options.add(new Object(), \"text\", true);\r\n    options.clear();\r\n    assertTrue(options.isEmpty());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testOptions",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#Options()}.\r\n */\r\n@Test\r\npublic void testOptions() {\r\n    Options options = new Options();\r\n    assertTrue(options.isEmpty());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testOptionsOptions",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#Options(org.apache.empire.commons.Options)}.\r\n */\r\n@Test\r\npublic void testOptionsOptions() {\r\n    Options options = new Options();\r\n    options.add(new Object(), \"text\", true);\r\n    Options options2 = new Options(options);\r\n    assertEquals(1, options2.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testOptionsOptionEntryArray",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#Options(org.apache.empire.commons.OptionEntry[])}.\r\n */\r\n@Test\r\npublic void testOptionsOptionEntryArray() {\r\n    Options options = new Options(new OptionEntry[] {});\r\n    assertTrue(options.isEmpty());\r\n    Options options2 = new Options(new OptionEntry[] { new OptionEntry(new Object(), \"text\") });\r\n    assertEquals(1, options2.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testGetIndex",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#getIndex(java.lang.Object)}.\r\n */\r\n@Test\r\npublic void testGetIndex() {\r\n    Options options = new Options();\r\n    assertEquals(-1, options.getIndex(new Object()));\r\n    options.add(Integer.valueOf(123), \"text\", true);\r\n    options.add(Integer.valueOf(456), \"text\", true);\r\n    assertEquals(0, options.getIndex(Integer.valueOf(123)));\r\n    assertEquals(1, options.getIndex(Integer.valueOf(456)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testCreateOptionEntry",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#createOptionEntry(java.lang.Object, java.lang.String)}.\r\n */\r\n@Test\r\npublic void testCreateOptionEntry() {\r\n    Options options = new Options();\r\n    OptionEntry entry = options.createOptionEntry(Integer.valueOf(123), \"test\");\r\n    assertEquals(\"test\", entry.getText());\r\n    assertEquals(Integer.valueOf(123), entry.getValue());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testGetEntry",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#getEntry(java.lang.Object)}.\r\n */\r\n@Test\r\npublic void testGetEntry() {\r\n    Options options = new Options();\r\n    options.add(Integer.valueOf(\"123\"), \"text\", true);\r\n    OptionEntry entry = options.getEntry(Integer.valueOf(\"123\"));\r\n    assertNotNull(entry);\r\n    assertEquals(\"text\", entry.getText());\r\n    assertEquals(Integer.valueOf(123), entry.getValue());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testGet",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#get(java.lang.Object)}.\r\n */\r\n@Test\r\npublic void testGet() {\r\n    Options options = new Options();\r\n    options.add(Integer.valueOf(\"123\"), \"text\", true);\r\n    String text = options.get(Integer.valueOf(\"123\"));\r\n    assertNotNull(text);\r\n    assertEquals(\"text\", text);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testGetValueAt",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#getValueAt(int)}.\r\n */\r\n@Test\r\npublic void testGetValueAt() {\r\n    Options options = new Options();\r\n    assertEquals(null, options.getValueAt(10));\r\n    options.add(Integer.valueOf(123), \"text\", true);\r\n    options.add(Integer.valueOf(456), \"text2\", true);\r\n    assertEquals(Integer.valueOf(456), options.getValueAt(1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testGetTextAt",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#getTextAt(int)}.\r\n */\r\n@Test\r\npublic void testGetTextAt() {\r\n    Options options = new Options();\r\n    assertEquals(\"\", options.getTextAt(10));\r\n    options.add(Integer.valueOf(123), \"text\", true);\r\n    options.add(Integer.valueOf(456), \"text2\", true);\r\n    assertEquals(\"text2\", options.getTextAt(1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testGetValues",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#getValues()}.\r\n */\r\n@Test\r\npublic void testGetValues() {\r\n    Options options = new Options();\r\n    assertEquals(0, options.getValues().size());\r\n    options.add(Integer.valueOf(123), \"text\", true);\r\n    options.add(Integer.valueOf(456), \"text2\", true);\r\n    Set<Object> values = options.getValues();\r\n    assertTrue(values.contains(Integer.valueOf(123)));\r\n    assertTrue(values.contains(Integer.valueOf(456)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testSetObjectStringInsertPos",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#set(java.lang.Object, java.lang.String, org.apache.empire.commons.Options.InsertPos)}.\r\n */\r\n@Test\r\npublic void testSetObjectStringInsertPos() {\r\n    Options options = new Options();\r\n    options.add(Integer.valueOf(123), \"text\", true);\r\n    options.set(Integer.valueOf(456), \"text2\", InsertPos.Top);\r\n    options.set(Integer.valueOf(789), \"text3\", InsertPos.Bottom);\r\n    assertEquals(Integer.valueOf(456), options.getValueAt(0));\r\n    assertEquals(Integer.valueOf(789), options.getValueAt(2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testSetObjectString",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#set(java.lang.Object, java.lang.String)}.\r\n */\r\n@Test\r\npublic void testSetObjectString() {\r\n    Options options = new Options();\r\n    options.add(Integer.valueOf(1), \"text\", true);\r\n    options.set(Integer.valueOf(2), \"text2\");\r\n    assertEquals(Integer.valueOf(2), options.getValueAt(1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testAddObjectStringBoolean",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#add(java.lang.Object, java.lang.String, boolean)}.\r\n */\r\n@Test\r\npublic void testAddObjectStringBoolean() {\r\n    Options options = new Options();\r\n    options.add(Integer.valueOf(1), \"text\", true);\r\n    assertEquals(Integer.valueOf(1), options.getValueAt(0));\r\n    options.add(Integer.valueOf(1), \"text\", true);\r\n    assertEquals(Integer.valueOf(1), options.getValueAt(1));\r\n    options = new Options();\r\n    options.add(Integer.valueOf(1), \"text\", false);\r\n    assertEquals(Integer.valueOf(1), options.getValueAt(0));\r\n    options.add(Integer.valueOf(1), \"text2\", false);\r\n    assertEquals(null, options.getValueAt(1));\r\n    assertEquals(\"text2\", options.getTextAt(0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testAddOptionEntry",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#add(org.apache.empire.commons.OptionEntry)}.\r\n */\r\n@Test\r\npublic void testAddOptionEntry() {\r\n    Options options = new Options();\r\n    options.add(new OptionEntry(Integer.valueOf(1), \"test1\"));\r\n    options.add(new OptionEntry(Integer.valueOf(1), \"test1-2\"));\r\n    options.add(new OptionEntry(Integer.valueOf(3), \"test3\"));\r\n    assertEquals(\"test1-2\", options.getTextAt(0));\r\n    assertEquals(\"test3\", options.getTextAt(1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testContainsObject",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#contains(java.lang.Object)}.\r\n */\r\n@Test\r\npublic void testContainsObject() {\r\n    Options options = new Options();\r\n    options.add(Integer.valueOf(1), \"txt\", false);\r\n    options.add(Integer.valueOf(2), \"txt\", false);\r\n    assertTrue(options.contains(Integer.valueOf(1)));\r\n    assertTrue(options.contains(Integer.valueOf(2)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testIterator",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#iterator()}.\r\n */\r\n@Test\r\npublic void testIterator() {\r\n    Options options = new Options();\r\n    options.add(Integer.valueOf(1), \"txt\", false);\r\n    options.add(Integer.valueOf(2), \"txt2\", false);\r\n    Iterator<OptionEntry> it = options.iterator();\r\n    it.next();\r\n    assertEquals(\"txt2\", it.next().getText());\r\n    it.remove();\r\n    assertEquals(1, options.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testRemoveObject",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#remove(java.lang.Object)}.\r\n */\r\n@Test\r\npublic void testRemoveObject() {\r\n    Options options = new Options();\r\n    options.add(Integer.valueOf(1), \"txt\", false);\r\n    options.add(Integer.valueOf(2), \"txt2\", false);\r\n    options.remove(Integer.valueOf(1));\r\n    assertFalse(options.contains(Integer.valueOf(1)));\r\n    assertTrue(options.contains(Integer.valueOf(2)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testToArray",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#toArray()}.\r\n */\r\n@Test\r\npublic void testToArray() {\r\n    Options options = new Options();\r\n    options.add(Integer.valueOf(1), \"txt\", false);\r\n    options.add(Integer.valueOf(2), \"txt2\", false);\r\n    assertEquals(2, options.toArray().length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\OptionsTest.java",
+  "methodName" : "testAddXml",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.empire.commons.Options#addXml(org.w3c.dom.Element, long)}.\r\n * @throws ParserConfigurationException\r\n */\r\n@Test\r\npublic void testAddXml() throws ParserConfigurationException {\r\n    Options options = new Options();\r\n    options.add(Integer.valueOf(1), \"txt\", false);\r\n    options.add(Integer.valueOf(2), \"txt2\", false);\r\n    DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();\r\n    Document doc = builder.newDocument();\r\n    Element root = doc.createElement(\"root\");\r\n    doc.appendChild(root);\r\n    // TODO get rid of flags param??\r\n    options.addXml(root, 0);\r\n    Node node = root.getFirstChild();\r\n    assertNotNull(\"no child was added\", node);\r\n    assertEquals(\"option\", node.getNodeName());\r\n    assertEquals(\"1\", node.getAttributes().getNamedItem(\"value\").getNodeValue());\r\n    assertEquals(\"txt\", node.getTextContent());\r\n    node = node.getNextSibling();\r\n    assertNotNull(\"no child was added\", node);\r\n    assertEquals(\"option\", node.getNodeName());\r\n    assertEquals(\"2\", node.getAttributes().getNamedItem(\"value\").getNodeValue());\r\n    assertEquals(\"txt2\", node.getTextContent());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\StringUtilsTest.java",
+  "methodName" : "testToStringObjectString",
+  "sourceCode" : "@Test\r\npublic void testToStringObjectString() {\r\n    assertEquals(null, StringUtils.toString((Object) null, null));\r\n    assertEquals(\"default\", StringUtils.toString(null, \"default\"));\r\n    assertEquals(\"123\", StringUtils.toString(Long.valueOf(\"123\"), \"456\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\StringUtilsTest.java",
+  "methodName" : "testToStringObject",
+  "sourceCode" : "@Test\r\npublic void testToStringObject() {\r\n    assertEquals(null, StringUtils.toString((Object) null));\r\n    assertEquals(\"test\", StringUtils.toString(\"test\"));\r\n    assertEquals(Boolean.FALSE.toString(), StringUtils.toString(Boolean.FALSE));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\StringUtilsTest.java",
+  "methodName" : "testToStringObjectArrayString",
+  "sourceCode" : "@Test\r\npublic void testToStringObjectArrayString() {\r\n    assertEquals(null, StringUtils.toString((Object[]) null, null));\r\n    assertEquals(\"default\", StringUtils.toString((Object[]) null, \"default\"));\r\n    assertEquals(\"default\", StringUtils.toString(new Number[] {}, \"default\"));\r\n    assertEquals(\"123/12.3\", StringUtils.toString(new Number[] { Integer.valueOf(\"123\"), Double.valueOf(\"12.3\") }, \"default\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\StringUtilsTest.java",
+  "methodName" : "testToStringObjectArray",
+  "sourceCode" : "@Test\r\npublic void testToStringObjectArray() {\r\n    assertEquals(null, StringUtils.toString((Object[]) null));\r\n    assertEquals(null, StringUtils.toString(new Number[] {}));\r\n    assertEquals(\"123/12.3\", StringUtils.toString(new Number[] { Integer.valueOf(\"123\"), Double.valueOf(\"12.3\") }));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\StringUtilsTest.java",
+  "methodName" : "testValueOfObject",
+  "sourceCode" : "@Test\r\npublic void testValueOfObject() {\r\n    assertEquals(\"null\", StringUtils.valueOf((Object) null));\r\n    assertEquals(\"\", StringUtils.valueOf(\"\"));\r\n    assertEquals(\"123\", StringUtils.valueOf(Long.valueOf(\"123\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\StringUtilsTest.java",
+  "methodName" : "testValueOfObjectArray",
+  "sourceCode" : "@Test\r\npublic void testValueOfObjectArray() {\r\n    assertEquals(\"null\", StringUtils.valueOf((Object[]) null));\r\n    assertEquals(\"null\", StringUtils.valueOf(new Object[] {}));\r\n    assertEquals(\"123/12.3\", StringUtils.valueOf(new Number[] { Integer.valueOf(\"123\"), Double.valueOf(\"12.3\") }));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\StringUtilsTest.java",
+  "methodName" : "testCoalesce",
+  "sourceCode" : "@Test\r\npublic void testCoalesce() {\r\n    assertEquals(\"ok\", StringUtils.coalesce(\"ok\", \"fail\"));\r\n    assertEquals(\"ok\", StringUtils.coalesce(\"   \\r \\n \\t  \", \"ok\"));\r\n    assertEquals(\"ok\", StringUtils.coalesce(null, \"ok\"));\r\n    assertEquals(null, StringUtils.coalesce(null, null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\StringUtilsTest.java",
+  "methodName" : "testNullIfEmpty",
+  "sourceCode" : "@Test\r\npublic void testNullIfEmpty() {\r\n    assertEquals(null, StringUtils.nullIfEmpty(null));\r\n    assertEquals(null, StringUtils.nullIfEmpty(\"\"));\r\n    assertEquals(\" \", StringUtils.nullIfEmpty(\" \"));\r\n    assertEquals(\"\\r\\n\\t\", StringUtils.nullIfEmpty(\"\\r\\n\\t\"));\r\n    assertEquals(\" value \", StringUtils.nullIfEmpty(\" value \"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\StringUtilsTest.java",
+  "methodName" : "testArrayToString",
+  "sourceCode" : "@Test\r\npublic void testArrayToString() {\r\n    assertEquals(null, StringUtils.arrayToString(null, null));\r\n    assertEquals(null, StringUtils.arrayToString(null, \"/\"));\r\n    assertEquals(null, StringUtils.arrayToString(new String[] {}, \"\"));\r\n    assertEquals(\"test\", StringUtils.arrayToString(new String[] { \"test\" }, \"|\"));\r\n    assertEquals(\"12312.3\", StringUtils.arrayToString(new Number[] { Integer.valueOf(\"123\"), Double.valueOf(\"12.3\") }, \"\"));\r\n    assertEquals(\"firstsecondthird\", StringUtils.arrayToString(new String[] { \"first\", \"second\", \"third\" }, null));\r\n    assertEquals(\" first \\t second \\t third \", StringUtils.arrayToString(new String[] { \" first \", \" second \", \" third \" }, \"\\t\"));\r\n    assertEquals(\"null/null\", StringUtils.arrayToString(new String[] { null, null }, \"/\"));\r\n    assertEquals(\"null\", StringUtils.arrayToString(new String[] { null }, \"/\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\StringUtilsTest.java",
+  "methodName" : "testIsEmpty",
+  "sourceCode" : "@Test\r\npublic void testIsEmpty() {\r\n    assertTrue(StringUtils.isEmpty(null));\r\n    assertTrue(StringUtils.isEmpty(\"\"));\r\n    assertTrue(StringUtils.isEmpty(\"\\t\\r\\n\"));\r\n    assertFalse(StringUtils.isEmpty(\" test \"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\StringUtilsTest.java",
+  "methodName" : "testIsValid",
+  "sourceCode" : "@Test\r\npublic void testIsValid() {\r\n    assertFalse(StringUtils.isNotEmpty(null));\r\n    assertFalse(StringUtils.isNotEmpty(\"\"));\r\n    assertFalse(StringUtils.isNotEmpty(\"\\t\\r\\n\"));\r\n    assertTrue(StringUtils.isNotEmpty(\" test \"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\StringUtilsTest.java",
+  "methodName" : "testValidate",
+  "sourceCode" : "@Test\r\npublic void testValidate() {\r\n    assertEquals(null, StringUtils.validate(null));\r\n    assertEquals(null, StringUtils.validate(\"\"));\r\n    assertEquals(null, StringUtils.validate(\" \\r\\n\\t \"));\r\n    assertEquals(\"azerty\\r\\n\\tazerty\", StringUtils.validate(\" \\r azerty\\r\\n\\tazerty\\t \"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\StringUtilsTest.java",
+  "methodName" : "testReplace",
+  "sourceCode" : "@Test\r\npublic void testReplace() {\r\n    assertEquals(null, StringUtils.replace(null, null, null));\r\n    assertEquals(\"\", StringUtils.replace(\"\", null, null));\r\n    assertEquals(\"test null test\", StringUtils.replace(\"test null test\", null, \"\"));\r\n    assertEquals(\"test  test\", StringUtils.replace(\"test a test\", \"a\", null));\r\n    assertEquals(\"test test\", StringUtils.replace(\"test test\", \"\", \"oops\"));\r\n    assertEquals(\"test test\", StringUtils.replaceAll(\"test test\", null, \"oops\"));\r\n    assertEquals(\"testoopsoopstest\", StringUtils.replace(\"test  test\", \" \", \"oops\"));\r\n    assertEquals(\"1-two-3\", StringUtils.replace(\"1 2 3\", \" 2 \", \"-two-\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\commons\\StringUtilsTest.java",
+  "methodName" : "testReplaceAll",
+  "sourceCode" : "@Test\r\npublic void testReplaceAll() {\r\n    // TODO what is the difference with the other replace method, merge???\r\n    assertEquals(null, StringUtils.replaceAll(null, null, null));\r\n    assertEquals(\"\", StringUtils.replaceAll(\"\", null, null));\r\n    assertEquals(\"test null test\", StringUtils.replaceAll(\"test null test\", null, \"\"));\r\n    assertEquals(\"test  test\", StringUtils.replaceAll(\"test a test\", \"a\", null));\r\n    assertEquals(\"test test\", StringUtils.replaceAll(\"test test\", \"\", \"oops\"));\r\n    assertEquals(\"test test\", StringUtils.replaceAll(\"test test\", null, \"oops\"));\r\n    assertEquals(\"testoopsoopstest\", StringUtils.replaceAll(\"test  test\", \" \", \"oops\"));\r\n    assertEquals(\"1-two-3\", StringUtils.replaceAll(\"1 2 3\", \" 2 \", \"-two-\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\DBCommandTest.java",
+  "methodName" : "testDBCommand",
+  "sourceCode" : "@Test\r\npublic void testDBCommand() {\r\n    MockDB mock = new MockDB();\r\n    mock.open(new MockDriver(), null);\r\n    List<DBColumn> list = new ArrayList<DBColumn>();\r\n    DBCommand command = mock.createCommand();\r\n    command.select(list);\r\n    assertNull(command.getSelectExprList());\r\n    List<DBColumnExpr> list2 = new ArrayList<DBColumnExpr>();\r\n    list2.add(mock.TABLE.COL1);\r\n    list2.add(mock.TABLE.COL3);\r\n    DBCommand command2 = mock.createCommand();\r\n    command2.select(list2);\r\n    assertEquals(2, command2.getSelectExprList().length);\r\n    DBCommand command3 = mock.createCommand();\r\n    command3.select(mock.TABLE.getColumns());\r\n    command3.groupBy(mock.TABLE.COL1, mock.TABLE.COL2, mock.TABLE.COL2);\r\n    assertEquals(3, command3.getSelectExprList().length);\r\n    assertEquals(2, command3.groupBy.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\expr\\set\\DBSetExprTest.java",
+  "methodName" : "testGetDatabase",
+  "sourceCode" : "@Test\r\npublic void testGetDatabase() {\r\n    assertEquals(testDB, expr.getDatabase());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\expr\\set\\DBSetExprTest.java",
+  "methodName" : "testAddSQL",
+  "sourceCode" : "@Test\r\npublic void testAddSQL() {\r\n    StringBuilder builder = new StringBuilder();\r\n    expr.addSQL(builder, 0);\r\n    assertEquals(\"\", builder.toString());\r\n    expr.addSQL(builder, DBExpr.CTX_DEFAULT);\r\n    assertEquals(\"FIRSTNAME='JUnit'\", builder.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\expr\\set\\DBSetExprTest.java",
+  "methodName" : "testAddSQLEmptyString",
+  "sourceCode" : "@Test\r\npublic void testAddSQLEmptyString() {\r\n    StringBuilder builder = new StringBuilder();\r\n    DBSetExpr setExpr = new DBSetExpr(testDB.EMPLOYEE.FIRSTNAME, \"\");\r\n    setExpr.addSQL(builder, DBExpr.CTX_DEFAULT);\r\n    // Empire-DB by default sees '' as null\r\n    assertEquals(\"FIRSTNAME=null\", builder.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\expr\\set\\DBSetExprTest.java",
+  "methodName" : "testAddSQLEmptyStringConstant",
+  "sourceCode" : "@Test\r\npublic void testAddSQLEmptyStringConstant() {\r\n    StringBuilder builder = new StringBuilder();\r\n    DBSetExpr setExpr = new DBSetExpr(testDB.EMPLOYEE.FIRSTNAME, DBDatabase.EMPTY_STRING);\r\n    setExpr.addSQL(builder, DBExpr.CTX_DEFAULT);\r\n    assertEquals(\"FIRSTNAME=''\", builder.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\expr\\set\\DBSetExprTest.java",
+  "methodName" : "testAddReferencedColumns",
+  "sourceCode" : "@Test\r\npublic void testAddReferencedColumns() {\r\n    Set<DBColumn> cols = new HashSet<DBColumn>();\r\n    expr.addReferencedColumns(cols);\r\n    assertTrue(cols.contains(testDB.EMPLOYEE.FIRSTNAME));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\expr\\set\\DBSetExprTest.java",
+  "methodName" : "testGetTable",
+  "sourceCode" : "@Test\r\npublic void testGetTable() {\r\n    assertEquals(testDB.EMPLOYEE, expr.getTable());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\expr\\set\\DBSetExprTest.java",
+  "methodName" : "testGetColumn",
+  "sourceCode" : "@Test\r\npublic void testGetColumn() {\r\n    assertEquals(testDB.EMPLOYEE.FIRSTNAME, expr.getColumn());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\expr\\set\\DBSetExprTest.java",
+  "methodName" : "testGetValue",
+  "sourceCode" : "@Test\r\npublic void testGetValue() {\r\n    assertEquals(\"JUnit\", expr.getValue());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\expr\\set\\DBSetExprTest.java",
+  "methodName" : "testSetValue",
+  "sourceCode" : "@Test\r\npublic void testSetValue() {\r\n    expr.setValue(\"JUnit2\");\r\n    assertEquals(\"JUnit2\", expr.getValue());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\hsql\\DBDatabaseDriverHSqlTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() {\r\n    Connection conn = dbResource.getConnection();\r\n    DBDatabaseDriver driver = dbResource.newDriver();\r\n    CompanyDB db = new CompanyDB();\r\n    db.open(driver, dbResource.getConnection());\r\n    DBSQLScript script = new DBSQLScript();\r\n    db.getCreateDDLScript(db.getDriver(), script);\r\n    script.run(db.getDriver(), dbResource.getConnection(), false);\r\n    DBRecord dep = new DBRecord();\r\n    dep.create(db.DEPARTMENT);\r\n    dep.setValue(db.DEPARTMENT.NAME, \"junit\");\r\n    dep.setValue(db.DEPARTMENT.BUSINESS_UNIT, \"test\");\r\n    dep.update(conn);\r\n    Date date = dep.getDateTime(db.DEPARTMENT.UPDATE_TIMESTAMP);\r\n    assertNotNull(\"Date is null\", date);\r\n    assertTrue(\"No departments\", dep.getInt(db.DEPARTMENT.ID) > 0);\r\n    DBRecord emp = new DBRecord();\r\n    emp.create(db.EMPLOYEE);\r\n    emp.setValue(db.EMPLOYEE.FIRSTNAME, \"junit\");\r\n    emp.setValue(db.EMPLOYEE.LASTNAME, \"test\");\r\n    emp.setValue(db.EMPLOYEE.GENDER, \"m\");\r\n    emp.setValue(db.EMPLOYEE.DEPARTMENT_ID, dep.getInt(db.DEPARTMENT.ID));\r\n    emp.update(conn);\r\n    date = emp.getDateTime(db.EMPLOYEE.UPDATE_TIMESTAMP);\r\n    assertNotNull(\"Date is null\", date);\r\n    assertTrue(\"Employee id O or less\", emp.getInt(db.EMPLOYEE.ID) > 0);\r\n    int id = emp.getInt(db.EMPLOYEE.ID);\r\n    // Update an Employee\r\n    emp = new DBRecord();\r\n    emp.read(db.EMPLOYEE, id, conn);\r\n    // Set\r\n    emp.setValue(db.EMPLOYEE.PHONE_NUMBER, \"123456\");\r\n    emp.update(conn);\r\n    emp = new DBRecord();\r\n    emp.read(db.EMPLOYEE, id, conn);\r\n    assertEquals(\"123456\", emp.getString(db.EMPLOYEE.PHONE_NUMBER));\r\n    script = new DBSQLScript();\r\n    db.getDriver().getDDLScript(DBCmdType.DROP, db.EMPLOYEE, script);\r\n    db.getDriver().getDDLScript(DBCmdType.DROP, db.DEPARTMENT, script);\r\n    script.run(db.getDriver(), conn, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\hsql\\DBDatabaseDriverHSqlTest.java",
+  "methodName" : "testSequence",
+  "sourceCode" : "/**\r\n * See https://issues.apache.org/jira/browse/EMPIREDB-151\r\n */\r\n@Test\r\npublic void testSequence() {\r\n    Connection conn = dbResource.getConnection();\r\n    DBDatabaseDriver driver = dbResource.newDriver();\r\n    SeqDB db = new SeqDB();\r\n    db.open(driver, dbResource.getConnection());\r\n    DBSQLScript script = new DBSQLScript();\r\n    db.getCreateDDLScript(db.getDriver(), script);\r\n    script.run(db.getDriver(), dbResource.getConnection(), false);\r\n    DBRecord data = new DBRecord();\r\n    data.create(db.DATA);\r\n    data.setValue(db.DATA.VALUE, \"test\");\r\n    data.update(conn);\r\n    final Object id = data.getLong(db.DATA.ID);\r\n    DBRecord read = new DBRecord();\r\n    read.read(db.DATA, id, conn);\r\n    assertEquals(\"test\", read.getString(db.DATA.VALUE));\r\n    script = new DBSQLScript();\r\n    db.getDriver().getDDLScript(DBCmdType.DROP, db.DATA, script);\r\n    script.run(db.getDriver(), conn, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\IntegerTest.java",
+  "methodName" : "testSQlitedb",
+  "sourceCode" : "@Test\r\npublic void testSQlitedb() {\r\n    SampleConfig config = new SampleConfig();\r\n    config.databaseProvider = \"sqlite\";\r\n    config.jdbcClass = \"org.sqlite.JDBC\";\r\n    config.jdbcURL = \"jdbc:sqlite::memory:\";\r\n    testLongInteger(config);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\IntegerTest.java",
+  "methodName" : "testHsqldb",
+  "sourceCode" : "@Test\r\npublic void testHsqldb() {\r\n    SampleConfig config = new SampleConfig();\r\n    config.databaseProvider = \"hsqldb\";\r\n    config.jdbcClass = \"org.hsqldb.jdbcDriver\";\r\n    config.jdbcURL = \"jdbc:hsqldb:mem:data/derby/test\";\r\n    testLongInteger(config);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\IntegerTest.java",
+  "methodName" : "testDerby",
+  "sourceCode" : "@Test\r\npublic void testDerby() {\r\n    SampleConfig config = new SampleConfig();\r\n    config.databaseProvider = \"derby\";\r\n    config.jdbcClass = \"org.apache.derby.jdbc.EmbeddedDriver\";\r\n    config.jdbcURL = \"jdbc:derby:memory:data/derby/test;create=true\";\r\n    testLongInteger(config);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\IntegerTest.java",
+  "methodName" : "testH2",
+  "sourceCode" : "@Test\r\npublic void testH2() {\r\n    SampleConfig config = new SampleConfig();\r\n    config.databaseProvider = \"h2\";\r\n    config.jdbcClass = \"org.h2.Driver\";\r\n    config.jdbcURL = \"jdbc:h2:mem:data/h2/test\";\r\n    testLongInteger(config);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\IntegerTest.java",
+  "methodName" : "testMySql",
+  "sourceCode" : "@Test\r\n@Ignore(\"This can only run when we have a local mydsl server set up\")\r\npublic void testMySql() {\r\n    SampleConfig config = new SampleConfig();\r\n    config.databaseProvider = \"mysql\";\r\n    config.jdbcClass = \"com.mysql.jdbc.Driver\";\r\n    config.jdbcURL = \"jdbc:mysql://localhost:3306/test\";\r\n    config.jdbcUser = \"test\";\r\n    config.jdbcPwd = \"test\";\r\n    config.schemaName = \"test\";\r\n    testLongInteger(config);\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\mssql\\DBDatabaseDriverMSSqlDateTest.java",
+  "methodName" : "testDateFormatYMD",
+  "sourceCode" : "@Test\r\npublic void testDateFormatYMD() throws Exception {\r\n    runTestWithDateFormat(\"ymd\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\mssql\\DBDatabaseDriverMSSqlDateTest.java",
+  "methodName" : "testDateFormatDMY",
+  "sourceCode" : "@Test\r\npublic void testDateFormatDMY() throws Exception {\r\n    runTestWithDateFormat(\"dmy\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\mssql\\DBDatabaseDriverMSSqlTest.java",
+  "methodName" : "testChineseCharacters",
+  "sourceCode" : "@Test\r\npublic void testChineseCharacters() {\r\n    Connection conn = dbResource.getConnection();\r\n    DBDatabaseDriver driver = dbResource.newDriver();\r\n    CompanyDB db = new CompanyDB();\r\n    // Encoding issue occur when prepared statement is disabled\r\n    //db.setPreparedStatementsEnabled(true);\r\n    db.open(driver, dbResource.getConnection());\r\n    if (!databaseExists(conn, db)) {\r\n        DBSQLScript script = new DBSQLScript();\r\n        db.getCreateDDLScript(db.getDriver(), script);\r\n        System.out.println(script.toString());\r\n        script.run(db.getDriver(), dbResource.getConnection(), false);\r\n    }\r\n    // STEP 5: Clear Database (Delete all records)\r\n    System.out.println(\"*** Step 5: clearDatabase() ***\");\r\n    clearDatabase(conn, db);\r\n    DBRecord dep = new DBRecord();\r\n    dep.create(db.DEPARTMENT);\r\n    dep.setValue(db.DEPARTMENT.NAME, \"junit\");\r\n    dep.setValue(db.DEPARTMENT.BUSINESS_UNIT, \"中文\");\r\n    dep.update(conn);\r\n    int id = dep.getInt(db.DEPARTMENT.ID);\r\n    // Update an Employee\r\n    DBRecord depRead = new DBRecord();\r\n    depRead.read(db.DEPARTMENT, id, conn);\r\n    // You may see ?? in the DB record\r\n    assertEquals(\"中文\", depRead.getString(db.DEPARTMENT.BUSINESS_UNIT));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\mysql\\DBDatabaseDriverMySQLTest.java",
+  "methodName" : "appendSQLTextValue",
+  "sourceCode" : "@Test\r\npublic void appendSQLTextValue() {\r\n    CompanyDB db = new CompanyDB();\r\n    DBDatabaseDriver driver = new DBDatabaseDriverMySQL();\r\n    db.open(driver, null);\r\n    Departments TD = db.DEPARTMENT;\r\n    DBCommand cmd = db.createCommand();\r\n    // Test 1\r\n    cmd.select(TD.count());\r\n    cmd.where(TD.NAME.is(\"\\\\LCI\\\\\"));\r\n    // Must be double escaped\r\n    assertTrue(cmd.getSelect().endsWith((\"`NAME`='\\\\\\\\LCI\\\\\\\\'\")));\r\n    cmd = db.createCommand();\r\n    // Test 2\r\n    cmd.select(TD.count());\r\n    cmd.where(TD.NAME.is(\"'\"));\r\n    assertTrue(cmd.getSelect().contains(\"`NAME`=''''\"));\r\n    cmd = db.createCommand();\r\n    // \\ and '\r\n    cmd.select(TD.count());\r\n    cmd.where(TD.NAME.is(\"Tarkk\\\\'ampujankatu\"));\r\n    assertTrue(cmd.getSelect().contains(\"`NAME`='Tarkk\\\\\\\\''ampujankatu'\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\mysql\\DBDatabaseDriverMySQLTest.java",
+  "methodName" : "testGetConvertPhrase",
+  "sourceCode" : "@Test\r\npublic void testGetConvertPhrase() {\r\n    DBDatabaseDriver driver = new DBDatabaseDriverMySQL();\r\n    // BOOL\r\n    assertEquals(\"CAST(? AS UNSIGNED)\", driver.getConvertPhrase(DataType.BOOL, null, null));\r\n    assertEquals(\"CAST(? AS UNSIGNED)\", driver.getConvertPhrase(DataType.BOOL, null, \"test\"));\r\n    // INTEGER\r\n    assertEquals(\"CAST(? AS SIGNED)\", driver.getConvertPhrase(DataType.INTEGER, null, null));\r\n    assertEquals(\"CAST(? AS SIGNED)\", driver.getConvertPhrase(DataType.INTEGER, null, \"test\"));\r\n    // DECIMAL\r\n    assertEquals(\"CAST(? AS DECIMAL)\", driver.getConvertPhrase(DataType.DECIMAL, null, null));\r\n    assertEquals(\"CAST(? AS DECIMAL)\", driver.getConvertPhrase(DataType.DECIMAL, null, \"test\"));\r\n    // FLOAT\r\n    assertEquals(\"CAST(? AS DECIMAL)\", driver.getConvertPhrase(DataType.FLOAT, null, null));\r\n    assertEquals(\"CAST(? AS DECIMAL)\", driver.getConvertPhrase(DataType.FLOAT, null, \"test\"));\r\n    // DATE\r\n    assertEquals(\"CAST(? AS DATE)\", driver.getConvertPhrase(DataType.DATE, null, null));\r\n    assertEquals(\"CAST(? AS DATE)\", driver.getConvertPhrase(DataType.DATE, null, \"test\"));\r\n    // DATETIME\r\n    assertEquals(\"CAST(? AS DATETIME)\", driver.getConvertPhrase(DataType.DATETIME, null, null));\r\n    assertEquals(\"CAST(? AS DATETIME)\", driver.getConvertPhrase(DataType.DATETIME, null, \"test\"));\r\n    // TEXT\r\n    assertEquals(\"CAST(? AS CHAR CHARACTER SET cp1250)\", driver.getConvertPhrase(DataType.TEXT, null, \"CHARACTER SET cp1250\"));\r\n    assertEquals(\"CAST(? AS CHAR)\", driver.getConvertPhrase(DataType.TEXT, null, null));\r\n    // BLOB\r\n    assertEquals(\"CAST(? AS BLOB)\", driver.getConvertPhrase(DataType.BLOB, null, null));\r\n    assertEquals(\"CAST(? AS BLOB)\", driver.getConvertPhrase(DataType.BLOB, null, \"test\"));\r\n    // Unknown Type\r\n    assertEquals(\"?\", driver.getConvertPhrase(DataType.AUTOINC, null, null));\r\n    assertEquals(\"?\", driver.getConvertPhrase(DataType.AUTOINC, null, \"test\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\postgresql\\DBDatabaseDriverPostgreSQLTest.java",
+  "methodName" : "testCreateReverseFunction",
+  "sourceCode" : "@Test\r\npublic void testCreateReverseFunction() throws SQLException {\r\n    Connection conn = dbResource.getConnection();\r\n    DBDatabaseDriver driver = dbResource.newDriver();\r\n    ((DBDatabaseDriverPostgreSQL) driver).createReverseFunction(conn);\r\n    Statement statement = conn.createStatement();\r\n    ResultSet resultSet = statement.executeQuery(\"SELECT reverse('reverseme')\");\r\n    resultSet.next();\r\n    String reversed = resultSet.getString(1);\r\n    resultSet.close();\r\n    statement.close();\r\n    conn.close();\r\n    assertEquals(\"emesrever\", reversed);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\postgresql\\DBDatabaseDriverPostgreSQLTest.java",
+  "methodName" : "testBlobDDL",
+  "sourceCode" : "@Test\r\npublic void testBlobDDL() throws SQLException {\r\n    Connection conn = dbResource.getConnection();\r\n    DBDatabaseDriver driver = dbResource.newDriver();\r\n    CompanyDB db = new CompanyDB();\r\n    // Encoding issue occurs when prepared statement is disabled\r\n    //db.setPreparedStatementsEnabled(true);\r\n    db.open(driver, dbResource.getConnection());\r\n    if (!databaseExists(conn, db)) {\r\n        DBSQLScript script = new DBSQLScript();\r\n        db.getCreateDDLScript(db.getDriver(), script);\r\n        System.out.println(script.toString());\r\n        script.run(db.getDriver(), dbResource.getConnection(), false);\r\n    }\r\n    conn.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\postgresql\\DBDatabaseDriverPostgreSQLTest.java",
+  "methodName" : "testBlobWritingReading",
+  "sourceCode" : "@Test\r\npublic void testBlobWritingReading() throws SQLException {\r\n    Connection conn = dbResource.getConnection();\r\n    DBDatabaseDriver driver = dbResource.newDriver();\r\n    CompanyDB db = new CompanyDB();\r\n    // Encoding issue occurs when prepared statement is disabled\r\n    //db.setPreparedStatementsEnabled(true);\r\n    db.open(driver, dbResource.getConnection());\r\n    DBRecord emp = new DBRecord();\r\n    emp.create(db.DATA);\r\n    emp.setValue(db.DATA.DATA, new byte[] { 1, 2, 3 });\r\n    emp.update(conn);\r\n    // read a value\r\n    DBCommand cmd = db.createCommand();\r\n    cmd.select(db.DATA.DATA);\r\n    DBReader reader = new DBReader();\r\n    reader.open(cmd, conn);\r\n    while (reader.moveNext()) {\r\n        byte[] value = (byte[]) reader.getValue(db.DATA.DATA);\r\n        Assert.assertArrayEquals(new byte[] { 1, 2, 3 }, value);\r\n    }\r\n    conn.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\PreparedStatementTest.java",
+  "methodName" : "testPreparedStatement",
+  "sourceCode" : "@Test\r\npublic void testPreparedStatement() {\r\n    Connection conn = dbResource.getConnection();\r\n    DBDatabaseDriver driver = dbResource.newDriver();\r\n    CompanyDB db = new CompanyDB();\r\n    db.open(driver, conn);\r\n    DBSQLScript script = new DBSQLScript();\r\n    db.getCreateDDLScript(db.getDriver(), script);\r\n    script.run(db.getDriver(), conn, false);\r\n    DBRecord department = new DBRecord();\r\n    department.create(db.DEPARTMENT);\r\n    department.setValue(db.DEPARTMENT.NAME, \"junit\");\r\n    department.setValue(db.DEPARTMENT.BUSINESS_UNIT, \"test\");\r\n    department.update(conn);\r\n    int id = department.getInt(db.DEPARTMENT.ID);\r\n    assertTrue(\"Department add failed\", id > 0);\r\n    // Define shortcuts for tables used - not necessary but convenient\r\n    CompanyDB.Departments DEP = db.DEPARTMENT;\r\n    // Define the query\r\n    DBCommand cmd = db.createCommand();\r\n    // Create parameters\r\n    DBCmdParam empIdParam = cmd.addParam(null);\r\n    // the previous line could be shorter\r\n    // DBCommandParam empIdParam  = cmd.addCmdParam(id);\r\n    // create statement\r\n    cmd.select(DEP.getColumns());\r\n    cmd.where(DEP.ID.is(empIdParam));\r\n    // set param value\r\n    empIdParam.setValue(id);\r\n    // check command\r\n    assertNotNull(cmd.getParamValues());\r\n    assertTrue(cmd.getSelect().indexOf('?') > 0);\r\n    DBReader r = new DBReader();\r\n    try {\r\n        r.open(cmd, conn);\r\n        // must have one record\r\n        assertEquals(true, r.moveNext());\r\n        // Department Id must be correct\r\n        assertEquals(id, r.getInt(DEP.ID));\r\n    } finally {\r\n        r.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\SerializeTest.java",
+  "methodName" : "testDBObject",
+  "sourceCode" : "@Test\r\npublic void testDBObject() throws Exception {\r\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    for (DBObject dbo : getObjectsToSerialize()) {\r\n        baos.reset();\r\n        ObjectOutputStream oos = new ObjectOutputStream(baos);\r\n        oos.writeObject(dbo);\r\n        ObjectInputStream oin = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));\r\n        DBObject dbo2 = (DBObject) oin.readObject();\r\n        //very simple check...\r\n        Assert.assertNotNull(dbo2.getDatabase());\r\n        Assert.assertEquals(dbo.getClass(), dbo2.getClass());\r\n        Assert.assertEquals(dbo.getDatabase().getClass(), dbo2.getDatabase().getClass());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\sqlite\\DBDatabaseDriverSQLiteTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() {\r\n    Connection conn = dbResource.getConnection();\r\n    DBDatabaseDriver driver = dbResource.newDriver();\r\n    CompanyDB db = new CompanyDB();\r\n    db.open(driver, dbResource.getConnection());\r\n    DBSQLScript script = new DBSQLScript();\r\n    db.getCreateDDLScript(db.getDriver(), script);\r\n    script.run(db.getDriver(), dbResource.getConnection(), false);\r\n    DBRecord dep = new DBRecord();\r\n    dep.create(db.DEPARTMENT);\r\n    dep.setValue(db.DEPARTMENT.NAME, \"junit\");\r\n    dep.setValue(db.DEPARTMENT.BUSINESS_UNIT, \"test\");\r\n    dep.update(conn);\r\n    Date date = dep.getDateTime(db.DEPARTMENT.UPDATE_TIMESTAMP);\r\n    assertNotNull(\"Date is null\", date);\r\n    assertTrue(\"No departments\", dep.getInt(db.DEPARTMENT.ID) > 0);\r\n    DBRecord emp = new DBRecord();\r\n    emp.create(db.EMPLOYEE);\r\n    emp.setValue(db.EMPLOYEE.FIRSTNAME, \"junit\");\r\n    emp.setValue(db.EMPLOYEE.LASTNAME, \"test\");\r\n    emp.setValue(db.EMPLOYEE.GENDER, \"m\");\r\n    emp.setValue(db.EMPLOYEE.DEPARTMENT_ID, dep.getInt(db.DEPARTMENT.ID));\r\n    emp.update(conn);\r\n    date = emp.getDateTime(db.EMPLOYEE.UPDATE_TIMESTAMP);\r\n    assertNotNull(\"Date is null\", date);\r\n    assertTrue(\"Employee id O or less\", emp.getInt(db.EMPLOYEE.ID) > 0);\r\n    int id = emp.getInt(db.EMPLOYEE.ID);\r\n    // Update an Employee\r\n    emp = new DBRecord();\r\n    emp.read(db.EMPLOYEE, id, conn);\r\n    // Set\r\n    emp.setValue(db.EMPLOYEE.PHONE_NUMBER, \"123456\");\r\n    emp.update(conn);\r\n    emp = new DBRecord();\r\n    emp.read(db.EMPLOYEE, id, conn);\r\n    assertEquals(\"123456\", emp.getString(db.EMPLOYEE.PHONE_NUMBER));\r\n    script = new DBSQLScript();\r\n    db.getDriver().getDDLScript(DBCmdType.DROP, db.EMPLOYEE, script);\r\n    db.getDriver().getDDLScript(DBCmdType.DROP, db.DEPARTMENT, script);\r\n    script.run(db.getDriver(), conn, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db\\src\\test\\java\\org\\apache\\empire\\db\\sqlite\\DBDatabaseDriverSQLiteTest.java",
+  "methodName" : "testSequence",
+  "sourceCode" : "/**\r\n * See https://issues.apache.org/jira/browse/EMPIREDB-151\r\n */\r\n@Test\r\npublic void testSequence() {\r\n    Connection conn = dbResource.getConnection();\r\n    DBDatabaseDriver driver = dbResource.newDriver();\r\n    SeqDB db = new SeqDB();\r\n    db.open(driver, dbResource.getConnection());\r\n    DBSQLScript script = new DBSQLScript();\r\n    db.getCreateDDLScript(db.getDriver(), script);\r\n    script.run(db.getDriver(), dbResource.getConnection(), false);\r\n    DBRecord data = new DBRecord();\r\n    data.create(db.DATA);\r\n    data.setValue(db.DATA.VALUE, \"test\");\r\n    data.update(conn);\r\n    final Object id = data.getLong(db.DATA.ID);\r\n    DBRecord read = new DBRecord();\r\n    read.read(db.DATA, id, conn);\r\n    assertEquals(\"test\", read.getString(db.DATA.VALUE));\r\n    script = new DBSQLScript();\r\n    db.getDriver().getDDLScript(DBCmdType.DROP, db.DATA, script);\r\n    script.run(db.getDriver(), conn, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db-codegen\\src\\test\\java\\org\\apache\\empire\\db\\codegen\\CodeGenAppTest.java",
+  "methodName" : "testMain",
+  "sourceCode" : "@Test\r\npublic void testMain() {\r\n    String[] args = new String[] { \"src/test/resources/testconfig.xml\" };\r\n    // execute app\r\n    CodeGenerator.main(args);\r\n    // expected files\r\n    File expected = new File(\"target/generated/dbsample/org/apache/empire/db/samples/dbsample/SampleDB.java\");\r\n    assertTrue(\"missing generated code\", expected.exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db-codegen\\src\\test\\java\\org\\apache\\empire\\db\\codegen\\CodeGenAppTest.java",
+  "methodName" : "testMainDefaultTemplateFolderNested",
+  "sourceCode" : "@Test\r\npublic void testMainDefaultTemplateFolderNested() {\r\n    String[] args = new String[] { \"src/test/resources/testconfig_default_template_folder_nested.xml\" };\r\n    CodeGenerator.main(args);\r\n    File expectedFile = new File(\"target/generated/dbsample/org/apache/empire/db/samples/dbsample/SampleDB.java\");\r\n    // the string to be expected within the DB class file\r\n    String expectedContent = \"addColumn(\";\r\n    // this variable will hold the file's whole content\r\n    String fileContent = \"\";\r\n    try {\r\n        FileInputStream fis = new FileInputStream(expectedFile);\r\n        byte[] buff = new byte[fis.available()];\r\n        fis.read(buff);\r\n        fileContent = new String(buff);\r\n        fis.close();\r\n    }// IO Exception can be ignored here\r\n     catch (IOException e) {\r\n    }\r\n    // we expect that there is at least one nested table is within the DB class that has at leas one column.\r\n    assertTrue(\"missing generated code for nested table classes\", fileContent.contains(expectedContent));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db-codegen\\src\\test\\java\\org\\apache\\empire\\db\\codegen\\CodeGenAppTest.java",
+  "methodName" : "testMainUsingTemplateFolder",
+  "sourceCode" : "@Test\r\npublic void testMainUsingTemplateFolder() {\r\n    String[] args = new String[] { \"src/test/resources/testconfig_using_template_folder.xml\" };\r\n    // execute app\r\n    CodeGenerator.main(args);\r\n    // expected files\r\n    File expected = new File(\"target/generated/dbsample/org/apache/empire/db/samples/dbsample/SampleDB.java\");\r\n    assertTrue(\"missing generated code\", expected.exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db-codegen\\src\\test\\java\\org\\apache\\empire\\db\\codegen\\CodeGenAppTest.java",
+  "methodName" : "testMainFailInvalidTemplateFolder",
+  "sourceCode" : "@Test\r\npublic void testMainFailInvalidTemplateFolder() {\r\n    String[] args = new String[] { \"src/test/resources/testconfig_invalid_template_folder.xml\" };\r\n    try {\r\n        CodeGenerator.main(args);\r\n        fail(\"This should fail as the template path is missing\");\r\n    } catch (RuntimeException ex) {\r\n        assertTrue(\"Wrong message\", ex.getMessage().startsWith(\"Provided template folder missing or not readable:\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db-codegen\\src\\test\\java\\org\\apache\\empire\\db\\codegen\\CodeGenParserTest.java",
+  "methodName" : "testLoadDbModel",
+  "sourceCode" : "@Test\r\npublic void testLoadDbModel() {\r\n    final DBDatabase db = parser.loadDbModel();\r\n    final DBTable departments = db.getTable(\"DEPARTMENTS\");\r\n    final DBTable employees = db.getTable(\"EMPLOYEES\");\r\n    assertNotNull(\"Expected DEPARTMENTS table.\", departments);\r\n    assertNotNull(\"Expected EMPLOYEES table.\", employees);\r\n    final List<DBRelation> relations = db.getRelations();\r\n    assertEquals(\"Should have two relations.\", 2, relations.size());\r\n    final DBRelation dbRelation = relations.get(1);\r\n    assertEquals(\"EMPLOYEES_DEPARTMENT_I_FK\", dbRelation.getName());\r\n    final DBReference[] references = dbRelation.getReferences();\r\n    assertEquals(\"Should reference one column.\", 1, references.length);\r\n    final DBReference dbReference = references[0];\r\n    assertEquals(dbReference.getSourceColumn(), employees.getColumn(\"DEPARTMENT_ID\"));\r\n    assertEquals(dbReference.getTargetColumn(), departments.getColumn(\"DEPARTMENT_ID\"));\r\n    final DBColumn salary = employees.getColumn(\"SALARY\");\r\n    assertThat(salary.getDataType(), is(DECIMAL));\r\n    assertThat(salary.getSize(), is(121.212));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db-codegen\\src\\test\\java\\org\\apache\\empire\\db\\codegen\\CodeGenTest.java",
+  "methodName" : "testCodeGen",
+  "sourceCode" : "@Test\r\n@SuppressWarnings(\"serial\")\r\npublic void testCodeGen() {\r\n    CodeGenConfig config = new CodeGenConfig();\r\n    config.init(\"testconfig.xml\", true);\r\n    CodeGenWriter codeGen = new CodeGenWriter(config);\r\n    DBDatabase db = new DBDatabase() {\r\n    };\r\n    List<File> files = codeGen.generateCodeFiles(db);\r\n    assertEquals(4, files.size());\r\n    for (File file : files) {\r\n        System.out.println(file);\r\n    }\r\n    // TODO try to compile the resulting files???\r\n    // Commons jci 1.0 seems not able to handle java 5\r\n    //        List<String> arguments = new ArrayList<String>();\r\n    //        String strFile;\r\n    //        for(File file:files){\r\n    //        \tstrFile = file.getPath().replace(config.getTargetFolder()+\"/\", \"\");\r\n    //            arguments.add(strFile);\r\n    //            System.out.println(strFile);\r\n    //        }\r\n    //        JavaCompiler compiler = new JavaCompilerFactory().createCompiler(\"eclipse\");\r\n    //        JavaCompilerSettings settings = new JavaCompilerSettings();\r\n    //        settings.setSourceVersion(\"1.5\");\r\n    //        settings.setTargetVersion(\"1.5\");\r\n    //        settings.setVerbose(true);\r\n    //        CompilationResult result = compiler.compile(\r\n    //        \t\targuments.toArray(new String[arguments.size()]),\r\n    //        \t\tnew FileResourceReader(new File(config.getTargetFolder())),\r\n    //        \t\tnew FileResourceStore(new File(\"target/compiledsources.test\")),\r\n    //        \t\tgetClass().getClassLoader(),\r\n    //        \t\tsettings);\r\n    //\r\n    //        System.out.println( result.getErrors().length + \" errors\");\r\n    //        for(CompilationProblem problem:result.getErrors()){\r\n    //        \tSystem.out.println( problem);\r\n    //        }\r\n    //        System.out.println( result.getWarnings().length + \" warnings\");\r\n    //        for(CompilationProblem warning:result.getWarnings()){\r\n    //        \tSystem.out.println( warning);\r\n    //        }\r\n    // ONLY for java 6\r\n    //        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();\r\n    //        arguments.add(\"-classpath\");\r\n    //        arguments.add(System.getProperty(\"java.class.path\"));\r\n    //        for(File file:files){\r\n    //            System.out.println(file);\r\n    //            arguments.add(file.getAbsolutePath());\r\n    //        }\r\n    //\r\n    //        int compilationResult = compiler.run(null, null, null, arguments.toArray(new String[arguments.size()]));\r\n    //        assertEquals(\"Compilation Failed\", 0, compilationResult);\r\n}",
+  "annotations" : [ "Test", "SuppressWarnings" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db-codegen\\src\\test\\java\\org\\apache\\empire\\db\\codegen\\util\\DBUtilTest.java",
+  "methodName" : "testCloseResultSet",
+  "sourceCode" : "@Test\r\npublic void testCloseResultSet() throws SQLException {\r\n    // null\r\n    Logger log = Mockito.mock(Logger.class);\r\n    boolean succes = DBUtil.close((ResultSet) null, log);\r\n    assertTrue(succes);\r\n    // normal\r\n    ResultSet rs = Mockito.mock(ResultSet.class);\r\n    boolean succes2 = DBUtil.close(rs, log);\r\n    assertTrue(succes2);\r\n    // exception\r\n    ResultSet rsFail = Mockito.mock(ResultSet.class);\r\n    Exception exception = new SQLException(\"test\");\r\n    Mockito.doThrow(exception).when(rsFail).close();\r\n    boolean succes3 = DBUtil.close(rsFail, log);\r\n    assertFalse(succes3);\r\n    Mockito.verify(log).error(\"The resultset could not be closed!\", exception);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db-codegen\\src\\test\\java\\org\\apache\\empire\\db\\codegen\\util\\FileUtilsTest.java",
+  "methodName" : "testCleanDirectory",
+  "sourceCode" : "@Test\r\npublic void testCleanDirectory() {\r\n    File testChildren = new File(testParent, \"this/is/a/test\");\r\n    boolean success = testChildren.mkdirs();\r\n    assertTrue(\"Could not create test folder\", success);\r\n    FileUtils.cleanDirectory(testParent);\r\n    assertTrue(\"Parent was deleted\", testParent.exists());\r\n    assertEquals(0, testParent.list().length);\r\n    // TODO test with files\r\n    // TODO test fail if file in use\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db-codegen\\src\\test\\java\\org\\apache\\empire\\db\\codegen\\WriterServiceTest.java",
+  "methodName" : "testGetTableClassName",
+  "sourceCode" : "@Test\r\npublic void testGetTableClassName() {\r\n    CodeGenConfig config = new CodeGenConfig();\r\n    WriterService service = new WriterService(config);\r\n    assertEquals(\"TestTable\", service.getTableClassName(\"test_table\"));\r\n    assertEquals(\"TestTable\", service.getTableClassName(\"TEST_TABLE\"));\r\n    assertEquals(\"Testtable\", service.getTableClassName(\"TESTTABLE\"));\r\n    /*\r\n\t\t * Hint: Camel casing can be disabled setting PreserverCharacterCase=true\r\n\t\t */\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db-codegen\\src\\test\\java\\org\\apache\\empire\\db\\codegen\\WriterServiceTest.java",
+  "methodName" : "testGetAccessorName",
+  "sourceCode" : "@Test\r\npublic void testGetAccessorName() {\r\n    CodeGenConfig config = new CodeGenConfig();\r\n    WriterService service = new WriterService(config);\r\n    DBTableColumn col = Mockito.mock(DBTableColumn.class);\r\n    Mockito.when(col.getDataType()).thenReturn(DataType.INTEGER);\r\n    Mockito.when(col.getName()).thenReturn(\"name\");\r\n    assertEquals(\"getName\", service.getAccessorName(col));\r\n    DBTableColumn col2 = Mockito.mock(DBTableColumn.class);\r\n    Mockito.when(col2.getDataType()).thenReturn(DataType.BOOL);\r\n    Mockito.when(col2.getName()).thenReturn(\"name\");\r\n    assertEquals(\"isName\", service.getAccessorName(col2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db-codegen\\src\\test\\java\\org\\apache\\empire\\db\\codegen\\WriterServiceTest.java",
+  "methodName" : "testGetMutatorName",
+  "sourceCode" : "@Test\r\npublic void testGetMutatorName() {\r\n    CodeGenConfig config = new CodeGenConfig();\r\n    WriterService service = new WriterService(config);\r\n    DBTableColumn col = Mockito.mock(DBTableColumn.class);\r\n    Mockito.when(col.getDataType()).thenReturn(DataType.DECIMAL);\r\n    Mockito.when(col.getName()).thenReturn(\"name\");\r\n    assertEquals(\"setName\", service.getMutatorName(col));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db-examples\\empire-db-example-codegen\\src\\test\\java\\org\\apache\\empire\\db\\examples\\codegen\\ValidatePluginRunTest.java",
+  "methodName" : "testTargetFolder",
+  "sourceCode" : "@Test\r\npublic void testTargetFolder() {\r\n    File file = new File(\"target/generated-sources/empiredb\");\r\n    assertTrue(\"No sources generated\", file.exists());\r\n    // TODO add extra validation for the real generated sources\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db-examples\\empire-db-example-codegen\\src\\test\\java\\org\\apache\\empire\\db\\examples\\codegen\\ValidatePluginRunTest.java",
+  "methodName" : "testGeneratedClass",
+  "sourceCode" : "@Test\r\npublic void testGeneratedClass() throws ClassNotFoundException {\r\n    Class<?> cls = Class.forName(\"org.apache.empire.db.example.MyDB\");\r\n    assertNotNull(\"Could not load generated class.\", cls);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Empire-db\\empire-db-examples\\empire-db-example-codegen\\src\\test\\java\\org\\apache\\empire\\db\\examples\\codegen\\ValidatePluginRunTest.java",
+  "methodName" : "useGeneratedCode",
+  "sourceCode" : "@Test\r\npublic void useGeneratedCode() throws Exception {\r\n    System.out.println(\"Opening database...\");\r\n    DBDatabaseDriver driver = new DBDatabaseDriverHSql();\r\n    MyDatabase db = MyDatabase.get();\r\n    db.open(driver, conn);\r\n    System.out.println(\"Createing query command...\");\r\n    Employees EMP = db.EMPLOYEES;\r\n    DBCommand cmd = db.createCommand();\r\n    cmd.select(EMP.EMPLOYEE_ID, EMP.FIRSTNAME);\r\n    int rowCount = 0;\r\n    DBReader reader = new DBReader();\r\n    try {\r\n        System.out.println(\"Executing query:\");\r\n        System.err.println(cmd.getSelect());\r\n        reader.open(cmd, conn);\r\n        System.out.println(\"Reading results:\");\r\n        while (reader.moveNext()) {\r\n            rowCount++;\r\n            System.out.println(reader.getString(EMP.EMPLOYEE_ID) + \"\\t\" + reader.getString(EMP.FIRSTNAME));\r\n        }\r\n        System.out.println(\"Result contained \" + String.valueOf(rowCount) + \" records\");\r\n    } finally {\r\n        reader.close();\r\n    }\r\n    assertEquals(\"We expect 3 rows\", 3, rowCount);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

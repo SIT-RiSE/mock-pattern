@@ -1,0 +1,1548 @@
+[
+  {
+    "rawMockObjectId": 1,
+    "variableName": "original",
+    "variableType": "Reader",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.commons.io.input",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\input\\CloseShieldReaderTest.java",
+      "className": "CloseShieldReaderTest"
+    },
+    "statements": [
+      {
+        "code": "private Reader original;",
+        "line": 37,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "original = spy(new CharSequenceReader(data));",
+        "line": 44,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "BeforeEach"
+          ],
+          "methodRawCode": "@BeforeEach\r\npublic void setUp() {\r\n    data = \"xyz\";\r\n    original = spy(new CharSequenceReader(data));\r\n    shielded = new CloseShieldReader(original);\r\n}"
+        }
+      },
+      {
+        "code": "verify(original, never()).close();",
+        "line": 51,
+        "type": "VERIFICATION",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testClose",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testClose() throws IOException {\r\n    shielded.close();\r\n    verify(original, never()).close();\r\n    final char[] cbuf = new char[10];\r\n    assertEquals(-1, shielded.read(cbuf, 0, 10), \"read(cbuf, off, len)\");\r\n    assertEquals(data.length(), original.read(cbuf, 0, 10), \"read(cbuf, off, len)\");\r\n    assertEquals(data, new String(cbuf, 0, data.length()));\r\n}"
+        }
+      },
+      {
+        "code": "assertEquals(data.length(), original.read(cbuf, 0, 10), \"read(cbuf, off, len)\");",
+        "line": 54,
+        "type": "REFERENCE",
+        "locate": "Test Case",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testClose",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testClose() throws IOException {\r\n    shielded.close();\r\n    verify(original, never()).close();\r\n    final char[] cbuf = new char[10];\r\n    assertEquals(-1, shielded.read(cbuf, 0, 10), \"read(cbuf, off, len)\");\r\n    assertEquals(data.length(), original.read(cbuf, 0, 10), \"read(cbuf, off, len)\");\r\n    assertEquals(data, new String(cbuf, 0, data.length()));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 2,
+    "variableName": "goodIs",
+    "variableType": "ByteArrayInputStream",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.input",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\input\\TeeInputStreamTest.java"
+    },
+    "statements": [
+      {
+        "code": "final ByteArrayInputStream goodIs = mock(ByteArrayInputStream.class);",
+        "line": 124,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCloseBranchIOException",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Tests that the main {@code InputStream} is closed when closing the branch {@code OutputStream} throws an\r\n * exception on {@link TeeInputStream#close()}, if specified to do so.\r\n */\r\n@Test\r\npublic void testCloseBranchIOException() throws Exception {\r\n    final ByteArrayInputStream goodIs = mock(ByteArrayInputStream.class);\r\n    final OutputStream badOs = new YellOnCloseOutputStream();\r\n    final TeeInputStream nonClosingTis = new TeeInputStream(goodIs, badOs, false);\r\n    nonClosingTis.close();\r\n    verify(goodIs).close();\r\n    final TeeInputStream closingTis = new TeeInputStream(goodIs, badOs, true);\r\n    try {\r\n        closingTis.close();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOException e) {\r\n        verify(goodIs, times(2)).close();\r\n    }\r\n}"
+        }
+      },
+      {
+        "code": "verify(goodIs).close();",
+        "line": 129,
+        "type": "VERIFICATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCloseBranchIOException",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Tests that the main {@code InputStream} is closed when closing the branch {@code OutputStream} throws an\r\n * exception on {@link TeeInputStream#close()}, if specified to do so.\r\n */\r\n@Test\r\npublic void testCloseBranchIOException() throws Exception {\r\n    final ByteArrayInputStream goodIs = mock(ByteArrayInputStream.class);\r\n    final OutputStream badOs = new YellOnCloseOutputStream();\r\n    final TeeInputStream nonClosingTis = new TeeInputStream(goodIs, badOs, false);\r\n    nonClosingTis.close();\r\n    verify(goodIs).close();\r\n    final TeeInputStream closingTis = new TeeInputStream(goodIs, badOs, true);\r\n    try {\r\n        closingTis.close();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOException e) {\r\n        verify(goodIs, times(2)).close();\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 3,
+    "variableName": "goodOs",
+    "variableType": "ByteArrayOutputStream",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.input",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\input\\TeeInputStreamTest.java"
+    },
+    "statements": [
+      {
+        "code": "final ByteArrayOutputStream goodOs = mock(ByteArrayOutputStream.class);",
+        "line": 147,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCloseMainIOException",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Tests that the branch {@code OutputStream} is closed when closing the main {@code InputStream} throws an\r\n * exception on {@link TeeInputStream#close()}, if specified to do so.\r\n */\r\n@Test\r\npublic void testCloseMainIOException() throws IOException {\r\n    final InputStream badIs = new YellOnCloseInputStream();\r\n    final ByteArrayOutputStream goodOs = mock(ByteArrayOutputStream.class);\r\n    final TeeInputStream nonClosingTis = new TeeInputStream(badIs, goodOs, false);\r\n    try {\r\n        nonClosingTis.close();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOException e) {\r\n        verify(goodOs, never()).close();\r\n    }\r\n    final TeeInputStream closingTis = new TeeInputStream(badIs, goodOs, true);\r\n    try {\r\n        closingTis.close();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOException e) {\r\n        verify(goodOs).close();\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 4,
+    "variableName": "goodR",
+    "variableType": "StringReader",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.input",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\input\\TeeReaderTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringReader goodR = mock(StringReader.class);",
+        "line": 61,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCloseBranchIOException",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Tests that the main {@code Reader} is closed when closing the branch {@code Writer} throws an\r\n * exception on {@link TeeReader#close()}, if specified to do so.\r\n */\r\n@Test\r\npublic void testCloseBranchIOException() throws Exception {\r\n    final StringReader goodR = mock(StringReader.class);\r\n    final Writer badW = new YellOnCloseWriter();\r\n    final TeeReader nonClosingTr = new TeeReader(goodR, badW, false);\r\n    nonClosingTr.close();\r\n    verify(goodR).close();\r\n    final TeeReader closingTr = new TeeReader(goodR, badW, true);\r\n    try {\r\n        closingTr.close();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOException e) {\r\n        verify(goodR, times(2)).close();\r\n    }\r\n}"
+        }
+      },
+      {
+        "code": "verify(goodR).close();",
+        "line": 66,
+        "type": "VERIFICATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCloseBranchIOException",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Tests that the main {@code Reader} is closed when closing the branch {@code Writer} throws an\r\n * exception on {@link TeeReader#close()}, if specified to do so.\r\n */\r\n@Test\r\npublic void testCloseBranchIOException() throws Exception {\r\n    final StringReader goodR = mock(StringReader.class);\r\n    final Writer badW = new YellOnCloseWriter();\r\n    final TeeReader nonClosingTr = new TeeReader(goodR, badW, false);\r\n    nonClosingTr.close();\r\n    verify(goodR).close();\r\n    final TeeReader closingTr = new TeeReader(goodR, badW, true);\r\n    try {\r\n        closingTr.close();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOException e) {\r\n        verify(goodR, times(2)).close();\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 5,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.input",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\input\\TeeReaderTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 84,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCloseMainIOException",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Tests that the branch {@code Writer} is closed when closing the main {@code Reader} throws an\r\n * exception on {@link TeeReader#close()}, if specified to do so.\r\n */\r\n@Test\r\npublic void testCloseMainIOException() throws IOException {\r\n    final Reader badR = new YellOnCloseReader();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeReader nonClosingTr = new TeeReader(badR, goodW, false);\r\n    try {\r\n        nonClosingTr.close();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOException e) {\r\n        verify(goodW, never()).close();\r\n    }\r\n    final TeeReader closingTr = new TeeReader(badR, goodW, true);\r\n    try {\r\n        closingTr.close();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOException e) {\r\n        //Assert.assertTrue(goodW.closed);\r\n        verify(goodW).close();\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 6,
+    "variableName": "original",
+    "variableType": "StringBuilderWriter",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\CloseShieldWriterTest.java",
+      "className": "CloseShieldWriterTest"
+    },
+    "statements": [
+      {
+        "code": "private StringBuilderWriter original;",
+        "line": 36,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "original = spy(new StringBuilderWriter());",
+        "line": 42,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "BeforeEach"
+          ],
+          "methodRawCode": "@BeforeEach\r\npublic void setUp() {\r\n    original = spy(new StringBuilderWriter());\r\n    shielded = new CloseShieldWriter(original);\r\n}"
+        }
+      },
+      {
+        "code": "verify(original, never()).close();",
+        "line": 49,
+        "type": "VERIFICATION",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testClose",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testClose() throws IOException {\r\n    shielded.close();\r\n    verify(original, never()).close();\r\n    try {\r\n        shielded.write('x');\r\n        fail(\"write(c)\");\r\n    } catch (final IOException ignore) {\r\n        // expected\r\n    }\r\n    original.write('y');\r\n    assertEquals(1, original.getBuilder().length());\r\n    assertEquals('y', original.toString().charAt(0));\r\n}"
+        }
+      },
+      {
+        "code": "original.write('y');",
+        "line": 56,
+        "type": "REFERENCE",
+        "locate": "Test Case",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testClose",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testClose() throws IOException {\r\n    shielded.close();\r\n    verify(original, never()).close();\r\n    try {\r\n        shielded.write('x');\r\n        fail(\"write(c)\");\r\n    } catch (final IOException ignore) {\r\n        // expected\r\n    }\r\n    original.write('y');\r\n    assertEquals(1, original.getBuilder().length());\r\n    assertEquals('y', original.toString().charAt(0));\r\n}"
+        }
+      },
+      {
+        "code": "assertEquals(1, original.getBuilder().length());",
+        "line": 57,
+        "type": "REFERENCE",
+        "locate": "Test Case",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testClose",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testClose() throws IOException {\r\n    shielded.close();\r\n    verify(original, never()).close();\r\n    try {\r\n        shielded.write('x');\r\n        fail(\"write(c)\");\r\n    } catch (final IOException ignore) {\r\n        // expected\r\n    }\r\n    original.write('y');\r\n    assertEquals(1, original.getBuilder().length());\r\n    assertEquals('y', original.toString().charAt(0));\r\n}"
+        }
+      },
+      {
+        "code": "assertEquals('y', original.toString().charAt(0));",
+        "line": 58,
+        "type": "REFERENCE",
+        "locate": "Test Case",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testClose",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testClose() throws IOException {\r\n    shielded.close();\r\n    verify(original, never()).close();\r\n    try {\r\n        shielded.write('x');\r\n        fail(\"write(c)\");\r\n    } catch (final IOException ignore) {\r\n        // expected\r\n    }\r\n    original.write('y');\r\n    assertEquals(1, original.getBuilder().length());\r\n    assertEquals('y', original.toString().charAt(0));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 7,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 42,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnAppendChar1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnAppendChar1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(badW, goodW, null);\r\n    final char data = 'A';\r\n    try {\r\n        tw.append(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).append(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 8,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 58,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnAppendChar2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnAppendChar2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(goodW, badW, null);\r\n    final char data = 'A';\r\n    try {\r\n        tw.append(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).append(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 9,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 74,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnAppendCharSequence1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnAppendCharSequence1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(badW, goodW, null);\r\n    final CharSequence data = \"A\";\r\n    try {\r\n        tw.append(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).append(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 10,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 90,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnAppendCharSequence2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnAppendCharSequence2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(goodW, badW, null);\r\n    final CharSequence data = \"A\";\r\n    try {\r\n        tw.append(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).append(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 11,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 106,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnAppendCharSequenceIntInt1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnAppendCharSequenceIntInt1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(badW, goodW, null);\r\n    final CharSequence data = \"A\";\r\n    try {\r\n        tw.append(data, 0, 0);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).append(data, 0, 0);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 12,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 122,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnAppendCharSequenceIntInt2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnAppendCharSequenceIntInt2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(goodW, badW, null);\r\n    final CharSequence data = \"A\";\r\n    try {\r\n        tw.append(data, 0, 0);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).append(data, 0, 0);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 13,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 138,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnClose1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnClose1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(badW, goodW, null);\r\n    try {\r\n        tw.close();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).close();\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 14,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 153,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnClose2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnClose2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(goodW, badW, null);\r\n    try {\r\n        tw.close();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).close();\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 15,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 168,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnFlush1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnFlush1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(badW, goodW, null);\r\n    try {\r\n        tw.flush();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).flush();\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 16,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 183,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnFlush2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnFlush2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(goodW, badW, null);\r\n    try {\r\n        tw.flush();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).flush();\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 17,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 198,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteCharArray1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteCharArray1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(badW, goodW, null);\r\n    final char[] data = new char[] { 'a' };\r\n    try {\r\n        tw.write(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 18,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 214,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteCharArray2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteCharArray2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(goodW, badW, null);\r\n    final char[] data = new char[] { 'a' };\r\n    try {\r\n        tw.write(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 19,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 230,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteCharArrayIntInt1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteCharArrayIntInt1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(badW, goodW, null);\r\n    final char[] data = new char[] { 'a' };\r\n    try {\r\n        tw.write(data, 0, 0);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data, 0, 0);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 20,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 246,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteCharArrayIntInt2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteCharArrayIntInt2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(goodW, badW, null);\r\n    final char[] data = new char[] { 'a' };\r\n    try {\r\n        tw.write(data, 0, 0);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data, 0, 0);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 21,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 262,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteInt1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteInt1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(badW, goodW, null);\r\n    final int data = 32;\r\n    try {\r\n        tw.write(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 22,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 278,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteInt2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteInt2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(goodW, badW, null);\r\n    try {\r\n        tw.write(32);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(32);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 23,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 294,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteString1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteString1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(badW, goodW, null);\r\n    final String data = \"A\";\r\n    try {\r\n        tw.write(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 24,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 310,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteString2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteString2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(goodW, badW, null);\r\n    final String data = \"A\";\r\n    try {\r\n        tw.write(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 25,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 327,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteStringIntInt1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteStringIntInt1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(badW, goodW, null);\r\n    final String data = \"A\";\r\n    try {\r\n        tw.write(data, 0, 0);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data, 0, 0);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 26,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 343,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteStringIntInt2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteStringIntInt2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(goodW, badW, null);\r\n    final String data = \"A\";\r\n    try {\r\n        tw.write(data, 0, 0);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data, 0, 0);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 27,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\ProxyCollectionWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 360,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCollectionCloseBranchIOException",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCollectionCloseBranchIOException() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(Arrays.asList(goodW, badW, null));\r\n    try {\r\n        tw.close();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).close();\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 28,
+    "variableName": "goodOs",
+    "variableType": "ByteArrayOutputStream",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeOutputStreamTest.java"
+    },
+    "statements": [
+      {
+        "code": "final ByteArrayOutputStream goodOs = mock(ByteArrayOutputStream.class);",
+        "line": 43,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testIOExceptionOnCloseBranch",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Tests that the branch {@code OutputStream} is closed when closing the main {@code OutputStream} throws an\r\n * exception on {@link TeeOutputStream#close()}.\r\n */\r\n@Test\r\npublic void testIOExceptionOnCloseBranch() throws IOException {\r\n    final OutputStream badOs = new YellOnCloseOutputStream();\r\n    final ByteArrayOutputStream goodOs = mock(ByteArrayOutputStream.class);\r\n    final TeeOutputStream tos = new TeeOutputStream(goodOs, badOs);\r\n    try {\r\n        tos.close();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOException e) {\r\n        verify(goodOs).close();\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 29,
+    "variableName": "goodOs",
+    "variableType": "ByteArrayOutputStream",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeOutputStreamTest.java"
+    },
+    "statements": [
+      {
+        "code": "final ByteArrayOutputStream goodOs = mock(ByteArrayOutputStream.class);",
+        "line": 60,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testIOExceptionOnClose",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Tests that the main {@code OutputStream} is closed when closing the branch {@code OutputStream} throws an\r\n * exception on {@link TeeOutputStream#close()}.\r\n */\r\n@Test\r\npublic void testIOExceptionOnClose() throws IOException {\r\n    final OutputStream badOs = new YellOnCloseOutputStream();\r\n    final ByteArrayOutputStream goodOs = mock(ByteArrayOutputStream.class);\r\n    final TeeOutputStream tos = new TeeOutputStream(badOs, goodOs);\r\n    try {\r\n        tos.close();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOException e) {\r\n        verify(goodOs).close();\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 30,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 42,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnAppendChar1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnAppendChar1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(badW, goodW, null);\r\n    final char data = 'A';\r\n    try {\r\n        tw.append(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).append(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 31,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 58,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnAppendChar2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnAppendChar2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final ProxyCollectionWriter tw = new ProxyCollectionWriter(goodW, badW, null);\r\n    final char data = 'A';\r\n    try {\r\n        tw.append(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).append(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 32,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 74,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnAppendCharSequence1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnAppendCharSequence1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(badW, goodW, null);\r\n    final String data = \"A\";\r\n    try {\r\n        tw.append(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).append(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 33,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 90,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnAppendCharSequence2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnAppendCharSequence2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(goodW, badW, null);\r\n    final String data = \"A\";\r\n    try {\r\n        tw.append(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).append(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 34,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 106,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnAppendCharSequenceIntInt1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnAppendCharSequenceIntInt1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(badW, goodW, null);\r\n    final String data = \"A\";\r\n    try {\r\n        tw.append(data, 0, 0);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).append(data, 0, 0);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 35,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 122,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnAppendCharSequenceIntInt2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnAppendCharSequenceIntInt2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(goodW, badW, null);\r\n    final String data = \"A\";\r\n    try {\r\n        tw.append(data, 0, 0);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).append(data, 0, 0);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 36,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 138,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnClose1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnClose1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(badW, goodW, null);\r\n    try {\r\n        tw.close();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).close();\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 37,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 153,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnClose2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnClose2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(goodW, badW, null);\r\n    try {\r\n        tw.close();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).close();\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 38,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 168,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnFlush1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnFlush1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(badW, goodW, null);\r\n    try {\r\n        tw.flush();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).flush();\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 39,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 183,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnFlush2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnFlush2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(goodW, badW, null);\r\n    try {\r\n        tw.flush();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).flush();\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 40,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 198,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteCharArray1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteCharArray1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(badW, goodW, null);\r\n    final char[] data = new char[] { 'a' };\r\n    try {\r\n        tw.write(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 41,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 214,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteCharArray2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteCharArray2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(goodW, badW, null);\r\n    final char[] data = new char[] { 'a' };\r\n    try {\r\n        tw.write(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 42,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 230,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteCharArrayIntInt1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteCharArrayIntInt1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(badW, goodW, null);\r\n    final char[] data = new char[] { 'a' };\r\n    try {\r\n        tw.write(data, 0, 0);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data, 0, 0);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 43,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 246,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteCharArrayIntInt2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteCharArrayIntInt2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(goodW, badW, null);\r\n    final char[] data = new char[] { 'a' };\r\n    try {\r\n        tw.write(data, 0, 0);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data, 0, 0);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 44,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 262,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteInt1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteInt1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(badW, goodW, null);\r\n    final int data = 32;\r\n    try {\r\n        tw.write(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 45,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 278,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteInt2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteInt2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(goodW, badW, null);\r\n    try {\r\n        tw.write(32);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(32);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 46,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 294,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteString1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteString1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(badW, goodW, null);\r\n    final String data = \"A\";\r\n    try {\r\n        tw.write(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 47,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 310,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteString2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteString2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(goodW, badW, null);\r\n    final String data = \"A\";\r\n    try {\r\n        tw.write(data);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 48,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 327,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteStringIntInt1",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteStringIntInt1() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(badW, goodW, null);\r\n    final String data = \"A\";\r\n    try {\r\n        tw.write(data, 0, 0);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data, 0, 0);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 49,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 343,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testArrayIOExceptionOnWriteStringIntInt2",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testArrayIOExceptionOnWriteStringIntInt2() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(goodW, badW, null);\r\n    final String data = \"A\";\r\n    try {\r\n        tw.write(data, 0, 0);\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).write(data, 0, 0);\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 50,
+    "variableName": "goodW",
+    "variableType": "StringWriter",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.commons.io.output",
+      "filePath": "C:\\Java_projects\\temp_projects\\Commons-IO\\src\\test\\java\\org\\apache\\commons\\io\\output\\TeeWriterTest.java"
+    },
+    "statements": [
+      {
+        "code": "final StringWriter goodW = mock(StringWriter.class);",
+        "line": 360,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCollectionCloseBranchIOException",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCollectionCloseBranchIOException() throws IOException {\r\n    final Writer badW = new BrokenWriter();\r\n    final StringWriter goodW = mock(StringWriter.class);\r\n    final TeeWriter tw = new TeeWriter(Arrays.asList(goodW, badW, null));\r\n    try {\r\n        tw.close();\r\n        fail(\"Expected \" + IOException.class.getName());\r\n    } catch (final IOExceptionList e) {\r\n        verify(goodW).close();\r\n        assertEquals(1, e.getCauseList().size());\r\n        assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());\r\n    }\r\n}"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,577 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestAbstractThriftMojo.java",
+  "methodName" : "testMakeThriftPathFromJars",
+  "sourceCode" : "@Test\r\npublic void testMakeThriftPathFromJars() throws Throwable {\r\n    final File temporaryThriftFileDirectory = testRootDir;\r\n    // The SharedIdl.jar file contains the same idl/shared.thrift and idl/tutorial.thrift hierarchy\r\n    // used by other tests. It's used here to represent a dependency of the project maven is building,\r\n    // one that is contributing .thrift IDL files as well as any other artifacts.\r\n    final Iterable<File> classpathElementFiles = Lists.newArrayList(new File(\"target/SharedIdl.jar\"));\r\n    final Set<File> thriftDirectories = mojo.makeThriftPathFromJars(temporaryThriftFileDirectory, classpathElementFiles);\r\n    // The results should be a path to a directory named after the JAR itself (assuming no path hashing,\r\n    // but see below for a separate test of that) representing the root of a hierarchy containing thrift\r\n    // files, suitable for providing to the thrift compiler as an include directory. In this case, that\r\n    // means it points to the directory containing the \"idl\" hierarchy rather than to the idl directory\r\n    // itself.\r\n    final Set<File> expected = Sets.newHashSet(new File(testRootDir, \"target/SharedIdl.jar\"));\r\n    assertEquals(\"makeThriftPathFromJars should return thrift IDL base path from within JAR\", expected, thriftDirectories);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestAbstractThriftMojo.java",
+  "methodName" : "testTruncatePath",
+  "sourceCode" : "@Test\r\npublic void testTruncatePath() throws Throwable {\r\n    // JAR path is unrelated to maven repo, and should be unchanged\r\n    assertEquals(\"/path/to/somejar.jar\", mojo.truncatePath(\"/path/to/somejar.jar\"));\r\n    // JAR path is within maven repo, and should be made relative to the repo\r\n    assertEquals(\"path/to/somejar.jar\", mojo.truncatePath(\"/test/maven/repo/basedir/path/to/somejar.jar\"));\r\n    // JAR path contains forward slashes that should be normalized\r\n    assertEquals(\"/path/to/somejar.jar\", mojo.truncatePath(\"\\\\path\\\\to\\\\somejar.jar\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestAbstractThriftMojo.java",
+  "methodName" : "testTruncatePathWithDependentPathHashing",
+  "sourceCode" : "@Test\r\npublic void testTruncatePathWithDependentPathHashing() throws Throwable {\r\n    mojo.setHashDependentPaths(true);\r\n    // hashDependentPaths set to true, the JAR path is immediately hashed (MD5) and converted to a hex string\r\n    assertEquals(\"1c85950987b23493462cf3c261d9510a\", mojo.truncatePath(\"/path/to/somejar.jar\"));\r\n    assertEquals(\"39fc2b4c34cb6cb0da38bed5d8b5fc67\", mojo.truncatePath(\"/test/maven/repo/basedir/path/to/somejar.jar\"));\r\n    assertEquals(\"25b6924f5b0e19486d0ff88448e999d5\", mojo.truncatePath(\"\\\\path\\\\to\\\\somejar.jar\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestThrift.java",
+  "methodName" : "testThriftCompile",
+  "sourceCode" : "@Test\r\npublic void testThriftCompile() throws Exception {\r\n    executeThriftCompile();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestThrift.java",
+  "methodName" : "testThriftCompileWithGeneratorOption",
+  "sourceCode" : "@Test\r\npublic void testThriftCompileWithGeneratorOption() throws Exception {\r\n    builder.setGenerator(\"java:private_members\");\r\n    executeThriftCompile();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestThrift.java",
+  "methodName" : "testThriftMultipleFileCompile",
+  "sourceCode" : "@Test\r\npublic void testThriftMultipleFileCompile() throws Exception {\r\n    final File sharedThrift = new File(idlDir, \"shared.thrift\");\r\n    final File tutorialThrift = new File(idlDir, \"tutorial.thrift\");\r\n    builder.addThriftFile(sharedThrift);\r\n    builder.addThriftFile(tutorialThrift);\r\n    final Thrift thrift = builder.build();\r\n    assertTrue(\"File not found: shared.thrift\", sharedThrift.exists());\r\n    assertFalse(\"gen-java directory should not exist\", genJavaDir.exists());\r\n    // execute the compile\r\n    final int result = thrift.compile();\r\n    assertEquals(0, result);\r\n    assertFalse(\"gen-java directory was not removed\", genJavaDir.exists());\r\n    assertTrue(\"generated java code doesn't exist\", new File(testRootDir, \"shared/SharedService.java\").exists());\r\n    assertTrue(\"generated java code doesn't exist\", new File(testRootDir, \"tutorial/InvalidOperation.java\").exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestThrift.java",
+  "methodName" : "testBadCompile",
+  "sourceCode" : "@Test\r\npublic void testBadCompile() throws Exception {\r\n    final File thriftFile = new File(testRootDir, \"missing.thrift\");\r\n    builder.addThriftPathElement(testRootDir);\r\n    // Hacking around checks in addThrift file.\r\n    assertTrue(thriftFile.createNewFile());\r\n    builder.addThriftFile(thriftFile);\r\n    assertTrue(thriftFile.delete());\r\n    final Thrift thrift = builder.build();\r\n    assertTrue(!thriftFile.exists());\r\n    assertFalse(\"gen-java directory should not exist\", genJavaDir.exists());\r\n    // execute the compile\r\n    final int result = thrift.compile();\r\n    assertEquals(1, result);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestThrift.java",
+  "methodName" : "testFileInPathPreCondition",
+  "sourceCode" : "@Test\r\npublic void testFileInPathPreCondition() throws Exception {\r\n    final File thriftFile = new File(testRootDir, \"missing.thrift\");\r\n    // Hacking around checks in addThrift file.\r\n    assertTrue(thriftFile.createNewFile());\r\n    try {\r\n        builder.addThriftFile(thriftFile);\r\n        fail(\"Expected IllegalStateException\");\r\n    } catch (IllegalStateException e) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\EnumCacheTest.java",
+  "methodName" : "testArgChecks",
+  "sourceCode" : "@Test\r\npublic void testArgChecks() {\r\n    EnumCache cache = new EnumCache();\r\n    // Should not throw.\r\n    cache.get(TestEnum.class, 0);\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'enumClass' must not be null\", () -> cache.get(null, 1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\EnumCacheTest.java",
+  "methodName" : "testGet",
+  "sourceCode" : "@Test\r\npublic void testGet() {\r\n    EnumCache cache = new EnumCache();\r\n    assertEquals(TestEnum.Alice, cache.get(TestEnum.class, -1));\r\n    assertEquals(TestEnum.Bob, cache.get(TestEnum.class, 0));\r\n    assertEquals(TestEnum.Charlie, cache.get(TestEnum.class, 1));\r\n    assertEquals(NotEnum.Alice, cache.get(NotEnum.class, -11));\r\n    assertEquals(NotEnum.Bob, cache.get(NotEnum.class, 10));\r\n    assertEquals(NotEnum.Charlie, cache.get(NotEnum.class, 11));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\EnumCacheTest.java",
+  "methodName" : "testGetInvalid",
+  "sourceCode" : "@Test\r\npublic void testGetInvalid() {\r\n    EnumCache cache = new EnumCache();\r\n    assertNull(cache.get(TestEnum.class, 42));\r\n    assertNull(cache.get(NotEnum.class, 42));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\PartialThriftComparerTest.java",
+  "methodName" : "testCompareSimple",
+  "sourceCode" : "@Test\r\npublic void testCompareSimple() throws TException, IOException {\r\n    TestStruct ts1 = testData.createTestStruct(1, 1);\r\n    assertTrue(ts1.isSetI16Field());\r\n    assertTrue(ts1.isSetI32Field());\r\n    byte[] bytesBinary = serde.serializeBinary(ts1);\r\n    byte[] bytesCompact = serde.serializeCompact(ts1);\r\n    List<String> fieldNames = Arrays.asList(\"i32Field\");\r\n    TDeserializer partialBinaryDeser = new TDeserializer(TestStruct.class, fieldNames, new TBinaryProtocol.Factory());\r\n    TDeserializer partialCompactDeser = new TDeserializer(TestStruct.class, fieldNames, new TCompactProtocol.Factory());\r\n    ThriftMetadata.ThriftStruct metadata = partialBinaryDeser.getMetadata();\r\n    PartialThriftComparer comparer = new PartialThriftComparer(metadata);\r\n    StringBuilder sb = new StringBuilder();\r\n    TestStruct ts2 = (TestStruct) partialBinaryDeser.partialDeserializeObject(bytesBinary);\r\n    if (!comparer.areEqual(ts1, ts2, sb)) {\r\n        fail(sb.toString());\r\n    }\r\n    ts2 = (TestStruct) partialCompactDeser.partialDeserializeObject(bytesCompact);\r\n    if (!comparer.areEqual(ts1, ts2, sb)) {\r\n        fail(sb.toString());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\TFieldDataTest.java",
+  "methodName" : "testEncodeStop",
+  "sourceCode" : "@Test\r\npublic void testEncodeStop() {\r\n    TField field = new TField(\"\", TType.STOP, (short) 0);\r\n    int data = TFieldData.encode(TType.STOP);\r\n    assertEquals(field.type, TFieldData.getType(data));\r\n    assertEquals(field.id, TFieldData.getId(data));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\TFieldDataTest.java",
+  "methodName" : "testEncodeRest",
+  "sourceCode" : "@Test\r\npublic void testEncodeRest() {\r\n    for (byte type = 1; type <= 16; type++) {\r\n        for (short id = 0; id < Short.MAX_VALUE; id++) {\r\n            TField field = new TField(\"\", type, id);\r\n            int data = TFieldData.encode(type, id);\r\n            assertEquals(field.type, TFieldData.getType(data));\r\n            assertEquals(field.id, TFieldData.getId(data));\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ThriftFieldTest.java",
+  "methodName" : "testArgChecks",
+  "sourceCode" : "@Test\r\npublic void testArgChecks() {\r\n    ThriftField test;\r\n    List<ThriftField> testFields;\r\n    // Should not throw.\r\n    test = new ThriftField(\"foo\");\r\n    test = new ThriftField(\"foo\", Arrays.asList(new ThriftField(\"bar\")));\r\n    testFields = ThriftField.fromNames(Arrays.asList(\"foo\"));\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'name' must not be null\", () -> new ThriftField(null, Collections.emptyList()));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'fields' must not be null\", () -> new ThriftField(\"foo\", null));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'fieldNames' must not be null\", () -> ThriftField.fromNames(null));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'fieldNames' must have at least one element\", () -> ThriftField.fromNames(Collections.emptyList()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ThriftFieldTest.java",
+  "methodName" : "testFromNames",
+  "sourceCode" : "@Test\r\npublic void testFromNames() {\r\n    List<String> fieldNames = Arrays.asList(\"f1\", \"f2.f21\", \"f3.f31.f311\", \"f3.f32.f321\", \"f3.f32.f322\");\r\n    List<ThriftField> testFields = ThriftField.fromNames(fieldNames);\r\n    assertEquals(3, testFields.size());\r\n    ThriftField f1 = testFields.get(0);\r\n    ThriftField f2 = testFields.get(1);\r\n    ThriftField f3 = testFields.get(2);\r\n    assertEquals(\"f1\", f1.name);\r\n    assertEquals(\"f2\", f2.name);\r\n    assertEquals(\"f3\", f3.name);\r\n    assertEquals(0, f1.fields.size());\r\n    assertEquals(1, f2.fields.size());\r\n    assertEquals(2, f3.fields.size());\r\n    ThriftField f21 = f2.fields.get(0);\r\n    ThriftField f31 = f3.fields.get(0);\r\n    ThriftField f32 = f3.fields.get(1);\r\n    assertEquals(\"f21\", f21.name);\r\n    assertEquals(\"f31\", f31.name);\r\n    assertEquals(\"f32\", f32.name);\r\n    assertEquals(0, f21.fields.size());\r\n    assertEquals(1, f31.fields.size());\r\n    assertEquals(2, f32.fields.size());\r\n    ThriftField f311 = f31.fields.get(0);\r\n    ThriftField f321 = f32.fields.get(0);\r\n    ThriftField f322 = f32.fields.get(1);\r\n    assertEquals(\"f311\", f311.name);\r\n    assertEquals(\"f321\", f321.name);\r\n    assertEquals(\"f322\", f322.name);\r\n    assertEquals(0, f311.fields.size());\r\n    assertEquals(0, f321.fields.size());\r\n    assertEquals(0, f322.fields.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ThriftFieldTest.java",
+  "methodName" : "testEquality",
+  "sourceCode" : "@Test\r\npublic void testEquality() {\r\n    List<String> fieldNames = Arrays.asList(\"f1\", \"f2.f21\", \"f3.f31.f311\", \"f3.f32.f321\", \"f3.f32.f322\");\r\n    List<ThriftField> testFields = ThriftField.fromNames(fieldNames);\r\n    List<ThriftField> testFields2 = testFields;\r\n    assertSame(testFields, testFields2);\r\n    assertEquals(testFields, testFields2);\r\n    List<ThriftField> testFields3 = ThriftField.fromNames(fieldNames);\r\n    assertNotSame(testFields, testFields3);\r\n    assertEquals(testFields, testFields3);\r\n    assertEquals(testFields.hashCode(), testFields3.hashCode());\r\n    List<String> fieldNamesDiff = Arrays.asList(\"f1\", \"f2.f21\", \"f3.f31.f311\", \"f3.f32.f323\", \"f3.f32.f322\");\r\n    List<ThriftField> testFields4 = ThriftField.fromNames(fieldNamesDiff);\r\n    assertNotSame(testFields, testFields4);\r\n    assertNotEquals(testFields, testFields4);\r\n    assertNotEquals(testFields.hashCode(), testFields4.hashCode());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ThriftMetadataTest.java",
+  "methodName" : "testArgChecks",
+  "sourceCode" : "@Test\r\npublic void testArgChecks() {\r\n    // Should not throw.\r\n    List<ThriftField> testFields = ThriftField.fromNames(Arrays.asList(\"byteField\"));\r\n    ThriftMetadata.ThriftStruct.fromFields(TestStruct.class, testFields);\r\n    // Verify it throws correctly.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'clasz' must not be null\", () -> ThriftMetadata.ThriftStruct.fromFields(null, testFields));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'fields' must not be null\", () -> ThriftMetadata.ThriftStruct.fromFields(TestStruct.class, null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ThriftMetadataTest.java",
+  "methodName" : "testThriftStructOf",
+  "sourceCode" : "@Test\r\npublic void testThriftStructOf() {\r\n    ThriftMetadata.ThriftStruct testStruct = ThriftMetadata.ThriftStruct.of(TestStruct.class);\r\n    assertEquals(45, testStruct.fields.keySet().size());\r\n    validateFieldMetadata(testStruct, 1, \"byteField\", TType.BYTE);\r\n    validateFieldMetadata(testStruct, 2, \"i16Field\", TType.I16);\r\n    validateFieldMetadata(testStruct, 3, \"i32Field\", TType.I32);\r\n    validateFieldMetadata(testStruct, 4, \"i64Field\", TType.I64);\r\n    validateFieldMetadata(testStruct, 5, \"doubleField\", TType.DOUBLE);\r\n    validateFieldMetadata(testStruct, 6, \"stringField\", TType.STRING);\r\n    validateFieldMetadata(testStruct, 7, \"enumField\", TType.ENUM);\r\n    validateFieldMetadata(testStruct, 8, \"binaryField\", TType.STRING);\r\n    validateListFieldMetadata(testStruct, 10, \"byteList\", TType.BYTE);\r\n    validateSetFieldMetadata(testStruct, 35, \"stringSet\", TType.STRING);\r\n    validateMapFieldMetadata(testStruct, 61, \"binaryMap\", TType.I32, TType.STRING);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ThriftMetadataTest.java",
+  "methodName" : "testUnion",
+  "sourceCode" : "@Test\r\npublic void testUnion() {\r\n    ThriftMetadata.ThriftStruct structWithUnions = ThriftMetadata.ThriftStruct.of(StructWithUnions.class);\r\n    validateBasicFieldMetadata(structWithUnions, StructWithUnions.class, 1, \"intValue\");\r\n    validateBasicFieldMetadata(structWithUnions, StructWithUnions.class, 2, \"smallStruct\");\r\n    validateBasicFieldMetadata(structWithUnions, StructWithUnions.class, 3, \"simpleUnion\");\r\n    validateBasicFieldMetadata(structWithUnions, StructWithUnions.class, 4, \"unionList\");\r\n    validateBasicFieldMetadata(structWithUnions, StructWithUnions.class, 5, \"unionSet\");\r\n    validateBasicFieldMetadata(structWithUnions, StructWithUnions.class, 6, \"keyUnionMap\");\r\n    validateBasicFieldMetadata(structWithUnions, StructWithUnions.class, 7, \"valUnionMap\");\r\n    validateBasicFieldMetadata(structWithUnions, StructWithUnions.class, 8, \"unionMap\");\r\n    ThriftMetadata.ThriftStructBase smallStructMetadata = (ThriftMetadata.ThriftStructBase) structWithUnions.fields.get(2);\r\n    assertFalse(smallStructMetadata.isUnion());\r\n    ThriftMetadata.ThriftStructBase simpleUnionMetadata = (ThriftMetadata.ThriftStructBase) structWithUnions.fields.get(3);\r\n    assertTrue(simpleUnionMetadata.isUnion());\r\n    ThriftMetadata.ThriftList unionListMetadata = (ThriftMetadata.ThriftList) structWithUnions.fields.get(4);\r\n    assertTrue(unionListMetadata.hasUnion());\r\n    ThriftMetadata.ThriftSet unionSetMetadata = (ThriftMetadata.ThriftSet) structWithUnions.fields.get(5);\r\n    assertTrue(unionSetMetadata.hasUnion());\r\n    ThriftMetadata.ThriftMap keyUnionMapMetadata = (ThriftMetadata.ThriftMap) structWithUnions.fields.get(6);\r\n    assertTrue(keyUnionMapMetadata.hasUnion());\r\n    ThriftMetadata.ThriftMap valUnionMapMetadata = (ThriftMetadata.ThriftMap) structWithUnions.fields.get(7);\r\n    assertTrue(valUnionMapMetadata.hasUnion());\r\n    ThriftMetadata.ThriftMap unionMapMetadata = (ThriftMetadata.ThriftMap) structWithUnions.fields.get(8);\r\n    assertTrue(unionMapMetadata.hasUnion());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ThriftStructProcessorTest.java",
+  "methodName" : "testStruct",
+  "sourceCode" : "@Test\r\npublic void testStruct() throws TException {\r\n    List<ThriftField> fields = ThriftField.fromNames(Arrays.asList(\"i32Field\"));\r\n    ThriftMetadata.ThriftStruct metadata = ThriftMetadata.ThriftStruct.fromFields(TestStruct.class, fields);\r\n    ThriftStructProcessor processor = new ThriftStructProcessor();\r\n    Object instance = processor.createNewStruct(metadata);\r\n    assertNotNull(instance);\r\n    assertTrue(instance instanceof TBase);\r\n    assertTrue(instance instanceof TestStruct);\r\n    Object instance2 = processor.prepareStruct(instance);\r\n    assertSame(instance, instance2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ThriftStructProcessorTest.java",
+  "methodName" : "testList",
+  "sourceCode" : "@Test\r\npublic void testList() throws TException {\r\n    final int numItems = 10;\r\n    ThriftStructProcessor processor = new ThriftStructProcessor();\r\n    Object instance = processor.createNewList(numItems);\r\n    assertNotNull(instance);\r\n    assertTrue(instance instanceof Object[]);\r\n    Object[] items = (Object[]) instance;\r\n    for (int i = 0; i < numItems; i++) {\r\n        assertNull(items[i]);\r\n        processor.setListElement(instance, i, Integer.valueOf(i));\r\n        assertEquals(i, items[i]);\r\n    }\r\n    assertTrue(processor.prepareList(instance) instanceof List<?>);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ThriftStructProcessorTest.java",
+  "methodName" : "testMap",
+  "sourceCode" : "@Test\r\npublic void testMap() throws TException {\r\n    final int numItems = 10;\r\n    ThriftStructProcessor processor = new ThriftStructProcessor();\r\n    Object instance = processor.createNewMap(numItems);\r\n    assertNotNull(instance);\r\n    assertTrue(instance instanceof Map<?, ?>);\r\n    Map<Object, Object> items = (Map<Object, Object>) instance;\r\n    int ignoredIndex = -1;\r\n    for (int i = 0; i < numItems; i++) {\r\n        assertNull(items.get(i));\r\n        processor.setMapElement(instance, ignoredIndex, Integer.valueOf(i), Integer.valueOf(i));\r\n        assertEquals(i, items.get(i));\r\n    }\r\n    assertTrue(processor.prepareMap(instance) instanceof Map<?, ?>);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ThriftStructProcessorTest.java",
+  "methodName" : "testSet",
+  "sourceCode" : "@Test\r\npublic void testSet() throws TException {\r\n    final int numItems = 10;\r\n    ThriftStructProcessor processor = new ThriftStructProcessor();\r\n    Object instance = processor.createNewSet(numItems);\r\n    assertNotNull(instance);\r\n    assertTrue(instance instanceof HashSet<?>);\r\n    Set<?> items = (HashSet<?>) instance;\r\n    int ignoredIndex = -1;\r\n    for (int i = 0; i < numItems; i++) {\r\n        assertFalse(items.contains(i));\r\n        processor.setSetElement(instance, ignoredIndex, Integer.valueOf(i));\r\n        assertTrue(items.contains(i));\r\n    }\r\n    assertTrue(processor.prepareSet(instance) instanceof Set<?>);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ThriftStructProcessorTest.java",
+  "methodName" : "testPrepareEnum",
+  "sourceCode" : "@Test\r\npublic void testPrepareEnum() throws TException {\r\n    ThriftStructProcessor processor = new ThriftStructProcessor();\r\n    Object instance = processor.prepareEnum(TstEnum.class, 1);\r\n    assertNotNull(instance);\r\n    assertEquals(TstEnum.E_ONE, instance);\r\n    instance = processor.prepareEnum(TstEnum.class, 2);\r\n    assertNotNull(instance);\r\n    assertEquals(TstEnum.E_TWO, instance);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ThriftStructProcessorTest.java",
+  "methodName" : "testPrepareString",
+  "sourceCode" : "@Test\r\npublic void testPrepareString() throws TException {\r\n    ThriftStructProcessor processor = new ThriftStructProcessor();\r\n    ByteBuffer emptyBuffer = ByteBuffer.wrap(new byte[0]);\r\n    Object instance = processor.prepareString(emptyBuffer);\r\n    assertNotNull(instance);\r\n    assertTrue(instance instanceof String);\r\n    assertEquals(\"\", instance);\r\n    String value = \"Hello world!\";\r\n    ByteBuffer buffer = ByteBuffer.wrap(value.getBytes(StandardCharsets.UTF_8));\r\n    instance = processor.prepareString(buffer);\r\n    assertNotNull(instance);\r\n    assertTrue(instance instanceof String);\r\n    assertEquals(value, instance);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ThriftStructProcessorTest.java",
+  "methodName" : "testPrepareBinary",
+  "sourceCode" : "@Test\r\npublic void testPrepareBinary() throws TException {\r\n    ThriftStructProcessor processor = new ThriftStructProcessor();\r\n    ByteBuffer emptyBuffer = ByteBuffer.wrap(new byte[0]);\r\n    Object instance = processor.prepareBinary(emptyBuffer);\r\n    assertNotNull(instance);\r\n    assertTrue(instance instanceof ByteBuffer);\r\n    assertSame(emptyBuffer, instance);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ThriftStructProcessorTest.java",
+  "methodName" : "testStructPrimitiveFields",
+  "sourceCode" : "@Test\r\npublic void testStructPrimitiveFields() throws TException {\r\n    List<ThriftField> fields = ThriftField.fromNames(Arrays.asList(\"byteField\", \"i16Field\", \"i32Field\", \"i64Field\", \"doubleField\", \"stringField\", \"enumField\", \"binaryField\"));\r\n    ThriftMetadata.ThriftStruct metadata = ThriftMetadata.ThriftStruct.fromFields(TestStruct.class, fields);\r\n    ThriftStructProcessor processor = new ThriftStructProcessor();\r\n    Object instance = processor.createNewStruct(metadata);\r\n    assertNotNull(instance);\r\n    assertTrue(instance instanceof TBase);\r\n    assertTrue(instance instanceof TestStruct);\r\n    TestStruct struct = (TestStruct) instance;\r\n    // byte\r\n    TFieldIdEnum fieldId = findFieldId(metadata, \"byteField\");\r\n    assertNull(getFieldValue(struct, fieldId));\r\n    processor.setByte(struct, fieldId, (byte) 42);\r\n    assertEquals(42, struct.getByteField());\r\n    // short\r\n    fieldId = findFieldId(metadata, \"i16Field\");\r\n    assertNull(getFieldValue(struct, fieldId));\r\n    processor.setInt16(struct, fieldId, (short) 42);\r\n    assertEquals(42, struct.getI16Field());\r\n    // int\r\n    fieldId = findFieldId(metadata, \"i32Field\");\r\n    assertNull(getFieldValue(struct, fieldId));\r\n    processor.setInt32(struct, fieldId, 42);\r\n    assertEquals(42, struct.getI32Field());\r\n    // long\r\n    fieldId = findFieldId(metadata, \"i64Field\");\r\n    assertNull(getFieldValue(struct, fieldId));\r\n    processor.setInt64(struct, fieldId, 42L);\r\n    assertEquals(42, struct.getI64Field());\r\n    // binary\r\n    fieldId = findFieldId(metadata, \"binaryField\");\r\n    assertNull(getFieldValue(struct, fieldId));\r\n    byte[] noBytes = new byte[0];\r\n    ByteBuffer emptyBuffer = ByteBuffer.wrap(noBytes);\r\n    processor.setBinary(struct, fieldId, emptyBuffer);\r\n    assertArrayEquals(noBytes, struct.getBinaryField());\r\n    // string\r\n    fieldId = findFieldId(metadata, \"stringField\");\r\n    assertNull(getFieldValue(struct, fieldId));\r\n    String value = \"Hello world!\";\r\n    ByteBuffer buffer = ByteBuffer.wrap(value.getBytes(StandardCharsets.UTF_8));\r\n    processor.setString(struct, fieldId, buffer);\r\n    assertEquals(value, struct.getStringField());\r\n    // enum\r\n    fieldId = findFieldId(metadata, \"enumField\");\r\n    assertNull(getFieldValue(struct, fieldId));\r\n    TstEnum e1 = TstEnum.E_ONE;\r\n    processor.setEnumField(struct, fieldId, e1);\r\n    assertEquals(TstEnum.E_ONE, struct.getEnumField());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ThriftStructProcessorTest.java",
+  "methodName" : "testStructContainerFields",
+  "sourceCode" : "@Test\r\npublic void testStructContainerFields() throws TException {\r\n    List<ThriftField> fields = ThriftField.fromNames(Arrays.asList(// List field\r\n    \"i32List\", // Set field\r\n    \"stringSet\", // Map field\r\n    \"stringMap\", // Struct field\r\n    \"structField\"));\r\n    ThriftMetadata.ThriftStruct metadata = ThriftMetadata.ThriftStruct.fromFields(TestStruct.class, fields);\r\n    ThriftStructProcessor processor = new ThriftStructProcessor();\r\n    Object instance = processor.createNewStruct(metadata);\r\n    assertNotNull(instance);\r\n    assertTrue(instance instanceof TBase);\r\n    assertTrue(instance instanceof TestStruct);\r\n    TestStruct struct = (TestStruct) instance;\r\n    // list\r\n    TFieldIdEnum fieldId = findFieldId(metadata, \"i32List\");\r\n    assertNull(getFieldValue(struct, fieldId));\r\n    Integer[] ints = new Integer[] { 1, 2, 3 };\r\n    List<Integer> intList = Arrays.asList(ints);\r\n    processor.setListField(struct, fieldId, intList);\r\n    assertArrayEquals(ints, struct.getI32List().toArray());\r\n    // set\r\n    fieldId = findFieldId(metadata, \"stringSet\");\r\n    assertNull(getFieldValue(struct, fieldId));\r\n    String[] strings = new String[] { \"Hello\", \"World!\" };\r\n    Set<String> stringSet = new HashSet<>(Arrays.asList(strings));\r\n    processor.setSetField(struct, fieldId, stringSet);\r\n    assertEquals(stringSet, struct.getStringSet());\r\n    // map\r\n    fieldId = findFieldId(metadata, \"stringMap\");\r\n    assertNull(getFieldValue(struct, fieldId));\r\n    Map<String, String> stringMap = new HashMap<>();\r\n    stringMap.put(\"foo\", \"bar\");\r\n    stringMap.put(\"Hello\", \"World!\");\r\n    processor.setMapField(struct, fieldId, stringMap);\r\n    assertEquals(stringMap, struct.getStringMap());\r\n    // struct\r\n    fieldId = findFieldId(metadata, \"structField\");\r\n    assertNull(getFieldValue(struct, fieldId));\r\n    SmallStruct smallStruct = new SmallStruct();\r\n    smallStruct.setI32Field(42);\r\n    SmallStruct smallStruct2 = new SmallStruct();\r\n    smallStruct2.setI32Field(42);\r\n    processor.setStructField(struct, fieldId, smallStruct);\r\n    assertEquals(smallStruct2, struct.getStructField());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ValidateTest.java",
+  "methodName" : "testCheckNotNull",
+  "sourceCode" : "@Test\r\npublic void testCheckNotNull() {\r\n    String nonNullArg = \"nonNullArg\";\r\n    String nullArg = null;\r\n    // Should not throw.\r\n    Validate.checkNotNull(nonNullArg, \"nonNullArg\");\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'nullArg' must not be null\", () -> Validate.checkNotNull(nullArg, \"nullArg\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ValidateTest.java",
+  "methodName" : "testCheckPositiveInteger",
+  "sourceCode" : "@Test\r\npublic void testCheckPositiveInteger() {\r\n    int positiveArg = 1;\r\n    int zero = 0;\r\n    int negativeArg = -1;\r\n    // Should not throw.\r\n    Validate.checkPositiveInteger(positiveArg, \"positiveArg\");\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'negativeArg' must be a positive integer\", () -> Validate.checkPositiveInteger(negativeArg, \"negativeArg\"));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'zero' must be a positive integer\", () -> Validate.checkPositiveInteger(zero, \"zero\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ValidateTest.java",
+  "methodName" : "testCheckNotNegative",
+  "sourceCode" : "@Test\r\npublic void testCheckNotNegative() {\r\n    int positiveArg = 1;\r\n    int zero = 0;\r\n    int negativeArg = -1;\r\n    // Should not throw.\r\n    Validate.checkNotNegative(zero, \"zeroArg\");\r\n    Validate.checkNotNegative(positiveArg, \"positiveArg\");\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'negativeArg' must not be negative\", () -> Validate.checkNotNegative(negativeArg, \"negativeArg\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ValidateTest.java",
+  "methodName" : "testCheckRequired",
+  "sourceCode" : "@Test\r\npublic void testCheckRequired() {\r\n    // Should not throw.\r\n    Validate.checkRequired(true, \"arg\");\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'arg' is required\", () -> Validate.checkRequired(false, \"arg\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ValidateTest.java",
+  "methodName" : "testCheckValid",
+  "sourceCode" : "@Test\r\npublic void testCheckValid() {\r\n    // Should not throw.\r\n    Validate.checkValid(true, \"arg\");\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'arg' is invalid\", () -> Validate.checkValid(false, \"arg\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ValidateTest.java",
+  "methodName" : "testCheckValidWithValues",
+  "sourceCode" : "@Test\r\npublic void testCheckValidWithValues() {\r\n    String validValues = \"foo, bar\";\r\n    // Should not throw.\r\n    Validate.checkValid(true, \"arg\", validValues);\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'arg' is invalid. Valid values are: foo, bar\", () -> Validate.checkValid(false, \"arg\", validValues));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ValidateTest.java",
+  "methodName" : "testCheckNotNullAndNotEmpty",
+  "sourceCode" : "@Test\r\npublic void testCheckNotNullAndNotEmpty() {\r\n    // Should not throw.\r\n    Validate.checkNotNullAndNotEmpty(TestData.nonEmptyArray, \"array\");\r\n    Validate.checkNotNullAndNotEmpty(TestData.nonEmptyByteArray, \"array\");\r\n    Validate.checkNotNullAndNotEmpty(TestData.nonEmptyShortArray, \"array\");\r\n    Validate.checkNotNullAndNotEmpty(TestData.nonEmptyIntArray, \"array\");\r\n    Validate.checkNotNullAndNotEmpty(TestData.nonEmptyLongArray, \"array\");\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'string' must not be empty\", () -> Validate.checkNotNullAndNotEmpty(\"\", \"string\"));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'array' must not be null\", () -> Validate.checkNotNullAndNotEmpty(TestData.nullArray, \"array\"));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'array' must have at least one element\", () -> Validate.checkNotNullAndNotEmpty(TestData.emptyArray, \"array\"));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'array' must not be null\", () -> Validate.checkNotNullAndNotEmpty(TestData.nullByteArray, \"array\"));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'array' must have at least one element\", () -> Validate.checkNotNullAndNotEmpty(TestData.emptyByteArray, \"array\"));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'array' must not be null\", () -> Validate.checkNotNullAndNotEmpty(TestData.nullShortArray, \"array\"));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'array' must have at least one element\", () -> Validate.checkNotNullAndNotEmpty(TestData.emptyShortArray, \"array\"));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'array' must not be null\", () -> Validate.checkNotNullAndNotEmpty(TestData.nullIntArray, \"array\"));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'array' must have at least one element\", () -> Validate.checkNotNullAndNotEmpty(TestData.emptyIntArray, \"array\"));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'array' must not be null\", () -> Validate.checkNotNullAndNotEmpty(TestData.nullLongArray, \"array\"));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'array' must have at least one element\", () -> Validate.checkNotNullAndNotEmpty(TestData.emptyLongArray, \"array\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ValidateTest.java",
+  "methodName" : "testCheckListNotNullAndNotEmpty",
+  "sourceCode" : "@Test\r\npublic void testCheckListNotNullAndNotEmpty() {\r\n    // Should not throw.\r\n    Validate.checkNotNullAndNotEmpty(TestData.validList, \"list\");\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'list' must not be null\", () -> Validate.checkNotNullAndNotEmpty(TestData.nullList, \"list\"));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'list' must have at least one element\", () -> Validate.checkNotNullAndNotEmpty(TestData.emptyList, \"list\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ValidateTest.java",
+  "methodName" : "testCheckNotNullAndNumberOfElements",
+  "sourceCode" : "@Test\r\npublic void testCheckNotNullAndNumberOfElements() {\r\n    // Should not throw.\r\n    Validate.checkNotNullAndNumberOfElements(Arrays.asList(1, 2, 3), 3, \"arg\");\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'arg' must not be null\", () -> Validate.checkNotNullAndNumberOfElements(null, 3, \"arg\"));\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"Number of elements in 'arg' must be exactly 3, 2 given.\", () -> Validate.checkNotNullAndNumberOfElements(Arrays.asList(1, 2), 3, \"arg\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ValidateTest.java",
+  "methodName" : "testCheckValuesEqual",
+  "sourceCode" : "@Test\r\npublic void testCheckValuesEqual() {\r\n    // Should not throw.\r\n    Validate.checkValuesEqual(1, \"arg1\", 1, \"arg2\");\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'arg1' (1) must equal 'arg2' (2)\", () -> Validate.checkValuesEqual(1, \"arg1\", 2, \"arg2\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ValidateTest.java",
+  "methodName" : "testCheckIntegerMultiple",
+  "sourceCode" : "@Test\r\npublic void testCheckIntegerMultiple() {\r\n    // Should not throw.\r\n    Validate.checkIntegerMultiple(10, \"arg1\", 5, \"arg2\");\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'arg1' (10) must be an integer multiple of 'arg2' (3)\", () -> Validate.checkIntegerMultiple(10, \"arg1\", 3, \"arg2\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ValidateTest.java",
+  "methodName" : "testCheckGreater",
+  "sourceCode" : "@Test\r\npublic void testCheckGreater() {\r\n    // Should not throw.\r\n    Validate.checkGreater(10, \"arg1\", 5, \"arg2\");\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'arg1' (5) must be greater than 'arg2' (10)\", () -> Validate.checkGreater(5, \"arg1\", 10, \"arg2\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ValidateTest.java",
+  "methodName" : "testCheckGreaterOrEqual",
+  "sourceCode" : "@Test\r\npublic void testCheckGreaterOrEqual() {\r\n    // Should not throw.\r\n    Validate.checkGreaterOrEqual(10, \"arg1\", 5, \"arg2\");\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'arg1' (5) must be greater than or equal to 'arg2' (10)\", () -> Validate.checkGreaterOrEqual(5, \"arg1\", 10, \"arg2\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ValidateTest.java",
+  "methodName" : "testCheckWithinRange",
+  "sourceCode" : "@Test\r\npublic void testCheckWithinRange() {\r\n    // Should not throw.\r\n    Validate.checkWithinRange(10, \"arg\", 5, 15);\r\n    Validate.checkWithinRange(10.0, \"arg\", 5.0, 15.0);\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'arg' (5) must be within the range [10, 20]\", () -> Validate.checkWithinRange(5, \"arg\", 10, 20));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'arg' (5.0) must be within the range [10.0, 20.0]\", () -> Validate.checkWithinRange(5.0, \"arg\", 10.0, 20.0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\partial\\ValidateTest.java",
+  "methodName" : "testCheckPathExists",
+  "sourceCode" : "@Test\r\npublic void testCheckPathExists() throws IOException {\r\n    Path tempFile = Files.createTempFile(\"foo\", \"bar\");\r\n    Path tempDir = tempFile.getParent();\r\n    Path notFound = Paths.get(\"<not-found>\");\r\n    // Should not throw.\r\n    Validate.checkPathExists(tempFile, \"tempFile\");\r\n    Validate.checkPathExists(tempDir, \"tempDir\");\r\n    // Verify it throws.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'nullArg' must not be null\", () -> Validate.checkPathExists(null, \"nullArg\"));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"Path notFound (<not-found>) does not exist\", () -> Validate.checkPathExists(notFound, \"notFound\"));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"must point to a directory\", () -> Validate.checkPathExistsAsDir(tempFile, \"tempFile\"));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"must point to a file\", () -> Validate.checkPathExistsAsFile(tempDir, \"tempDir\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\server\\TestThreadPoolServer.java",
+  "methodName" : "testStopServerWithOpenClient",
+  "sourceCode" : "/**\r\n * Test server is shut down properly even with some open clients.\r\n */\r\n@Test\r\npublic void testStopServerWithOpenClient() throws Exception {\r\n    TServerSocket serverSocket = new TServerSocket(0, 3000);\r\n    TThreadPoolServer server = buildServer(serverSocket);\r\n    Thread serverThread = new Thread(() -> server.serve());\r\n    serverThread.start();\r\n    try (TSocket client = new TSocket(\"localhost\", serverSocket.getServerSocket().getLocalPort())) {\r\n        client.open();\r\n        Thread.sleep(1000);\r\n        // There is a thread listening to the client\r\n        Assert.assertEquals(1, ((ThreadPoolExecutor) server.getExecutorService()).getActiveCount());\r\n        // Trigger the server to stop, but it does not wait\r\n        server.stop();\r\n        Assert.assertTrue(server.waitForShutdown());\r\n        // After server is stopped, the executor thread pool should be shut down\r\n        Assert.assertTrue(\"Server thread pool should be terminated\", server.getExecutorService().isTerminated());\r\n        // TODO: The socket is actually closed (timeout) but the client code\r\n        // ignores the timeout Exception and maintains the socket open state\r\n        Assert.assertTrue(\"Client should be closed after server shutdown\", client.isOpen());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testSyncClientMustReturnResultReturnString",
+  "sourceCode" : "@Test\r\npublic void testSyncClientMustReturnResultReturnString() throws Exception {\r\n    checkSyncClient(\"returnString\", \"sent msg\", false, \"sent msg\", null, null, (client, msg, throwException) -> {\r\n        return client.returnString(msg, throwException);\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testSyncClientMustReturnResultReturnVoidThrows",
+  "sourceCode" : "@Test\r\npublic void testSyncClientMustReturnResultReturnVoidThrows() throws Exception {\r\n    checkSyncClient(\"returnVoidThrows\", \"sent msg\", false, null, null, null, (client, msg, throwException) -> {\r\n        client.returnVoidThrows(msg, throwException);\r\n        return null;\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testSyncClientMustReturnResultReturnVoidNoThrowsRuntimeException",
+  "sourceCode" : "@Test\r\npublic void testSyncClientMustReturnResultReturnVoidNoThrowsRuntimeException() throws Exception {\r\n    checkSyncClient(\"returnVoidNoThrowsRuntimeException\", \"sent msg\", false, null, null, null, (client, msg, throwException) -> {\r\n        client.returnVoidNoThrowsRuntimeException(msg, throwException);\r\n        return null;\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testSyncClientMustReturnResultReturnVoidNoThrowsTApplicationException",
+  "sourceCode" : "@Test\r\npublic void testSyncClientMustReturnResultReturnVoidNoThrowsTApplicationException() throws Exception {\r\n    checkSyncClient(\"returnVoidNoThrowsTApplicationException\", \"sent msg\", false, null, null, null, (client, msg, throwException) -> {\r\n        client.returnVoidNoThrowsTApplicationException(msg, throwException);\r\n        return null;\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testSyncClientMustThrowExceptionReturnString",
+  "sourceCode" : "@Test\r\npublic void testSyncClientMustThrowExceptionReturnString() throws Exception {\r\n    checkSyncClient(\"returnString\", \"sent msg\", true, null, TExampleException.class, \"sent msg\", (client, msg, throwException) -> {\r\n        return client.returnString(msg, throwException);\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testSyncClientMustThrowExceptionReturnVoidThrows",
+  "sourceCode" : "@Test\r\npublic void testSyncClientMustThrowExceptionReturnVoidThrows() throws Exception {\r\n    checkSyncClient(\"returnVoidThrows\", \"sent msg\", true, null, TExampleException.class, \"sent msg\", (client, msg, throwException) -> {\r\n        client.returnVoidThrows(msg, throwException);\r\n        return null;\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testSyncClientMustThrowExceptionReturnVoidNoThrowsRuntimeException",
+  "sourceCode" : "@Test\r\npublic void testSyncClientMustThrowExceptionReturnVoidNoThrowsRuntimeException() throws Exception {\r\n    checkSyncClient(\"returnVoidNoThrowsRuntimeException\", \"sent msg\", true, null, TApplicationException.class, serverImplementationType == ServerImplementationType.ASYNC_SERVER ? \"sent msg\" : // sync server return \"Internal error processing returnVoidNoThrowsRuntimeException\" message\r\n    null, (client, msg, throwException) -> {\r\n        client.returnVoidNoThrowsRuntimeException(msg, throwException);\r\n        return null;\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testSyncClientMustThrowExceptionReturnVoidNoThrowsTApplicationException",
+  "sourceCode" : "@Test\r\npublic void testSyncClientMustThrowExceptionReturnVoidNoThrowsTApplicationException() throws Exception {\r\n    checkSyncClient(\"returnVoidNoThrowsTApplicationException\", \"sent msg\", true, null, TApplicationException.class, \"sent msg\", (client, msg, throwException) -> {\r\n        client.returnVoidNoThrowsTApplicationException(msg, throwException);\r\n        return null;\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testAsyncClientMustReturnResultReturnString",
+  "sourceCode" : "@Test\r\npublic void testAsyncClientMustReturnResultReturnString() throws Throwable {\r\n    checkAsyncClient(\"returnString\", \"sent msg\", false, \"sent msg\", null, null, (client, msg, throwException, resultHandler) -> {\r\n        client.returnString(msg, throwException, resultHandler);\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testAsyncClientMustReturnResultReturnVoidThrows",
+  "sourceCode" : "@Test\r\npublic void testAsyncClientMustReturnResultReturnVoidThrows() throws Throwable {\r\n    checkAsyncClient(\"returnVoidThrows\", \"sent msg\", false, (Void) null, null, null, (client, msg, throwException, resultHandler) -> {\r\n        client.returnVoidThrows(msg, throwException, resultHandler);\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testAsyncClientMustReturnResultReturnVoidNoThrowsRuntimeException",
+  "sourceCode" : "@Test\r\npublic void testAsyncClientMustReturnResultReturnVoidNoThrowsRuntimeException() throws Throwable {\r\n    checkAsyncClient(\"returnVoidNoThrowsRuntimeException\", \"sent msg\", false, (Void) null, null, null, (client, msg, throwException, resultHandler) -> {\r\n        client.returnVoidNoThrowsRuntimeException(msg, throwException, resultHandler);\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testAsyncClientMustReturnResultReturnVoidNoThrowsTApplicationException",
+  "sourceCode" : "@Test\r\npublic void testAsyncClientMustReturnResultReturnVoidNoThrowsTApplicationException() throws Throwable {\r\n    checkAsyncClient(\"returnVoidNoThrowsTApplicationException\", \"sent msg\", false, (Void) null, null, null, (client, msg, throwException, resultHandler) -> {\r\n        client.returnVoidNoThrowsTApplicationException(msg, throwException, resultHandler);\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testAsyncClientMustThrowExceptionReturnString",
+  "sourceCode" : "@Test\r\npublic void testAsyncClientMustThrowExceptionReturnString() throws Throwable {\r\n    checkAsyncClient(\"returnString\", \"sent msg\", true, (String) null, TExampleException.class, \"sent msg\", (client, msg, throwException, resultHandler) -> {\r\n        client.returnString(msg, throwException, resultHandler);\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testAsyncClientMustThrowExceptionReturnVoidThrows",
+  "sourceCode" : "@Test\r\npublic void testAsyncClientMustThrowExceptionReturnVoidThrows() throws Throwable {\r\n    checkAsyncClient(\"returnVoidThrows\", \"sent msg\", true, (Void) null, TExampleException.class, \"sent msg\", (client, msg, throwException, resultHandler) -> {\r\n        client.returnVoidThrows(msg, throwException, resultHandler);\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testAsyncClientMustThrowExceptionReturnVoidNoThrowsRuntimeException",
+  "sourceCode" : "@Test\r\npublic void testAsyncClientMustThrowExceptionReturnVoidNoThrowsRuntimeException() throws Throwable {\r\n    checkAsyncClient(\"returnVoidNoThrowsRuntimeException\", \"sent msg\", true, (Void) null, TApplicationException.class, serverImplementationType == ServerImplementationType.ASYNC_SERVER ? \"sent msg\" : // sync server return \"Internal error processing returnVoidNoThrowsRuntimeException\" message\r\n    null, (client, msg, throwException, resultHandler) -> {\r\n        client.returnVoidNoThrowsRuntimeException(msg, throwException, resultHandler);\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testAsyncClientMustThrowExceptionReturnVoidNoThrowsTApplicationException",
+  "sourceCode" : "@Test\r\npublic void testAsyncClientMustThrowExceptionReturnVoidNoThrowsTApplicationException() throws Throwable {\r\n    checkAsyncClient(\"returnVoidNoThrowsTApplicationException\", \"sent msg\", true, (Void) null, TApplicationException.class, \"sent msg\", (client, msg, throwException, resultHandler) -> {\r\n        client.returnVoidNoThrowsTApplicationException(msg, throwException, resultHandler);\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testSyncClientNoWaitForResultNoExceptionOnewayVoidNoThrows",
+  "sourceCode" : "@Test\r\npublic void testSyncClientNoWaitForResultNoExceptionOnewayVoidNoThrows() throws Exception {\r\n    checkSyncClient(\"onewayVoidNoThrows\", \"sent msg\", false, null, null, null, (client, msg, throwException) -> {\r\n        client.onewayVoidNoThrows(msg, throwException);\r\n        return null;\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testSyncClientNoWaitForResultExceptionOnewayVoidNoThrows",
+  "sourceCode" : "@Test\r\npublic void testSyncClientNoWaitForResultExceptionOnewayVoidNoThrows() throws Exception {\r\n    checkSyncClient(\"onewayVoidNoThrows\", \"sent msg\", true, null, null, null, (client, msg, throwException) -> {\r\n        client.onewayVoidNoThrows(msg, throwException);\r\n        return null;\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testAsyncClientNoWaitForResultNoExceptionOnewayVoidNoThrows",
+  "sourceCode" : "@Test\r\npublic void testAsyncClientNoWaitForResultNoExceptionOnewayVoidNoThrows() throws Throwable {\r\n    checkAsyncClient(\"onewayVoidNoThrows\", \"sent msg\", false, (Void) null, null, null, (client, msg, throwException, resultHandler) -> {\r\n        client.onewayVoidNoThrows(msg, throwException, resultHandler);\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\test\\voidmethexceptions\\TestVoidMethExceptions.java",
+  "methodName" : "testAsyncClientNoWaitForResultExceptionOnewayVoidNoThrows",
+  "sourceCode" : "@Test\r\npublic void testAsyncClientNoWaitForResultExceptionOnewayVoidNoThrows() throws Throwable {\r\n    checkAsyncClient(\"onewayVoidNoThrows\", \"sent msg\", true, (Void) null, null, null, (client, msg, throwException, resultHandler) -> {\r\n        client.onewayVoidNoThrows(msg, throwException, resultHandler);\r\n    });\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\TestMultiplexedProcessor.java",
+  "methodName" : "testWrongMessageType",
+  "sourceCode" : "@Test(expected = TException.class)\r\npublic void testWrongMessageType() throws TException {\r\n    when(iprot.readMessageBegin()).thenReturn(new TMessage(\"service:func\", TMessageType.REPLY, 42));\r\n    mp.process(iprot, oprot);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\TestMultiplexedProcessor.java",
+  "methodName" : "testNoSuchService",
+  "sourceCode" : "@Test(expected = TException.class)\r\npublic void testNoSuchService() throws TException {\r\n    when(iprot.readMessageBegin()).thenReturn(new TMessage(\"service:func\", TMessageType.CALL, 42));\r\n    mp.process(iprot, oprot);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\TestMultiplexedProcessor.java",
+  "methodName" : "testExistingService",
+  "sourceCode" : "@Test\r\npublic void testExistingService() throws TException {\r\n    when(iprot.readMessageBegin()).thenReturn(new TMessage(\"service:func\", TMessageType.CALL, 42));\r\n    mp.registerProcessor(\"service\", new StubProcessor());\r\n    mp.process(iprot, oprot);\r\n    verify(oprot).writeMessageBegin(any(TMessage.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\TestMultiplexedProcessor.java",
+  "methodName" : "testDefaultService",
+  "sourceCode" : "@Test\r\npublic void testDefaultService() throws TException {\r\n    when(iprot.readMessageBegin()).thenReturn(new TMessage(\"func\", TMessageType.CALL, 42));\r\n    mp.registerDefault(new StubProcessor());\r\n    mp.process(iprot, oprot);\r\n    verify(oprot).writeMessageBegin(any(TMessage.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\TestPartialThriftDeserializer.java",
+  "methodName" : "testArgChecks",
+  "sourceCode" : "@Test\r\npublic void testArgChecks() throws TException {\r\n    // Should not throw.\r\n    List<String> fieldNames = Arrays.asList(\"i32Field\");\r\n    new TDeserializer(TestStruct.class, fieldNames, binaryProtocolFactory);\r\n    // Verify it throws correctly.\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'thriftClass' must not be null\", () -> new TDeserializer(null, fieldNames, binaryProtocolFactory));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'fieldNames' must not be null\", () -> new TDeserializer(TestStruct.class, null, binaryProtocolFactory));\r\n    ExceptionAsserts.assertThrows(IllegalArgumentException.class, \"'processor' must not be null\", () -> new TDeserializer(TestStruct.class, fieldNames, null, binaryProtocolFactory));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\TestPartialThriftDeserializer.java",
+  "methodName" : "testRoundTripFull",
+  "sourceCode" : "/**\r\n * This test does not use partial deserialization. It is used to establish correctness\r\n * of full serialization used in the other tests.\r\n */\r\n@Test\r\npublic void testRoundTripFull() throws TException {\r\n    TestStruct ts1 = testData.createTestStruct(1, 2);\r\n    byte[] bytesBinary = serde.serializeBinary(ts1);\r\n    byte[] bytesCompact = serde.serializeCompact(ts1);\r\n    TestStruct ts2 = serde.deserializeBinary(bytesBinary, TestStruct.class);\r\n    assertEquals(ts1, ts2);\r\n    ts2 = serde.deserializeCompact(bytesCompact, TestStruct.class);\r\n    assertEquals(ts1, ts2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\TestPartialThriftDeserializer.java",
+  "methodName" : "testPartialSimpleField",
+  "sourceCode" : "@Test\r\npublic void testPartialSimpleField() throws TException, IOException {\r\n    TestStruct ts1 = testData.createTestStruct(1, 1);\r\n    assertTrue(ts1.isSetI16Field());\r\n    assertTrue(ts1.isSetI32Field());\r\n    byte[] bytesBinary = serde.serializeBinary(ts1);\r\n    byte[] bytesCompact = serde.serializeCompact(ts1);\r\n    List<String> fieldNames = Arrays.asList(\"i32Field\");\r\n    TDeserializer partialBinaryDeserializer = new TDeserializer(TestStruct.class, fieldNames, binaryProtocolFactory);\r\n    TDeserializer partialCompactDeserializer = new TDeserializer(TestStruct.class, fieldNames, compactProtocolFactory);\r\n    PartialThriftComparer comparer = new PartialThriftComparer(partialBinaryDeserializer.getMetadata());\r\n    StringBuilder sb = new StringBuilder();\r\n    TestStruct ts2 = (TestStruct) partialBinaryDeserializer.partialDeserializeObject(bytesBinary);\r\n    validatePartialSimpleField(ts1, ts2);\r\n    if (!comparer.areEqual(ts1, ts2, sb)) {\r\n        fail(sb.toString());\r\n    }\r\n    ts2 = (TestStruct) partialCompactDeserializer.partialDeserializeObject(bytesCompact);\r\n    validatePartialSimpleField(ts1, ts2);\r\n    if (!comparer.areEqual(ts1, ts2, sb)) {\r\n        fail(sb.toString());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\TestPartialThriftDeserializer.java",
+  "methodName" : "testPartialComplex",
+  "sourceCode" : "@Test\r\npublic void testPartialComplex() throws TException {\r\n    int id = 1;\r\n    int numItems = 10;\r\n    TestStruct ts1 = testData.createTestStruct(id, numItems);\r\n    byte[] bytesBinary = serde.serializeBinary(ts1);\r\n    byte[] bytesCompact = serde.serializeCompact(ts1);\r\n    List<String> fieldNames = Arrays.asList(\"byteField\", \"i16Field\", \"i32Field\", \"i64Field\", \"doubleField\", \"stringField\", \"enumField\", \"binaryField\", // List fields\r\n    \"byteList\", \"i16List\", \"i32List\", \"i64List\", \"doubleList\", \"stringList\", \"enumList\", \"listList\", \"setList\", \"mapList\", \"structList\", \"binaryList\", // Set fields\r\n    \"byteSet\", \"i16Set\", \"i32Set\", \"i64Set\", \"doubleSet\", \"stringSet\", \"enumSet\", \"listSet\", \"setSet\", \"mapSet\", \"structSet\", \"binarySet\", // Map fields\r\n    \"byteMap\", \"i16Map\", \"i32Map\", \"i64Map\", \"doubleMap\", \"stringMap\", \"enumMap\", \"listMap\", \"setMap\", \"mapMap\", \"structMap\", \"binaryMap\", // Struct field\r\n    \"structField\");\r\n    StringBuilder sb = new StringBuilder();\r\n    TDeserializer partialBinaryDeserializer = new TDeserializer(TestStruct.class, fieldNames, binaryProtocolFactory);\r\n    TDeserializer partialCompactDeserializer = new TDeserializer(TestStruct.class, fieldNames, compactProtocolFactory);\r\n    PartialThriftComparer comparer = new PartialThriftComparer(partialBinaryDeserializer.getMetadata());\r\n    TestStruct ts2 = (TestStruct) partialBinaryDeserializer.partialDeserializeObject(bytesBinary);\r\n    validatePartialComplex(ts1, ts2, id, numItems);\r\n    if (!comparer.areEqual(ts1, ts2, sb)) {\r\n        fail(sb.toString());\r\n    }\r\n    ts2 = (TestStruct) partialCompactDeserializer.partialDeserializeObject(bytesCompact);\r\n    validatePartialComplex(ts1, ts2, id, numItems);\r\n    if (!comparer.areEqual(ts1, ts2, sb)) {\r\n        fail(sb.toString());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\sasl\\TestDataFrameReader.java",
+  "methodName" : "testRead",
+  "sourceCode" : "@Test\r\npublic void testRead() throws TTransportException {\r\n    // Prepare data\r\n    int payloadSize = 23;\r\n    ByteBuffer buffer = ByteBuffer.allocate(DataFrameHeaderReader.PAYLOAD_LENGTH_BYTES + payloadSize);\r\n    buffer.putInt(payloadSize);\r\n    for (int i = 0; i < payloadSize; i++) {\r\n        buffer.put((byte) i);\r\n    }\r\n    buffer.rewind();\r\n    TMemoryInputTransport transport = new TMemoryInputTransport();\r\n    DataFrameReader dataFrameReader = new DataFrameReader();\r\n    // No bytes received.\r\n    dataFrameReader.read(transport);\r\n    Assert.assertFalse(\"No bytes received\", dataFrameReader.isComplete());\r\n    Assert.assertFalse(\"No bytes received\", dataFrameReader.getHeader().isComplete());\r\n    // Payload size (header) and part of the payload are received.\r\n    transport.reset(buffer.array(), 0, 6);\r\n    dataFrameReader.read(transport);\r\n    Assert.assertFalse(\"Only header is complete\", dataFrameReader.isComplete());\r\n    Assert.assertTrue(\"Header should be complete\", dataFrameReader.getHeader().isComplete());\r\n    Assert.assertEquals(\"Payload size should be \" + payloadSize, payloadSize, dataFrameReader.getHeader().payloadSize());\r\n    // Read the rest of payload.\r\n    transport.reset(buffer.array(), 6, 21);\r\n    dataFrameReader.read(transport);\r\n    Assert.assertTrue(\"Reader should be complete\", dataFrameReader.isComplete());\r\n    buffer.position(DataFrameHeaderReader.PAYLOAD_LENGTH_BYTES);\r\n    Assert.assertEquals(\"Payload should be the same as from the transport\", buffer, ByteBuffer.wrap(dataFrameReader.getPayload()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\sasl\\TestDataFrameWriter.java",
+  "methodName" : "testProvideEntireByteArrayAsPayload",
+  "sourceCode" : "@Test\r\npublic void testProvideEntireByteArrayAsPayload() {\r\n    DataFrameWriter frameWriter = new DataFrameWriter();\r\n    frameWriter.withOnlyPayload(BYTES);\r\n    byte[] expectedBytes = new byte[BYTES.length + PAYLOAD_LENGTH_BYTES];\r\n    EncodingUtils.encodeBigEndian(BYTES.length, expectedBytes);\r\n    System.arraycopy(BYTES, 0, expectedBytes, PAYLOAD_LENGTH_BYTES, BYTES.length);\r\n    Assert.assertEquals(ByteBuffer.wrap(expectedBytes), frameWriter.frameBytes);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\sasl\\TestDataFrameWriter.java",
+  "methodName" : "testProvideByteArrayPortionAsPayload",
+  "sourceCode" : "@Test\r\npublic void testProvideByteArrayPortionAsPayload() {\r\n    DataFrameWriter frameWriter = new DataFrameWriter();\r\n    int portionOffset = 2;\r\n    int portionLength = 3;\r\n    frameWriter.withOnlyPayload(BYTES, portionOffset, portionLength);\r\n    byte[] expectedBytes = new byte[portionLength + PAYLOAD_LENGTH_BYTES];\r\n    EncodingUtils.encodeBigEndian(portionLength, expectedBytes);\r\n    System.arraycopy(BYTES, portionOffset, expectedBytes, PAYLOAD_LENGTH_BYTES, portionLength);\r\n    Assert.assertEquals(ByteBuffer.wrap(expectedBytes), frameWriter.frameBytes);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\sasl\\TestDataFrameWriter.java",
+  "methodName" : "testProvideHeaderAndPayload",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testProvideHeaderAndPayload() {\r\n    DataFrameWriter frameWriter = new DataFrameWriter();\r\n    frameWriter.withHeaderAndPayload(new byte[1], new byte[1]);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\sasl\\TestDataFrameWriter.java",
+  "methodName" : "testProvidePayloadToIncompleteFrame",
+  "sourceCode" : "@Test(expected = IllegalStateException.class)\r\npublic void testProvidePayloadToIncompleteFrame() {\r\n    DataFrameWriter frameWriter = new DataFrameWriter();\r\n    frameWriter.withOnlyPayload(BYTES);\r\n    frameWriter.withOnlyPayload(new byte[1]);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\sasl\\TestDataFrameWriter.java",
+  "methodName" : "testWrite",
+  "sourceCode" : "@Test\r\npublic void testWrite() throws Exception {\r\n    DataFrameWriter frameWriter = new DataFrameWriter();\r\n    frameWriter.withOnlyPayload(BYTES);\r\n    // Slow socket which writes one byte per call.\r\n    TNonblockingTransport transport = Mockito.mock(TNonblockingTransport.class);\r\n    SlowWriting slowWriting = new SlowWriting();\r\n    Mockito.when(transport.write(frameWriter.frameBytes)).thenAnswer(slowWriting);\r\n    frameWriter.write(transport);\r\n    while (slowWriting.written < frameWriter.frameBytes.limit()) {\r\n        Assert.assertFalse(\"Frame writer should not be complete\", frameWriter.isComplete());\r\n        frameWriter.write(transport);\r\n    }\r\n    Assert.assertTrue(\"Frame writer should be complete\", frameWriter.isComplete());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\sasl\\TestSaslNegotiationFrameReader.java",
+  "methodName" : "testRead",
+  "sourceCode" : "@Test\r\npublic void testRead() throws TTransportException {\r\n    TMemoryInputTransport transport = new TMemoryInputTransport();\r\n    SaslNegotiationFrameReader negotiationReader = new SaslNegotiationFrameReader();\r\n    // No bytes received\r\n    negotiationReader.read(transport);\r\n    Assert.assertFalse(\"No bytes received\", negotiationReader.isComplete());\r\n    Assert.assertFalse(\"No bytes received\", negotiationReader.getHeader().isComplete());\r\n    // Read header\r\n    ByteBuffer buffer = ByteBuffer.allocate(5);\r\n    buffer.put(0, NegotiationStatus.OK.getValue());\r\n    buffer.putInt(1, 10);\r\n    transport.reset(buffer.array());\r\n    negotiationReader.read(transport);\r\n    Assert.assertFalse(\"Only header is complete\", negotiationReader.isComplete());\r\n    Assert.assertTrue(\"Header should be complete\", negotiationReader.getHeader().isComplete());\r\n    Assert.assertEquals(\"Payload size should be 10\", 10, negotiationReader.getHeader().payloadSize());\r\n    // Read payload\r\n    transport.reset(new byte[20]);\r\n    negotiationReader.read(transport);\r\n    Assert.assertTrue(\"Reader should be complete\", negotiationReader.isComplete());\r\n    Assert.assertEquals(\"Payload length should be 10\", 10, negotiationReader.getPayload().length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\sasl\\TestSaslNegotiationFrameReader.java",
+  "methodName" : "testReadInvalidNegotiationStatus",
+  "sourceCode" : "@Test(expected = TSaslNegotiationException.class)\r\npublic void testReadInvalidNegotiationStatus() throws TTransportException {\r\n    byte[] bytes = new byte[5];\r\n    // Invalid status byte.\r\n    bytes[0] = -1;\r\n    TMemoryInputTransport transport = new TMemoryInputTransport(bytes);\r\n    SaslNegotiationFrameReader negotiationReader = new SaslNegotiationFrameReader();\r\n    negotiationReader.read(transport);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\sasl\\TestSaslNegotiationFrameWriter.java",
+  "methodName" : "testWithHeaderAndPayload",
+  "sourceCode" : "@Test\r\npublic void testWithHeaderAndPayload() {\r\n    SaslNegotiationFrameWriter frameWriter = new SaslNegotiationFrameWriter();\r\n    frameWriter.withHeaderAndPayload(new byte[] { NegotiationStatus.OK.getValue() }, PAYLOAD);\r\n    byte[] expectedBytes = new byte[HEADER_BYTES + PAYLOAD.length];\r\n    expectedBytes[0] = NegotiationStatus.OK.getValue();\r\n    EncodingUtils.encodeBigEndian(PAYLOAD.length, expectedBytes, 1);\r\n    System.arraycopy(PAYLOAD, 0, expectedBytes, HEADER_BYTES, PAYLOAD.length);\r\n    Assert.assertEquals(ByteBuffer.wrap(expectedBytes), frameWriter.frameBytes);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\sasl\\TestSaslNegotiationFrameWriter.java",
+  "methodName" : "testWithInvalidHeaderLength",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testWithInvalidHeaderLength() {\r\n    SaslNegotiationFrameWriter frameWriter = new SaslNegotiationFrameWriter();\r\n    frameWriter.withHeaderAndPayload(new byte[5], 0, 2, PAYLOAD, 0, 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\sasl\\TestSaslNegotiationFrameWriter.java",
+  "methodName" : "testWithOnlyPayload",
+  "sourceCode" : "@Test(expected = UnsupportedOperationException.class)\r\npublic void testWithOnlyPayload() {\r\n    SaslNegotiationFrameWriter frameWriter = new SaslNegotiationFrameWriter();\r\n    frameWriter.withOnlyPayload(new byte[0]);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\TestAutoExpandingBufferWriteTransport.java",
+  "methodName" : "testIt",
+  "sourceCode" : "@Test\r\npublic void testIt() throws Exception {\r\n    AutoExpandingBufferWriteTransport t = new AutoExpandingBufferWriteTransport(config, 1, 0);\r\n    assertEquals(0, t.getLength());\r\n    assertEquals(1, t.getBuf().array().length);\r\n    byte[] b1 = new byte[] { 1, 2, 3 };\r\n    t.write(b1);\r\n    assertEquals(3, t.getLength());\r\n    assertTrue(t.getBuf().array().length >= 3);\r\n    assertEquals(ByteBuffer.wrap(b1), ByteBuffer.wrap(t.getBuf().array(), 0, 3));\r\n    t.reset();\r\n    assertEquals(0, t.getLength());\r\n    assertTrue(t.getBuf().array().length >= 3);\r\n    byte[] b2 = new byte[] { 4, 5 };\r\n    t.write(b2);\r\n    assertEquals(2, t.getLength());\r\n    assertEquals(ByteBuffer.wrap(b2), ByteBuffer.wrap(t.getBuf().array(), 0, 2));\r\n    AutoExpandingBufferWriteTransport uut = new AutoExpandingBufferWriteTransport(config, 8, 4);\r\n    assertEquals(4, uut.getLength());\r\n    assertEquals(8, uut.getBuf().array().length);\r\n    uut.write(b1);\r\n    assertEquals(7, uut.getLength());\r\n    assertEquals(8, uut.getBuf().array().length);\r\n    assertEquals(ByteBuffer.wrap(b1), ByteBuffer.wrap(uut.getBuf().array(), 4, 3));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\TestAutoExpandingBufferWriteTransport.java",
+  "methodName" : "testBadInitialSize",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testBadInitialSize() throws IllegalArgumentException, TTransportException {\r\n    new AutoExpandingBufferWriteTransport(config, 0, 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\TestAutoExpandingBufferWriteTransport.java",
+  "methodName" : "testBadFrontReserveSize",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testBadFrontReserveSize() throws IllegalArgumentException, TTransportException {\r\n    new AutoExpandingBufferWriteTransport(config, 4, -1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\TestAutoExpandingBufferWriteTransport.java",
+  "methodName" : "testTooSmallFrontReserveSize",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testTooSmallFrontReserveSize() throws IllegalArgumentException, TTransportException {\r\n    new AutoExpandingBufferWriteTransport(config, 4, 5);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\TestNonblockingServerSocket.java",
+  "methodName" : "testSocketChannelBlockingMode",
+  "sourceCode" : "@Test\r\npublic void testSocketChannelBlockingMode() throws TTransportException {\r\n    try (TNonblockingServerSocket nonblockingServer = new TNonblockingServerSocket(0)) {\r\n        ServerSocketChannel socketChannel = nonblockingServer.getServerSocketChannel();\r\n        Assert.assertFalse(\"Socket channel should be nonblocking\", socketChannel.isBlocking());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\TestTMemoryTransport.java",
+  "methodName" : "testReadBatches",
+  "sourceCode" : "@Test\r\npublic void testReadBatches() throws TTransportException {\r\n    byte[] inputBytes = { 0x10, 0x7A, (byte) 0xBF, (byte) 0xFE, 0x53, (byte) 0x82, (byte) 0xFF };\r\n    TMemoryTransport transport = new TMemoryTransport(inputBytes);\r\n    byte[] read = new byte[inputBytes.length];\r\n    int firstBatch = new Random().nextInt(inputBytes.length);\r\n    int secondBatch = inputBytes.length - firstBatch;\r\n    transport.read(read, 0, firstBatch);\r\n    transport.read(read, firstBatch, secondBatch);\r\n    boolean equal = true;\r\n    for (int i = 0; i < inputBytes.length; i++) {\r\n        equal = equal && inputBytes[i] == read[i];\r\n    }\r\n    Assert.assertEquals(ByteBuffer.wrap(inputBytes), ByteBuffer.wrap(read));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\TestTMemoryTransport.java",
+  "methodName" : "testReadMoreThanRemaining",
+  "sourceCode" : "@Test(expected = TTransportException.class)\r\npublic void testReadMoreThanRemaining() throws TTransportException {\r\n    TMemoryTransport transport = new TMemoryTransport(new byte[] { 0x00, 0x32 });\r\n    byte[] read = new byte[3];\r\n    transport.read(read, 0, 3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\transport\\TestTMemoryTransport.java",
+  "methodName" : "testWrite",
+  "sourceCode" : "@Test\r\npublic void testWrite() throws TTransportException {\r\n    TMemoryTransport transport = new TMemoryTransport(new byte[0]);\r\n    byte[] output1 = { 0x72, 0x56, 0x29, (byte) 0xAF, (byte) 0x9B };\r\n    transport.write(output1);\r\n    byte[] output2 = { (byte) 0x83, 0x10, 0x00 };\r\n    transport.write(output2, 0, 2);\r\n    byte[] expected = { 0x72, 0x56, 0x29, (byte) 0xAF, (byte) 0x9B, (byte) 0x83, 0x10 };\r\n    TByteArrayOutputStream outputByteArray = transport.getOutput();\r\n    Assert.assertEquals(ByteBuffer.wrap(expected), ByteBuffer.wrap(outputByteArray.get(), 0, outputByteArray.len()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\utils\\TestStringUtils.java",
+  "methodName" : "testToHexString",
+  "sourceCode" : "@Test\r\npublic void testToHexString() {\r\n    byte[] bytes = { 0x00, 0x1A, (byte) 0xEF, (byte) 0xAB, (byte) 0x92 };\r\n    Assert.assertEquals(\"001AEFAB92\", StringUtils.bytesToHexString(bytes));\r\n    Assert.assertEquals(\"EFAB92\", StringUtils.bytesToHexString(bytes, 2, 3));\r\n    Assert.assertNull(StringUtils.bytesToHexString(null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\utils\\TestStringUtils.java",
+  "methodName" : "testNegativeLength",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testNegativeLength() {\r\n    StringUtils.bytesToHexString(bytes, 0, -1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\utils\\TestStringUtils.java",
+  "methodName" : "testNegativeStartOffset",
+  "sourceCode" : "@Test(expected = IndexOutOfBoundsException.class)\r\npublic void testNegativeStartOffset() {\r\n    StringUtils.bytesToHexString(bytes, -1, 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\utils\\TestStringUtils.java",
+  "methodName" : "testInvalidRange",
+  "sourceCode" : "@Test(expected = IndexOutOfBoundsException.class)\r\npublic void testInvalidRange() {\r\n    StringUtils.bytesToHexString(bytes, 5, 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

@@ -1,0 +1,219 @@
+[
+  {
+    "rawMockObjectId": 1,
+    "variableName": "accessor",
+    "variableType": "HelixDataAccessor",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.helix.common.caches",
+      "filePath": "C:\\Java_projects\\temp_projects\\Helix\\helix-core\\src\\test\\java\\org\\apache\\helix\\common\\caches\\TestPropertyCache.java"
+    },
+    "statements": [
+      {
+        "code": "HelixDataAccessor accessor = mock(HelixDataAccessor.class);",
+        "line": 53,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testSimpleCacheRefresh",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test(description = \"Unit test for simple cache refresh\")\r\npublic void testSimpleCacheRefresh() {\r\n    @SuppressWarnings(\"unchecked\")\r\n    PropertyCache<HelixProperty> propertyCache = new PropertyCache<>(MOCK_CONTROL_CONTEXT_PROVIDER, \"mock property cache\", mock(PropertyCache.PropertyCacheKeyFuncs.class), false);\r\n    HelixDataAccessor accessor = mock(HelixDataAccessor.class);\r\n    Map<String, HelixProperty> propertyConfigMap = ImmutableMap.of(\"id\", new HelixProperty(\"test\"));\r\n    when(accessor.getChildValuesMap(any(PropertyKey.class), any(Boolean.class))).thenReturn(propertyConfigMap);\r\n    propertyCache.refresh(accessor);\r\n    Assert.assertEquals(propertyCache.getPropertyMap(), propertyConfigMap);\r\n    Assert.assertEquals(propertyCache.getPropertyByName(\"id\"), new HelixProperty(\"test\"));\r\n}"
+        }
+      },
+      {
+        "code": "when(accessor.getChildValuesMap(any(PropertyKey.class), any(Boolean.class))).thenReturn(propertyConfigMap);",
+        "line": 55,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testSimpleCacheRefresh",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test(description = \"Unit test for simple cache refresh\")\r\npublic void testSimpleCacheRefresh() {\r\n    @SuppressWarnings(\"unchecked\")\r\n    PropertyCache<HelixProperty> propertyCache = new PropertyCache<>(MOCK_CONTROL_CONTEXT_PROVIDER, \"mock property cache\", mock(PropertyCache.PropertyCacheKeyFuncs.class), false);\r\n    HelixDataAccessor accessor = mock(HelixDataAccessor.class);\r\n    Map<String, HelixProperty> propertyConfigMap = ImmutableMap.of(\"id\", new HelixProperty(\"test\"));\r\n    when(accessor.getChildValuesMap(any(PropertyKey.class), any(Boolean.class))).thenReturn(propertyConfigMap);\r\n    propertyCache.refresh(accessor);\r\n    Assert.assertEquals(propertyCache.getPropertyMap(), propertyConfigMap);\r\n    Assert.assertEquals(propertyCache.getPropertyByName(\"id\"), new HelixProperty(\"test\"));\r\n}"
+        }
+      },
+      {
+        "code": "propertyCache.refresh(accessor);",
+        "line": 58,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testSimpleCacheRefresh",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test(description = \"Unit test for simple cache refresh\")\r\npublic void testSimpleCacheRefresh() {\r\n    @SuppressWarnings(\"unchecked\")\r\n    PropertyCache<HelixProperty> propertyCache = new PropertyCache<>(MOCK_CONTROL_CONTEXT_PROVIDER, \"mock property cache\", mock(PropertyCache.PropertyCacheKeyFuncs.class), false);\r\n    HelixDataAccessor accessor = mock(HelixDataAccessor.class);\r\n    Map<String, HelixProperty> propertyConfigMap = ImmutableMap.of(\"id\", new HelixProperty(\"test\"));\r\n    when(accessor.getChildValuesMap(any(PropertyKey.class), any(Boolean.class))).thenReturn(propertyConfigMap);\r\n    propertyCache.refresh(accessor);\r\n    Assert.assertEquals(propertyCache.getPropertyMap(), propertyConfigMap);\r\n    Assert.assertEquals(propertyCache.getPropertyByName(\"id\"), new HelixProperty(\"test\"));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 2,
+    "variableName": "accessor",
+    "variableType": "HelixDataAccessor",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.helix.common.caches",
+      "filePath": "C:\\Java_projects\\temp_projects\\Helix\\helix-core\\src\\test\\java\\org\\apache\\helix\\common\\caches\\TestPropertyCache.java"
+    },
+    "statements": [
+      {
+        "code": "HelixDataAccessor accessor = mock(HelixDataAccessor.class);",
+        "line": 66,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testSelectivePropertyRefreshInputs",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test(description = \"Unit test for selective cache refresh\")\r\npublic void testSelectivePropertyRefreshInputs() {\r\n    HelixDataAccessor accessor = mock(HelixDataAccessor.class);\r\n    Map<String, HelixProperty> currentCache = ImmutableMap.of(\"instance0\", new HelixProperty(\"key0\"), \"instance1\", new HelixProperty(\"key1\"));\r\n    PropertyCache.PropertyCacheKeyFuncs<HelixProperty> mockCacheKeyFuncs = new PropertyCache.PropertyCacheKeyFuncs<HelixProperty>() {\r\n\r\n        @Override\r\n        public PropertyKey getRootKey(HelixDataAccessor accessor) {\r\n            return mock(PropertyKey.class);\r\n        }\r\n\r\n        @Override\r\n        public PropertyKey getObjPropertyKey(HelixDataAccessor accessor, String objName) {\r\n            return new PropertyKey.Builder(\"fake\").instance(objName);\r\n        }\r\n\r\n        @Override\r\n        public String getObjName(HelixProperty obj) {\r\n            return obj.getRecord().getId();\r\n        }\r\n    };\r\n    when(accessor.getChildNames(any(PropertyKey.class))).thenReturn(ImmutableList.of(\"instance1\", \"instance2\"));\r\n    @SuppressWarnings(\"unchecked\")\r\n    PropertyCache<HelixProperty> propertyCache = new PropertyCache<>(MOCK_CONTROL_CONTEXT_PROVIDER, \"mock property cache\", mock(PropertyCache.PropertyCacheKeyFuncs.class), false);\r\n    PropertyCache.SelectivePropertyRefreshInputs<HelixProperty> selectivePropertyRefreshInputs = propertyCache.genSelectiveUpdateInput(accessor, currentCache, mockCacheKeyFuncs);\r\n    Assert.assertEquals(selectivePropertyRefreshInputs.getReloadKeys().size(), 1);\r\n    Assert.assertEquals(selectivePropertyRefreshInputs.getReloadKeys().get(0), new PropertyKey.Builder(\"fake\").instance(\"instance2\"));\r\n}"
+        }
+      },
+      {
+        "code": "when(accessor.getChildNames(any(PropertyKey.class))).thenReturn(ImmutableList.of(\"instance1\", \"instance2\"));",
+        "line": 87,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testSelectivePropertyRefreshInputs",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test(description = \"Unit test for selective cache refresh\")\r\npublic void testSelectivePropertyRefreshInputs() {\r\n    HelixDataAccessor accessor = mock(HelixDataAccessor.class);\r\n    Map<String, HelixProperty> currentCache = ImmutableMap.of(\"instance0\", new HelixProperty(\"key0\"), \"instance1\", new HelixProperty(\"key1\"));\r\n    PropertyCache.PropertyCacheKeyFuncs<HelixProperty> mockCacheKeyFuncs = new PropertyCache.PropertyCacheKeyFuncs<HelixProperty>() {\r\n\r\n        @Override\r\n        public PropertyKey getRootKey(HelixDataAccessor accessor) {\r\n            return mock(PropertyKey.class);\r\n        }\r\n\r\n        @Override\r\n        public PropertyKey getObjPropertyKey(HelixDataAccessor accessor, String objName) {\r\n            return new PropertyKey.Builder(\"fake\").instance(objName);\r\n        }\r\n\r\n        @Override\r\n        public String getObjName(HelixProperty obj) {\r\n            return obj.getRecord().getId();\r\n        }\r\n    };\r\n    when(accessor.getChildNames(any(PropertyKey.class))).thenReturn(ImmutableList.of(\"instance1\", \"instance2\"));\r\n    @SuppressWarnings(\"unchecked\")\r\n    PropertyCache<HelixProperty> propertyCache = new PropertyCache<>(MOCK_CONTROL_CONTEXT_PROVIDER, \"mock property cache\", mock(PropertyCache.PropertyCacheKeyFuncs.class), false);\r\n    PropertyCache.SelectivePropertyRefreshInputs<HelixProperty> selectivePropertyRefreshInputs = propertyCache.genSelectiveUpdateInput(accessor, currentCache, mockCacheKeyFuncs);\r\n    Assert.assertEquals(selectivePropertyRefreshInputs.getReloadKeys().size(), 1);\r\n    Assert.assertEquals(selectivePropertyRefreshInputs.getReloadKeys().get(0), new PropertyKey.Builder(\"fake\").instance(\"instance2\"));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 3,
+    "variableName": "manager",
+    "variableType": "HelixManager",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.helix.monitoring",
+      "filePath": "C:\\Java_projects\\temp_projects\\Helix\\helix-core\\src\\test\\java\\org\\apache\\helix\\monitoring\\TestZKPathDataDumpTask.java"
+    },
+    "statements": [
+      {
+        "code": "HelixManager manager = mock(HelixManager.class);",
+        "line": 65,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "test",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void test() throws Exception {\r\n    String className = TestHelper.getTestClassName();\r\n    String methodName = TestHelper.getTestMethodName();\r\n    String clusterName = className + \"_\" + methodName;\r\n    int n = 1;\r\n    System.out.println(\"START \" + clusterName + \" at \" + new Date(System.currentTimeMillis()));\r\n    // participant port\r\n    TestHelper.// participant port\r\n    setupCluster(// participant port\r\n    clusterName, // participant port\r\n    ZK_ADDR, // participant port\r\n    12918, // participant name prefix\r\n    \"localhost\", // resource name prefix\r\n    \"TestDB\", // resources\r\n    1, // partitions per resource\r\n    2, // number of nodes\r\n    n, // replicas\r\n    1, \"MasterSlave\", // do rebalance\r\n    true);\r\n    HelixDataAccessor accessor = new ZKHelixDataAccessor(clusterName, new ZkBaseDataAccessor<ZNRecord>(_gZkClient));\r\n    PropertyKey.Builder keyBuilder = accessor.keyBuilder();\r\n    BaseDataAccessor<ZNRecord> baseAccessor = accessor.getBaseDataAccessor();\r\n    HelixManager manager = mock(HelixManager.class);\r\n    when(manager.getHelixDataAccessor()).thenReturn(accessor);\r\n    when(manager.getClusterName()).thenReturn(clusterName);\r\n    // run dump task without statusUpdates and errors, should not remove any existing\r\n    // statusUpdate/error paths\r\n    ZKPathDataDumpTask task = new ZKPathDataDumpTask(manager, 0L, 0L, Integer.MAX_VALUE);\r\n    task.run();\r\n    PropertyKey controllerStatusUpdateKey = keyBuilder.controllerTaskStatuses();\r\n    Assert.assertTrue(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    PropertyKey controllerErrorKey = keyBuilder.controllerTaskErrors();\r\n    Assert.assertTrue(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    PropertyKey statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\");\r\n    Assert.assertTrue(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    PropertyKey errorKey = keyBuilder.stateTransitionErrors(\"localhost_12918\");\r\n    // add participant status updates and errors\r\n    statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_0\");\r\n    accessor.setProperty(statusUpdateKey, new StatusUpdate(new ZNRecord(\"statusUpdate\")));\r\n    errorKey = keyBuilder.stateTransitionError(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_0\");\r\n    accessor.setProperty(errorKey, new Error(new ZNRecord(\"error\")));\r\n    // add controller status updates and errors\r\n    controllerStatusUpdateKey = keyBuilder.controllerTaskStatus(\"session_0\", \"TestDB\");\r\n    accessor.setProperty(controllerStatusUpdateKey, new StatusUpdate(new ZNRecord(\"controllerStatusUpdate\")));\r\n    controllerErrorKey = keyBuilder.controllerTaskError(\"TestDB_error\");\r\n    accessor.setProperty(controllerErrorKey, new Error(new ZNRecord(\"controllerError\")));\r\n    // run dump task, should remove existing statusUpdate/error paths\r\n    task.run();\r\n    Assert.assertFalse(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(errorKey.getPath(), 0));\r\n    controllerStatusUpdateKey = keyBuilder.controllerTaskStatuses();\r\n    Assert.assertTrue(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    controllerErrorKey = keyBuilder.controllerTaskErrors();\r\n    Assert.assertTrue(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\");\r\n    Assert.assertTrue(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    errorKey = keyBuilder.stateTransitionErrors(\"localhost_12918\");\r\n    System.out.println(\"END \" + clusterName + \" at \" + new Date(System.currentTimeMillis()));\r\n}"
+        }
+      },
+      {
+        "code": "when(manager.getHelixDataAccessor()).thenReturn(accessor);",
+        "line": 66,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "test",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void test() throws Exception {\r\n    String className = TestHelper.getTestClassName();\r\n    String methodName = TestHelper.getTestMethodName();\r\n    String clusterName = className + \"_\" + methodName;\r\n    int n = 1;\r\n    System.out.println(\"START \" + clusterName + \" at \" + new Date(System.currentTimeMillis()));\r\n    // participant port\r\n    TestHelper.// participant port\r\n    setupCluster(// participant port\r\n    clusterName, // participant port\r\n    ZK_ADDR, // participant port\r\n    12918, // participant name prefix\r\n    \"localhost\", // resource name prefix\r\n    \"TestDB\", // resources\r\n    1, // partitions per resource\r\n    2, // number of nodes\r\n    n, // replicas\r\n    1, \"MasterSlave\", // do rebalance\r\n    true);\r\n    HelixDataAccessor accessor = new ZKHelixDataAccessor(clusterName, new ZkBaseDataAccessor<ZNRecord>(_gZkClient));\r\n    PropertyKey.Builder keyBuilder = accessor.keyBuilder();\r\n    BaseDataAccessor<ZNRecord> baseAccessor = accessor.getBaseDataAccessor();\r\n    HelixManager manager = mock(HelixManager.class);\r\n    when(manager.getHelixDataAccessor()).thenReturn(accessor);\r\n    when(manager.getClusterName()).thenReturn(clusterName);\r\n    // run dump task without statusUpdates and errors, should not remove any existing\r\n    // statusUpdate/error paths\r\n    ZKPathDataDumpTask task = new ZKPathDataDumpTask(manager, 0L, 0L, Integer.MAX_VALUE);\r\n    task.run();\r\n    PropertyKey controllerStatusUpdateKey = keyBuilder.controllerTaskStatuses();\r\n    Assert.assertTrue(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    PropertyKey controllerErrorKey = keyBuilder.controllerTaskErrors();\r\n    Assert.assertTrue(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    PropertyKey statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\");\r\n    Assert.assertTrue(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    PropertyKey errorKey = keyBuilder.stateTransitionErrors(\"localhost_12918\");\r\n    // add participant status updates and errors\r\n    statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_0\");\r\n    accessor.setProperty(statusUpdateKey, new StatusUpdate(new ZNRecord(\"statusUpdate\")));\r\n    errorKey = keyBuilder.stateTransitionError(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_0\");\r\n    accessor.setProperty(errorKey, new Error(new ZNRecord(\"error\")));\r\n    // add controller status updates and errors\r\n    controllerStatusUpdateKey = keyBuilder.controllerTaskStatus(\"session_0\", \"TestDB\");\r\n    accessor.setProperty(controllerStatusUpdateKey, new StatusUpdate(new ZNRecord(\"controllerStatusUpdate\")));\r\n    controllerErrorKey = keyBuilder.controllerTaskError(\"TestDB_error\");\r\n    accessor.setProperty(controllerErrorKey, new Error(new ZNRecord(\"controllerError\")));\r\n    // run dump task, should remove existing statusUpdate/error paths\r\n    task.run();\r\n    Assert.assertFalse(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(errorKey.getPath(), 0));\r\n    controllerStatusUpdateKey = keyBuilder.controllerTaskStatuses();\r\n    Assert.assertTrue(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    controllerErrorKey = keyBuilder.controllerTaskErrors();\r\n    Assert.assertTrue(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\");\r\n    Assert.assertTrue(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    errorKey = keyBuilder.stateTransitionErrors(\"localhost_12918\");\r\n    System.out.println(\"END \" + clusterName + \" at \" + new Date(System.currentTimeMillis()));\r\n}"
+        }
+      },
+      {
+        "code": "when(manager.getClusterName()).thenReturn(clusterName);",
+        "line": 67,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "test",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void test() throws Exception {\r\n    String className = TestHelper.getTestClassName();\r\n    String methodName = TestHelper.getTestMethodName();\r\n    String clusterName = className + \"_\" + methodName;\r\n    int n = 1;\r\n    System.out.println(\"START \" + clusterName + \" at \" + new Date(System.currentTimeMillis()));\r\n    // participant port\r\n    TestHelper.// participant port\r\n    setupCluster(// participant port\r\n    clusterName, // participant port\r\n    ZK_ADDR, // participant port\r\n    12918, // participant name prefix\r\n    \"localhost\", // resource name prefix\r\n    \"TestDB\", // resources\r\n    1, // partitions per resource\r\n    2, // number of nodes\r\n    n, // replicas\r\n    1, \"MasterSlave\", // do rebalance\r\n    true);\r\n    HelixDataAccessor accessor = new ZKHelixDataAccessor(clusterName, new ZkBaseDataAccessor<ZNRecord>(_gZkClient));\r\n    PropertyKey.Builder keyBuilder = accessor.keyBuilder();\r\n    BaseDataAccessor<ZNRecord> baseAccessor = accessor.getBaseDataAccessor();\r\n    HelixManager manager = mock(HelixManager.class);\r\n    when(manager.getHelixDataAccessor()).thenReturn(accessor);\r\n    when(manager.getClusterName()).thenReturn(clusterName);\r\n    // run dump task without statusUpdates and errors, should not remove any existing\r\n    // statusUpdate/error paths\r\n    ZKPathDataDumpTask task = new ZKPathDataDumpTask(manager, 0L, 0L, Integer.MAX_VALUE);\r\n    task.run();\r\n    PropertyKey controllerStatusUpdateKey = keyBuilder.controllerTaskStatuses();\r\n    Assert.assertTrue(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    PropertyKey controllerErrorKey = keyBuilder.controllerTaskErrors();\r\n    Assert.assertTrue(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    PropertyKey statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\");\r\n    Assert.assertTrue(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    PropertyKey errorKey = keyBuilder.stateTransitionErrors(\"localhost_12918\");\r\n    // add participant status updates and errors\r\n    statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_0\");\r\n    accessor.setProperty(statusUpdateKey, new StatusUpdate(new ZNRecord(\"statusUpdate\")));\r\n    errorKey = keyBuilder.stateTransitionError(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_0\");\r\n    accessor.setProperty(errorKey, new Error(new ZNRecord(\"error\")));\r\n    // add controller status updates and errors\r\n    controllerStatusUpdateKey = keyBuilder.controllerTaskStatus(\"session_0\", \"TestDB\");\r\n    accessor.setProperty(controllerStatusUpdateKey, new StatusUpdate(new ZNRecord(\"controllerStatusUpdate\")));\r\n    controllerErrorKey = keyBuilder.controllerTaskError(\"TestDB_error\");\r\n    accessor.setProperty(controllerErrorKey, new Error(new ZNRecord(\"controllerError\")));\r\n    // run dump task, should remove existing statusUpdate/error paths\r\n    task.run();\r\n    Assert.assertFalse(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(errorKey.getPath(), 0));\r\n    controllerStatusUpdateKey = keyBuilder.controllerTaskStatuses();\r\n    Assert.assertTrue(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    controllerErrorKey = keyBuilder.controllerTaskErrors();\r\n    Assert.assertTrue(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\");\r\n    Assert.assertTrue(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    errorKey = keyBuilder.stateTransitionErrors(\"localhost_12918\");\r\n    System.out.println(\"END \" + clusterName + \" at \" + new Date(System.currentTimeMillis()));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 4,
+    "variableName": "manager",
+    "variableType": "HelixManager",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.helix.monitoring",
+      "filePath": "C:\\Java_projects\\temp_projects\\Helix\\helix-core\\src\\test\\java\\org\\apache\\helix\\monitoring\\TestZKPathDataDumpTask.java"
+    },
+    "statements": [
+      {
+        "code": "HelixManager manager = mock(HelixManager.class);",
+        "line": 138,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCapacityReached",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCapacityReached() throws Exception {\r\n    String className = TestHelper.getTestClassName();\r\n    String methodName = TestHelper.getTestMethodName();\r\n    String clusterName = className + \"_\" + methodName;\r\n    int n = 1;\r\n    System.out.println(\"START \" + clusterName + \" at \" + new Date(System.currentTimeMillis()));\r\n    // participant port\r\n    TestHelper.// participant port\r\n    setupCluster(// participant port\r\n    clusterName, // participant port\r\n    ZK_ADDR, // participant port\r\n    12918, // participant name prefix\r\n    \"localhost\", // resource name prefix\r\n    \"TestDB\", // resources\r\n    1, // partitions per resource\r\n    2, // number of nodes\r\n    n, // replicas\r\n    1, \"MasterSlave\", // do rebalance\r\n    true);\r\n    HelixDataAccessor accessor = new ZKHelixDataAccessor(clusterName, new ZkBaseDataAccessor<ZNRecord>(_gZkClient));\r\n    PropertyKey.Builder keyBuilder = accessor.keyBuilder();\r\n    BaseDataAccessor<ZNRecord> baseAccessor = accessor.getBaseDataAccessor();\r\n    HelixManager manager = mock(HelixManager.class);\r\n    when(manager.getHelixDataAccessor()).thenReturn(accessor);\r\n    when(manager.getClusterName()).thenReturn(clusterName);\r\n    // run dump task without statusUpdates and errors, should not remove any existing\r\n    // statusUpdate/error paths\r\n    ZKPathDataDumpTask task = new ZKPathDataDumpTask(manager, Long.MAX_VALUE, Long.MAX_VALUE, 1);\r\n    task.run();\r\n    PropertyKey controllerStatusUpdateKey = keyBuilder.controllerTaskStatuses();\r\n    Assert.assertTrue(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    PropertyKey controllerErrorKey = keyBuilder.controllerTaskErrors();\r\n    Assert.assertTrue(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    PropertyKey statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\");\r\n    Assert.assertTrue(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    PropertyKey errorKey = keyBuilder.stateTransitionErrors(\"localhost_12918\");\r\n    Assert.assertTrue(baseAccessor.exists(errorKey.getPath(), 0));\r\n    // add participant status updates and errors\r\n    statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_0\");\r\n    accessor.setProperty(statusUpdateKey, new StatusUpdate(new ZNRecord(\"statusUpdate\")));\r\n    errorKey = keyBuilder.stateTransitionError(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_0\");\r\n    accessor.setProperty(errorKey, new Error(new ZNRecord(\"error\")));\r\n    // add controller status updates and errors (one of each, should not trigger anything)\r\n    controllerStatusUpdateKey = keyBuilder.controllerTaskStatus(\"session_0\", \"TestDB\");\r\n    accessor.setProperty(controllerStatusUpdateKey, new StatusUpdate(new ZNRecord(\"controllerStatusUpdate\")));\r\n    controllerErrorKey = keyBuilder.controllerTaskError(\"TestDB_error\");\r\n    accessor.setProperty(controllerErrorKey, new Error(new ZNRecord(\"controllerError\")));\r\n    // run dump task, should not remove anything because the threshold is not exceeded\r\n    task.run();\r\n    Assert.assertTrue(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    Assert.assertTrue(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    Assert.assertTrue(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    Assert.assertTrue(baseAccessor.exists(errorKey.getPath(), 0));\r\n    // add a second set of all status updates and errors\r\n    statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_1\");\r\n    accessor.setProperty(statusUpdateKey, new StatusUpdate(new ZNRecord(\"statusUpdate\")));\r\n    errorKey = keyBuilder.stateTransitionError(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_1\");\r\n    accessor.setProperty(errorKey, new Error(new ZNRecord(\"error\")));\r\n    controllerStatusUpdateKey = keyBuilder.controllerTaskStatus(\"session_0\", \"TestDB1\");\r\n    accessor.setProperty(controllerStatusUpdateKey, new StatusUpdate(new ZNRecord(\"controllerStatusUpdate\")));\r\n    controllerErrorKey = keyBuilder.controllerTaskError(\"TestDB1_error\");\r\n    accessor.setProperty(controllerErrorKey, new Error(new ZNRecord(\"controllerError\")));\r\n    // run dump task, should remove everything since capacities are exceeded\r\n    task.run();\r\n    Assert.assertFalse(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(errorKey.getPath(), 0));\r\n}"
+        }
+      },
+      {
+        "code": "when(manager.getHelixDataAccessor()).thenReturn(accessor);",
+        "line": 139,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCapacityReached",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCapacityReached() throws Exception {\r\n    String className = TestHelper.getTestClassName();\r\n    String methodName = TestHelper.getTestMethodName();\r\n    String clusterName = className + \"_\" + methodName;\r\n    int n = 1;\r\n    System.out.println(\"START \" + clusterName + \" at \" + new Date(System.currentTimeMillis()));\r\n    // participant port\r\n    TestHelper.// participant port\r\n    setupCluster(// participant port\r\n    clusterName, // participant port\r\n    ZK_ADDR, // participant port\r\n    12918, // participant name prefix\r\n    \"localhost\", // resource name prefix\r\n    \"TestDB\", // resources\r\n    1, // partitions per resource\r\n    2, // number of nodes\r\n    n, // replicas\r\n    1, \"MasterSlave\", // do rebalance\r\n    true);\r\n    HelixDataAccessor accessor = new ZKHelixDataAccessor(clusterName, new ZkBaseDataAccessor<ZNRecord>(_gZkClient));\r\n    PropertyKey.Builder keyBuilder = accessor.keyBuilder();\r\n    BaseDataAccessor<ZNRecord> baseAccessor = accessor.getBaseDataAccessor();\r\n    HelixManager manager = mock(HelixManager.class);\r\n    when(manager.getHelixDataAccessor()).thenReturn(accessor);\r\n    when(manager.getClusterName()).thenReturn(clusterName);\r\n    // run dump task without statusUpdates and errors, should not remove any existing\r\n    // statusUpdate/error paths\r\n    ZKPathDataDumpTask task = new ZKPathDataDumpTask(manager, Long.MAX_VALUE, Long.MAX_VALUE, 1);\r\n    task.run();\r\n    PropertyKey controllerStatusUpdateKey = keyBuilder.controllerTaskStatuses();\r\n    Assert.assertTrue(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    PropertyKey controllerErrorKey = keyBuilder.controllerTaskErrors();\r\n    Assert.assertTrue(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    PropertyKey statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\");\r\n    Assert.assertTrue(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    PropertyKey errorKey = keyBuilder.stateTransitionErrors(\"localhost_12918\");\r\n    Assert.assertTrue(baseAccessor.exists(errorKey.getPath(), 0));\r\n    // add participant status updates and errors\r\n    statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_0\");\r\n    accessor.setProperty(statusUpdateKey, new StatusUpdate(new ZNRecord(\"statusUpdate\")));\r\n    errorKey = keyBuilder.stateTransitionError(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_0\");\r\n    accessor.setProperty(errorKey, new Error(new ZNRecord(\"error\")));\r\n    // add controller status updates and errors (one of each, should not trigger anything)\r\n    controllerStatusUpdateKey = keyBuilder.controllerTaskStatus(\"session_0\", \"TestDB\");\r\n    accessor.setProperty(controllerStatusUpdateKey, new StatusUpdate(new ZNRecord(\"controllerStatusUpdate\")));\r\n    controllerErrorKey = keyBuilder.controllerTaskError(\"TestDB_error\");\r\n    accessor.setProperty(controllerErrorKey, new Error(new ZNRecord(\"controllerError\")));\r\n    // run dump task, should not remove anything because the threshold is not exceeded\r\n    task.run();\r\n    Assert.assertTrue(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    Assert.assertTrue(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    Assert.assertTrue(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    Assert.assertTrue(baseAccessor.exists(errorKey.getPath(), 0));\r\n    // add a second set of all status updates and errors\r\n    statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_1\");\r\n    accessor.setProperty(statusUpdateKey, new StatusUpdate(new ZNRecord(\"statusUpdate\")));\r\n    errorKey = keyBuilder.stateTransitionError(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_1\");\r\n    accessor.setProperty(errorKey, new Error(new ZNRecord(\"error\")));\r\n    controllerStatusUpdateKey = keyBuilder.controllerTaskStatus(\"session_0\", \"TestDB1\");\r\n    accessor.setProperty(controllerStatusUpdateKey, new StatusUpdate(new ZNRecord(\"controllerStatusUpdate\")));\r\n    controllerErrorKey = keyBuilder.controllerTaskError(\"TestDB1_error\");\r\n    accessor.setProperty(controllerErrorKey, new Error(new ZNRecord(\"controllerError\")));\r\n    // run dump task, should remove everything since capacities are exceeded\r\n    task.run();\r\n    Assert.assertFalse(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(errorKey.getPath(), 0));\r\n}"
+        }
+      },
+      {
+        "code": "when(manager.getClusterName()).thenReturn(clusterName);",
+        "line": 140,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCapacityReached",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCapacityReached() throws Exception {\r\n    String className = TestHelper.getTestClassName();\r\n    String methodName = TestHelper.getTestMethodName();\r\n    String clusterName = className + \"_\" + methodName;\r\n    int n = 1;\r\n    System.out.println(\"START \" + clusterName + \" at \" + new Date(System.currentTimeMillis()));\r\n    // participant port\r\n    TestHelper.// participant port\r\n    setupCluster(// participant port\r\n    clusterName, // participant port\r\n    ZK_ADDR, // participant port\r\n    12918, // participant name prefix\r\n    \"localhost\", // resource name prefix\r\n    \"TestDB\", // resources\r\n    1, // partitions per resource\r\n    2, // number of nodes\r\n    n, // replicas\r\n    1, \"MasterSlave\", // do rebalance\r\n    true);\r\n    HelixDataAccessor accessor = new ZKHelixDataAccessor(clusterName, new ZkBaseDataAccessor<ZNRecord>(_gZkClient));\r\n    PropertyKey.Builder keyBuilder = accessor.keyBuilder();\r\n    BaseDataAccessor<ZNRecord> baseAccessor = accessor.getBaseDataAccessor();\r\n    HelixManager manager = mock(HelixManager.class);\r\n    when(manager.getHelixDataAccessor()).thenReturn(accessor);\r\n    when(manager.getClusterName()).thenReturn(clusterName);\r\n    // run dump task without statusUpdates and errors, should not remove any existing\r\n    // statusUpdate/error paths\r\n    ZKPathDataDumpTask task = new ZKPathDataDumpTask(manager, Long.MAX_VALUE, Long.MAX_VALUE, 1);\r\n    task.run();\r\n    PropertyKey controllerStatusUpdateKey = keyBuilder.controllerTaskStatuses();\r\n    Assert.assertTrue(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    PropertyKey controllerErrorKey = keyBuilder.controllerTaskErrors();\r\n    Assert.assertTrue(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    PropertyKey statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\");\r\n    Assert.assertTrue(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    PropertyKey errorKey = keyBuilder.stateTransitionErrors(\"localhost_12918\");\r\n    Assert.assertTrue(baseAccessor.exists(errorKey.getPath(), 0));\r\n    // add participant status updates and errors\r\n    statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_0\");\r\n    accessor.setProperty(statusUpdateKey, new StatusUpdate(new ZNRecord(\"statusUpdate\")));\r\n    errorKey = keyBuilder.stateTransitionError(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_0\");\r\n    accessor.setProperty(errorKey, new Error(new ZNRecord(\"error\")));\r\n    // add controller status updates and errors (one of each, should not trigger anything)\r\n    controllerStatusUpdateKey = keyBuilder.controllerTaskStatus(\"session_0\", \"TestDB\");\r\n    accessor.setProperty(controllerStatusUpdateKey, new StatusUpdate(new ZNRecord(\"controllerStatusUpdate\")));\r\n    controllerErrorKey = keyBuilder.controllerTaskError(\"TestDB_error\");\r\n    accessor.setProperty(controllerErrorKey, new Error(new ZNRecord(\"controllerError\")));\r\n    // run dump task, should not remove anything because the threshold is not exceeded\r\n    task.run();\r\n    Assert.assertTrue(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    Assert.assertTrue(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    Assert.assertTrue(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    Assert.assertTrue(baseAccessor.exists(errorKey.getPath(), 0));\r\n    // add a second set of all status updates and errors\r\n    statusUpdateKey = keyBuilder.stateTransitionStatus(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_1\");\r\n    accessor.setProperty(statusUpdateKey, new StatusUpdate(new ZNRecord(\"statusUpdate\")));\r\n    errorKey = keyBuilder.stateTransitionError(\"localhost_12918\", \"session_0\", \"TestDB0\", \"TestDB0_1\");\r\n    accessor.setProperty(errorKey, new Error(new ZNRecord(\"error\")));\r\n    controllerStatusUpdateKey = keyBuilder.controllerTaskStatus(\"session_0\", \"TestDB1\");\r\n    accessor.setProperty(controllerStatusUpdateKey, new StatusUpdate(new ZNRecord(\"controllerStatusUpdate\")));\r\n    controllerErrorKey = keyBuilder.controllerTaskError(\"TestDB1_error\");\r\n    accessor.setProperty(controllerErrorKey, new Error(new ZNRecord(\"controllerError\")));\r\n    // run dump task, should remove everything since capacities are exceeded\r\n    task.run();\r\n    Assert.assertFalse(baseAccessor.exists(controllerStatusUpdateKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(controllerErrorKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(statusUpdateKey.getPath(), 0));\r\n    Assert.assertFalse(baseAccessor.exists(errorKey.getPath(), 0));\r\n}"
+        }
+      }
+    ]
+  }
+]

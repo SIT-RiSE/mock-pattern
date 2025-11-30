@@ -1,0 +1,1420 @@
+[
+  {
+    "rawMockObjectId": 1,
+    "variableName": "keyCacheSerializerSpy",
+    "variableType": "CacheService.KeyCacheSerializer",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.db",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\db\\KeyCacheTest.java"
+    },
+    "statements": [
+      {
+        "code": "CacheService.KeyCacheSerializer keyCacheSerializerSpy = Mockito.spy(keyCacheSerializer);",
+        "line": 393,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testKeyCacheLoadCacheLoadTimeExceedingLimit",
+          "methodAnnotations": [
+            "SuppressWarnings",
+            "Test"
+          ],
+          "methodRawCode": "@SuppressWarnings({ \"unchecked\", \"rawtypes\" })\r\n@Test\r\npublic void testKeyCacheLoadCacheLoadTimeExceedingLimit() throws Exception {\r\n    DatabaseDescriptor.setCacheLoadTimeout(2);\r\n    int delayMillis = 1000;\r\n    int numberOfRows = 100;\r\n    String cf = COLUMN_FAMILY9;\r\n    createAndInvalidateCache(Collections.singletonList(Pair.create(KEYSPACE1, cf)), numberOfRows);\r\n    // Testing cache load. Here using custom built AutoSavingCache instance as simulating delay is not possible with\r\n    // 'CacheService.instance.keyCache'. 'AutoSavingCache.loadSaved()' is returning no.of entries loaded so we don't need\r\n    // to instantiate ICache.class.\r\n    CacheService.KeyCacheSerializer keyCacheSerializer = new CacheService.KeyCacheSerializer();\r\n    CacheService.KeyCacheSerializer keyCacheSerializerSpy = Mockito.spy(keyCacheSerializer);\r\n    AutoSavingCache autoSavingCache = new AutoSavingCache(mock(ICache.class), CacheService.CacheType.KEY_CACHE, keyCacheSerializerSpy);\r\n    doAnswer(new AnswersWithDelay(delayMillis, answer -> keyCacheSerializer.deserialize(answer.getArgument(0), answer.getArgument(1)))).when(keyCacheSerializerSpy).deserialize(any(DataInputPlus.class), any(ColumnFamilyStore.class));\r\n    long maxExpectedKeyCache = Math.min(numberOfRows, 1 + TimeUnit.SECONDS.toMillis(DatabaseDescriptor.getCacheLoadTimeout()) / delayMillis);\r\n    long keysLoaded = autoSavingCache.loadSaved();\r\n    assertThat(keysLoaded, Matchers.lessThanOrEqualTo(maxExpectedKeyCache));\r\n    assertNotEquals(0, keysLoaded);\r\n    Mockito.verify(keyCacheSerializerSpy, Mockito.times(1)).cleanupAfterDeserialize();\r\n}"
+        }
+      },
+      {
+        "code": "doAnswer(new AnswersWithDelay(delayMillis, answer -> keyCacheSerializer.deserialize(answer.getArgument(0), answer.getArgument(1)))).when(keyCacheSerializerSpy).deserialize(any(DataInputPlus.class), any(ColumnFamilyStore.class));",
+        "line": 398,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testKeyCacheLoadCacheLoadTimeExceedingLimit",
+          "methodAnnotations": [
+            "SuppressWarnings",
+            "Test"
+          ],
+          "methodRawCode": "@SuppressWarnings({ \"unchecked\", \"rawtypes\" })\r\n@Test\r\npublic void testKeyCacheLoadCacheLoadTimeExceedingLimit() throws Exception {\r\n    DatabaseDescriptor.setCacheLoadTimeout(2);\r\n    int delayMillis = 1000;\r\n    int numberOfRows = 100;\r\n    String cf = COLUMN_FAMILY9;\r\n    createAndInvalidateCache(Collections.singletonList(Pair.create(KEYSPACE1, cf)), numberOfRows);\r\n    // Testing cache load. Here using custom built AutoSavingCache instance as simulating delay is not possible with\r\n    // 'CacheService.instance.keyCache'. 'AutoSavingCache.loadSaved()' is returning no.of entries loaded so we don't need\r\n    // to instantiate ICache.class.\r\n    CacheService.KeyCacheSerializer keyCacheSerializer = new CacheService.KeyCacheSerializer();\r\n    CacheService.KeyCacheSerializer keyCacheSerializerSpy = Mockito.spy(keyCacheSerializer);\r\n    AutoSavingCache autoSavingCache = new AutoSavingCache(mock(ICache.class), CacheService.CacheType.KEY_CACHE, keyCacheSerializerSpy);\r\n    doAnswer(new AnswersWithDelay(delayMillis, answer -> keyCacheSerializer.deserialize(answer.getArgument(0), answer.getArgument(1)))).when(keyCacheSerializerSpy).deserialize(any(DataInputPlus.class), any(ColumnFamilyStore.class));\r\n    long maxExpectedKeyCache = Math.min(numberOfRows, 1 + TimeUnit.SECONDS.toMillis(DatabaseDescriptor.getCacheLoadTimeout()) / delayMillis);\r\n    long keysLoaded = autoSavingCache.loadSaved();\r\n    assertThat(keysLoaded, Matchers.lessThanOrEqualTo(maxExpectedKeyCache));\r\n    assertNotEquals(0, keysLoaded);\r\n    Mockito.verify(keyCacheSerializerSpy, Mockito.times(1)).cleanupAfterDeserialize();\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.verify(keyCacheSerializerSpy, Mockito.times(1)).cleanupAfterDeserialize();",
+        "line": 408,
+        "type": "VERIFICATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testKeyCacheLoadCacheLoadTimeExceedingLimit",
+          "methodAnnotations": [
+            "SuppressWarnings",
+            "Test"
+          ],
+          "methodRawCode": "@SuppressWarnings({ \"unchecked\", \"rawtypes\" })\r\n@Test\r\npublic void testKeyCacheLoadCacheLoadTimeExceedingLimit() throws Exception {\r\n    DatabaseDescriptor.setCacheLoadTimeout(2);\r\n    int delayMillis = 1000;\r\n    int numberOfRows = 100;\r\n    String cf = COLUMN_FAMILY9;\r\n    createAndInvalidateCache(Collections.singletonList(Pair.create(KEYSPACE1, cf)), numberOfRows);\r\n    // Testing cache load. Here using custom built AutoSavingCache instance as simulating delay is not possible with\r\n    // 'CacheService.instance.keyCache'. 'AutoSavingCache.loadSaved()' is returning no.of entries loaded so we don't need\r\n    // to instantiate ICache.class.\r\n    CacheService.KeyCacheSerializer keyCacheSerializer = new CacheService.KeyCacheSerializer();\r\n    CacheService.KeyCacheSerializer keyCacheSerializerSpy = Mockito.spy(keyCacheSerializer);\r\n    AutoSavingCache autoSavingCache = new AutoSavingCache(mock(ICache.class), CacheService.CacheType.KEY_CACHE, keyCacheSerializerSpy);\r\n    doAnswer(new AnswersWithDelay(delayMillis, answer -> keyCacheSerializer.deserialize(answer.getArgument(0), answer.getArgument(1)))).when(keyCacheSerializerSpy).deserialize(any(DataInputPlus.class), any(ColumnFamilyStore.class));\r\n    long maxExpectedKeyCache = Math.min(numberOfRows, 1 + TimeUnit.SECONDS.toMillis(DatabaseDescriptor.getCacheLoadTimeout()) / delayMillis);\r\n    long keysLoaded = autoSavingCache.loadSaved();\r\n    assertThat(keysLoaded, Matchers.lessThanOrEqualTo(maxExpectedKeyCache));\r\n    assertNotEquals(0, keysLoaded);\r\n    Mockito.verify(keyCacheSerializerSpy, Mockito.times(1)).cleanupAfterDeserialize();\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 2,
+    "variableName": "schema",
+    "variableType": "SchemaProvider",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.db",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\db\\KeyspaceTest.java"
+    },
+    "statements": [
+      {
+        "code": "SchemaProvider schema = Mockito.mock(SchemaProvider.class);",
+        "line": 502,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "shouldThrowOnMissingKeyspace",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void shouldThrowOnMissingKeyspace() {\r\n    SchemaProvider schema = Mockito.mock(SchemaProvider.class);\r\n    String ksName = \"MissingKeyspace\";\r\n    Mockito.when(schema.getKeyspaceMetadata(ksName)).thenReturn(null);\r\n    Assertions.assertThatThrownBy(() -> Keyspace.open(ksName, schema, false)).isInstanceOf(AssertionError.class).hasMessage(\"Unknown keyspace \" + ksName);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(schema.getKeyspaceMetadata(ksName)).thenReturn(null);",
+        "line": 505,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "shouldThrowOnMissingKeyspace",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void shouldThrowOnMissingKeyspace() {\r\n    SchemaProvider schema = Mockito.mock(SchemaProvider.class);\r\n    String ksName = \"MissingKeyspace\";\r\n    Mockito.when(schema.getKeyspaceMetadata(ksName)).thenReturn(null);\r\n    Assertions.assertThatThrownBy(() -> Keyspace.open(ksName, schema, false)).isInstanceOf(AssertionError.class).hasMessage(\"Unknown keyspace \" + ksName);\r\n}"
+        }
+      },
+      {
+        "code": "Assertions.assertThatThrownBy(() -> Keyspace.open(ksName, schema, false)).isInstanceOf(AssertionError.class).hasMessage(\"Unknown keyspace \" + ksName);",
+        "line": 507,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "shouldThrowOnMissingKeyspace",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void shouldThrowOnMissingKeyspace() {\r\n    SchemaProvider schema = Mockito.mock(SchemaProvider.class);\r\n    String ksName = \"MissingKeyspace\";\r\n    Mockito.when(schema.getKeyspaceMetadata(ksName)).thenReturn(null);\r\n    Assertions.assertThatThrownBy(() -> Keyspace.open(ksName, schema, false)).isInstanceOf(AssertionError.class).hasMessage(\"Unknown keyspace \" + ksName);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 3,
+    "variableName": "output",
+    "variableType": "DataOutputPlus",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.db.marshal",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\db\\marshal\\EmptyTypeTest.java"
+    },
+    "statements": [
+      {
+        "code": "DataOutputPlus output = Mockito.mock(DataOutputPlus.class);",
+        "line": 45,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "writeEmptyAllowed",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void writeEmptyAllowed() {\r\n    DataOutputPlus output = Mockito.mock(DataOutputPlus.class);\r\n    EmptyType.instance.writeValue(ByteBufferUtil.EMPTY_BYTE_BUFFER, output);\r\n    Mockito.verifyNoInteractions(output);\r\n}"
+        }
+      },
+      {
+        "code": "EmptyType.instance.writeValue(ByteBufferUtil.EMPTY_BYTE_BUFFER, output);",
+        "line": 46,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "writeEmptyAllowed",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void writeEmptyAllowed() {\r\n    DataOutputPlus output = Mockito.mock(DataOutputPlus.class);\r\n    EmptyType.instance.writeValue(ByteBufferUtil.EMPTY_BYTE_BUFFER, output);\r\n    Mockito.verifyNoInteractions(output);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.verifyNoInteractions(output);",
+        "line": 48,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "writeEmptyAllowed",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void writeEmptyAllowed() {\r\n    DataOutputPlus output = Mockito.mock(DataOutputPlus.class);\r\n    EmptyType.instance.writeValue(ByteBufferUtil.EMPTY_BYTE_BUFFER, output);\r\n    Mockito.verifyNoInteractions(output);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 4,
+    "variableName": "output",
+    "variableType": "DataOutputPlus",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.db.marshal",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\db\\marshal\\EmptyTypeTest.java"
+    },
+    "statements": [
+      {
+        "code": "DataOutputPlus output = Mockito.mock(DataOutputPlus.class);",
+        "line": 54,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "writeNonEmpty",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void writeNonEmpty() {\r\n    DataOutputPlus output = Mockito.mock(DataOutputPlus.class);\r\n    ByteBuffer rejected = ByteBuffer.wrap(\"this better fail\".getBytes());\r\n    assertThatThrownBy(() -> EmptyType.instance.writeValue(rejected, output)).isInstanceOf(AssertionError.class);\r\n    Mockito.verifyNoInteractions(output);\r\n}"
+        }
+      },
+      {
+        "code": "assertThatThrownBy(() -> EmptyType.instance.writeValue(rejected, output)).isInstanceOf(AssertionError.class);",
+        "line": 57,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "writeNonEmpty",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void writeNonEmpty() {\r\n    DataOutputPlus output = Mockito.mock(DataOutputPlus.class);\r\n    ByteBuffer rejected = ByteBuffer.wrap(\"this better fail\".getBytes());\r\n    assertThatThrownBy(() -> EmptyType.instance.writeValue(rejected, output)).isInstanceOf(AssertionError.class);\r\n    Mockito.verifyNoInteractions(output);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.verifyNoInteractions(output);",
+        "line": 59,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "writeNonEmpty",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void writeNonEmpty() {\r\n    DataOutputPlus output = Mockito.mock(DataOutputPlus.class);\r\n    ByteBuffer rejected = ByteBuffer.wrap(\"this better fail\".getBytes());\r\n    assertThatThrownBy(() -> EmptyType.instance.writeValue(rejected, output)).isInstanceOf(AssertionError.class);\r\n    Mockito.verifyNoInteractions(output);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 5,
+    "variableName": "input",
+    "variableType": "DataInputPlus",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.db.marshal",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\db\\marshal\\EmptyTypeTest.java"
+    },
+    "statements": [
+      {
+        "code": "DataInputPlus input = Mockito.mock(DataInputPlus.class);",
+        "line": 65,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "read",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void read() {\r\n    DataInputPlus input = Mockito.mock(DataInputPlus.class);\r\n    ByteBuffer buffer = EmptyType.instance.readBuffer(input);\r\n    assertThat(buffer).isNotNull().matches(b -> !b.hasRemaining());\r\n    buffer = EmptyType.instance.readBuffer(input, 42);\r\n    assertThat(buffer).isNotNull().matches(b -> !b.hasRemaining());\r\n    Mockito.verifyNoInteractions(input);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.verifyNoInteractions(input);",
+        "line": 77,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "read",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void read() {\r\n    DataInputPlus input = Mockito.mock(DataInputPlus.class);\r\n    ByteBuffer buffer = EmptyType.instance.readBuffer(input);\r\n    assertThat(buffer).isNotNull().matches(b -> !b.hasRemaining());\r\n    buffer = EmptyType.instance.readBuffer(input, 42);\r\n    assertThat(buffer).isNotNull().matches(b -> !b.hasRemaining());\r\n    Mockito.verifyNoInteractions(input);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 6,
+    "variableName": "output",
+    "variableType": "DataOutputPlus",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.db.marshal",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\db\\marshal\\TypeValidationTest.java"
+    },
+    "statements": [
+      {
+        "code": "DataOutputPlus output = Mockito.mock(DataOutputPlus.class);",
+        "line": 84,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testWriteValueWrongFixedLength",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testWriteValueWrongFixedLength() {\r\n    DataOutputPlus output = Mockito.mock(DataOutputPlus.class);\r\n    assertThatThrownBy(() -> Int32Type.instance.writeValue(Util.getBytes(42L), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 4 bytes, but was 8\");\r\n    assertThatThrownBy(() -> LongType.instance.writeValue(Util.getBytes(42), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 8 bytes, but was 4\");\r\n    assertThatThrownBy(() -> UUIDType.instance.writeValue(Util.getBytes(42L), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 16 bytes, but was 8\");\r\n    Mockito.verifyNoInteractions(output);\r\n}"
+        }
+      },
+      {
+        "code": "assertThatThrownBy(() -> Int32Type.instance.writeValue(Util.getBytes(42L), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 4 bytes, but was 8\");",
+        "line": 86,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testWriteValueWrongFixedLength",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testWriteValueWrongFixedLength() {\r\n    DataOutputPlus output = Mockito.mock(DataOutputPlus.class);\r\n    assertThatThrownBy(() -> Int32Type.instance.writeValue(Util.getBytes(42L), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 4 bytes, but was 8\");\r\n    assertThatThrownBy(() -> LongType.instance.writeValue(Util.getBytes(42), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 8 bytes, but was 4\");\r\n    assertThatThrownBy(() -> UUIDType.instance.writeValue(Util.getBytes(42L), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 16 bytes, but was 8\");\r\n    Mockito.verifyNoInteractions(output);\r\n}"
+        }
+      },
+      {
+        "code": "assertThatThrownBy(() -> LongType.instance.writeValue(Util.getBytes(42), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 8 bytes, but was 4\");",
+        "line": 88,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testWriteValueWrongFixedLength",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testWriteValueWrongFixedLength() {\r\n    DataOutputPlus output = Mockito.mock(DataOutputPlus.class);\r\n    assertThatThrownBy(() -> Int32Type.instance.writeValue(Util.getBytes(42L), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 4 bytes, but was 8\");\r\n    assertThatThrownBy(() -> LongType.instance.writeValue(Util.getBytes(42), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 8 bytes, but was 4\");\r\n    assertThatThrownBy(() -> UUIDType.instance.writeValue(Util.getBytes(42L), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 16 bytes, but was 8\");\r\n    Mockito.verifyNoInteractions(output);\r\n}"
+        }
+      },
+      {
+        "code": "assertThatThrownBy(() -> UUIDType.instance.writeValue(Util.getBytes(42L), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 16 bytes, but was 8\");",
+        "line": 90,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testWriteValueWrongFixedLength",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testWriteValueWrongFixedLength() {\r\n    DataOutputPlus output = Mockito.mock(DataOutputPlus.class);\r\n    assertThatThrownBy(() -> Int32Type.instance.writeValue(Util.getBytes(42L), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 4 bytes, but was 8\");\r\n    assertThatThrownBy(() -> LongType.instance.writeValue(Util.getBytes(42), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 8 bytes, but was 4\");\r\n    assertThatThrownBy(() -> UUIDType.instance.writeValue(Util.getBytes(42L), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 16 bytes, but was 8\");\r\n    Mockito.verifyNoInteractions(output);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.verifyNoInteractions(output);",
+        "line": 93,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testWriteValueWrongFixedLength",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testWriteValueWrongFixedLength() {\r\n    DataOutputPlus output = Mockito.mock(DataOutputPlus.class);\r\n    assertThatThrownBy(() -> Int32Type.instance.writeValue(Util.getBytes(42L), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 4 bytes, but was 8\");\r\n    assertThatThrownBy(() -> LongType.instance.writeValue(Util.getBytes(42), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 8 bytes, but was 4\");\r\n    assertThatThrownBy(() -> UUIDType.instance.writeValue(Util.getBytes(42L), output)).isInstanceOf(IOException.class).hasMessageContaining(\"Expected exactly 16 bytes, but was 8\");\r\n    Mockito.verifyNoInteractions(output);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 7,
+    "variableName": "key",
+    "variableType": "DecoratedKey",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.db.rows",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\db\\rows\\PartitionSerializationExceptionTest.java"
+    },
+    "statements": [
+      {
+        "code": "DecoratedKey key = mock(DecoratedKey.class);",
+        "line": 39,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testMessageWithSimplePartitionKey",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testMessageWithSimplePartitionKey() {\r\n    TableMetadata metadata = TableMetadata.builder(\"ks\", \"tbl\").addPartitionKeyColumn(\"pk\", UTF8Type.instance).build();\r\n    DecoratedKey key = mock(DecoratedKey.class);\r\n    when(key.getKey()).thenReturn(UTF8Type.instance.decompose(\"foo\"));\r\n    @SuppressWarnings(\"unchecked\")\r\n    BaseRowIterator<Unfiltered> partition = mock(BaseRowIterator.class);\r\n    when(partition.metadata()).thenReturn(metadata);\r\n    when(partition.partitionKey()).thenReturn(key);\r\n    PartitionSerializationException pse = new PartitionSerializationException(partition, new RuntimeException());\r\n    assertEquals(\"Failed to serialize partition key 'foo' on table 'tbl' in keyspace 'ks'.\", pse.getMessage());\r\n}"
+        }
+      },
+      {
+        "code": "when(key.getKey()).thenReturn(UTF8Type.instance.decompose(\"foo\"));",
+        "line": 40,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testMessageWithSimplePartitionKey",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testMessageWithSimplePartitionKey() {\r\n    TableMetadata metadata = TableMetadata.builder(\"ks\", \"tbl\").addPartitionKeyColumn(\"pk\", UTF8Type.instance).build();\r\n    DecoratedKey key = mock(DecoratedKey.class);\r\n    when(key.getKey()).thenReturn(UTF8Type.instance.decompose(\"foo\"));\r\n    @SuppressWarnings(\"unchecked\")\r\n    BaseRowIterator<Unfiltered> partition = mock(BaseRowIterator.class);\r\n    when(partition.metadata()).thenReturn(metadata);\r\n    when(partition.partitionKey()).thenReturn(key);\r\n    PartitionSerializationException pse = new PartitionSerializationException(partition, new RuntimeException());\r\n    assertEquals(\"Failed to serialize partition key 'foo' on table 'tbl' in keyspace 'ks'.\", pse.getMessage());\r\n}"
+        }
+      },
+      {
+        "code": "when(partition.partitionKey()).thenReturn(key);",
+        "line": 45,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testMessageWithSimplePartitionKey",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testMessageWithSimplePartitionKey() {\r\n    TableMetadata metadata = TableMetadata.builder(\"ks\", \"tbl\").addPartitionKeyColumn(\"pk\", UTF8Type.instance).build();\r\n    DecoratedKey key = mock(DecoratedKey.class);\r\n    when(key.getKey()).thenReturn(UTF8Type.instance.decompose(\"foo\"));\r\n    @SuppressWarnings(\"unchecked\")\r\n    BaseRowIterator<Unfiltered> partition = mock(BaseRowIterator.class);\r\n    when(partition.metadata()).thenReturn(metadata);\r\n    when(partition.partitionKey()).thenReturn(key);\r\n    PartitionSerializationException pse = new PartitionSerializationException(partition, new RuntimeException());\r\n    assertEquals(\"Failed to serialize partition key 'foo' on table 'tbl' in keyspace 'ks'.\", pse.getMessage());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 8,
+    "variableName": "partition",
+    "variableType": "BaseRowIterator<Unfiltered>",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.db.rows",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\db\\rows\\PartitionSerializationExceptionTest.java"
+    },
+    "statements": [
+      {
+        "code": "@SuppressWarnings(\"unchecked\")\r\nBaseRowIterator<Unfiltered> partition = mock(BaseRowIterator.class);",
+        "line": 42,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testMessageWithSimplePartitionKey",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testMessageWithSimplePartitionKey() {\r\n    TableMetadata metadata = TableMetadata.builder(\"ks\", \"tbl\").addPartitionKeyColumn(\"pk\", UTF8Type.instance).build();\r\n    DecoratedKey key = mock(DecoratedKey.class);\r\n    when(key.getKey()).thenReturn(UTF8Type.instance.decompose(\"foo\"));\r\n    @SuppressWarnings(\"unchecked\")\r\n    BaseRowIterator<Unfiltered> partition = mock(BaseRowIterator.class);\r\n    when(partition.metadata()).thenReturn(metadata);\r\n    when(partition.partitionKey()).thenReturn(key);\r\n    PartitionSerializationException pse = new PartitionSerializationException(partition, new RuntimeException());\r\n    assertEquals(\"Failed to serialize partition key 'foo' on table 'tbl' in keyspace 'ks'.\", pse.getMessage());\r\n}"
+        }
+      },
+      {
+        "code": "when(partition.metadata()).thenReturn(metadata);",
+        "line": 44,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testMessageWithSimplePartitionKey",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testMessageWithSimplePartitionKey() {\r\n    TableMetadata metadata = TableMetadata.builder(\"ks\", \"tbl\").addPartitionKeyColumn(\"pk\", UTF8Type.instance).build();\r\n    DecoratedKey key = mock(DecoratedKey.class);\r\n    when(key.getKey()).thenReturn(UTF8Type.instance.decompose(\"foo\"));\r\n    @SuppressWarnings(\"unchecked\")\r\n    BaseRowIterator<Unfiltered> partition = mock(BaseRowIterator.class);\r\n    when(partition.metadata()).thenReturn(metadata);\r\n    when(partition.partitionKey()).thenReturn(key);\r\n    PartitionSerializationException pse = new PartitionSerializationException(partition, new RuntimeException());\r\n    assertEquals(\"Failed to serialize partition key 'foo' on table 'tbl' in keyspace 'ks'.\", pse.getMessage());\r\n}"
+        }
+      },
+      {
+        "code": "when(partition.partitionKey()).thenReturn(key);",
+        "line": 45,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testMessageWithSimplePartitionKey",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testMessageWithSimplePartitionKey() {\r\n    TableMetadata metadata = TableMetadata.builder(\"ks\", \"tbl\").addPartitionKeyColumn(\"pk\", UTF8Type.instance).build();\r\n    DecoratedKey key = mock(DecoratedKey.class);\r\n    when(key.getKey()).thenReturn(UTF8Type.instance.decompose(\"foo\"));\r\n    @SuppressWarnings(\"unchecked\")\r\n    BaseRowIterator<Unfiltered> partition = mock(BaseRowIterator.class);\r\n    when(partition.metadata()).thenReturn(metadata);\r\n    when(partition.partitionKey()).thenReturn(key);\r\n    PartitionSerializationException pse = new PartitionSerializationException(partition, new RuntimeException());\r\n    assertEquals(\"Failed to serialize partition key 'foo' on table 'tbl' in keyspace 'ks'.\", pse.getMessage());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 9,
+    "variableName": "key",
+    "variableType": "DecoratedKey",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.db.rows",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\db\\rows\\PartitionSerializationExceptionTest.java"
+    },
+    "statements": [
+      {
+        "code": "DecoratedKey key = mock(DecoratedKey.class);",
+        "line": 58,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testMessageWithCompositePartitionKey",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testMessageWithCompositePartitionKey() {\r\n    TableMetadata metadata = TableMetadata.builder(\"ks\", \"tbl\").addPartitionKeyColumn(\"pk1\", UTF8Type.instance).addPartitionKeyColumn(\"pk2\", UTF8Type.instance).build();\r\n    DecoratedKey key = mock(DecoratedKey.class);\r\n    CompositeType keyType = CompositeType.getInstance(UTF8Type.instance, UTF8Type.instance);\r\n    when(key.getKey()).thenReturn(keyType.decompose(\"foo\", \"bar\"));\r\n    @SuppressWarnings(\"unchecked\")\r\n    BaseRowIterator<Unfiltered> partition = mock(BaseRowIterator.class);\r\n    when(partition.metadata()).thenReturn(metadata);\r\n    when(partition.partitionKey()).thenReturn(key);\r\n    PartitionSerializationException pse = new PartitionSerializationException(partition, new RuntimeException());\r\n    assertEquals(\"Failed to serialize partition key 'foo:bar' on table 'tbl' in keyspace 'ks'.\", pse.getMessage());\r\n}"
+        }
+      },
+      {
+        "code": "when(key.getKey()).thenReturn(keyType.decompose(\"foo\", \"bar\"));",
+        "line": 60,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testMessageWithCompositePartitionKey",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testMessageWithCompositePartitionKey() {\r\n    TableMetadata metadata = TableMetadata.builder(\"ks\", \"tbl\").addPartitionKeyColumn(\"pk1\", UTF8Type.instance).addPartitionKeyColumn(\"pk2\", UTF8Type.instance).build();\r\n    DecoratedKey key = mock(DecoratedKey.class);\r\n    CompositeType keyType = CompositeType.getInstance(UTF8Type.instance, UTF8Type.instance);\r\n    when(key.getKey()).thenReturn(keyType.decompose(\"foo\", \"bar\"));\r\n    @SuppressWarnings(\"unchecked\")\r\n    BaseRowIterator<Unfiltered> partition = mock(BaseRowIterator.class);\r\n    when(partition.metadata()).thenReturn(metadata);\r\n    when(partition.partitionKey()).thenReturn(key);\r\n    PartitionSerializationException pse = new PartitionSerializationException(partition, new RuntimeException());\r\n    assertEquals(\"Failed to serialize partition key 'foo:bar' on table 'tbl' in keyspace 'ks'.\", pse.getMessage());\r\n}"
+        }
+      },
+      {
+        "code": "when(partition.partitionKey()).thenReturn(key);",
+        "line": 65,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testMessageWithCompositePartitionKey",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testMessageWithCompositePartitionKey() {\r\n    TableMetadata metadata = TableMetadata.builder(\"ks\", \"tbl\").addPartitionKeyColumn(\"pk1\", UTF8Type.instance).addPartitionKeyColumn(\"pk2\", UTF8Type.instance).build();\r\n    DecoratedKey key = mock(DecoratedKey.class);\r\n    CompositeType keyType = CompositeType.getInstance(UTF8Type.instance, UTF8Type.instance);\r\n    when(key.getKey()).thenReturn(keyType.decompose(\"foo\", \"bar\"));\r\n    @SuppressWarnings(\"unchecked\")\r\n    BaseRowIterator<Unfiltered> partition = mock(BaseRowIterator.class);\r\n    when(partition.metadata()).thenReturn(metadata);\r\n    when(partition.partitionKey()).thenReturn(key);\r\n    PartitionSerializationException pse = new PartitionSerializationException(partition, new RuntimeException());\r\n    assertEquals(\"Failed to serialize partition key 'foo:bar' on table 'tbl' in keyspace 'ks'.\", pse.getMessage());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 10,
+    "variableName": "partition",
+    "variableType": "BaseRowIterator<Unfiltered>",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.db.rows",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\db\\rows\\PartitionSerializationExceptionTest.java"
+    },
+    "statements": [
+      {
+        "code": "@SuppressWarnings(\"unchecked\")\r\nBaseRowIterator<Unfiltered> partition = mock(BaseRowIterator.class);",
+        "line": 62,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testMessageWithCompositePartitionKey",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testMessageWithCompositePartitionKey() {\r\n    TableMetadata metadata = TableMetadata.builder(\"ks\", \"tbl\").addPartitionKeyColumn(\"pk1\", UTF8Type.instance).addPartitionKeyColumn(\"pk2\", UTF8Type.instance).build();\r\n    DecoratedKey key = mock(DecoratedKey.class);\r\n    CompositeType keyType = CompositeType.getInstance(UTF8Type.instance, UTF8Type.instance);\r\n    when(key.getKey()).thenReturn(keyType.decompose(\"foo\", \"bar\"));\r\n    @SuppressWarnings(\"unchecked\")\r\n    BaseRowIterator<Unfiltered> partition = mock(BaseRowIterator.class);\r\n    when(partition.metadata()).thenReturn(metadata);\r\n    when(partition.partitionKey()).thenReturn(key);\r\n    PartitionSerializationException pse = new PartitionSerializationException(partition, new RuntimeException());\r\n    assertEquals(\"Failed to serialize partition key 'foo:bar' on table 'tbl' in keyspace 'ks'.\", pse.getMessage());\r\n}"
+        }
+      },
+      {
+        "code": "when(partition.metadata()).thenReturn(metadata);",
+        "line": 64,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testMessageWithCompositePartitionKey",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testMessageWithCompositePartitionKey() {\r\n    TableMetadata metadata = TableMetadata.builder(\"ks\", \"tbl\").addPartitionKeyColumn(\"pk1\", UTF8Type.instance).addPartitionKeyColumn(\"pk2\", UTF8Type.instance).build();\r\n    DecoratedKey key = mock(DecoratedKey.class);\r\n    CompositeType keyType = CompositeType.getInstance(UTF8Type.instance, UTF8Type.instance);\r\n    when(key.getKey()).thenReturn(keyType.decompose(\"foo\", \"bar\"));\r\n    @SuppressWarnings(\"unchecked\")\r\n    BaseRowIterator<Unfiltered> partition = mock(BaseRowIterator.class);\r\n    when(partition.metadata()).thenReturn(metadata);\r\n    when(partition.partitionKey()).thenReturn(key);\r\n    PartitionSerializationException pse = new PartitionSerializationException(partition, new RuntimeException());\r\n    assertEquals(\"Failed to serialize partition key 'foo:bar' on table 'tbl' in keyspace 'ks'.\", pse.getMessage());\r\n}"
+        }
+      },
+      {
+        "code": "when(partition.partitionKey()).thenReturn(key);",
+        "line": 65,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testMessageWithCompositePartitionKey",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testMessageWithCompositePartitionKey() {\r\n    TableMetadata metadata = TableMetadata.builder(\"ks\", \"tbl\").addPartitionKeyColumn(\"pk1\", UTF8Type.instance).addPartitionKeyColumn(\"pk2\", UTF8Type.instance).build();\r\n    DecoratedKey key = mock(DecoratedKey.class);\r\n    CompositeType keyType = CompositeType.getInstance(UTF8Type.instance, UTF8Type.instance);\r\n    when(key.getKey()).thenReturn(keyType.decompose(\"foo\", \"bar\"));\r\n    @SuppressWarnings(\"unchecked\")\r\n    BaseRowIterator<Unfiltered> partition = mock(BaseRowIterator.class);\r\n    when(partition.metadata()).thenReturn(metadata);\r\n    when(partition.partitionKey()).thenReturn(key);\r\n    PartitionSerializationException pse = new PartitionSerializationException(partition, new RuntimeException());\r\n    assertEquals(\"Failed to serialize partition key 'foo:bar' on table 'tbl' in keyspace 'ks'.\", pse.getMessage());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 11,
+    "variableName": "connectorMock",
+    "variableType": "Ec2MetadataServiceConnector",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.locator",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\locator\\Ec2SnitchTest.java"
+    },
+    "statements": [
+      {
+        "code": "Ec2MetadataServiceConnector connectorMock = mock(Ec2MetadataServiceConnector.class);",
+        "line": 86,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testLegacyRac",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testLegacyRac() throws Exception {\r\n    Ec2MetadataServiceConnector connectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(connectorMock.apiCall(anyString())).thenReturn(\"us-east-1d\");\r\n    Ec2Snitch snitch = new Ec2Snitch(legacySnitchProps, connectorMock);\r\n    testLegacyRacInternal(snitch);\r\n}"
+        }
+      },
+      {
+        "code": "when(connectorMock.apiCall(anyString())).thenReturn(\"us-east-1d\");",
+        "line": 87,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testLegacyRac",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testLegacyRac() throws Exception {\r\n    Ec2MetadataServiceConnector connectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(connectorMock.apiCall(anyString())).thenReturn(\"us-east-1d\");\r\n    Ec2Snitch snitch = new Ec2Snitch(legacySnitchProps, connectorMock);\r\n    testLegacyRacInternal(snitch);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 12,
+    "variableName": "multiRegionConnectorMock",
+    "variableType": "Ec2MetadataServiceConnector",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.locator",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\locator\\Ec2SnitchTest.java"
+    },
+    "statements": [
+      {
+        "code": "Ec2MetadataServiceConnector multiRegionConnectorMock = mock(Ec2MetadataServiceConnector.class);",
+        "line": 95,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testMultiregionLegacyRac",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testMultiregionLegacyRac() throws Exception {\r\n    Ec2MetadataServiceConnector multiRegionConnectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(multiRegionConnectorMock.apiCall(anyString())).then((Answer<String>) invocation -> {\r\n        String query = invocation.getArgument(0);\r\n        return (PUBLIC_IP_QUERY.equals(query) || PRIVATE_IP_QUERY.equals(query)) ? \"127.0.0.1\" : \"us-east-1d\";\r\n    });\r\n    Ec2Snitch snitch = new Ec2MultiRegionSnitch(legacySnitchProps, multiRegionConnectorMock);\r\n    testLegacyRacInternal(snitch);\r\n}"
+        }
+      },
+      {
+        "code": "when(multiRegionConnectorMock.apiCall(anyString())).then((Answer<String>) invocation -> {\r\n    String query = invocation.getArgument(0);\r\n    return (PUBLIC_IP_QUERY.equals(query) || PRIVATE_IP_QUERY.equals(query)) ? \"127.0.0.1\" : \"us-east-1d\";\r\n});",
+        "line": 96,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testMultiregionLegacyRac",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testMultiregionLegacyRac() throws Exception {\r\n    Ec2MetadataServiceConnector multiRegionConnectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(multiRegionConnectorMock.apiCall(anyString())).then((Answer<String>) invocation -> {\r\n        String query = invocation.getArgument(0);\r\n        return (PUBLIC_IP_QUERY.equals(query) || PRIVATE_IP_QUERY.equals(query)) ? \"127.0.0.1\" : \"us-east-1d\";\r\n    });\r\n    Ec2Snitch snitch = new Ec2MultiRegionSnitch(legacySnitchProps, multiRegionConnectorMock);\r\n    testLegacyRacInternal(snitch);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 13,
+    "variableName": "connectorMock",
+    "variableType": "Ec2MetadataServiceConnector",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.locator",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\locator\\Ec2SnitchTest.java"
+    },
+    "statements": [
+      {
+        "code": "Ec2MetadataServiceConnector connectorMock = mock(Ec2MetadataServiceConnector.class);",
+        "line": 108,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testLegacyNewRegions",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testLegacyNewRegions() throws Exception {\r\n    Ec2MetadataServiceConnector connectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(connectorMock.apiCall(anyString())).thenReturn(\"us-east-2d\");\r\n    testLegacyNewRegionsInternal(new Ec2Snitch(legacySnitchProps, connectorMock));\r\n}"
+        }
+      },
+      {
+        "code": "when(connectorMock.apiCall(anyString())).thenReturn(\"us-east-2d\");",
+        "line": 109,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testLegacyNewRegions",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testLegacyNewRegions() throws Exception {\r\n    Ec2MetadataServiceConnector connectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(connectorMock.apiCall(anyString())).thenReturn(\"us-east-2d\");\r\n    testLegacyNewRegionsInternal(new Ec2Snitch(legacySnitchProps, connectorMock));\r\n}"
+        }
+      },
+      {
+        "code": "testLegacyNewRegionsInternal(new Ec2Snitch(legacySnitchProps, connectorMock));",
+        "line": 110,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testLegacyNewRegions",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testLegacyNewRegions() throws Exception {\r\n    Ec2MetadataServiceConnector connectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(connectorMock.apiCall(anyString())).thenReturn(\"us-east-2d\");\r\n    testLegacyNewRegionsInternal(new Ec2Snitch(legacySnitchProps, connectorMock));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 14,
+    "variableName": "multiRegionConnectorMock",
+    "variableType": "Ec2MetadataServiceConnector",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.locator",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\locator\\Ec2SnitchTest.java"
+    },
+    "statements": [
+      {
+        "code": "Ec2MetadataServiceConnector multiRegionConnectorMock = mock(Ec2MetadataServiceConnector.class);",
+        "line": 116,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testLegacyMultiRegionNewRegions",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testLegacyMultiRegionNewRegions() throws Exception {\r\n    Ec2MetadataServiceConnector multiRegionConnectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(multiRegionConnectorMock.apiCall(anyString())).then((Answer<String>) invocation -> {\r\n        String query = invocation.getArgument(0);\r\n        return (PUBLIC_IP_QUERY.equals(query) || PRIVATE_IP_QUERY.equals(query)) ? \"127.0.0.1\" : \"us-east-2d\";\r\n    });\r\n    testLegacyNewRegionsInternal(new Ec2MultiRegionSnitch(legacySnitchProps, multiRegionConnectorMock));\r\n}"
+        }
+      },
+      {
+        "code": "when(multiRegionConnectorMock.apiCall(anyString())).then((Answer<String>) invocation -> {\r\n    String query = invocation.getArgument(0);\r\n    return (PUBLIC_IP_QUERY.equals(query) || PRIVATE_IP_QUERY.equals(query)) ? \"127.0.0.1\" : \"us-east-2d\";\r\n});",
+        "line": 117,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testLegacyMultiRegionNewRegions",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testLegacyMultiRegionNewRegions() throws Exception {\r\n    Ec2MetadataServiceConnector multiRegionConnectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(multiRegionConnectorMock.apiCall(anyString())).then((Answer<String>) invocation -> {\r\n        String query = invocation.getArgument(0);\r\n        return (PUBLIC_IP_QUERY.equals(query) || PRIVATE_IP_QUERY.equals(query)) ? \"127.0.0.1\" : \"us-east-2d\";\r\n    });\r\n    testLegacyNewRegionsInternal(new Ec2MultiRegionSnitch(legacySnitchProps, multiRegionConnectorMock));\r\n}"
+        }
+      },
+      {
+        "code": "testLegacyNewRegionsInternal(new Ec2MultiRegionSnitch(legacySnitchProps, multiRegionConnectorMock));",
+        "line": 122,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testLegacyMultiRegionNewRegions",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testLegacyMultiRegionNewRegions() throws Exception {\r\n    Ec2MetadataServiceConnector multiRegionConnectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(multiRegionConnectorMock.apiCall(anyString())).then((Answer<String>) invocation -> {\r\n        String query = invocation.getArgument(0);\r\n        return (PUBLIC_IP_QUERY.equals(query) || PRIVATE_IP_QUERY.equals(query)) ? \"127.0.0.1\" : \"us-east-2d\";\r\n    });\r\n    testLegacyNewRegionsInternal(new Ec2MultiRegionSnitch(legacySnitchProps, multiRegionConnectorMock));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 15,
+    "variableName": "connectorMock",
+    "variableType": "Ec2MetadataServiceConnector",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.locator",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\locator\\Ec2SnitchTest.java"
+    },
+    "statements": [
+      {
+        "code": "Ec2MetadataServiceConnector connectorMock = mock(Ec2MetadataServiceConnector.class);",
+        "line": 129,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testFullNamingScheme",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testFullNamingScheme() throws Exception {\r\n    Ec2MetadataServiceConnector connectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(connectorMock.apiCall(anyString())).thenReturn(\"us-east-2d\");\r\n    Ec2Snitch snitch = new Ec2Snitch(new SnitchProperties(new Properties()), connectorMock);\r\n    InetAddressAndPort local = InetAddressAndPort.getByName(\"127.0.0.1\");\r\n    assertEquals(\"us-east-2\", snitch.getDatacenter(local));\r\n    assertEquals(\"us-east-2d\", snitch.getRack(local));\r\n    Ec2MetadataServiceConnector multiRegionConnectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(multiRegionConnectorMock.apiCall(anyString())).then((Answer<String>) invocation -> {\r\n        String query = invocation.getArgument(0);\r\n        return (PUBLIC_IP_QUERY.equals(query) || PRIVATE_IP_QUERY.equals(query)) ? \"127.0.0.1\" : \"us-east-2d\";\r\n    });\r\n    assertEquals(\"us-east-2\", snitch.getDatacenter(local));\r\n    assertEquals(\"us-east-2d\", snitch.getRack(local));\r\n}"
+        }
+      },
+      {
+        "code": "when(connectorMock.apiCall(anyString())).thenReturn(\"us-east-2d\");",
+        "line": 130,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testFullNamingScheme",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testFullNamingScheme() throws Exception {\r\n    Ec2MetadataServiceConnector connectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(connectorMock.apiCall(anyString())).thenReturn(\"us-east-2d\");\r\n    Ec2Snitch snitch = new Ec2Snitch(new SnitchProperties(new Properties()), connectorMock);\r\n    InetAddressAndPort local = InetAddressAndPort.getByName(\"127.0.0.1\");\r\n    assertEquals(\"us-east-2\", snitch.getDatacenter(local));\r\n    assertEquals(\"us-east-2d\", snitch.getRack(local));\r\n    Ec2MetadataServiceConnector multiRegionConnectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(multiRegionConnectorMock.apiCall(anyString())).then((Answer<String>) invocation -> {\r\n        String query = invocation.getArgument(0);\r\n        return (PUBLIC_IP_QUERY.equals(query) || PRIVATE_IP_QUERY.equals(query)) ? \"127.0.0.1\" : \"us-east-2d\";\r\n    });\r\n    assertEquals(\"us-east-2\", snitch.getDatacenter(local));\r\n    assertEquals(\"us-east-2d\", snitch.getRack(local));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 16,
+    "variableName": "multiRegionConnectorMock",
+    "variableType": "Ec2MetadataServiceConnector",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.locator",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\locator\\Ec2SnitchTest.java"
+    },
+    "statements": [
+      {
+        "code": "Ec2MetadataServiceConnector multiRegionConnectorMock = mock(Ec2MetadataServiceConnector.class);",
+        "line": 138,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testFullNamingScheme",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testFullNamingScheme() throws Exception {\r\n    Ec2MetadataServiceConnector connectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(connectorMock.apiCall(anyString())).thenReturn(\"us-east-2d\");\r\n    Ec2Snitch snitch = new Ec2Snitch(new SnitchProperties(new Properties()), connectorMock);\r\n    InetAddressAndPort local = InetAddressAndPort.getByName(\"127.0.0.1\");\r\n    assertEquals(\"us-east-2\", snitch.getDatacenter(local));\r\n    assertEquals(\"us-east-2d\", snitch.getRack(local));\r\n    Ec2MetadataServiceConnector multiRegionConnectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(multiRegionConnectorMock.apiCall(anyString())).then((Answer<String>) invocation -> {\r\n        String query = invocation.getArgument(0);\r\n        return (PUBLIC_IP_QUERY.equals(query) || PRIVATE_IP_QUERY.equals(query)) ? \"127.0.0.1\" : \"us-east-2d\";\r\n    });\r\n    assertEquals(\"us-east-2\", snitch.getDatacenter(local));\r\n    assertEquals(\"us-east-2d\", snitch.getRack(local));\r\n}"
+        }
+      },
+      {
+        "code": "when(multiRegionConnectorMock.apiCall(anyString())).then((Answer<String>) invocation -> {\r\n    String query = invocation.getArgument(0);\r\n    return (PUBLIC_IP_QUERY.equals(query) || PRIVATE_IP_QUERY.equals(query)) ? \"127.0.0.1\" : \"us-east-2d\";\r\n});",
+        "line": 139,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testFullNamingScheme",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testFullNamingScheme() throws Exception {\r\n    Ec2MetadataServiceConnector connectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(connectorMock.apiCall(anyString())).thenReturn(\"us-east-2d\");\r\n    Ec2Snitch snitch = new Ec2Snitch(new SnitchProperties(new Properties()), connectorMock);\r\n    InetAddressAndPort local = InetAddressAndPort.getByName(\"127.0.0.1\");\r\n    assertEquals(\"us-east-2\", snitch.getDatacenter(local));\r\n    assertEquals(\"us-east-2d\", snitch.getRack(local));\r\n    Ec2MetadataServiceConnector multiRegionConnectorMock = mock(Ec2MetadataServiceConnector.class);\r\n    when(multiRegionConnectorMock.apiCall(anyString())).then((Answer<String>) invocation -> {\r\n        String query = invocation.getArgument(0);\r\n        return (PUBLIC_IP_QUERY.equals(query) || PRIVATE_IP_QUERY.equals(query)) ? \"127.0.0.1\" : \"us-east-2d\";\r\n    });\r\n    assertEquals(\"us-east-2\", snitch.getDatacenter(local));\r\n    assertEquals(\"us-east-2d\", snitch.getRack(local));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 17,
+    "variableName": "schema",
+    "variableType": "SchemaProvider",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.net",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\net\\MessageSerializationPropertyTest.java"
+    },
+    "statements": [
+      {
+        "code": "SchemaProvider schema = Mockito.mock(SchemaProvider.class, Mockito.CALLS_REAL_METHODS);",
+        "line": 91,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testMessageSerialization",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Message and payload don't define equals, so have to rely on another way to define equality; serialized bytes!\r\n * The assumption is that serialize(deserialize(serialize(message))) == serialize(message)\r\n */\r\n@Test\r\npublic void testMessageSerialization() throws Exception {\r\n    SchemaProvider schema = Mockito.mock(SchemaProvider.class, Mockito.CALLS_REAL_METHODS);\r\n    ReadCommand.Serializer readCommandSerializer = new ReadCommand.Serializer(schema);\r\n    Supplier<? extends IVersionedAsymmetricSerializer<?, ?>> original = Verb.READ_REQ.unsafeSetSerializer(() -> readCommandSerializer);\r\n    try (DataOutputBuffer first = new DataOutputBuffer(1024);\r\n        DataOutputBuffer second = new DataOutputBuffer(1024)) {\r\n        qt().forAll(MESSAGE_GEN).checkAssert(orFail(message -> {\r\n            withTable(schema, message, orFail(ignore -> {\r\n                for (MessagingService.Version version : MessagingService.Version.values()) {\r\n                    first.clear();\r\n                    second.clear();\r\n                    // sync the clock with the generated createdAtNanos\r\n                    FixedMonotonicClock.setNowInNanos(message.createdAtNanos());\r\n                    serializer.serialize(message, first, version.value);\r\n                    Message<Object> read = serializer.deserialize(new DataInputBuffer(first.buffer(), true), FBUtilities.getBroadcastAddressAndPort(), version.value);\r\n                    serializer.serialize(read, second, version.value);\r\n                    // using hex as byte buffer equality kept failing, and was harder to debug difference\r\n                    // using hex means the specific section of the string that is different will be shown\r\n                    Assertions.assertThat(ByteBufferUtil.bytesToHex(second.buffer())).as(\"Property serialize(deserialize(serialize(message))) == serialize(message) \" + \"was violated for version %s and verb %s\" + \"\\n first=%s\" + \"\\nsecond=%s\\n\", version, message.header.verb, // toString methods are not relyable for messages, so use reflection to generate one\r\n                    new Object() {\r\n\r\n                        public String toString() {\r\n                            return CassandraGenerators.toStringRecursive(message);\r\n                        }\r\n                    }, new Object() {\r\n\r\n                        public String toString() {\r\n                            return CassandraGenerators.toStringRecursive(read);\r\n                        }\r\n                    }).isEqualTo(ByteBufferUtil.bytesToHex(first.buffer()));\r\n                }\r\n            }));\r\n        }));\r\n    } finally {\r\n        Verb.READ_REQ.unsafeSetSerializer(original);\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 18,
+    "variableName": "tokenMetadataTopology",
+    "variableType": "TokenMetadata.Topology",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.service",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\service\\StorageServiceTest.java"
+    },
+    "statements": [
+      {
+        "code": "TokenMetadata.Topology tokenMetadataTopology = Mockito.mock(TokenMetadata.Topology.class);",
+        "line": 203,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "getStorageService",
+          "methodAnnotations": [],
+          "methodRawCode": "private StorageService getStorageService() {\r\n    ImmutableMultimap.Builder<String, InetAddressAndPort> builder = ImmutableMultimap.builder();\r\n    builder.put(SimpleSnitch.DATA_CENTER_NAME, aAddress);\r\n    TokenMetadata.Topology tokenMetadataTopology = Mockito.mock(TokenMetadata.Topology.class);\r\n    Mockito.when(tokenMetadataTopology.getDatacenterEndpoints()).thenReturn(builder.build());\r\n    TokenMetadata metadata = new TokenMetadata(new SimpleSnitch());\r\n    TokenMetadata spiedMetadata = Mockito.spy(metadata);\r\n    Mockito.when(spiedMetadata.getTopology()).thenReturn(tokenMetadataTopology);\r\n    StorageService spiedStorageService = Mockito.spy(StorageService.instance);\r\n    Mockito.when(spiedStorageService.getTokenMetadata()).thenReturn(spiedMetadata);\r\n    Mockito.when(spiedMetadata.cloneOnlyTokenMap()).thenReturn(spiedMetadata);\r\n    return spiedStorageService;\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(tokenMetadataTopology.getDatacenterEndpoints()).thenReturn(builder.build());",
+        "line": 204,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "getStorageService",
+          "methodAnnotations": [],
+          "methodRawCode": "private StorageService getStorageService() {\r\n    ImmutableMultimap.Builder<String, InetAddressAndPort> builder = ImmutableMultimap.builder();\r\n    builder.put(SimpleSnitch.DATA_CENTER_NAME, aAddress);\r\n    TokenMetadata.Topology tokenMetadataTopology = Mockito.mock(TokenMetadata.Topology.class);\r\n    Mockito.when(tokenMetadataTopology.getDatacenterEndpoints()).thenReturn(builder.build());\r\n    TokenMetadata metadata = new TokenMetadata(new SimpleSnitch());\r\n    TokenMetadata spiedMetadata = Mockito.spy(metadata);\r\n    Mockito.when(spiedMetadata.getTopology()).thenReturn(tokenMetadataTopology);\r\n    StorageService spiedStorageService = Mockito.spy(StorageService.instance);\r\n    Mockito.when(spiedStorageService.getTokenMetadata()).thenReturn(spiedMetadata);\r\n    Mockito.when(spiedMetadata.cloneOnlyTokenMap()).thenReturn(spiedMetadata);\r\n    return spiedStorageService;\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(spiedMetadata.getTopology()).thenReturn(tokenMetadataTopology);",
+        "line": 209,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "getStorageService",
+          "methodAnnotations": [],
+          "methodRawCode": "private StorageService getStorageService() {\r\n    ImmutableMultimap.Builder<String, InetAddressAndPort> builder = ImmutableMultimap.builder();\r\n    builder.put(SimpleSnitch.DATA_CENTER_NAME, aAddress);\r\n    TokenMetadata.Topology tokenMetadataTopology = Mockito.mock(TokenMetadata.Topology.class);\r\n    Mockito.when(tokenMetadataTopology.getDatacenterEndpoints()).thenReturn(builder.build());\r\n    TokenMetadata metadata = new TokenMetadata(new SimpleSnitch());\r\n    TokenMetadata spiedMetadata = Mockito.spy(metadata);\r\n    Mockito.when(spiedMetadata.getTopology()).thenReturn(tokenMetadataTopology);\r\n    StorageService spiedStorageService = Mockito.spy(StorageService.instance);\r\n    Mockito.when(spiedStorageService.getTokenMetadata()).thenReturn(spiedMetadata);\r\n    Mockito.when(spiedMetadata.cloneOnlyTokenMap()).thenReturn(spiedMetadata);\r\n    return spiedStorageService;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 19,
+    "variableName": "spiedMetadata",
+    "variableType": "TokenMetadata",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.service",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\service\\StorageServiceTest.java"
+    },
+    "statements": [
+      {
+        "code": "TokenMetadata spiedMetadata = Mockito.spy(metadata);",
+        "line": 207,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "getStorageService",
+          "methodAnnotations": [],
+          "methodRawCode": "private StorageService getStorageService() {\r\n    ImmutableMultimap.Builder<String, InetAddressAndPort> builder = ImmutableMultimap.builder();\r\n    builder.put(SimpleSnitch.DATA_CENTER_NAME, aAddress);\r\n    TokenMetadata.Topology tokenMetadataTopology = Mockito.mock(TokenMetadata.Topology.class);\r\n    Mockito.when(tokenMetadataTopology.getDatacenterEndpoints()).thenReturn(builder.build());\r\n    TokenMetadata metadata = new TokenMetadata(new SimpleSnitch());\r\n    TokenMetadata spiedMetadata = Mockito.spy(metadata);\r\n    Mockito.when(spiedMetadata.getTopology()).thenReturn(tokenMetadataTopology);\r\n    StorageService spiedStorageService = Mockito.spy(StorageService.instance);\r\n    Mockito.when(spiedStorageService.getTokenMetadata()).thenReturn(spiedMetadata);\r\n    Mockito.when(spiedMetadata.cloneOnlyTokenMap()).thenReturn(spiedMetadata);\r\n    return spiedStorageService;\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(spiedMetadata.getTopology()).thenReturn(tokenMetadataTopology);",
+        "line": 209,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "getStorageService",
+          "methodAnnotations": [],
+          "methodRawCode": "private StorageService getStorageService() {\r\n    ImmutableMultimap.Builder<String, InetAddressAndPort> builder = ImmutableMultimap.builder();\r\n    builder.put(SimpleSnitch.DATA_CENTER_NAME, aAddress);\r\n    TokenMetadata.Topology tokenMetadataTopology = Mockito.mock(TokenMetadata.Topology.class);\r\n    Mockito.when(tokenMetadataTopology.getDatacenterEndpoints()).thenReturn(builder.build());\r\n    TokenMetadata metadata = new TokenMetadata(new SimpleSnitch());\r\n    TokenMetadata spiedMetadata = Mockito.spy(metadata);\r\n    Mockito.when(spiedMetadata.getTopology()).thenReturn(tokenMetadataTopology);\r\n    StorageService spiedStorageService = Mockito.spy(StorageService.instance);\r\n    Mockito.when(spiedStorageService.getTokenMetadata()).thenReturn(spiedMetadata);\r\n    Mockito.when(spiedMetadata.cloneOnlyTokenMap()).thenReturn(spiedMetadata);\r\n    return spiedStorageService;\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(spiedStorageService.getTokenMetadata()).thenReturn(spiedMetadata);",
+        "line": 212,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "getStorageService",
+          "methodAnnotations": [],
+          "methodRawCode": "private StorageService getStorageService() {\r\n    ImmutableMultimap.Builder<String, InetAddressAndPort> builder = ImmutableMultimap.builder();\r\n    builder.put(SimpleSnitch.DATA_CENTER_NAME, aAddress);\r\n    TokenMetadata.Topology tokenMetadataTopology = Mockito.mock(TokenMetadata.Topology.class);\r\n    Mockito.when(tokenMetadataTopology.getDatacenterEndpoints()).thenReturn(builder.build());\r\n    TokenMetadata metadata = new TokenMetadata(new SimpleSnitch());\r\n    TokenMetadata spiedMetadata = Mockito.spy(metadata);\r\n    Mockito.when(spiedMetadata.getTopology()).thenReturn(tokenMetadataTopology);\r\n    StorageService spiedStorageService = Mockito.spy(StorageService.instance);\r\n    Mockito.when(spiedStorageService.getTokenMetadata()).thenReturn(spiedMetadata);\r\n    Mockito.when(spiedMetadata.cloneOnlyTokenMap()).thenReturn(spiedMetadata);\r\n    return spiedStorageService;\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(spiedMetadata.cloneOnlyTokenMap()).thenReturn(spiedMetadata);",
+        "line": 213,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "getStorageService",
+          "methodAnnotations": [],
+          "methodRawCode": "private StorageService getStorageService() {\r\n    ImmutableMultimap.Builder<String, InetAddressAndPort> builder = ImmutableMultimap.builder();\r\n    builder.put(SimpleSnitch.DATA_CENTER_NAME, aAddress);\r\n    TokenMetadata.Topology tokenMetadataTopology = Mockito.mock(TokenMetadata.Topology.class);\r\n    Mockito.when(tokenMetadataTopology.getDatacenterEndpoints()).thenReturn(builder.build());\r\n    TokenMetadata metadata = new TokenMetadata(new SimpleSnitch());\r\n    TokenMetadata spiedMetadata = Mockito.spy(metadata);\r\n    Mockito.when(spiedMetadata.getTopology()).thenReturn(tokenMetadataTopology);\r\n    StorageService spiedStorageService = Mockito.spy(StorageService.instance);\r\n    Mockito.when(spiedStorageService.getTokenMetadata()).thenReturn(spiedMetadata);\r\n    Mockito.when(spiedMetadata.cloneOnlyTokenMap()).thenReturn(spiedMetadata);\r\n    return spiedStorageService;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 20,
+    "variableName": "spiedStorageService",
+    "variableType": "StorageService",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.service",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\service\\StorageServiceTest.java"
+    },
+    "statements": [
+      {
+        "code": "StorageService spiedStorageService = Mockito.spy(StorageService.instance);",
+        "line": 211,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "getStorageService",
+          "methodAnnotations": [],
+          "methodRawCode": "private StorageService getStorageService() {\r\n    ImmutableMultimap.Builder<String, InetAddressAndPort> builder = ImmutableMultimap.builder();\r\n    builder.put(SimpleSnitch.DATA_CENTER_NAME, aAddress);\r\n    TokenMetadata.Topology tokenMetadataTopology = Mockito.mock(TokenMetadata.Topology.class);\r\n    Mockito.when(tokenMetadataTopology.getDatacenterEndpoints()).thenReturn(builder.build());\r\n    TokenMetadata metadata = new TokenMetadata(new SimpleSnitch());\r\n    TokenMetadata spiedMetadata = Mockito.spy(metadata);\r\n    Mockito.when(spiedMetadata.getTopology()).thenReturn(tokenMetadataTopology);\r\n    StorageService spiedStorageService = Mockito.spy(StorageService.instance);\r\n    Mockito.when(spiedStorageService.getTokenMetadata()).thenReturn(spiedMetadata);\r\n    Mockito.when(spiedMetadata.cloneOnlyTokenMap()).thenReturn(spiedMetadata);\r\n    return spiedStorageService;\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(spiedStorageService.getTokenMetadata()).thenReturn(spiedMetadata);",
+        "line": 212,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "getStorageService",
+          "methodAnnotations": [],
+          "methodRawCode": "private StorageService getStorageService() {\r\n    ImmutableMultimap.Builder<String, InetAddressAndPort> builder = ImmutableMultimap.builder();\r\n    builder.put(SimpleSnitch.DATA_CENTER_NAME, aAddress);\r\n    TokenMetadata.Topology tokenMetadataTopology = Mockito.mock(TokenMetadata.Topology.class);\r\n    Mockito.when(tokenMetadataTopology.getDatacenterEndpoints()).thenReturn(builder.build());\r\n    TokenMetadata metadata = new TokenMetadata(new SimpleSnitch());\r\n    TokenMetadata spiedMetadata = Mockito.spy(metadata);\r\n    Mockito.when(spiedMetadata.getTopology()).thenReturn(tokenMetadataTopology);\r\n    StorageService spiedStorageService = Mockito.spy(StorageService.instance);\r\n    Mockito.when(spiedStorageService.getTokenMetadata()).thenReturn(spiedMetadata);\r\n    Mockito.when(spiedMetadata.cloneOnlyTokenMap()).thenReturn(spiedMetadata);\r\n    return spiedStorageService;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 21,
+    "variableName": "pool",
+    "variableType": "MemtablePool",
+    "isGlobal": true,
+    "mockPatternLevel": 2,
+    "classContext": {
+      "packageName": "org.apache.cassandra.utils.memory",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\utils\\memory\\MemtableCleanerThreadTest.java",
+      "className": "MemtableCleanerThreadTest"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate MemtablePool pool;",
+        "line": 46,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      },
+      {
+        "code": "when(pool.needsCleaning()).thenAnswer(invocation -> needsCleaning.get());",
+        "line": 92,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCleanerInvoked",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCleanerInvoked() throws Exception {\r\n    CountDownLatch cleanerExecutedLatch = new CountDownLatch(1);\r\n    CompletableFuture<Boolean> fut = new CompletableFuture<>();\r\n    AtomicBoolean needsCleaning = new AtomicBoolean(false);\r\n    when(pool.needsCleaning()).thenAnswer(invocation -> needsCleaning.get());\r\n    when(cleaner.clean()).thenAnswer(invocation -> {\r\n        needsCleaning.set(false);\r\n        cleanerExecutedLatch.countDown();\r\n        return fut;\r\n    });\r\n    // start the thread with needsCleaning returning false, the cleaner should not be invoked\r\n    needsCleaning.set(false);\r\n    startThread();\r\n    assertFalse(cleanerExecutedLatch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS));\r\n    assertEquals(1, cleanerExecutedLatch.getCount());\r\n    assertEquals(0, cleanerThread.numPendingTasks());\r\n    // now invoke the cleaner\r\n    needsCleaning.set(true);\r\n    cleanerThread.trigger();\r\n    assertTrue(cleanerExecutedLatch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS));\r\n    assertEquals(0, cleanerExecutedLatch.getCount());\r\n    assertEquals(1, cleanerThread.numPendingTasks());\r\n    // now complete the cleaning task\r\n    needsCleaning.set(false);\r\n    fut.complete(true);\r\n    waitForPendingTasks();\r\n    stopThread();\r\n}"
+        }
+      },
+      {
+        "code": "when(pool.needsCleaning()).thenAnswer(invocation -> needsCleaning.get());",
+        "line": 130,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCleanerError",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCleanerError() throws Exception {\r\n    AtomicReference<CountDownLatch> cleanerLatch = new AtomicReference<>(new CountDownLatch(1));\r\n    AtomicReference<CompletableFuture<Boolean>> fut = new AtomicReference<>(new CompletableFuture<>());\r\n    AtomicBoolean needsCleaning = new AtomicBoolean(false);\r\n    AtomicInteger numTimeCleanerInvoked = new AtomicInteger(0);\r\n    when(pool.needsCleaning()).thenAnswer(invocation -> needsCleaning.get());\r\n    when(cleaner.clean()).thenAnswer(invocation -> {\r\n        needsCleaning.set(false);\r\n        numTimeCleanerInvoked.incrementAndGet();\r\n        cleanerLatch.get().countDown();\r\n        return fut.get();\r\n    });\r\n    // start the thread with needsCleaning returning true, the cleaner should be invoked\r\n    needsCleaning.set(true);\r\n    startThread();\r\n    assertTrue(cleanerLatch.get().await(TIMEOUT_SECONDS, TimeUnit.SECONDS));\r\n    assertEquals(0, cleanerLatch.get().getCount());\r\n    assertEquals(1, cleanerThread.numPendingTasks());\r\n    assertEquals(1, numTimeCleanerInvoked.get());\r\n    // complete the cleaning task with an error, no other cleaning task should be invoked\r\n    cleanerLatch.set(new CountDownLatch(1));\r\n    CompletableFuture<Boolean> oldFut = fut.get();\r\n    fut.set(new CompletableFuture<>());\r\n    needsCleaning.set(false);\r\n    oldFut.completeExceptionally(new RuntimeException(\"Test\"));\r\n    assertFalse(cleanerLatch.get().await(TIMEOUT_SECONDS, TimeUnit.SECONDS));\r\n    assertEquals(1, cleanerLatch.get().getCount());\r\n    assertEquals(1, numTimeCleanerInvoked.get());\r\n    // now trigger cleaning again and verify that a new task is invoked\r\n    cleanerLatch.set(new CountDownLatch(1));\r\n    fut.set(new CompletableFuture<>());\r\n    needsCleaning.set(true);\r\n    cleanerThread.trigger();\r\n    assertTrue(cleanerLatch.get().await(TIMEOUT_SECONDS, TimeUnit.SECONDS));\r\n    assertEquals(0, cleanerLatch.get().getCount());\r\n    assertEquals(2, numTimeCleanerInvoked.get());\r\n    //  complete the cleaning task with false (nothing should be scheduled)\r\n    cleanerLatch.set(new CountDownLatch(1));\r\n    oldFut = fut.get();\r\n    fut.set(new CompletableFuture<>());\r\n    needsCleaning.set(false);\r\n    oldFut.complete(false);\r\n    assertFalse(cleanerLatch.get().await(TIMEOUT_SECONDS, TimeUnit.SECONDS));\r\n    assertEquals(1, cleanerLatch.get().getCount());\r\n    assertEquals(2, numTimeCleanerInvoked.get());\r\n    // now trigger cleaning again and verify that a new task is invoked\r\n    cleanerLatch.set(new CountDownLatch(1));\r\n    fut.set(new CompletableFuture<>());\r\n    needsCleaning.set(true);\r\n    cleanerThread.trigger();\r\n    assertTrue(cleanerLatch.get().await(TIMEOUT_SECONDS, TimeUnit.SECONDS));\r\n    assertEquals(0, cleanerLatch.get().getCount());\r\n    assertEquals(3, numTimeCleanerInvoked.get());\r\n    stopThread();\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 22,
+    "variableName": "cleaner",
+    "variableType": "MemtableCleaner",
+    "isGlobal": true,
+    "mockPatternLevel": 2,
+    "classContext": {
+      "packageName": "org.apache.cassandra.utils.memory",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\test\\unit\\org\\apache\\cassandra\\utils\\memory\\MemtableCleanerThreadTest.java",
+      "className": "MemtableCleanerThreadTest"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate MemtableCleaner cleaner;",
+        "line": 49,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      },
+      {
+        "code": "when(cleaner.clean()).thenAnswer(invocation -> {\r\n    needsCleaning.set(false);\r\n    cleanerExecutedLatch.countDown();\r\n    return fut;\r\n});",
+        "line": 94,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCleanerInvoked",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCleanerInvoked() throws Exception {\r\n    CountDownLatch cleanerExecutedLatch = new CountDownLatch(1);\r\n    CompletableFuture<Boolean> fut = new CompletableFuture<>();\r\n    AtomicBoolean needsCleaning = new AtomicBoolean(false);\r\n    when(pool.needsCleaning()).thenAnswer(invocation -> needsCleaning.get());\r\n    when(cleaner.clean()).thenAnswer(invocation -> {\r\n        needsCleaning.set(false);\r\n        cleanerExecutedLatch.countDown();\r\n        return fut;\r\n    });\r\n    // start the thread with needsCleaning returning false, the cleaner should not be invoked\r\n    needsCleaning.set(false);\r\n    startThread();\r\n    assertFalse(cleanerExecutedLatch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS));\r\n    assertEquals(1, cleanerExecutedLatch.getCount());\r\n    assertEquals(0, cleanerThread.numPendingTasks());\r\n    // now invoke the cleaner\r\n    needsCleaning.set(true);\r\n    cleanerThread.trigger();\r\n    assertTrue(cleanerExecutedLatch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS));\r\n    assertEquals(0, cleanerExecutedLatch.getCount());\r\n    assertEquals(1, cleanerThread.numPendingTasks());\r\n    // now complete the cleaning task\r\n    needsCleaning.set(false);\r\n    fut.complete(true);\r\n    waitForPendingTasks();\r\n    stopThread();\r\n}"
+        }
+      },
+      {
+        "code": "when(cleaner.clean()).thenAnswer(invocation -> {\r\n    needsCleaning.set(false);\r\n    numTimeCleanerInvoked.incrementAndGet();\r\n    cleanerLatch.get().countDown();\r\n    return fut.get();\r\n});",
+        "line": 132,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCleanerError",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCleanerError() throws Exception {\r\n    AtomicReference<CountDownLatch> cleanerLatch = new AtomicReference<>(new CountDownLatch(1));\r\n    AtomicReference<CompletableFuture<Boolean>> fut = new AtomicReference<>(new CompletableFuture<>());\r\n    AtomicBoolean needsCleaning = new AtomicBoolean(false);\r\n    AtomicInteger numTimeCleanerInvoked = new AtomicInteger(0);\r\n    when(pool.needsCleaning()).thenAnswer(invocation -> needsCleaning.get());\r\n    when(cleaner.clean()).thenAnswer(invocation -> {\r\n        needsCleaning.set(false);\r\n        numTimeCleanerInvoked.incrementAndGet();\r\n        cleanerLatch.get().countDown();\r\n        return fut.get();\r\n    });\r\n    // start the thread with needsCleaning returning true, the cleaner should be invoked\r\n    needsCleaning.set(true);\r\n    startThread();\r\n    assertTrue(cleanerLatch.get().await(TIMEOUT_SECONDS, TimeUnit.SECONDS));\r\n    assertEquals(0, cleanerLatch.get().getCount());\r\n    assertEquals(1, cleanerThread.numPendingTasks());\r\n    assertEquals(1, numTimeCleanerInvoked.get());\r\n    // complete the cleaning task with an error, no other cleaning task should be invoked\r\n    cleanerLatch.set(new CountDownLatch(1));\r\n    CompletableFuture<Boolean> oldFut = fut.get();\r\n    fut.set(new CompletableFuture<>());\r\n    needsCleaning.set(false);\r\n    oldFut.completeExceptionally(new RuntimeException(\"Test\"));\r\n    assertFalse(cleanerLatch.get().await(TIMEOUT_SECONDS, TimeUnit.SECONDS));\r\n    assertEquals(1, cleanerLatch.get().getCount());\r\n    assertEquals(1, numTimeCleanerInvoked.get());\r\n    // now trigger cleaning again and verify that a new task is invoked\r\n    cleanerLatch.set(new CountDownLatch(1));\r\n    fut.set(new CompletableFuture<>());\r\n    needsCleaning.set(true);\r\n    cleanerThread.trigger();\r\n    assertTrue(cleanerLatch.get().await(TIMEOUT_SECONDS, TimeUnit.SECONDS));\r\n    assertEquals(0, cleanerLatch.get().getCount());\r\n    assertEquals(2, numTimeCleanerInvoked.get());\r\n    //  complete the cleaning task with false (nothing should be scheduled)\r\n    cleanerLatch.set(new CountDownLatch(1));\r\n    oldFut = fut.get();\r\n    fut.set(new CompletableFuture<>());\r\n    needsCleaning.set(false);\r\n    oldFut.complete(false);\r\n    assertFalse(cleanerLatch.get().await(TIMEOUT_SECONDS, TimeUnit.SECONDS));\r\n    assertEquals(1, cleanerLatch.get().getCount());\r\n    assertEquals(2, numTimeCleanerInvoked.get());\r\n    // now trigger cleaning again and verify that a new task is invoked\r\n    cleanerLatch.set(new CountDownLatch(1));\r\n    fut.set(new CompletableFuture<>());\r\n    needsCleaning.set(true);\r\n    cleanerThread.trigger();\r\n    assertTrue(cleanerLatch.get().await(TIMEOUT_SECONDS, TimeUnit.SECONDS));\r\n    assertEquals(0, cleanerLatch.get().getCount());\r\n    assertEquals(3, numTimeCleanerInvoked.get());\r\n    stopThread();\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 23,
+    "variableName": "mockValueIn",
+    "variableType": "ValueIn",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.fqltool.commands",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\tools\\fqltool\\test\\unit\\org\\apache\\cassandra\\fqltool\\commands\\DumpTest.java"
+    },
+    "statements": [
+      {
+        "code": "ValueIn mockValueIn = Mockito.mock(ValueIn.class);",
+        "line": 57,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testDumpQueryNullValues",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testDumpQueryNullValues() {\r\n    String keyspace = \"ks1\";\r\n    List<ByteBuffer> values = Arrays.asList(ByteBuffer.wrap(new byte[] { 1 }), null);\r\n    QueryOptions queryOptions = QueryOptions.create(ConsistencyLevel.LOCAL_QUORUM, values, true, 1, null, null, ProtocolVersion.CURRENT, keyspace);\r\n    ValueIn mockValueIn = Mockito.mock(ValueIn.class);\r\n    Mockito.when(mockValueIn.text()).thenReturn(\"INSERT INTO ks1.t1 (k, v) VALUES (?,?)\");\r\n    WireIn mockWireIn = Mockito.mock(WireIn.class);\r\n    Mockito.when(mockWireIn.read(FullQueryLogger.QUERY)).thenReturn(mockValueIn);\r\n    StringBuilder sb = new StringBuilder();\r\n    Dump.dumpQuery(queryOptions, mockWireIn, sb);\r\n    String[] lines = sb.toString().split(System.lineSeparator());\r\n    boolean valuesStarted = false;\r\n    int count = 0;\r\n    int nullcount = 0;\r\n    for (String line : lines) {\r\n        if (line.startsWith(\"Values:\")) {\r\n            valuesStarted = true;\r\n            continue;\r\n        }\r\n        if (valuesStarted) {\r\n            if (\"-----\".equals(line)) {\r\n                continue;\r\n            }\r\n            if (null == values.get(count++)) {\r\n                nullcount++;\r\n                Assert.assertEquals(\"null\", line);\r\n            }\r\n        }\r\n    }\r\n    Assert.assertEquals(values.stream().filter(Objects::isNull).count(), nullcount);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(mockValueIn.text()).thenReturn(\"INSERT INTO ks1.t1 (k, v) VALUES (?,?)\");",
+        "line": 58,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testDumpQueryNullValues",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testDumpQueryNullValues() {\r\n    String keyspace = \"ks1\";\r\n    List<ByteBuffer> values = Arrays.asList(ByteBuffer.wrap(new byte[] { 1 }), null);\r\n    QueryOptions queryOptions = QueryOptions.create(ConsistencyLevel.LOCAL_QUORUM, values, true, 1, null, null, ProtocolVersion.CURRENT, keyspace);\r\n    ValueIn mockValueIn = Mockito.mock(ValueIn.class);\r\n    Mockito.when(mockValueIn.text()).thenReturn(\"INSERT INTO ks1.t1 (k, v) VALUES (?,?)\");\r\n    WireIn mockWireIn = Mockito.mock(WireIn.class);\r\n    Mockito.when(mockWireIn.read(FullQueryLogger.QUERY)).thenReturn(mockValueIn);\r\n    StringBuilder sb = new StringBuilder();\r\n    Dump.dumpQuery(queryOptions, mockWireIn, sb);\r\n    String[] lines = sb.toString().split(System.lineSeparator());\r\n    boolean valuesStarted = false;\r\n    int count = 0;\r\n    int nullcount = 0;\r\n    for (String line : lines) {\r\n        if (line.startsWith(\"Values:\")) {\r\n            valuesStarted = true;\r\n            continue;\r\n        }\r\n        if (valuesStarted) {\r\n            if (\"-----\".equals(line)) {\r\n                continue;\r\n            }\r\n            if (null == values.get(count++)) {\r\n                nullcount++;\r\n                Assert.assertEquals(\"null\", line);\r\n            }\r\n        }\r\n    }\r\n    Assert.assertEquals(values.stream().filter(Objects::isNull).count(), nullcount);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(mockWireIn.read(FullQueryLogger.QUERY)).thenReturn(mockValueIn);",
+        "line": 61,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testDumpQueryNullValues",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testDumpQueryNullValues() {\r\n    String keyspace = \"ks1\";\r\n    List<ByteBuffer> values = Arrays.asList(ByteBuffer.wrap(new byte[] { 1 }), null);\r\n    QueryOptions queryOptions = QueryOptions.create(ConsistencyLevel.LOCAL_QUORUM, values, true, 1, null, null, ProtocolVersion.CURRENT, keyspace);\r\n    ValueIn mockValueIn = Mockito.mock(ValueIn.class);\r\n    Mockito.when(mockValueIn.text()).thenReturn(\"INSERT INTO ks1.t1 (k, v) VALUES (?,?)\");\r\n    WireIn mockWireIn = Mockito.mock(WireIn.class);\r\n    Mockito.when(mockWireIn.read(FullQueryLogger.QUERY)).thenReturn(mockValueIn);\r\n    StringBuilder sb = new StringBuilder();\r\n    Dump.dumpQuery(queryOptions, mockWireIn, sb);\r\n    String[] lines = sb.toString().split(System.lineSeparator());\r\n    boolean valuesStarted = false;\r\n    int count = 0;\r\n    int nullcount = 0;\r\n    for (String line : lines) {\r\n        if (line.startsWith(\"Values:\")) {\r\n            valuesStarted = true;\r\n            continue;\r\n        }\r\n        if (valuesStarted) {\r\n            if (\"-----\".equals(line)) {\r\n                continue;\r\n            }\r\n            if (null == values.get(count++)) {\r\n                nullcount++;\r\n                Assert.assertEquals(\"null\", line);\r\n            }\r\n        }\r\n    }\r\n    Assert.assertEquals(values.stream().filter(Objects::isNull).count(), nullcount);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 24,
+    "variableName": "mockWireIn",
+    "variableType": "WireIn",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.fqltool.commands",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\tools\\fqltool\\test\\unit\\org\\apache\\cassandra\\fqltool\\commands\\DumpTest.java"
+    },
+    "statements": [
+      {
+        "code": "WireIn mockWireIn = Mockito.mock(WireIn.class);",
+        "line": 60,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testDumpQueryNullValues",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testDumpQueryNullValues() {\r\n    String keyspace = \"ks1\";\r\n    List<ByteBuffer> values = Arrays.asList(ByteBuffer.wrap(new byte[] { 1 }), null);\r\n    QueryOptions queryOptions = QueryOptions.create(ConsistencyLevel.LOCAL_QUORUM, values, true, 1, null, null, ProtocolVersion.CURRENT, keyspace);\r\n    ValueIn mockValueIn = Mockito.mock(ValueIn.class);\r\n    Mockito.when(mockValueIn.text()).thenReturn(\"INSERT INTO ks1.t1 (k, v) VALUES (?,?)\");\r\n    WireIn mockWireIn = Mockito.mock(WireIn.class);\r\n    Mockito.when(mockWireIn.read(FullQueryLogger.QUERY)).thenReturn(mockValueIn);\r\n    StringBuilder sb = new StringBuilder();\r\n    Dump.dumpQuery(queryOptions, mockWireIn, sb);\r\n    String[] lines = sb.toString().split(System.lineSeparator());\r\n    boolean valuesStarted = false;\r\n    int count = 0;\r\n    int nullcount = 0;\r\n    for (String line : lines) {\r\n        if (line.startsWith(\"Values:\")) {\r\n            valuesStarted = true;\r\n            continue;\r\n        }\r\n        if (valuesStarted) {\r\n            if (\"-----\".equals(line)) {\r\n                continue;\r\n            }\r\n            if (null == values.get(count++)) {\r\n                nullcount++;\r\n                Assert.assertEquals(\"null\", line);\r\n            }\r\n        }\r\n    }\r\n    Assert.assertEquals(values.stream().filter(Objects::isNull).count(), nullcount);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(mockWireIn.read(FullQueryLogger.QUERY)).thenReturn(mockValueIn);",
+        "line": 61,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testDumpQueryNullValues",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testDumpQueryNullValues() {\r\n    String keyspace = \"ks1\";\r\n    List<ByteBuffer> values = Arrays.asList(ByteBuffer.wrap(new byte[] { 1 }), null);\r\n    QueryOptions queryOptions = QueryOptions.create(ConsistencyLevel.LOCAL_QUORUM, values, true, 1, null, null, ProtocolVersion.CURRENT, keyspace);\r\n    ValueIn mockValueIn = Mockito.mock(ValueIn.class);\r\n    Mockito.when(mockValueIn.text()).thenReturn(\"INSERT INTO ks1.t1 (k, v) VALUES (?,?)\");\r\n    WireIn mockWireIn = Mockito.mock(WireIn.class);\r\n    Mockito.when(mockWireIn.read(FullQueryLogger.QUERY)).thenReturn(mockValueIn);\r\n    StringBuilder sb = new StringBuilder();\r\n    Dump.dumpQuery(queryOptions, mockWireIn, sb);\r\n    String[] lines = sb.toString().split(System.lineSeparator());\r\n    boolean valuesStarted = false;\r\n    int count = 0;\r\n    int nullcount = 0;\r\n    for (String line : lines) {\r\n        if (line.startsWith(\"Values:\")) {\r\n            valuesStarted = true;\r\n            continue;\r\n        }\r\n        if (valuesStarted) {\r\n            if (\"-----\".equals(line)) {\r\n                continue;\r\n            }\r\n            if (null == values.get(count++)) {\r\n                nullcount++;\r\n                Assert.assertEquals(\"null\", line);\r\n            }\r\n        }\r\n    }\r\n    Assert.assertEquals(values.stream().filter(Objects::isNull).count(), nullcount);\r\n}"
+        }
+      },
+      {
+        "code": "Dump.dumpQuery(queryOptions, mockWireIn, sb);",
+        "line": 64,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testDumpQueryNullValues",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testDumpQueryNullValues() {\r\n    String keyspace = \"ks1\";\r\n    List<ByteBuffer> values = Arrays.asList(ByteBuffer.wrap(new byte[] { 1 }), null);\r\n    QueryOptions queryOptions = QueryOptions.create(ConsistencyLevel.LOCAL_QUORUM, values, true, 1, null, null, ProtocolVersion.CURRENT, keyspace);\r\n    ValueIn mockValueIn = Mockito.mock(ValueIn.class);\r\n    Mockito.when(mockValueIn.text()).thenReturn(\"INSERT INTO ks1.t1 (k, v) VALUES (?,?)\");\r\n    WireIn mockWireIn = Mockito.mock(WireIn.class);\r\n    Mockito.when(mockWireIn.read(FullQueryLogger.QUERY)).thenReturn(mockValueIn);\r\n    StringBuilder sb = new StringBuilder();\r\n    Dump.dumpQuery(queryOptions, mockWireIn, sb);\r\n    String[] lines = sb.toString().split(System.lineSeparator());\r\n    boolean valuesStarted = false;\r\n    int count = 0;\r\n    int nullcount = 0;\r\n    for (String line : lines) {\r\n        if (line.startsWith(\"Values:\")) {\r\n            valuesStarted = true;\r\n            continue;\r\n        }\r\n        if (valuesStarted) {\r\n            if (\"-----\".equals(line)) {\r\n                continue;\r\n            }\r\n            if (null == values.get(count++)) {\r\n                nullcount++;\r\n                Assert.assertEquals(\"null\", line);\r\n            }\r\n        }\r\n    }\r\n    Assert.assertEquals(values.stream().filter(Objects::isNull).count(), nullcount);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 25,
+    "variableName": "mockValueIn",
+    "variableType": "ValueIn",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.fqltool.commands",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\tools\\fqltool\\test\\unit\\org\\apache\\cassandra\\fqltool\\commands\\DumpTest.java"
+    },
+    "statements": [
+      {
+        "code": "ValueIn mockValueIn = Mockito.mock(ValueIn.class);",
+        "line": 114,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testDumpQueryValuesShouldHaveSeperator",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testDumpQueryValuesShouldHaveSeperator() {\r\n    String keyspace = \"ks1\";\r\n    int value = 1;\r\n    List<ByteBuffer> values = Arrays.asList(ByteBuffer.wrap(new byte[] { (byte) value }), ByteBuffer.wrap(new byte[] { (byte) value }), ByteBuffer.wrap(new byte[] { (byte) value }));\r\n    QueryOptions queryOptions = QueryOptions.create(ConsistencyLevel.LOCAL_QUORUM, values, true, 1, null, null, ProtocolVersion.CURRENT, keyspace);\r\n    ValueIn mockValueIn = Mockito.mock(ValueIn.class);\r\n    Mockito.when(mockValueIn.text()).thenReturn(\"INSERT INTO ks1.t1 (k, v1, v2) VALUES (?, ?, ?)\");\r\n    WireIn mockWireIn = Mockito.mock(WireIn.class);\r\n    Mockito.when(mockWireIn.read(FullQueryLogger.QUERY)).thenReturn(mockValueIn);\r\n    StringBuilder sb = new StringBuilder();\r\n    Dump.dumpQuery(queryOptions, mockWireIn, sb);\r\n    String[] lines = sb.toString().split(System.lineSeparator());\r\n    boolean valuesStarted = false;\r\n    int valueCount = 0;\r\n    int separatorCount = 0;\r\n    for (String line : lines) {\r\n        if (!valuesStarted && line.startsWith(\"Values:\")) {\r\n            valuesStarted = true;\r\n            continue;\r\n        }\r\n        if (valuesStarted) {\r\n            valueCount++;\r\n            if (valueCount % 2 == 0) {\r\n                Assert.assertEquals(\"-----\", line);\r\n                separatorCount++;\r\n            }\r\n        }\r\n    }\r\n    Assert.assertEquals(values.size(), separatorCount);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(mockValueIn.text()).thenReturn(\"INSERT INTO ks1.t1 (k, v1, v2) VALUES (?, ?, ?)\");",
+        "line": 115,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testDumpQueryValuesShouldHaveSeperator",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testDumpQueryValuesShouldHaveSeperator() {\r\n    String keyspace = \"ks1\";\r\n    int value = 1;\r\n    List<ByteBuffer> values = Arrays.asList(ByteBuffer.wrap(new byte[] { (byte) value }), ByteBuffer.wrap(new byte[] { (byte) value }), ByteBuffer.wrap(new byte[] { (byte) value }));\r\n    QueryOptions queryOptions = QueryOptions.create(ConsistencyLevel.LOCAL_QUORUM, values, true, 1, null, null, ProtocolVersion.CURRENT, keyspace);\r\n    ValueIn mockValueIn = Mockito.mock(ValueIn.class);\r\n    Mockito.when(mockValueIn.text()).thenReturn(\"INSERT INTO ks1.t1 (k, v1, v2) VALUES (?, ?, ?)\");\r\n    WireIn mockWireIn = Mockito.mock(WireIn.class);\r\n    Mockito.when(mockWireIn.read(FullQueryLogger.QUERY)).thenReturn(mockValueIn);\r\n    StringBuilder sb = new StringBuilder();\r\n    Dump.dumpQuery(queryOptions, mockWireIn, sb);\r\n    String[] lines = sb.toString().split(System.lineSeparator());\r\n    boolean valuesStarted = false;\r\n    int valueCount = 0;\r\n    int separatorCount = 0;\r\n    for (String line : lines) {\r\n        if (!valuesStarted && line.startsWith(\"Values:\")) {\r\n            valuesStarted = true;\r\n            continue;\r\n        }\r\n        if (valuesStarted) {\r\n            valueCount++;\r\n            if (valueCount % 2 == 0) {\r\n                Assert.assertEquals(\"-----\", line);\r\n                separatorCount++;\r\n            }\r\n        }\r\n    }\r\n    Assert.assertEquals(values.size(), separatorCount);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(mockWireIn.read(FullQueryLogger.QUERY)).thenReturn(mockValueIn);",
+        "line": 118,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testDumpQueryValuesShouldHaveSeperator",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testDumpQueryValuesShouldHaveSeperator() {\r\n    String keyspace = \"ks1\";\r\n    int value = 1;\r\n    List<ByteBuffer> values = Arrays.asList(ByteBuffer.wrap(new byte[] { (byte) value }), ByteBuffer.wrap(new byte[] { (byte) value }), ByteBuffer.wrap(new byte[] { (byte) value }));\r\n    QueryOptions queryOptions = QueryOptions.create(ConsistencyLevel.LOCAL_QUORUM, values, true, 1, null, null, ProtocolVersion.CURRENT, keyspace);\r\n    ValueIn mockValueIn = Mockito.mock(ValueIn.class);\r\n    Mockito.when(mockValueIn.text()).thenReturn(\"INSERT INTO ks1.t1 (k, v1, v2) VALUES (?, ?, ?)\");\r\n    WireIn mockWireIn = Mockito.mock(WireIn.class);\r\n    Mockito.when(mockWireIn.read(FullQueryLogger.QUERY)).thenReturn(mockValueIn);\r\n    StringBuilder sb = new StringBuilder();\r\n    Dump.dumpQuery(queryOptions, mockWireIn, sb);\r\n    String[] lines = sb.toString().split(System.lineSeparator());\r\n    boolean valuesStarted = false;\r\n    int valueCount = 0;\r\n    int separatorCount = 0;\r\n    for (String line : lines) {\r\n        if (!valuesStarted && line.startsWith(\"Values:\")) {\r\n            valuesStarted = true;\r\n            continue;\r\n        }\r\n        if (valuesStarted) {\r\n            valueCount++;\r\n            if (valueCount % 2 == 0) {\r\n                Assert.assertEquals(\"-----\", line);\r\n                separatorCount++;\r\n            }\r\n        }\r\n    }\r\n    Assert.assertEquals(values.size(), separatorCount);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 26,
+    "variableName": "mockWireIn",
+    "variableType": "WireIn",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.cassandra.fqltool.commands",
+      "filePath": "C:\\Java_projects\\temp_projects\\Cassandra\\tools\\fqltool\\test\\unit\\org\\apache\\cassandra\\fqltool\\commands\\DumpTest.java"
+    },
+    "statements": [
+      {
+        "code": "WireIn mockWireIn = Mockito.mock(WireIn.class);",
+        "line": 117,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testDumpQueryValuesShouldHaveSeperator",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testDumpQueryValuesShouldHaveSeperator() {\r\n    String keyspace = \"ks1\";\r\n    int value = 1;\r\n    List<ByteBuffer> values = Arrays.asList(ByteBuffer.wrap(new byte[] { (byte) value }), ByteBuffer.wrap(new byte[] { (byte) value }), ByteBuffer.wrap(new byte[] { (byte) value }));\r\n    QueryOptions queryOptions = QueryOptions.create(ConsistencyLevel.LOCAL_QUORUM, values, true, 1, null, null, ProtocolVersion.CURRENT, keyspace);\r\n    ValueIn mockValueIn = Mockito.mock(ValueIn.class);\r\n    Mockito.when(mockValueIn.text()).thenReturn(\"INSERT INTO ks1.t1 (k, v1, v2) VALUES (?, ?, ?)\");\r\n    WireIn mockWireIn = Mockito.mock(WireIn.class);\r\n    Mockito.when(mockWireIn.read(FullQueryLogger.QUERY)).thenReturn(mockValueIn);\r\n    StringBuilder sb = new StringBuilder();\r\n    Dump.dumpQuery(queryOptions, mockWireIn, sb);\r\n    String[] lines = sb.toString().split(System.lineSeparator());\r\n    boolean valuesStarted = false;\r\n    int valueCount = 0;\r\n    int separatorCount = 0;\r\n    for (String line : lines) {\r\n        if (!valuesStarted && line.startsWith(\"Values:\")) {\r\n            valuesStarted = true;\r\n            continue;\r\n        }\r\n        if (valuesStarted) {\r\n            valueCount++;\r\n            if (valueCount % 2 == 0) {\r\n                Assert.assertEquals(\"-----\", line);\r\n                separatorCount++;\r\n            }\r\n        }\r\n    }\r\n    Assert.assertEquals(values.size(), separatorCount);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(mockWireIn.read(FullQueryLogger.QUERY)).thenReturn(mockValueIn);",
+        "line": 118,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testDumpQueryValuesShouldHaveSeperator",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testDumpQueryValuesShouldHaveSeperator() {\r\n    String keyspace = \"ks1\";\r\n    int value = 1;\r\n    List<ByteBuffer> values = Arrays.asList(ByteBuffer.wrap(new byte[] { (byte) value }), ByteBuffer.wrap(new byte[] { (byte) value }), ByteBuffer.wrap(new byte[] { (byte) value }));\r\n    QueryOptions queryOptions = QueryOptions.create(ConsistencyLevel.LOCAL_QUORUM, values, true, 1, null, null, ProtocolVersion.CURRENT, keyspace);\r\n    ValueIn mockValueIn = Mockito.mock(ValueIn.class);\r\n    Mockito.when(mockValueIn.text()).thenReturn(\"INSERT INTO ks1.t1 (k, v1, v2) VALUES (?, ?, ?)\");\r\n    WireIn mockWireIn = Mockito.mock(WireIn.class);\r\n    Mockito.when(mockWireIn.read(FullQueryLogger.QUERY)).thenReturn(mockValueIn);\r\n    StringBuilder sb = new StringBuilder();\r\n    Dump.dumpQuery(queryOptions, mockWireIn, sb);\r\n    String[] lines = sb.toString().split(System.lineSeparator());\r\n    boolean valuesStarted = false;\r\n    int valueCount = 0;\r\n    int separatorCount = 0;\r\n    for (String line : lines) {\r\n        if (!valuesStarted && line.startsWith(\"Values:\")) {\r\n            valuesStarted = true;\r\n            continue;\r\n        }\r\n        if (valuesStarted) {\r\n            valueCount++;\r\n            if (valueCount % 2 == 0) {\r\n                Assert.assertEquals(\"-----\", line);\r\n                separatorCount++;\r\n            }\r\n        }\r\n    }\r\n    Assert.assertEquals(values.size(), separatorCount);\r\n}"
+        }
+      },
+      {
+        "code": "Dump.dumpQuery(queryOptions, mockWireIn, sb);",
+        "line": 121,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testDumpQueryValuesShouldHaveSeperator",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testDumpQueryValuesShouldHaveSeperator() {\r\n    String keyspace = \"ks1\";\r\n    int value = 1;\r\n    List<ByteBuffer> values = Arrays.asList(ByteBuffer.wrap(new byte[] { (byte) value }), ByteBuffer.wrap(new byte[] { (byte) value }), ByteBuffer.wrap(new byte[] { (byte) value }));\r\n    QueryOptions queryOptions = QueryOptions.create(ConsistencyLevel.LOCAL_QUORUM, values, true, 1, null, null, ProtocolVersion.CURRENT, keyspace);\r\n    ValueIn mockValueIn = Mockito.mock(ValueIn.class);\r\n    Mockito.when(mockValueIn.text()).thenReturn(\"INSERT INTO ks1.t1 (k, v1, v2) VALUES (?, ?, ?)\");\r\n    WireIn mockWireIn = Mockito.mock(WireIn.class);\r\n    Mockito.when(mockWireIn.read(FullQueryLogger.QUERY)).thenReturn(mockValueIn);\r\n    StringBuilder sb = new StringBuilder();\r\n    Dump.dumpQuery(queryOptions, mockWireIn, sb);\r\n    String[] lines = sb.toString().split(System.lineSeparator());\r\n    boolean valuesStarted = false;\r\n    int valueCount = 0;\r\n    int separatorCount = 0;\r\n    for (String line : lines) {\r\n        if (!valuesStarted && line.startsWith(\"Values:\")) {\r\n            valuesStarted = true;\r\n            continue;\r\n        }\r\n        if (valuesStarted) {\r\n            valueCount++;\r\n            if (valueCount % 2 == 0) {\r\n                Assert.assertEquals(\"-----\", line);\r\n                separatorCount++;\r\n            }\r\n        }\r\n    }\r\n    Assert.assertEquals(values.size(), separatorCount);\r\n}"
+        }
+      }
+    ]
+  }
+]

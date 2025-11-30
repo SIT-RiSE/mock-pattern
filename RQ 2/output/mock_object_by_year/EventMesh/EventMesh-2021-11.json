@@ -1,0 +1,309 @@
+[
+  {
+    "rawMockObjectId": 1,
+    "variableName": "header",
+    "variableType": "Header",
+    "isGlobal": true,
+    "mockPatternLevel": 2,
+    "classContext": {
+      "packageName": "org.apache.eventmesh.common.protocol.http",
+      "filePath": "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\HttpCommandTest.java",
+      "className": "HttpCommandTest"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate Header header;",
+        "line": 41,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      },
+      {
+        "code": "when(header.toMap()).thenReturn(headerMap);",
+        "line": 59,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCreateHttpCommandResponseWithHeaderAndBody",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCreateHttpCommandResponseWithHeaderAndBody() {\r\n    HttpCommand command = httpCommand.createHttpCommandResponse(header, body);\r\n    Map<String, Object> headerMap = new HashMap<>();\r\n    headerMap.put(\"key1\", \"value1\");\r\n    when(header.toMap()).thenReturn(headerMap);\r\n    Assert.assertEquals(\"1.1\", command.getHttpVersion());\r\n    Assert.assertEquals(\"POST\", command.getHttpMethod());\r\n    Assert.assertEquals(\"200\", command.getRequestCode());\r\n    Assert.assertEquals(\"value1\", command.getHeader().toMap().get(\"key1\"));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 2,
+    "variableName": "body",
+    "variableType": "Body",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.eventmesh.common.protocol.http",
+      "filePath": "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\HttpCommandTest.java",
+      "className": "HttpCommandTest"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate Body body;",
+        "line": 44,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 3,
+    "variableName": "rocketmqPushConsumer",
+    "variableType": "DefaultMQPushConsumer",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.rocketmq.consumer",
+      "filePath": "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-plugin\\eventmesh-connector-rocketmq\\src\\test\\java\\org\\apache\\rocketmq\\consumer\\PushConsumerImplTest.java",
+      "className": "PushConsumerImplTest"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate DefaultMQPushConsumer rocketmqPushConsumer;",
+        "line": 50,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      },
+      {
+        "code": "//Replace\r\nfield.set(consumer, rocketmqPushConsumer);",
+        "line": 71,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "before",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void before() throws Exception {\r\n    Properties consumerProp = new Properties();\r\n    consumerProp.setProperty(OMSBuiltinKeys.DRIVER_IMPL, \"org.apache.eventmesh.connector.rocketmq.MessagingAccessPointImpl\");\r\n    consumerProp.setProperty(\"access_points\", \"IP1:9876,IP2:9876\");\r\n    //final MessagingAccessPoint messagingAccessPoint = OMS.builder().build(consumerProp);//.endpoint(\"oms:rocketmq://IP1:9876,IP2:9876/namespace\").build(config);\r\n    consumerProp.setProperty(\"message.model\", \"CLUSTERING\");\r\n    //Properties consumerProp = new Properties();\r\n    consumerProp.put(\"CONSUMER_ID\", \"TestGroup\");\r\n    consumer = new PushConsumerImpl(consumerProp);\r\n    Field field = PushConsumerImpl.class.getDeclaredField(\"rocketmqPushConsumer\");\r\n    field.setAccessible(true);\r\n    DefaultMQPushConsumer innerConsumer = (DefaultMQPushConsumer) field.get(consumer);\r\n    //Replace\r\n    field.set(consumer, rocketmqPushConsumer);\r\n    Mockito.when(rocketmqPushConsumer.getMessageListener()).thenReturn(innerConsumer.getMessageListener());\r\n    consumer.start();\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(rocketmqPushConsumer.getMessageListener()).thenReturn(innerConsumer.getMessageListener());",
+        "line": 73,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "before",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void before() throws Exception {\r\n    Properties consumerProp = new Properties();\r\n    consumerProp.setProperty(OMSBuiltinKeys.DRIVER_IMPL, \"org.apache.eventmesh.connector.rocketmq.MessagingAccessPointImpl\");\r\n    consumerProp.setProperty(\"access_points\", \"IP1:9876,IP2:9876\");\r\n    //final MessagingAccessPoint messagingAccessPoint = OMS.builder().build(consumerProp);//.endpoint(\"oms:rocketmq://IP1:9876,IP2:9876/namespace\").build(config);\r\n    consumerProp.setProperty(\"message.model\", \"CLUSTERING\");\r\n    //Properties consumerProp = new Properties();\r\n    consumerProp.put(\"CONSUMER_ID\", \"TestGroup\");\r\n    consumer = new PushConsumerImpl(consumerProp);\r\n    Field field = PushConsumerImpl.class.getDeclaredField(\"rocketmqPushConsumer\");\r\n    field.setAccessible(true);\r\n    DefaultMQPushConsumer innerConsumer = (DefaultMQPushConsumer) field.get(consumer);\r\n    //Replace\r\n    field.set(consumer, rocketmqPushConsumer);\r\n    Mockito.when(rocketmqPushConsumer.getMessageListener()).thenReturn(innerConsumer.getMessageListener());\r\n    consumer.start();\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.verify(rocketmqPushConsumer).getMessageListener();",
+        "line": 79,
+        "type": "VERIFICATION",
+        "locate": "@After",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "after",
+          "methodAnnotations": [
+            "After"
+          ],
+          "methodRawCode": "@After\r\npublic void after() throws Exception {\r\n    Mockito.verify(rocketmqPushConsumer).getMessageListener();\r\n    consumer.shutdown();\r\n}"
+        }
+      },
+      {
+        "code": "((MessageListenerConcurrently) rocketmqPushConsumer.getMessageListener()).consumeMessage(Collections.singletonList(consumedMsg), null);",
+        "line": 101,
+        "type": "REFERENCE",
+        "locate": "Test Case",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testConsumeMessage",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testConsumeMessage() {\r\n    final byte[] testBody = new byte[] { 'a', 'b' };\r\n    MessageExt consumedMsg = new MessageExt();\r\n    consumedMsg.setMsgId(\"NewMsgId\");\r\n    consumedMsg.setBody(testBody);\r\n    consumedMsg.putUserProperty(NonStandardKeys.MESSAGE_DESTINATION, \"TOPIC\");\r\n    consumedMsg.setTopic(\"HELLO_QUEUE\");\r\n    consumer.subscribe(\"HELLO_QUEUE\", \"*\", new EventListener() {\r\n\r\n        @Override\r\n        public void consume(CloudEvent cloudEvent, org.apache.eventmesh.api.AsyncConsumeContext context) {\r\n            assertThat(cloudEvent.getExtension(\"MESSAGE_ID\")).isEqualTo(\"NewMsgId\");\r\n            assertThat(cloudEvent.getData()).isEqualTo(testBody);\r\n            context.commit(EventMeshAction.CommitMessage);\r\n        }\r\n    });\r\n    ((MessageListenerConcurrently) rocketmqPushConsumer.getMessageListener()).consumeMessage(Collections.singletonList(consumedMsg), null);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 4,
+    "variableName": "rocketmqProducer",
+    "variableType": "DefaultMQProducer",
+    "isGlobal": true,
+    "mockPatternLevel": 2,
+    "classContext": {
+      "packageName": "org.apache.rocketmq.producer",
+      "filePath": "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-plugin\\eventmesh-connector-rocketmq\\src\\test\\java\\org\\apache\\rocketmq\\producer\\ProducerImplTest.java",
+      "className": "ProducerImplTest"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate DefaultMQProducer rocketmqProducer;",
+        "line": 59,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      },
+      {
+        "code": "field.set(producer, rocketmqProducer);",
+        "line": 71,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "before",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void before() throws NoSuchFieldException, IllegalAccessException {\r\n    Properties config = new Properties();\r\n    config.setProperty(OMSBuiltinKeys.DRIVER_IMPL, \"org.apache.eventmesh.connector.rocketmq.MessagingAccessPointImpl\");\r\n    config.setProperty(\"access_points\", \"IP1:9876,IP2:9876\");\r\n    producer = new ProducerImpl(config);\r\n    Field field = AbstractProducer.class.getDeclaredField(\"rocketmqProducer\");\r\n    field.setAccessible(true);\r\n    field.set(producer, rocketmqProducer);\r\n    //        messagingAccessPoint.startup();\r\n    producer.start();\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(rocketmqProducer.send(any(Message.class))).thenReturn(sendResult);",
+        "line": 94,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testSend_OK",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testSend_OK() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {\r\n    SendResult sendResult = new SendResult();\r\n    sendResult.setMsgId(\"TestMsgID\");\r\n    sendResult.setSendStatus(SendStatus.SEND_OK);\r\n    MessageQueue messageQueue = new MessageQueue(\"HELLO_TOPIC\", \"testBroker\", 0);\r\n    sendResult.setMessageQueue(messageQueue);\r\n    Mockito.when(rocketmqProducer.send(any(Message.class))).thenReturn(sendResult);\r\n    DefaultMQProducer defaultMQProducer = new DefaultMQProducer(\"testGroup\");\r\n    DefaultMQProducerImpl defaultMQProducerImpl = new DefaultMQProducerImpl(defaultMQProducer);\r\n    defaultMQProducerImpl.setServiceState(ServiceState.RUNNING);\r\n    Mockito.when(rocketmqProducer.getDefaultMQProducerImpl()).thenReturn(defaultMQProducerImpl);\r\n    CloudEvent cloudEvent = CloudEventBuilder.v1().withId(\"id1\").withSource(URI.create(\"https://github.com/cloudevents/*****\")).withType(\"producer.example\").withSubject(\"HELLO_TOPIC\").withData(\"hello world\".getBytes()).build();\r\n    org.apache.eventmesh.api.SendResult result = producer.send(cloudEvent);\r\n    assertThat(result.getMessageId()).isEqualTo(\"TestMsgID\");\r\n    Mockito.verify(rocketmqProducer).getDefaultMQProducerImpl();\r\n    Mockito.verify(rocketmqProducer).send(any(Message.class));\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(rocketmqProducer.getDefaultMQProducerImpl()).thenReturn(defaultMQProducerImpl);",
+        "line": 99,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testSend_OK",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testSend_OK() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {\r\n    SendResult sendResult = new SendResult();\r\n    sendResult.setMsgId(\"TestMsgID\");\r\n    sendResult.setSendStatus(SendStatus.SEND_OK);\r\n    MessageQueue messageQueue = new MessageQueue(\"HELLO_TOPIC\", \"testBroker\", 0);\r\n    sendResult.setMessageQueue(messageQueue);\r\n    Mockito.when(rocketmqProducer.send(any(Message.class))).thenReturn(sendResult);\r\n    DefaultMQProducer defaultMQProducer = new DefaultMQProducer(\"testGroup\");\r\n    DefaultMQProducerImpl defaultMQProducerImpl = new DefaultMQProducerImpl(defaultMQProducer);\r\n    defaultMQProducerImpl.setServiceState(ServiceState.RUNNING);\r\n    Mockito.when(rocketmqProducer.getDefaultMQProducerImpl()).thenReturn(defaultMQProducerImpl);\r\n    CloudEvent cloudEvent = CloudEventBuilder.v1().withId(\"id1\").withSource(URI.create(\"https://github.com/cloudevents/*****\")).withType(\"producer.example\").withSubject(\"HELLO_TOPIC\").withData(\"hello world\".getBytes()).build();\r\n    org.apache.eventmesh.api.SendResult result = producer.send(cloudEvent);\r\n    assertThat(result.getMessageId()).isEqualTo(\"TestMsgID\");\r\n    Mockito.verify(rocketmqProducer).getDefaultMQProducerImpl();\r\n    Mockito.verify(rocketmqProducer).send(any(Message.class));\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.verify(rocketmqProducer).getDefaultMQProducerImpl();",
+        "line": 113,
+        "type": "VERIFICATION",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testSend_OK",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testSend_OK() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {\r\n    SendResult sendResult = new SendResult();\r\n    sendResult.setMsgId(\"TestMsgID\");\r\n    sendResult.setSendStatus(SendStatus.SEND_OK);\r\n    MessageQueue messageQueue = new MessageQueue(\"HELLO_TOPIC\", \"testBroker\", 0);\r\n    sendResult.setMessageQueue(messageQueue);\r\n    Mockito.when(rocketmqProducer.send(any(Message.class))).thenReturn(sendResult);\r\n    DefaultMQProducer defaultMQProducer = new DefaultMQProducer(\"testGroup\");\r\n    DefaultMQProducerImpl defaultMQProducerImpl = new DefaultMQProducerImpl(defaultMQProducer);\r\n    defaultMQProducerImpl.setServiceState(ServiceState.RUNNING);\r\n    Mockito.when(rocketmqProducer.getDefaultMQProducerImpl()).thenReturn(defaultMQProducerImpl);\r\n    CloudEvent cloudEvent = CloudEventBuilder.v1().withId(\"id1\").withSource(URI.create(\"https://github.com/cloudevents/*****\")).withType(\"producer.example\").withSubject(\"HELLO_TOPIC\").withData(\"hello world\".getBytes()).build();\r\n    org.apache.eventmesh.api.SendResult result = producer.send(cloudEvent);\r\n    assertThat(result.getMessageId()).isEqualTo(\"TestMsgID\");\r\n    Mockito.verify(rocketmqProducer).getDefaultMQProducerImpl();\r\n    Mockito.verify(rocketmqProducer).send(any(Message.class));\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.verify(rocketmqProducer).send(any(Message.class));",
+        "line": 114,
+        "type": "VERIFICATION",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testSend_OK",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testSend_OK() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {\r\n    SendResult sendResult = new SendResult();\r\n    sendResult.setMsgId(\"TestMsgID\");\r\n    sendResult.setSendStatus(SendStatus.SEND_OK);\r\n    MessageQueue messageQueue = new MessageQueue(\"HELLO_TOPIC\", \"testBroker\", 0);\r\n    sendResult.setMessageQueue(messageQueue);\r\n    Mockito.when(rocketmqProducer.send(any(Message.class))).thenReturn(sendResult);\r\n    DefaultMQProducer defaultMQProducer = new DefaultMQProducer(\"testGroup\");\r\n    DefaultMQProducerImpl defaultMQProducerImpl = new DefaultMQProducerImpl(defaultMQProducer);\r\n    defaultMQProducerImpl.setServiceState(ServiceState.RUNNING);\r\n    Mockito.when(rocketmqProducer.getDefaultMQProducerImpl()).thenReturn(defaultMQProducerImpl);\r\n    CloudEvent cloudEvent = CloudEventBuilder.v1().withId(\"id1\").withSource(URI.create(\"https://github.com/cloudevents/*****\")).withType(\"producer.example\").withSubject(\"HELLO_TOPIC\").withData(\"hello world\".getBytes()).build();\r\n    org.apache.eventmesh.api.SendResult result = producer.send(cloudEvent);\r\n    assertThat(result.getMessageId()).isEqualTo(\"TestMsgID\");\r\n    Mockito.verify(rocketmqProducer).getDefaultMQProducerImpl();\r\n    Mockito.verify(rocketmqProducer).send(any(Message.class));\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(rocketmqProducer.getDefaultMQProducerImpl()).thenReturn(defaultMQProducerImpl);",
+        "line": 146,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testSend_WithException",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "//    @Test\r\n//    public void testSend_Not_OK() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {\r\n//        SendResult sendResult = new SendResult();\r\n//        sendResult.setSendStatus(SendStatus.FLUSH_DISK_TIMEOUT);\r\n//        MessageQueue messageQueue = new  MessageQueue(\"HELLO_TOPIC\", \"testBroker\", 0);\r\n//        sendResult.setMessageQueue(messageQueue);\r\n//\r\n//        when(rocketmqProducer.send(any(Message.class))).thenReturn(sendResult);\r\n//\r\n//        DefaultMQProducer defaultMQProducer =new DefaultMQProducer(\"testGroup\");\r\n//        DefaultMQProducerImpl defaultMQProducerImpl = new DefaultMQProducerImpl(defaultMQProducer);\r\n//        defaultMQProducerImpl.setServiceState(ServiceState.RUNNING);\r\n//        when(rocketmqProducer.getDefaultMQProducerImpl()).thenReturn(defaultMQProducerImpl);\r\n//\r\n//        try {\r\n//            io.openmessaging.api.Message message = new io.openmessaging.api.Message(\"HELLO_TOPIC\", \"\", new byte[] {'a'});\r\n//            producer.send(message);\r\n//            failBecauseExceptionWasNotThrown(OMSRuntimeException.class);\r\n//        } catch (Exception e) {\r\n//            assertThat(e).hasMessageContaining(\"Send message to RocketMQ broker failed.\");\r\n//        }\r\n//    }\r\n@Test\r\npublic void testSend_WithException() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {\r\n    DefaultMQProducer defaultMQProducer = new DefaultMQProducer(\"testGroup\");\r\n    DefaultMQProducerImpl defaultMQProducerImpl = new DefaultMQProducerImpl(defaultMQProducer);\r\n    defaultMQProducerImpl.setServiceState(ServiceState.RUNNING);\r\n    Mockito.when(rocketmqProducer.getDefaultMQProducerImpl()).thenReturn(defaultMQProducerImpl);\r\n    MQClientException exception = new MQClientException(\"Send message to RocketMQ broker failed.\", new Exception());\r\n    Mockito.when(rocketmqProducer.send(any(Message.class))).thenThrow(exception);\r\n    try {\r\n        io.openmessaging.api.Message message = new io.openmessaging.api.Message(\"HELLO_TOPIC\", \"\", new byte[] { 'a' });\r\n        CloudEvent cloudEvent = CloudEventBuilder.v1().withId(\"id1\").withSource(URI.create(\"https://github.com/cloudevents/*****\")).withType(\"producer.example\").withSubject(\"HELLO_TOPIC\").withData(new byte[] { 'a' }).build();\r\n        producer.send(cloudEvent);\r\n        failBecauseExceptionWasNotThrown(ConnectorRuntimeException.class);\r\n    } catch (Exception e) {\r\n        assertThat(e).hasMessageContaining(\"Send message to RocketMQ broker failed.\");\r\n    }\r\n    Mockito.verify(rocketmqProducer).send(any(Message.class));\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(rocketmqProducer.send(any(Message.class))).thenThrow(exception);",
+        "line": 148,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testSend_WithException",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "//    @Test\r\n//    public void testSend_Not_OK() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {\r\n//        SendResult sendResult = new SendResult();\r\n//        sendResult.setSendStatus(SendStatus.FLUSH_DISK_TIMEOUT);\r\n//        MessageQueue messageQueue = new  MessageQueue(\"HELLO_TOPIC\", \"testBroker\", 0);\r\n//        sendResult.setMessageQueue(messageQueue);\r\n//\r\n//        when(rocketmqProducer.send(any(Message.class))).thenReturn(sendResult);\r\n//\r\n//        DefaultMQProducer defaultMQProducer =new DefaultMQProducer(\"testGroup\");\r\n//        DefaultMQProducerImpl defaultMQProducerImpl = new DefaultMQProducerImpl(defaultMQProducer);\r\n//        defaultMQProducerImpl.setServiceState(ServiceState.RUNNING);\r\n//        when(rocketmqProducer.getDefaultMQProducerImpl()).thenReturn(defaultMQProducerImpl);\r\n//\r\n//        try {\r\n//            io.openmessaging.api.Message message = new io.openmessaging.api.Message(\"HELLO_TOPIC\", \"\", new byte[] {'a'});\r\n//            producer.send(message);\r\n//            failBecauseExceptionWasNotThrown(OMSRuntimeException.class);\r\n//        } catch (Exception e) {\r\n//            assertThat(e).hasMessageContaining(\"Send message to RocketMQ broker failed.\");\r\n//        }\r\n//    }\r\n@Test\r\npublic void testSend_WithException() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {\r\n    DefaultMQProducer defaultMQProducer = new DefaultMQProducer(\"testGroup\");\r\n    DefaultMQProducerImpl defaultMQProducerImpl = new DefaultMQProducerImpl(defaultMQProducer);\r\n    defaultMQProducerImpl.setServiceState(ServiceState.RUNNING);\r\n    Mockito.when(rocketmqProducer.getDefaultMQProducerImpl()).thenReturn(defaultMQProducerImpl);\r\n    MQClientException exception = new MQClientException(\"Send message to RocketMQ broker failed.\", new Exception());\r\n    Mockito.when(rocketmqProducer.send(any(Message.class))).thenThrow(exception);\r\n    try {\r\n        io.openmessaging.api.Message message = new io.openmessaging.api.Message(\"HELLO_TOPIC\", \"\", new byte[] { 'a' });\r\n        CloudEvent cloudEvent = CloudEventBuilder.v1().withId(\"id1\").withSource(URI.create(\"https://github.com/cloudevents/*****\")).withType(\"producer.example\").withSubject(\"HELLO_TOPIC\").withData(new byte[] { 'a' }).build();\r\n        producer.send(cloudEvent);\r\n        failBecauseExceptionWasNotThrown(ConnectorRuntimeException.class);\r\n    } catch (Exception e) {\r\n        assertThat(e).hasMessageContaining(\"Send message to RocketMQ broker failed.\");\r\n    }\r\n    Mockito.verify(rocketmqProducer).send(any(Message.class));\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.verify(rocketmqProducer).send(any(Message.class));",
+        "line": 165,
+        "type": "VERIFICATION",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testSend_WithException",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "//    @Test\r\n//    public void testSend_Not_OK() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {\r\n//        SendResult sendResult = new SendResult();\r\n//        sendResult.setSendStatus(SendStatus.FLUSH_DISK_TIMEOUT);\r\n//        MessageQueue messageQueue = new  MessageQueue(\"HELLO_TOPIC\", \"testBroker\", 0);\r\n//        sendResult.setMessageQueue(messageQueue);\r\n//\r\n//        when(rocketmqProducer.send(any(Message.class))).thenReturn(sendResult);\r\n//\r\n//        DefaultMQProducer defaultMQProducer =new DefaultMQProducer(\"testGroup\");\r\n//        DefaultMQProducerImpl defaultMQProducerImpl = new DefaultMQProducerImpl(defaultMQProducer);\r\n//        defaultMQProducerImpl.setServiceState(ServiceState.RUNNING);\r\n//        when(rocketmqProducer.getDefaultMQProducerImpl()).thenReturn(defaultMQProducerImpl);\r\n//\r\n//        try {\r\n//            io.openmessaging.api.Message message = new io.openmessaging.api.Message(\"HELLO_TOPIC\", \"\", new byte[] {'a'});\r\n//            producer.send(message);\r\n//            failBecauseExceptionWasNotThrown(OMSRuntimeException.class);\r\n//        } catch (Exception e) {\r\n//            assertThat(e).hasMessageContaining(\"Send message to RocketMQ broker failed.\");\r\n//        }\r\n//    }\r\n@Test\r\npublic void testSend_WithException() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {\r\n    DefaultMQProducer defaultMQProducer = new DefaultMQProducer(\"testGroup\");\r\n    DefaultMQProducerImpl defaultMQProducerImpl = new DefaultMQProducerImpl(defaultMQProducer);\r\n    defaultMQProducerImpl.setServiceState(ServiceState.RUNNING);\r\n    Mockito.when(rocketmqProducer.getDefaultMQProducerImpl()).thenReturn(defaultMQProducerImpl);\r\n    MQClientException exception = new MQClientException(\"Send message to RocketMQ broker failed.\", new Exception());\r\n    Mockito.when(rocketmqProducer.send(any(Message.class))).thenThrow(exception);\r\n    try {\r\n        io.openmessaging.api.Message message = new io.openmessaging.api.Message(\"HELLO_TOPIC\", \"\", new byte[] { 'a' });\r\n        CloudEvent cloudEvent = CloudEventBuilder.v1().withId(\"id1\").withSource(URI.create(\"https://github.com/cloudevents/*****\")).withType(\"producer.example\").withSubject(\"HELLO_TOPIC\").withData(new byte[] { 'a' }).build();\r\n        producer.send(cloudEvent);\r\n        failBecauseExceptionWasNotThrown(ConnectorRuntimeException.class);\r\n    } catch (Exception e) {\r\n        assertThat(e).hasMessageContaining(\"Send message to RocketMQ broker failed.\");\r\n    }\r\n    Mockito.verify(rocketmqProducer).send(any(Message.class));\r\n}"
+        }
+      }
+    ]
+  }
+]

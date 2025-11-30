@@ -1,0 +1,841 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\AnnotationAccessFlagTestCase.java",
+  "methodName" : "testAnnotationClassSaysItIs",
+  "sourceCode" : "/**\r\n * If you write an annotation and compile it, the class file generated\r\n * should be marked as an annotation type - which is detectable through\r\n * BCEL.\r\n */\r\n@Test\r\npublic void testAnnotationClassSaysItIs() throws ClassNotFoundException {\r\n    JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.SimpleAnnotation\");\r\n    assertTrue(clazz.isAnnotation(), \"Expected SimpleAnnotation class to say it was an annotation - but it didn't !\");\r\n    clazz = getTestClass(PACKAGE_BASE_NAME + \".data.SimpleClass\");\r\n    assertFalse(clazz.isAnnotation(), \"Expected SimpleClass class to say it was not an annotation - but it didn't !\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\AnnotationDefaultAttributeTestCase.java",
+  "methodName" : "testMethodAnnotations",
+  "sourceCode" : "/**\r\n * For values in an annotation that have default values, we should be able\r\n * to query the AnnotationDefault attribute against the method to discover\r\n * the default value that was originally declared.\r\n */\r\n@Test\r\npublic void testMethodAnnotations() throws ClassNotFoundException {\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.SimpleAnnotation\");\r\n    final Method m = getMethod(clazz, \"fruit\");\r\n    final AnnotationDefault a = (AnnotationDefault) findAttribute(\"AnnotationDefault\", m.getAttributes());\r\n    final SimpleElementValue val = (SimpleElementValue) a.getDefaultValue();\r\n    assertEquals(ElementValue.STRING, val.getElementValueType(), \"Wrong element value type\");\r\n    assertEquals(\"bananas\", val.getValueString(), \"Wrong default\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\AnonymousClassTestCase.java",
+  "methodName" : "testRegularClassIsNotAnonymous",
+  "sourceCode" : "@Test\r\npublic void testRegularClassIsNotAnonymous() throws ClassNotFoundException {\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.AnonymousClassTest\");\r\n    assertFalse(clazz.isAnonymous(), \"regular outer classes are not anonymous\");\r\n    assertFalse(clazz.isNested(), \"regular outer classes are not nested\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\AnonymousClassTestCase.java",
+  "methodName" : "testNamedInnerClassIsNotAnonymous",
+  "sourceCode" : "@Test\r\npublic void testNamedInnerClassIsNotAnonymous() throws ClassNotFoundException {\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.AnonymousClassTest$X\");\r\n    assertFalse(clazz.isAnonymous(), \"regular inner classes are not anonymous\");\r\n    assertTrue(clazz.isNested(), \"regular inner classes are nested\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\AnonymousClassTestCase.java",
+  "methodName" : "testStaticInnerClassIsNotAnonymous",
+  "sourceCode" : "@Test\r\npublic void testStaticInnerClassIsNotAnonymous() throws ClassNotFoundException {\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.AnonymousClassTest$Y\");\r\n    assertFalse(clazz.isAnonymous(), \"regular static inner classes are not anonymous\");\r\n    assertTrue(clazz.isNested(), \"regular static inner classes are nested\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\AnonymousClassTestCase.java",
+  "methodName" : "testAnonymousInnerClassIsAnonymous",
+  "sourceCode" : "@Test\r\npublic void testAnonymousInnerClassIsAnonymous() throws ClassNotFoundException {\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.AnonymousClassTest$1\");\r\n    assertTrue(clazz.isAnonymous(), \"anonymous inner classes are anonymous\");\r\n    assertTrue(clazz.isNested(), \"anonymous inner classes are anonymous\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\classfile\\CodeExceptionTestCase.java",
+  "methodName" : "testReferenceToConstant",
+  "sourceCode" : "/**\r\n * Tests that we do not break binary compatibility with BCEL-330.\r\n */\r\n@Test\r\npublic void testReferenceToConstant() {\r\n    @SuppressWarnings(\"unused\")\r\n    final short referenceToConstant = CodeException.AALOAD;\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\classfile\\ConstantPoolTestCase.java",
+  "methodName" : "testConstantToString",
+  "sourceCode" : "@Test\r\npublic void testConstantToString() throws ClassNotFoundException {\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.SimpleClassWithDefaultConstructor\");\r\n    final ConstantPoolGen cp = new ConstantPoolGen(clazz.getConstantPool());\r\n    final Method[] methods = clazz.getMethods();\r\n    for (final Method method : methods) {\r\n        if (method.getName().equals(\"<init>\")) {\r\n            for (final InstructionHandle instructionHandle : getInstructionHandles(clazz, cp, method)) {\r\n                final String string = instructionHandle.getInstruction().toString(cp.getConstantPool());\r\n                assertNotNull(string);\r\n                // TODO Need real assertions.\r\n                // System.out.println(string);\r\n            }\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\classfile\\JDKClassDumpTestCase.java",
+  "methodName" : "testPerformance",
+  "sourceCode" : "@Test\r\npublic void testPerformance() throws Exception {\r\n    final File javaLib = new File(System.getProperty(\"java.home\") + \"/lib\");\r\n    javaLib.listFiles(file -> {\r\n        if (file.getName().endsWith(\".jar\")) {\r\n            try {\r\n                testJar(file);\r\n            } catch (final Exception e) {\r\n                fail(e.getMessage());\r\n            }\r\n        }\r\n        return false;\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\classfile\\LocalVariableTestCase.java",
+  "methodName" : "testReferenceToConstant",
+  "sourceCode" : "/**\r\n * Tests that we do not break binary compatibility with BCEL-330.\r\n */\r\n@Test\r\npublic void testReferenceToConstant() {\r\n    @SuppressWarnings(\"unused\")\r\n    final short referenceToConstant = LocalVariable.AALOAD;\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\classfile\\UtilityTestCase.java",
+  "methodName" : "testSignatureToStringWithGenerics",
+  "sourceCode" : "@Test\r\npublic void testSignatureToStringWithGenerics() throws Exception {\r\n    // tests for BCEL-197\r\n    assertEquals(\"java.util.Map<X, java.util.List<Y>>\", Utility.signatureToString(\"Ljava/util/Map<TX;Ljava/util/List<TY;>;>;\"), \"generic signature\");\r\n    assertEquals(\"java.util.Set<? extends java.nio.file.OpenOption>\", Utility.signatureToString(\"Ljava/util/Set<+Ljava/nio/file/OpenOption;>;\"), \"generic signature\");\r\n    assertEquals(\"java.nio.file.attribute.FileAttribute<?>[]\", Utility.signatureToString(\"[Ljava/nio/file/attribute/FileAttribute<*>;\"), \"generic signature\");\r\n    // tests for BCEL-286\r\n    assertEquals(\"boofcv.alg.tracker.tld.TldTracker<boofcv.struct.image.ImageGray<boofcv.struct.image.GrayU8>, boofcv.struct.image.GrayI<boofcv.struct.image.GrayU8>>\", Utility.signatureToString(\"Lboofcv/alg/tracker/tld/TldTracker<Lboofcv/struct/image/ImageGray<Lboofcv/struct/image/GrayU8;>;Lboofcv/struct/image/GrayI<Lboofcv/struct/image/GrayU8;>;>;\"), \"generic signature\");\r\n    assertEquals(\"java.util.Map<?, ?>\", Utility.signatureToString(\"Ljava/util/Map<**>;\"), \"generic signature\");\r\n    assertEquals(\"com.jme3.util.IntMap<T>.IntMapIterator\", Utility.signatureToString(\"Lcom/jme3/util/IntMap<TT;>.IntMapIterator;\"), \"generic signature\");\r\n    // tests for BCEL-279\r\n    assertEquals(\"<T extends java.lang.Object>(com.google.common.io.ByteProcessor<T>, int)T\", Utility.signatureToString(\"<T:Ljava/lang/Object;>(Lcom/google/common/io/ByteProcessor<TT;>;I)TT;\", false), \"type parameters signature\");\r\n    assertEquals(\"<T extends Object>(com.google.common.io.ByteProcessor<T>, int)T\", Utility.signatureToString(\"<T:Ljava/lang/Object;>(Lcom/google/common/io/ByteProcessor<TT;>;I)TT;\", true), \"type parameters signature\");\r\n    assertEquals(\"<M extends java.lang.reflect.AccessibleObject & java.lang.reflect.Member>(M)void\", Utility.signatureToString(\"<M:Ljava/lang/reflect/AccessibleObject;:Ljava/lang/reflect/Member;>(TM;)V\"), \"type parameters signature\");\r\n    assertEquals(\"<K1 extends K, V1 extends V>()com.google.common.cache.Weigher<K1, V1>\", Utility.signatureToString(\"<K1:TK;V1:TV;>()Lcom/google/common/cache/Weigher<TK1;TV1;>;\"), \"type parameters signature\");\r\n    assertEquals(\"<K1 extends K, V1 extends V>(com.google.common.cache.Weigher<? super K1, ? super V1>)com.google.common.cache.CacheBuilder<K1, V1>\", Utility.signatureToString(\"<K1:TK;V1:TV;>(Lcom/google/common/cache/Weigher<-TK1;-TV1;>;)Lcom/google/common/cache/CacheBuilder<TK1;TV1;>;\"), \"type parameters signature\");\r\n    assertEquals(\"<N extends java.lang.Object, E extends java.lang.Object> extends java.lang.Object implements com.google.common.graph.Network<N, E>\", Utility.signatureToString(\"<N:Ljava/lang/Object;E:Ljava/lang/Object;>Ljava/lang/Object;Lcom/google/common/graph/Network<TN;TE;>;\", false), \"class signature\");\r\n    assertEquals(\"<K extends Object, V extends Object> extends Object\", Utility.signatureToString(\"<K:Ljava/lang/Object;V:Ljava/lang/Object;>Ljava/lang/Object;\"), \"class signature\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testAnnotationsCount",
+  "sourceCode" : "@Test\r\npublic void testAnnotationsCount() {\r\n    assertEquals(2, getVisitor().annotationCount, \"annotationCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testAnnotationDefaultCount",
+  "sourceCode" : "@Test\r\npublic void testAnnotationDefaultCount() {\r\n    assertEquals(0, getVisitor().annotationDefaultCount, \"annotationDefaultCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testAnnotationEntryCount",
+  "sourceCode" : "@Test\r\npublic void testAnnotationEntryCount() {\r\n    assertEquals(2, getVisitor().annotationEntryCount, \"annotationEntryCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testCodeCount",
+  "sourceCode" : "@Test\r\npublic void testCodeCount() {\r\n    assertEquals(1, getVisitor().codeCount, \"codeCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testCodeExceptionCount",
+  "sourceCode" : "@Test\r\npublic void testCodeExceptionCount() {\r\n    assertEquals(0, getVisitor().codeExceptionCount, \"codeExceptionCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testConstantClassCount",
+  "sourceCode" : "@Test\r\npublic void testConstantClassCount() {\r\n    assertEquals(2, getVisitor().constantClassCount, \"constantClassCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testConstantDoubleCount",
+  "sourceCode" : "@Test\r\npublic void testConstantDoubleCount() {\r\n    assertEquals(0, getVisitor().constantDoubleCount, \"constantDoubleCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testConstantFieldrefCount",
+  "sourceCode" : "@Test\r\npublic void testConstantFieldrefCount() {\r\n    assertEquals(0, getVisitor().constantFieldrefCount, \"constantFieldrefCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testConstantFloatCount",
+  "sourceCode" : "@Test\r\npublic void testConstantFloatCount() {\r\n    assertEquals(0, getVisitor().constantFloatCount, \"constantFloatCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testConstantIntegerCount",
+  "sourceCode" : "@Test\r\npublic void testConstantIntegerCount() {\r\n    assertEquals(0, getVisitor().constantIntegerCount, \"constantIntegerCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testConstantInterfaceMethodrefCount",
+  "sourceCode" : "@Test\r\npublic void testConstantInterfaceMethodrefCount() {\r\n    assertEquals(0, getVisitor().constantInterfaceMethodrefCount, \"constantInterfaceMethodrefCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testConstantLongCount",
+  "sourceCode" : "@Test\r\npublic void testConstantLongCount() {\r\n    assertEquals(0, getVisitor().constantLongCount, \"constantLongCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testConstantMethodrefCount",
+  "sourceCode" : "@Test\r\npublic void testConstantMethodrefCount() {\r\n    assertEquals(1, getVisitor().constantMethodrefCount, \"constantMethodrefCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testConstantNameAndTypeCount",
+  "sourceCode" : "@Test\r\npublic void testConstantNameAndTypeCount() {\r\n    assertEquals(1, getVisitor().constantNameAndTypeCount, \"constantNameAndTypeCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testConstantPoolCount",
+  "sourceCode" : "@Test\r\npublic void testConstantPoolCount() {\r\n    assertEquals(1, getVisitor().constantPoolCount, \"constantPoolCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testConstantStringCount",
+  "sourceCode" : "@Test\r\npublic void testConstantStringCount() {\r\n    assertEquals(0, getVisitor().constantStringCount, \"constantStringCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testConstantValueCount",
+  "sourceCode" : "@Test\r\npublic void testConstantValueCount() {\r\n    assertEquals(0, getVisitor().constantValueCount, \"constantValueCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testDeprecatedCount",
+  "sourceCode" : "@Test\r\npublic void testDeprecatedCount() {\r\n    assertEquals(0, getVisitor().deprecatedCount, \"deprecatedCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testEnclosingMethodCount",
+  "sourceCode" : "@Test\r\npublic void testEnclosingMethodCount() {\r\n    assertEquals(0, getVisitor().enclosingMethodCount, \"enclosingMethodCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testExceptionTableCount",
+  "sourceCode" : "@Test\r\npublic void testExceptionTableCount() {\r\n    assertEquals(0, getVisitor().exceptionTableCount, \"exceptionTableCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testFieldCount",
+  "sourceCode" : "@Test\r\npublic void testFieldCount() {\r\n    assertEquals(0, getVisitor().fieldCount, \"fieldCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testInnerClassCount",
+  "sourceCode" : "@Test\r\npublic void testInnerClassCount() {\r\n    assertEquals(0, getVisitor().innerClassCount, \"innerClassCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testInnerClassesCount",
+  "sourceCode" : "@Test\r\npublic void testInnerClassesCount() {\r\n    assertEquals(0, getVisitor().innerClassesCount, \"innerClassesCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testJavaClassCount",
+  "sourceCode" : "@Test\r\npublic void testJavaClassCount() {\r\n    assertEquals(1, getVisitor().javaClassCount, \"javaClassCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testLineNumberCount",
+  "sourceCode" : "@Test\r\npublic void testLineNumberCount() {\r\n    assertEquals(1, getVisitor().lineNumberCount, \"lineNumberCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testLineNumberTableCount",
+  "sourceCode" : "@Test\r\npublic void testLineNumberTableCount() {\r\n    assertEquals(1, getVisitor().lineNumberTableCount, \"lineNumberTableCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testLocalVariableCount",
+  "sourceCode" : "@Test\r\npublic void testLocalVariableCount() {\r\n    assertEquals(1, getVisitor().localVariableCount, \"localVariableCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testLocalVariableTableCount",
+  "sourceCode" : "@Test\r\npublic void testLocalVariableTableCount() {\r\n    assertEquals(1, getVisitor().localVariableTableCount, \"localVariableTableCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testLocalVariableTypeTableCount",
+  "sourceCode" : "@Test\r\npublic void testLocalVariableTypeTableCount() {\r\n    assertEquals(0, getVisitor().localVariableTypeTableCount, \"localVariableTypeTableCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testMethodCount",
+  "sourceCode" : "@Test\r\npublic void testMethodCount() {\r\n    assertEquals(1, getVisitor().methodCount, \"methodCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testParameterAnnotationCount",
+  "sourceCode" : "@Test\r\npublic void testParameterAnnotationCount() {\r\n    assertEquals(0, getVisitor().parameterAnnotationCount, \"parameterAnnotationCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testSignatureCount",
+  "sourceCode" : "@Test\r\npublic void testSignatureCount() {\r\n    assertEquals(0, getVisitor().signatureAnnotationCount, \"signatureAnnotationCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testSourceFileCount",
+  "sourceCode" : "@Test\r\npublic void testSourceFileCount() {\r\n    assertEquals(1, getVisitor().sourceFileCount, \"sourceFileCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testStackMapCount",
+  "sourceCode" : "@Test\r\npublic void testStackMapCount() {\r\n    assertEquals(0, getVisitor().stackMapCount, \"stackMapCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testStackMapEntryCount",
+  "sourceCode" : "@Test\r\npublic void testStackMapEntryCount() {\r\n    assertEquals(0, getVisitor().stackMapEntryCount, \"stackMapEntryCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testSyntheticCount",
+  "sourceCode" : "@Test\r\npublic void testSyntheticCount() {\r\n    assertEquals(0, getVisitor().syntheticCount, \"syntheticCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\CounterVisitorTestCase.java",
+  "methodName" : "testUnknownCount",
+  "sourceCode" : "@Test\r\npublic void testUnknownCount() {\r\n    assertEquals(0, getVisitor().unknownCount, \"unknownCount\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\ElementValueGenTestCase.java",
+  "methodName" : "testCreateIntegerElementValue",
+  "sourceCode" : "/**\r\n * Create primitive element values\r\n */\r\n@Test\r\npublic void testCreateIntegerElementValue() throws Exception {\r\n    final ClassGen cg = createClassGen(\"HelloWorld\");\r\n    final ConstantPoolGen cp = cg.getConstantPool();\r\n    final SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_INT, cp, 555);\r\n    // Creation of an element like that should leave a new entry in the\r\n    // cpool\r\n    assertEquals(cp.lookupInteger(555), evg.getIndex(), \"Should have the same index in the constantpool\");\r\n    checkSerialize(evg, cp);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\ElementValueGenTestCase.java",
+  "methodName" : "testCreateFloatElementValue",
+  "sourceCode" : "@Test\r\npublic void testCreateFloatElementValue() throws Exception {\r\n    final ClassGen cg = createClassGen(\"HelloWorld\");\r\n    final ConstantPoolGen cp = cg.getConstantPool();\r\n    final SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_FLOAT, cp, 111.222f);\r\n    // Creation of an element like that should leave a new entry in the\r\n    // cpool\r\n    assertEquals(cp.lookupFloat(111.222f), evg.getIndex(), \"Should have the same index in the constantpool\");\r\n    checkSerialize(evg, cp);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\ElementValueGenTestCase.java",
+  "methodName" : "testCreateDoubleElementValue",
+  "sourceCode" : "@Test\r\npublic void testCreateDoubleElementValue() throws Exception {\r\n    final ClassGen cg = createClassGen(\"HelloWorld\");\r\n    final ConstantPoolGen cp = cg.getConstantPool();\r\n    final SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_DOUBLE, cp, 333.44);\r\n    // Creation of an element like that should leave a new entry in the\r\n    // cpool\r\n    final int idx = cp.lookupDouble(333.44);\r\n    assertEquals(idx, evg.getIndex(), \"Should have the same index in the constantpool\");\r\n    checkSerialize(evg, cp);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\ElementValueGenTestCase.java",
+  "methodName" : "testCreateLongElementValue",
+  "sourceCode" : "@Test\r\npublic void testCreateLongElementValue() throws Exception {\r\n    final ClassGen cg = createClassGen(\"HelloWorld\");\r\n    final ConstantPoolGen cp = cg.getConstantPool();\r\n    final SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_LONG, cp, 3334455L);\r\n    // Creation of an element like that should leave a new entry in the\r\n    // cpool\r\n    final int idx = cp.lookupLong(3334455L);\r\n    assertEquals(idx, evg.getIndex(), \"Should have the same index in the constantpool\");\r\n    checkSerialize(evg, cp);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\ElementValueGenTestCase.java",
+  "methodName" : "testCreateCharElementValue",
+  "sourceCode" : "@Test\r\npublic void testCreateCharElementValue() throws Exception {\r\n    final ClassGen cg = createClassGen(\"HelloWorld\");\r\n    final ConstantPoolGen cp = cg.getConstantPool();\r\n    final SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_CHAR, cp, 't');\r\n    // Creation of an element like that should leave a new entry in the\r\n    // cpool\r\n    final int idx = cp.lookupInteger('t');\r\n    assertEquals(idx, evg.getIndex(), \"Should have the same index in the constantpool\");\r\n    checkSerialize(evg, cp);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\ElementValueGenTestCase.java",
+  "methodName" : "testCreateByteElementValue",
+  "sourceCode" : "@Test\r\npublic void testCreateByteElementValue() throws Exception {\r\n    final ClassGen cg = createClassGen(\"HelloWorld\");\r\n    final ConstantPoolGen cp = cg.getConstantPool();\r\n    final SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_CHAR, cp, (byte) 'z');\r\n    // Creation of an element like that should leave a new entry in the\r\n    // cpool\r\n    final int idx = cp.lookupInteger((byte) 'z');\r\n    assertEquals(idx, evg.getIndex(), \"Should have the same index in the constantpool\");\r\n    checkSerialize(evg, cp);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\ElementValueGenTestCase.java",
+  "methodName" : "testCreateBooleanElementValue",
+  "sourceCode" : "@Test\r\npublic void testCreateBooleanElementValue() throws Exception {\r\n    final ClassGen cg = createClassGen(\"HelloWorld\");\r\n    final ConstantPoolGen cp = cg.getConstantPool();\r\n    final SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_BOOLEAN, cp, true);\r\n    // Creation of an element like that should leave a new entry in the\r\n    // cpool\r\n    // 1 == true\r\n    final int idx = cp.lookupInteger(1);\r\n    assertEquals(idx, evg.getIndex(), \"Should have the same index in the constantpool\");\r\n    checkSerialize(evg, cp);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\ElementValueGenTestCase.java",
+  "methodName" : "testCreateShortElementValue",
+  "sourceCode" : "@Test\r\npublic void testCreateShortElementValue() throws Exception {\r\n    final ClassGen cg = createClassGen(\"HelloWorld\");\r\n    final ConstantPoolGen cp = cg.getConstantPool();\r\n    final SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_SHORT, cp, (short) 42);\r\n    // Creation of an element like that should leave a new entry in the\r\n    // cpool\r\n    final int idx = cp.lookupInteger(42);\r\n    assertEquals(idx, evg.getIndex(), \"Should have the same index in the constantpool\");\r\n    checkSerialize(evg, cp);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\ElementValueGenTestCase.java",
+  "methodName" : "testCreateStringElementValue",
+  "sourceCode" : "// //\r\n// Create string element values\r\n@Test\r\npublic void testCreateStringElementValue() throws Exception {\r\n    // Create HelloWorld\r\n    final ClassGen cg = createClassGen(\"HelloWorld\");\r\n    final ConstantPoolGen cp = cg.getConstantPool();\r\n    final SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.STRING, cp, \"hello\");\r\n    // Creation of an element like that should leave a new entry in the\r\n    // cpool\r\n    assertEquals(cp.lookupUtf8(\"hello\"), evg.getIndex(), \"Should have the same index in the constantpool\");\r\n    checkSerialize(evg, cp);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\ElementValueGenTestCase.java",
+  "methodName" : "testCreateEnumElementValue",
+  "sourceCode" : "// //\r\n// Create enum element value\r\n@Test\r\npublic void testCreateEnumElementValue() throws Exception {\r\n    final ClassGen cg = createClassGen(\"HelloWorld\");\r\n    final ConstantPoolGen cp = cg.getConstantPool();\r\n    // Supports rainbow\r\n    final ObjectType enumType = new ObjectType(\"SimpleEnum\");\r\n    // :)\r\n    final EnumElementValueGen evg = new EnumElementValueGen(enumType, \"Red\", cp);\r\n    // Creation of an element like that should leave a new entry in the\r\n    // cpool\r\n    assertEquals(cp.lookupUtf8(\"Red\"), evg.getValueIndex(), \"The new ElementValue value index should match the contents of the constantpool\");\r\n    // BCELBUG: Should the class signature or class name be in the constant\r\n    // pool? (see note in ConstantPool)\r\n    // assertTrue(\"The new ElementValue type index should match the contents\r\n    // of the constantpool but \"+\r\n    // evg.getTypeIndex()+\"!=\"+cp.lookupClass(enumType.getSignature()),\r\n    // evg.getTypeIndex()==cp.lookupClass(enumType.getSignature()));\r\n    checkSerialize(evg, cp);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\ElementValueGenTestCase.java",
+  "methodName" : "testCreateClassElementValue",
+  "sourceCode" : "// //\r\n// Create class element value\r\n@Test\r\npublic void testCreateClassElementValue() throws Exception {\r\n    final ClassGen cg = createClassGen(\"HelloWorld\");\r\n    final ConstantPoolGen cp = cg.getConstantPool();\r\n    final ObjectType classType = new ObjectType(\"java.lang.Integer\");\r\n    final ClassElementValueGen evg = new ClassElementValueGen(classType, cp);\r\n    assertTrue(evg.getClassString().contains(\"Integer\"), \"Unexpected value for contained class: '\" + evg.getClassString() + \"'\");\r\n    checkSerialize(evg, cp);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\EnclosingMethodAttributeTestCase.java",
+  "methodName" : "testCheckMethodLevelNamedInnerClass",
+  "sourceCode" : "/**\r\n * Verify for an inner class declared inside the 'main' method that the\r\n * enclosing method attribute is set correctly.\r\n */\r\n@Test\r\npublic void testCheckMethodLevelNamedInnerClass() throws ClassNotFoundException {\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.AttributeTestClassEM01$1S\");\r\n    final ConstantPool pool = clazz.getConstantPool();\r\n    final Attribute[] encMethodAttrs = findAttribute(\"EnclosingMethod\", clazz);\r\n    assertEquals(1, encMethodAttrs.length, \"Wrong number of EnclosingMethod attributes\");\r\n    final EnclosingMethod em = (EnclosingMethod) encMethodAttrs[0];\r\n    final String enclosingClassName = em.getEnclosingClass().getBytes(pool);\r\n    final String enclosingMethodName = em.getEnclosingMethod().getName(pool);\r\n    assertEquals(PACKAGE_BASE_SIG + \"/data/AttributeTestClassEM01\", enclosingClassName, \"Wrong class name\");\r\n    assertEquals(enclosingMethodName, \"main\", \"Wrong method name\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\EnclosingMethodAttributeTestCase.java",
+  "methodName" : "testCheckClassLevelNamedInnerClass",
+  "sourceCode" : "/**\r\n * Verify for an inner class declared at the type level that the\r\n * EnclosingMethod attribute is set correctly (i.e. to a null value)\r\n */\r\n@Test\r\npublic void testCheckClassLevelNamedInnerClass() throws ClassNotFoundException {\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.AttributeTestClassEM02$1\");\r\n    final ConstantPool pool = clazz.getConstantPool();\r\n    final Attribute[] encMethodAttrs = findAttribute(\"EnclosingMethod\", clazz);\r\n    assertEquals(1, encMethodAttrs.length, \"Expected 1 EnclosingMethod attribute but found \" + encMethodAttrs.length);\r\n    final EnclosingMethod em = (EnclosingMethod) encMethodAttrs[0];\r\n    final String enclosingClassName = em.getEnclosingClass().getBytes(pool);\r\n    assertEquals(em.getEnclosingMethodIndex(), 0, \"The class is not within a method, so method_index should be null\");\r\n    assertEquals(PACKAGE_BASE_SIG + \"/data/AttributeTestClassEM02\", enclosingClassName, \"Wrong class name\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\EnclosingMethodAttributeTestCase.java",
+  "methodName" : "testAttributeSerializtion",
+  "sourceCode" : "/**\r\n * Check that we can save and load the attribute correctly.\r\n */\r\n@Test\r\npublic void testAttributeSerializtion() throws ClassNotFoundException, IOException {\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.AttributeTestClassEM02$1\");\r\n    final ConstantPool pool = clazz.getConstantPool();\r\n    final Attribute[] encMethodAttrs = findAttribute(\"EnclosingMethod\", clazz);\r\n    assertEquals(1, encMethodAttrs.length, \"Wrong number of EnclosingMethod attributes\");\r\n    // Write it out\r\n    final File tfile = createTestdataFile(\"AttributeTestClassEM02$1.class\");\r\n    clazz.dump(tfile);\r\n    // Read in the new version and check it is OK\r\n    final SyntheticRepository repos2 = createRepos(\".\");\r\n    final JavaClass clazz2 = repos2.loadClass(\"AttributeTestClassEM02$1\");\r\n    // Use the variable to avoid a warning\r\n    assertNotNull(clazz2);\r\n    final EnclosingMethod em = (EnclosingMethod) encMethodAttrs[0];\r\n    final String enclosingClassName = em.getEnclosingClass().getBytes(pool);\r\n    assertEquals(em.getEnclosingMethodIndex(), 0, \"The class is not within a method, so method_index should be null\");\r\n    assertEquals(PACKAGE_BASE_SIG + \"/data/AttributeTestClassEM02\", enclosingClassName, \"Wrong class name\");\r\n    tfile.deleteOnExit();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\EnumAccessFlagTestCase.java",
+  "methodName" : "testEnumClassSaysItIs",
+  "sourceCode" : "/**\r\n * An enumerated type, once compiled, should result in a class file that is\r\n * marked such that we can determine from the access flags (through BCEL)\r\n * that it was originally an enum type declaration.\r\n */\r\n@Test\r\npublic void testEnumClassSaysItIs() throws ClassNotFoundException {\r\n    JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.SimpleEnum\");\r\n    assertTrue(clazz.isEnum(), \"Expected SimpleEnum class to say it was an enum - but it didn't !\");\r\n    clazz = getTestClass(PACKAGE_BASE_NAME + \".data.SimpleClass\");\r\n    assertFalse(clazz.isEnum(), \"Expected SimpleClass class to say it was not an enum - but it didn't !\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\AnnotationGenTestCase.java",
+  "methodName" : "testConstructMutableAnnotation",
+  "sourceCode" : "/**\r\n * Programmatically construct an mutable annotation (AnnotationGen) object.\r\n */\r\n@Test\r\npublic void testConstructMutableAnnotation() throws IOException {\r\n    // Create the containing class\r\n    final ClassGen cg = createClassGen(\"HelloWorld\");\r\n    final ConstantPoolGen cp = cg.getConstantPool();\r\n    // Create the simple primitive value '4' of type 'int'\r\n    final SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_INT, cp, 4);\r\n    // Give it a name, call it 'id'\r\n    final ElementValuePairGen nvGen = new ElementValuePairGen(\"id\", evg, cp);\r\n    // Check it looks right\r\n    assertTrue(nvGen.toString().contains(\"id=4\"), \"Should include string 'id=4' but says: \" + nvGen.toString());\r\n    final ObjectType t = new ObjectType(\"SimpleAnnotation\");\r\n    final List<ElementValuePairGen> elements = new ArrayList<>();\r\n    elements.add(nvGen);\r\n    // Build an annotation of type 'SimpleAnnotation' with 'id=4' as the\r\n    // only value :)\r\n    final AnnotationEntryGen a = new AnnotationEntryGen(t, elements, true, cp);\r\n    // Check we can save and load it ok\r\n    checkSerialize(a, cp);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\AnnotationGenTestCase.java",
+  "methodName" : "testVisibleInvisibleAnnotationGen",
+  "sourceCode" : "@Test\r\npublic void testVisibleInvisibleAnnotationGen() {\r\n    // Create the containing class\r\n    final ClassGen cg = createClassGen(\"HelloWorld\");\r\n    final ConstantPoolGen cp = cg.getConstantPool();\r\n    // Create the simple primitive value '4' of type 'int'\r\n    final SimpleElementValueGen evg = new SimpleElementValueGen(ElementValueGen.PRIMITIVE_INT, cp, 4);\r\n    // Give it a name, call it 'id'\r\n    final ElementValuePairGen nvGen = new ElementValuePairGen(\"id\", evg, cp);\r\n    // Check it looks right\r\n    assertTrue(nvGen.toString().contains(\"id=4\"), \"Should include string 'id=4' but says: \" + nvGen.toString());\r\n    final ObjectType t = new ObjectType(\"SimpleAnnotation\");\r\n    final List<ElementValuePairGen> elements = new ArrayList<>();\r\n    elements.add(nvGen);\r\n    // Build a RV annotation of type 'SimpleAnnotation' with 'id=4' as the\r\n    // only value :)\r\n    final AnnotationEntryGen a = new AnnotationEntryGen(t, elements, true, cp);\r\n    final List<AnnotationEntryGen> v = new ArrayList<>();\r\n    v.add(a);\r\n    final Attribute[] attributes = AnnotationEntryGen.getAnnotationAttributes(cp, v.toArray(new AnnotationEntryGen[0]));\r\n    boolean foundRV = false;\r\n    for (final Attribute attribute : attributes) {\r\n        if (attribute instanceof RuntimeVisibleAnnotations) {\r\n            assertTrue(((Annotations) attribute).isRuntimeVisible());\r\n            foundRV = true;\r\n        }\r\n    }\r\n    assertTrue(foundRV, \"Should have seen a RuntimeVisibleAnnotation\");\r\n    // Build a RIV annotation of type 'SimpleAnnotation' with 'id=4' as the\r\n    // only value :)\r\n    final AnnotationEntryGen a2 = new AnnotationEntryGen(t, elements, false, cp);\r\n    final List<AnnotationEntryGen> v2 = new ArrayList<>();\r\n    v2.add(a2);\r\n    final Attribute[] attributes2 = AnnotationEntryGen.getAnnotationAttributes(cp, v2.toArray(new AnnotationEntryGen[0]));\r\n    boolean foundRIV = false;\r\n    for (final Attribute attribute : attributes2) {\r\n        if (attribute instanceof RuntimeInvisibleAnnotations) {\r\n            assertFalse(((Annotations) attribute).isRuntimeVisible());\r\n            foundRIV = true;\r\n        }\r\n    }\r\n    assertTrue(foundRIV, \"Should have seen a RuntimeInvisibleAnnotation\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\BranchHandleTestCase.java",
+  "methodName" : "testsetInstructionNull",
+  "sourceCode" : "// Test that setInstruction only allows BranchInstructions\r\n@Test\r\npublic void testsetInstructionNull() {\r\n    // have to start with a valid BI\r\n    final BranchHandle bh = BranchHandle.getBranchHandle(new GOTO(null));\r\n    assertNotNull(bh);\r\n    assertThrows(ClassGenException.class, () -> bh.setInstruction(null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\BranchHandleTestCase.java",
+  "methodName" : "testsetInstructionBI",
+  "sourceCode" : "@Test\r\npublic void testsetInstructionBI() {\r\n    // have to start with a valid BI\r\n    final BranchHandle bh = BranchHandle.getBranchHandle(new GOTO(null));\r\n    assertNotNull(bh);\r\n    bh.setInstruction(new GOTO(null));\r\n    assertNotNull(bh);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\BranchHandleTestCase.java",
+  "methodName" : "testsetInstructionnotBI",
+  "sourceCode" : "@Test\r\npublic void testsetInstructionnotBI() {\r\n    // have to start with a valid BI\r\n    final BranchHandle bh = BranchHandle.getBranchHandle(new GOTO(null));\r\n    assertNotNull(bh);\r\n    assertThrows(ClassGenException.class, () -> bh.setInstruction(new NOP()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\BranchHandleTestCase.java",
+  "methodName" : "testGetBHnull",
+  "sourceCode" : "@Test\r\npublic void testGetBHnull() {\r\n    assertThrows(ClassGenException.class, () -> BranchHandle.getBranchHandle(null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\FieldAnnotationsTestCase.java",
+  "methodName" : "testFieldAnnotationEntrys",
+  "sourceCode" : "/**\r\n * Check field AnnotationEntrys are retrievable.\r\n */\r\n@Test\r\npublic void testFieldAnnotationEntrys() throws ClassNotFoundException {\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.AnnotatedFields\");\r\n    // TODO L...;?\r\n    checkAnnotatedField(clazz, \"i\", \"L\" + PACKAGE_BASE_SIG + \"/data/SimpleAnnotation;\", \"id\", \"1\");\r\n    checkAnnotatedField(clazz, \"s\", \"L\" + PACKAGE_BASE_SIG + \"/data/SimpleAnnotation;\", \"id\", \"2\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\FieldAnnotationsTestCase.java",
+  "methodName" : "testFieldAnnotationEntrysReadWrite",
+  "sourceCode" : "/**\r\n * Check field AnnotationEntrys (de)serialize ok.\r\n */\r\n@Test\r\npublic void testFieldAnnotationEntrysReadWrite() throws ClassNotFoundException, IOException {\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.AnnotatedFields\");\r\n    checkAnnotatedField(clazz, \"i\", \"L\" + PACKAGE_BASE_SIG + \"/data/SimpleAnnotation;\", \"id\", \"1\");\r\n    checkAnnotatedField(clazz, \"s\", \"L\" + PACKAGE_BASE_SIG + \"/data/SimpleAnnotation;\", \"id\", \"2\");\r\n    // Write it out\r\n    final File tfile = createTestdataFile(\"AnnotatedFields.class\");\r\n    clazz.dump(tfile);\r\n    final SyntheticRepository repos2 = createRepos(\".\");\r\n    repos2.loadClass(\"AnnotatedFields\");\r\n    checkAnnotatedField(clazz, \"i\", \"L\" + PACKAGE_BASE_SIG + \"/data/SimpleAnnotation;\", \"id\", \"1\");\r\n    checkAnnotatedField(clazz, \"s\", \"L\" + PACKAGE_BASE_SIG + \"/data/SimpleAnnotation;\", \"id\", \"2\");\r\n    assertTrue(tfile.delete());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\FieldAnnotationsTestCase.java",
+  "methodName" : "testFieldAnnotationModification",
+  "sourceCode" : "/**\r\n * Check we can load in a class, modify its field AnnotationEntrys, save it,\r\n * reload it and everything is correct.\r\n */\r\n@Test\r\npublic void testFieldAnnotationModification() throws ClassNotFoundException {\r\n    final boolean dbg = false;\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.AnnotatedFields\");\r\n    final ClassGen clg = new ClassGen(clazz);\r\n    Field f = clg.getFields()[0];\r\n    if (dbg) {\r\n        System.err.println(\"Field in freshly constructed class is: \" + f);\r\n    }\r\n    if (dbg) {\r\n        System.err.println(\"AnnotationEntrys on field are: \" + dumpAnnotationEntries(f.getAnnotationEntries()));\r\n    }\r\n    final AnnotationEntryGen fruitBasedAnnotationEntry = createFruitAnnotationEntry(clg.getConstantPool(), \"Tomato\", false);\r\n    final FieldGen fg = new FieldGen(f, clg.getConstantPool());\r\n    if (dbg) {\r\n        System.err.println(\"Adding AnnotationEntry to the field\");\r\n    }\r\n    fg.addAnnotationEntry(fruitBasedAnnotationEntry);\r\n    if (dbg) {\r\n        System.err.println(\"FieldGen (mutable field) is \" + fg);\r\n    }\r\n    if (dbg) {\r\n        System.err.println(\"with AnnotationEntrys: \" + dumpAnnotationEntries(fg.getAnnotationEntries()));\r\n    }\r\n    if (dbg) {\r\n        System.err.println(\"Replacing original field with new field that has extra AnnotationEntry\");\r\n    }\r\n    clg.removeField(f);\r\n    clg.addField(fg.getField());\r\n    // there are two fields in the class, removing\r\n    f = clg.getFields()[1];\r\n    // and readding has changed the order\r\n    // so this time index [1] is the 'int i' field\r\n    if (dbg) {\r\n        System.err.println(\"Field now looks like this: \" + f);\r\n    }\r\n    if (dbg) {\r\n        System.err.println(\"With AnnotationEntrys: \" + dumpAnnotationEntries(f.getAnnotationEntries()));\r\n    }\r\n    assertEquals(2, f.getAnnotationEntries().length, \"Wrong number of AnnotationEntries\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\GeneratingAnnotatedClassesTestCase.java",
+  "methodName" : "testGenerateClassLevelAnnotations",
+  "sourceCode" : "/**\r\n * Steps in the test:\r\n * <ol>\r\n * <li>Programmatically construct the HelloWorld program</li>\r\n * <li>Add two simple annotations at the class level</li>\r\n * <li>Save the class to disk</li>\r\n * <li>Reload the class using the 'static' variant of the BCEL classes</li>\r\n * <li>Check the attributes are OK</li>\r\n * </ol>\r\n */\r\n@Test\r\npublic void testGenerateClassLevelAnnotations() throws ClassNotFoundException {\r\n    // Create HelloWorld\r\n    final ClassGen cg = createClassGen(\"HelloWorld\");\r\n    cg.setMajor(49);\r\n    cg.setMinor(0);\r\n    final ConstantPoolGen cp = cg.getConstantPool();\r\n    final InstructionList il = new InstructionList();\r\n    cg.addAnnotationEntry(createSimpleVisibleAnnotation(cp));\r\n    cg.addAnnotationEntry(createSimpleInvisibleAnnotation(cp));\r\n    buildClassContents(cg, cp, il);\r\n    //System.out.println(cg.getJavaClass().toString());\r\n    dumpClass(cg, \"HelloWorld.class\");\r\n    final JavaClass jc = getClassFrom(\".\", \"HelloWorld\");\r\n    final AnnotationEntry[] as = jc.getAnnotationEntries();\r\n    assertEquals(2, as.length, \"Wrong number of AnnotationEntries\");\r\n    // TODO L??;\r\n    assertEquals(\"LSimpleAnnotation;\", as[0].getAnnotationType(), \"Wrong name of annotation 1\");\r\n    assertEquals(\"LSimpleAnnotation;\", as[1].getAnnotationType(), \"Wrong name of annotation 2\");\r\n    final ElementValuePair[] vals = as[0].getElementValuePairs();\r\n    final ElementValuePair nvp = vals[0];\r\n    assertEquals(\"id\", nvp.getNameString(), \"Wrong name of element in SimpleAnnotation\");\r\n    final ElementValue ev = nvp.getValue();\r\n    assertEquals(ElementValue.PRIMITIVE_INT, ev.getElementValueType(), \"Wrong type of element value\");\r\n    assertEquals(\"4\", ev.stringifyValue(), \"Wrong value of element\");\r\n    assertTrue(createTestdataFile(\"HelloWorld.class\").delete());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\GeneratingAnnotatedClassesTestCase.java",
+  "methodName" : "testGenerateMethodLevelAnnotations1",
+  "sourceCode" : "/**\r\n * Just check that we can dump a class that has a method annotation on it\r\n * and it is still there when we read it back in\r\n */\r\n@Test\r\npublic void testGenerateMethodLevelAnnotations1() throws ClassNotFoundException {\r\n    // Create HelloWorld\r\n    final ClassGen cg = createClassGen(\"HelloWorld\");\r\n    final ConstantPoolGen cp = cg.getConstantPool();\r\n    final InstructionList il = new InstructionList();\r\n    buildClassContentsWithAnnotatedMethods(cg, cp, il);\r\n    // Check annotation is OK\r\n    int i = cg.getMethods()[0].getAnnotationEntries().length;\r\n    assertEquals(1, i, \"Wrong number of annotations of main method prior to dumping\");\r\n    dumpClass(cg, \"temp1\" + File.separator + \"HelloWorld.class\");\r\n    final JavaClass jc2 = getClassFrom(\"temp1\", \"HelloWorld\");\r\n    // Check annotation is OK\r\n    i = jc2.getMethods()[0].getAnnotationEntries().length;\r\n    assertEquals(1, i, \"Wrong number of annotation on JavaClass\");\r\n    final ClassGen cg2 = new ClassGen(jc2);\r\n    // Check it now it is a ClassGen\r\n    final Method[] m = cg2.getMethods();\r\n    i = m[0].getAnnotationEntries().length;\r\n    assertEquals(1, i, \"Wrong number of annotations on the main 'Method'\");\r\n    final MethodGen mg = new MethodGen(m[0], cg2.getClassName(), cg2.getConstantPool());\r\n    // Check it finally when the Method is changed to a MethodGen\r\n    i = mg.getAnnotationEntries().length;\r\n    assertEquals(1, i, \"Wrong number of annotations on the main 'MethodGen'\");\r\n    assertTrue(wipe(\"temp1\", \"HelloWorld.class\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\GeneratingAnnotatedClassesTestCase.java",
+  "methodName" : "testGenerateMethodLevelAnnotations2",
+  "sourceCode" : "/**\r\n * Going further than the last test - when we reload the method back in,\r\n * let's change it (adding a new annotation) and then store that, read it\r\n * back in and verify both annotations are there !\r\n * Also check that we can remove method annotations.\r\n */\r\n@Test\r\npublic void testGenerateMethodLevelAnnotations2() throws ClassNotFoundException {\r\n    // Create HelloWorld\r\n    final ClassGen cg = createClassGen(\"HelloWorld\");\r\n    final ConstantPoolGen cp = cg.getConstantPool();\r\n    final InstructionList il = new InstructionList();\r\n    buildClassContentsWithAnnotatedMethods(cg, cp, il);\r\n    dumpClass(cg, \"temp2\", \"HelloWorld.class\");\r\n    final JavaClass jc2 = getClassFrom(\"temp2\", \"HelloWorld\");\r\n    final ClassGen cg2 = new ClassGen(jc2);\r\n    // Main method after reading the class back in\r\n    final Method mainMethod1 = jc2.getMethods()[0];\r\n    assertEquals(1, mainMethod1.getAnnotationEntries().length, \"Wrong number of annotations of the 'Method'\");\r\n    final MethodGen mainMethod2 = new MethodGen(mainMethod1, cg2.getClassName(), cg2.getConstantPool());\r\n    assertEquals(1, mainMethod2.getAnnotationEntries().length, \"Wrong number of annotations of the 'MethodGen'\");\r\n    final AnnotationEntryGen fruit = createFruitAnnotation(cg2.getConstantPool(), \"Pear\");\r\n    mainMethod2.addAnnotationEntry(fruit);\r\n    cg2.removeMethod(mainMethod1);\r\n    cg2.addMethod(mainMethod2.getMethod());\r\n    dumpClass(cg2, \"temp3\", \"HelloWorld.class\");\r\n    final JavaClass jc3 = getClassFrom(\"temp3\", \"HelloWorld\");\r\n    final ClassGen cg3 = new ClassGen(jc3);\r\n    final Method mainMethod3 = cg3.getMethods()[1];\r\n    final int i = mainMethod3.getAnnotationEntries().length;\r\n    assertEquals(2, i, \"Wrong number of annotations on the 'Method'\");\r\n    mainMethod2.removeAnnotationEntry(fruit);\r\n    assertEquals(1, mainMethod2.getAnnotationEntries().length, \"Wrong number of annotations on the 'MethodGen'\");\r\n    mainMethod2.removeAnnotationEntries();\r\n    assertEquals(0, mainMethod2.getAnnotationEntries().length, 0, \"Wrong number of annotations on the 'MethodGen'\");\r\n    assertTrue(wipe(\"temp2\", \"HelloWorld.class\"));\r\n    assertTrue(wipe(\"temp3\", \"HelloWorld.class\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\GeneratingAnnotatedClassesTestCase.java",
+  "methodName" : "testTransformClassToClassGen_SimpleTypes",
+  "sourceCode" : "// J5TODO: Need to add deleteFile calls to many of these tests\r\n/**\r\n * Transform simple class from an immutable to a mutable object.\r\n */\r\n@Test\r\npublic void testTransformClassToClassGen_SimpleTypes() throws ClassNotFoundException {\r\n    final JavaClass jc = getTestClass(PACKAGE_BASE_NAME + \".data.SimpleAnnotatedClass\");\r\n    final ClassGen cgen = new ClassGen(jc);\r\n    // Check annotations are correctly preserved\r\n    final AnnotationEntryGen[] annotations = cgen.getAnnotationEntries();\r\n    assertEquals(1, annotations.length, \"Wrong number of annotations\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\GeneratingAnnotatedClassesTestCase.java",
+  "methodName" : "testTransformClassToClassGen_EnumType",
+  "sourceCode" : "/**\r\n * Transform simple class from an immutable to a mutable object. The class\r\n * is annotated with an annotation that uses an enum.\r\n */\r\n@Test\r\npublic void testTransformClassToClassGen_EnumType() throws ClassNotFoundException {\r\n    final JavaClass jc = getTestClass(PACKAGE_BASE_NAME + \".data.AnnotatedWithEnumClass\");\r\n    final ClassGen cgen = new ClassGen(jc);\r\n    // Check annotations are correctly preserved\r\n    final AnnotationEntryGen[] annotations = cgen.getAnnotationEntries();\r\n    assertEquals(1, annotations.length, \"Wrong number of annotations\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\GeneratingAnnotatedClassesTestCase.java",
+  "methodName" : "testTransformClassToClassGen_ArrayAndAnnotationTypes",
+  "sourceCode" : "/**\r\n * Transform simple class from an immutable to a mutable object. The class\r\n * is annotated with an annotation that uses an array of SimpleAnnotations.\r\n */\r\n@Test\r\npublic void testTransformClassToClassGen_ArrayAndAnnotationTypes() throws ClassNotFoundException {\r\n    final JavaClass jc = getTestClass(PACKAGE_BASE_NAME + \".data.AnnotatedWithCombinedAnnotation\");\r\n    final ClassGen cgen = new ClassGen(jc);\r\n    // Check annotations are correctly preserved\r\n    final AnnotationEntryGen[] annotations = cgen.getAnnotationEntries();\r\n    assertEquals(1, annotations.length, \"Wrong number of annotations\");\r\n    final AnnotationEntryGen a = annotations[0];\r\n    assertEquals(1, a.getValues().size(), \"Wrong number of values for the annotation\");\r\n    final ElementValuePairGen nvp = a.getValues().get(0);\r\n    final ElementValueGen value = nvp.getValue();\r\n    assertTrue(value instanceof ArrayElementValueGen, \"Value should be ArrayElementValueGen but is \" + value);\r\n    final ArrayElementValueGen arrayValue = (ArrayElementValueGen) value;\r\n    assertEquals(1, arrayValue.getElementValuesSize(), \"Wrong size of the array\");\r\n    final ElementValueGen innerValue = arrayValue.getElementValues().get(0);\r\n    assertTrue(innerValue instanceof AnnotationElementValueGen, \"Value in the array should be AnnotationElementValueGen but is \" + innerValue);\r\n    final AnnotationElementValueGen innerAnnotationValue = (AnnotationElementValueGen) innerValue;\r\n    assertEquals(\"L\" + PACKAGE_BASE_SIG + \"/data/SimpleAnnotation;\", innerAnnotationValue.getAnnotation().getTypeSignature(), \"Wrong type signature\");\r\n    // check the three methods\r\n    final Method[] methods = cgen.getMethods();\r\n    assertEquals(3, methods.length);\r\n    for (final Method method : methods) {\r\n        final String methodName = method.getName();\r\n        if (methodName.equals(\"<init>\")) {\r\n            assertMethodAnnotations(method, 0, 1);\r\n            assertParameterAnnotations(method, 0, 1);\r\n        } else if (methodName.equals(\"methodWithArrayOfZeroAnnotations\")) {\r\n            assertMethodAnnotations(method, 1, 0);\r\n        } else if (methodName.equals(\"methodWithArrayOfTwoAnnotations\")) {\r\n            assertMethodAnnotations(method, 1, 2);\r\n        } else {\r\n            fail(() -> \"unexpected method \" + method.getName());\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\GeneratingAnnotatedClassesTestCase.java",
+  "methodName" : "testTransformComplexClassToClassGen",
+  "sourceCode" : "/**\r\n * Transform complex class from an immutable to a mutable object.\r\n */\r\n@Test\r\npublic void testTransformComplexClassToClassGen() throws ClassNotFoundException {\r\n    final JavaClass jc = getTestClass(PACKAGE_BASE_NAME + \".data.ComplexAnnotatedClass\");\r\n    final ClassGen cgen = new ClassGen(jc);\r\n    // Check annotations are correctly preserved\r\n    final AnnotationEntryGen[] annotations = cgen.getAnnotationEntries();\r\n    assertEquals(1, annotations.length, \"Wrong number of annotations\");\r\n    final List<?> l = annotations[0].getValues();\r\n    boolean found = false;\r\n    for (final Object name : l) {\r\n        final ElementValuePairGen element = (ElementValuePairGen) name;\r\n        if (element.getNameString().equals(\"dval\") && element.getValue().stringifyValue().equals(\"33.4\")) {\r\n            found = true;\r\n        }\r\n    }\r\n    assertTrue(found, \"Did not find double annotation value with value 33.4\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\GeneratingAnnotatedClassesTestCase.java",
+  "methodName" : "testModifyingClasses1",
+  "sourceCode" : "/**\r\n * Load a class in and modify it with a new attribute - A SimpleAnnotation\r\n * annotation\r\n */\r\n@Test\r\npublic void testModifyingClasses1() throws ClassNotFoundException {\r\n    final JavaClass jc = getTestClass(PACKAGE_BASE_NAME + \".data.SimpleAnnotatedClass\");\r\n    final ClassGen cgen = new ClassGen(jc);\r\n    final ConstantPoolGen cp = cgen.getConstantPool();\r\n    cgen.addAnnotationEntry(createFruitAnnotation(cp, \"Pineapple\"));\r\n    assertEquals(2, cgen.getAnnotationEntries().length, \"Wrong number of annotations\");\r\n    dumpClass(cgen, \"SimpleAnnotatedClass.class\");\r\n    assertTrue(wipe(\"SimpleAnnotatedClass.class\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\GeneratingAnnotatedClassesTestCase.java",
+  "methodName" : "testModifyingClasses2",
+  "sourceCode" : "/**\r\n * Load a class in and modify it with a new attribute - A ComplexAnnotation\r\n * annotation\r\n */\r\n@Test\r\npublic void testModifyingClasses2() throws ClassNotFoundException {\r\n    final JavaClass jc = getTestClass(PACKAGE_BASE_NAME + \".data.SimpleAnnotatedClass\");\r\n    final ClassGen cgen = new ClassGen(jc);\r\n    final ConstantPoolGen cp = cgen.getConstantPool();\r\n    cgen.addAnnotationEntry(createCombinedAnnotation(cp));\r\n    assertEquals(2, cgen.getAnnotationEntries().length, \"Wrong number of annotations\");\r\n    dumpClass(cgen, \"SimpleAnnotatedClass.class\");\r\n    final JavaClass jc2 = getClassFrom(\".\", \"SimpleAnnotatedClass\");\r\n    jc2.getAnnotationEntries();\r\n    assertTrue(wipe(\"SimpleAnnotatedClass.class\"));\r\n    // System.err.println(jc2.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\InstructionHandleTestCase.java",
+  "methodName" : "testsetInstructionNull",
+  "sourceCode" : "// Test that setInstruction only allows Instructions that are not BranchInstructions\r\n@Test\r\npublic void testsetInstructionNull() {\r\n    // have to start with a valid non BI\r\n    final InstructionHandle ih = InstructionHandle.getInstructionHandle(new NOP());\r\n    assertNotNull(ih);\r\n    assertThrows(ClassGenException.class, () -> ih.setInstruction(null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\InstructionHandleTestCase.java",
+  "methodName" : "testsetInstructionI",
+  "sourceCode" : "@Test\r\npublic void testsetInstructionI() {\r\n    // have to start with a valid non BI\r\n    final InstructionHandle ih = InstructionHandle.getInstructionHandle(new NOP());\r\n    assertNotNull(ih);\r\n    ih.setInstruction(new NOP());\r\n    assertNotNull(ih);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\InstructionHandleTestCase.java",
+  "methodName" : "testsetInstructionnotI",
+  "sourceCode" : "@Test\r\npublic void testsetInstructionnotI() {\r\n    // have to start with a valid non BI\r\n    final InstructionHandle ih = InstructionHandle.getInstructionHandle(new NOP());\r\n    assertNotNull(ih);\r\n    assertThrows(ClassGenException.class, () -> ih.setInstruction(new GOTO(null)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\InstructionHandleTestCase.java",
+  "methodName" : "testGetIHnull",
+  "sourceCode" : "@Test\r\npublic void testGetIHnull() {\r\n    assertThrows(ClassGenException.class, () -> InstructionHandle.getInstructionHandle(null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\InstructionHandleTestCase.java",
+  "methodName" : "testBCEL195",
+  "sourceCode" : "@Test\r\npublic void testBCEL195() {\r\n    final InstructionList il = new InstructionList();\r\n    final InstructionHandle ih = il.append(InstructionConst.NOP);\r\n    new TABLESWITCH(new int[0], new InstructionHandle[0], ih);\r\n    new TABLESWITCH(new int[0], new InstructionHandle[0], ih);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\JdkGenericDumpTestCase.java",
+  "methodName" : "testJdkJars",
+  "sourceCode" : "@ParameterizedTest\r\n@MethodSource(\"findJavaHomes\")\r\npublic void testJdkJars(final String javaHome) throws Exception {\r\n    final File[] jars = listJdkJars(javaHome);\r\n    if (jars != null) {\r\n        for (final File file : jars) {\r\n            testJar(file);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "ParameterizedTest", "MethodSource" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\JdkGenericDumpTestCase.java",
+  "methodName" : "testJdkModules",
+  "sourceCode" : "@ParameterizedTest\r\n@MethodSource(\"findJavaHomes\")\r\npublic void testJdkModules(final String javaHome) throws Exception {\r\n    final File[] jmods = listJdkModules(javaHome);\r\n    if (jmods != null) {\r\n        for (final File file : jmods) {\r\n            testJar(file);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "ParameterizedTest", "MethodSource" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\JdkGenericDumpTestCase.java",
+  "methodName" : "testJreModules",
+  "sourceCode" : "@ParameterizedTest\r\n@MethodSource(\"findJavaHomes\")\r\npublic void testJreModules(final String javaHome) throws Exception {\r\n    assumeTrue(SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_9));\r\n    try (final ModularRuntimeImage mri = new ModularRuntimeImage(javaHome)) {\r\n        final List<Path> modules = mri.modules();\r\n        assertFalse(modules.isEmpty());\r\n        for (final Path path : modules) {\r\n            Files.walkFileTree(path, new ClassParserFilesVisitor(\"*.class\"));\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "ParameterizedTest", "MethodSource" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\MethodGenTestCase.java",
+  "methodName" : "testAnnotationsAreUnpacked",
+  "sourceCode" : "@Test\r\npublic void testAnnotationsAreUnpacked() throws Exception {\r\n    final JavaClass jc = Repository.lookupClass(Bar.Inner.class);\r\n    final ClassGen cg = new ClassGen(jc);\r\n    final MethodGen mg = new MethodGen(cg.getMethodAt(0), cg.getClassName(), cg.getConstantPool());\r\n    final List<AnnotationEntryGen> firstParamAnnotations = mg.getAnnotationsOnParameter(0);\r\n    assertEquals(1, firstParamAnnotations.size(), \"Wrong number of annotations in the first parameter\");\r\n    final List<AnnotationEntryGen> secondParamAnnotations = mg.getAnnotationsOnParameter(1);\r\n    assertEquals(1, secondParamAnnotations.size(), \"Wrong number of annotations in the second parameter\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\MethodGenTestCase.java",
+  "methodName" : "testRemoveLocalVariable",
+  "sourceCode" : "@Test\r\npublic void testRemoveLocalVariable() throws Exception {\r\n    final MethodGen mg = getMethod(Foo.class, \"bar\");\r\n    final LocalVariableGen lv = mg.getLocalVariables()[1];\r\n    assertEquals(\"a\", lv.getName(), \"variable name\");\r\n    final InstructionHandle start = lv.getStart();\r\n    final InstructionHandle end = lv.getEnd();\r\n    assertNotNull(start, \"scope start\");\r\n    assertNotNull(end, \"scope end\");\r\n    assertTrue(Arrays.asList(start.getTargeters()).contains(lv), \"scope start not targeted by the local variable\");\r\n    assertTrue(Arrays.asList(end.getTargeters()).contains(lv), \"scope end not targeted by the local variable\");\r\n    // now let's remove the local variable\r\n    mg.removeLocalVariable(lv);\r\n    assertFalse(Arrays.asList(start.getTargeters()).contains(lv), \"scope start still targeted by the removed variable\");\r\n    assertFalse(Arrays.asList(end.getTargeters()).contains(lv), \"scope end still targeted by the removed variable\");\r\n    assertNull(lv.getStart(), \"scope start\");\r\n    assertNull(lv.getEnd(), \"scope end\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\MethodGenTestCase.java",
+  "methodName" : "testRemoveLocalVariables",
+  "sourceCode" : "@Test\r\npublic void testRemoveLocalVariables() throws Exception {\r\n    final MethodGen mg = getMethod(Foo.class, \"bar\");\r\n    final LocalVariableGen lv = mg.getLocalVariables()[1];\r\n    assertEquals(\"a\", lv.getName(), \"variable name\");\r\n    final InstructionHandle start = lv.getStart();\r\n    final InstructionHandle end = lv.getEnd();\r\n    assertNotNull(start, \"scope start\");\r\n    assertNotNull(end, \"scope end\");\r\n    assertTrue(Arrays.asList(start.getTargeters()).contains(lv), \"scope start not targeted by the local variable\");\r\n    assertTrue(Arrays.asList(end.getTargeters()).contains(lv), \"scope end not targeted by the local variable\");\r\n    // now let's remove the local variables\r\n    mg.removeLocalVariables();\r\n    assertFalse(Arrays.asList(start.getTargeters()).contains(lv), \"scope start still targeted by the removed variable\");\r\n    assertFalse(Arrays.asList(end.getTargeters()).contains(lv), \"scope end still targeted by the removed variable\");\r\n    assertNull(lv.getStart(), \"scope start\");\r\n    assertNull(lv.getEnd(), \"scope end\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\MethodGenTestCase.java",
+  "methodName" : "testInvalidNullMethodBody_MailDateFormat",
+  "sourceCode" : "@Test\r\npublic void testInvalidNullMethodBody_MailDateFormat() {\r\n    assertThrows(IllegalStateException.class, () -> testInvalidNullMethodBody(\"javax.mail.internet.MailDateFormat\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\MethodGenTestCase.java",
+  "methodName" : "testInvalidNullMethodBody_EmptyStaticInit",
+  "sourceCode" : "@Test\r\npublic void testInvalidNullMethodBody_EmptyStaticInit() throws Exception {\r\n    testInvalidNullMethodBody(\"org.apache.bcel.generic.EmptyStaticInit\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\generic\\TypeTestCase.java",
+  "methodName" : "testBCEL243",
+  "sourceCode" : "@Test\r\npublic void testBCEL243() {\r\n    // expectedValue = \"Ljava/util/Map<TX;Ljava/util/List<TY;>;>;\";\r\n    // The line commented out above is the correct expected value; however,\r\n    // the constructor for ObjectType is yet another place where BCEL does\r\n    // not understand generics so we need to substitute the modified value below.\r\n    final String expectedValue = \"Ljava/util/Map<X, java/util/List<Y>>;\";\r\n    final String actualValue = (Type.getType(\"Ljava/util/Map<TX;Ljava/util/List<TY;>;>;\")).getSignature();\r\n    assertEquals(expectedValue, actualValue, \"Type.getType\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\HandleTestCase.java",
+  "methodName" : "testBranchHandle",
+  "sourceCode" : "/**\r\n * Assert that two independent instruction lists can be modified concurrently.\r\n * Here: inserting branch instructions.\r\n */\r\n@Test\r\npublic void testBranchHandle() throws Throwable {\r\n    perform(HandleTestCase::branchHandles);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\HandleTestCase.java",
+  "methodName" : "testInstructionHandle",
+  "sourceCode" : "/**\r\n * Assert that two independent instruction lists can be modified concurrently.\r\n * Here: inserting regular instructions.\r\n */\r\n@Test\r\npublic void testInstructionHandle() throws Throwable {\r\n    perform(HandleTestCase::handles);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\InstructionFinderTestCase.java",
+  "methodName" : "testSearchAll",
+  "sourceCode" : "@Test\r\npublic void testSearchAll() throws Exception {\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".util.InstructionFinder\");\r\n    final Method[] methods = clazz.getMethods();\r\n    Method searchM = null;\r\n    for (final Method m : methods) {\r\n        if (m.getName().equals(\"search\") && (m.getArgumentTypes().length == 3)) {\r\n            searchM = m;\r\n            break;\r\n        }\r\n    }\r\n    if (searchM == null) {\r\n        throw new Exception(\"search method not found\");\r\n    }\r\n    final byte[] bytes = searchM.getCode().getCode();\r\n    final InstructionList il = new InstructionList(bytes);\r\n    final InstructionFinder finder = new InstructionFinder(il);\r\n    final Iterator<?> it = finder.search(\".*\", il.getStart(), null);\r\n    final InstructionHandle[] ihs = (InstructionHandle[]) it.next();\r\n    int size = 0;\r\n    for (final InstructionHandle ih : ihs) {\r\n        size += ih.getInstruction().getLength();\r\n    }\r\n    assertEquals(bytes.length, size);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\LocalVariableTypeTableTestCase.java",
+  "methodName" : "testWithGenericArguement",
+  "sourceCode" : "@Test\r\npublic void testWithGenericArguement() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {\r\n    final String targetClass = PACKAGE_BASE_NAME + \".data.SimpleClassHasMethodIncludeGenericArgument\";\r\n    final TestClassLoader loader = new TestClassLoader(getClass().getClassLoader());\r\n    final Class<?> cls = loader.findClass(targetClass, getBytesFromClass(targetClass));\r\n    java.lang.reflect.Method method = cls.getDeclaredMethod(\"a\", String.class, List.class);\r\n    method.invoke(null, \"a1\", new LinkedList<String>());\r\n    method = cls.getDeclaredMethod(\"b\", String.class, List.class);\r\n    method.invoke(null, \"b1\", new LinkedList<String>());\r\n    method = cls.getDeclaredMethod(\"c\", String.class, String.class);\r\n    method.invoke(null, \"c1\", \"c2\");\r\n    method = cls.getDeclaredMethod(\"d\", List.class, String.class);\r\n    method.invoke(null, new LinkedList<String>(), \"d2\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\PerformanceTest.java",
+  "methodName" : "testPerformance",
+  "sourceCode" : "@Test\r\npublic void testPerformance() {\r\n    final File javaLib = new File(System.getProperty(\"java.home\"), \"lib\");\r\n    javaLib.listFiles(file -> {\r\n        if (file.getName().endsWith(\".jar\")) {\r\n            try {\r\n                test(file);\r\n            } catch (final IOException e) {\r\n                fail(e.getMessage());\r\n            }\r\n        }\r\n        return false;\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\PLSETestCase.java",
+  "methodName" : "testB208",
+  "sourceCode" : "/**\r\n * BCEL-208: A couple of methods in MethodGen.java need to test for\r\n * an empty instruction list.\r\n */\r\n@Test\r\npublic void testB208() throws ClassNotFoundException {\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.PLSETestClass\");\r\n    final ClassGen gen = new ClassGen(clazz);\r\n    final ConstantPoolGen pool = gen.getConstantPool();\r\n    final Method m = gen.getMethodAt(1);\r\n    final MethodGen mg = new MethodGen(m, gen.getClassName(), pool);\r\n    mg.setInstructionList(null);\r\n    mg.addLocalVariable(\"local2\", Type.INT, null, null);\r\n    // currently, this will cause null pointer exception\r\n    mg.getLocalVariableTable(pool);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\PLSETestCase.java",
+  "methodName" : "testB79",
+  "sourceCode" : "/**\r\n * BCEL-79:\r\n */\r\n@Test\r\npublic void testB79() throws ClassNotFoundException {\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.PLSETestClass\");\r\n    final ClassGen gen = new ClassGen(clazz);\r\n    final ConstantPoolGen pool = gen.getConstantPool();\r\n    final Method m = gen.getMethodAt(2);\r\n    final LocalVariableTable lvt = m.getLocalVariableTable();\r\n    //System.out.println(lvt);\r\n    //System.out.println(lvt.getTableLength());\r\n    final MethodGen mg = new MethodGen(m, gen.getClassName(), pool);\r\n    final LocalVariableTable new_lvt = mg.getLocalVariableTable(mg.getConstantPool());\r\n    //System.out.println(new_lvt);\r\n    assertEquals(lvt.getTableLength(), new_lvt.getTableLength(), \"number of locals\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\PLSETestCase.java",
+  "methodName" : "testB262",
+  "sourceCode" : "/**\r\n * BCEL-262:\r\n */\r\n@Test\r\npublic void testB262() throws ClassNotFoundException {\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.PLSETestEnum\");\r\n    final ClassGen gen = new ClassGen(clazz);\r\n    final ConstantPoolGen pool = gen.getConstantPool();\r\n    // get the values() method\r\n    final Method m = gen.getMethodAt(0);\r\n    final MethodGen mg = new MethodGen(m, gen.getClassName(), pool);\r\n    final InstructionList il = mg.getInstructionList();\r\n    // get the invokevirtual instruction\r\n    final InstructionHandle ih = il.findHandle(3);\r\n    final InvokeInstruction ii = (InvokeInstruction) (ih.getInstruction());\r\n    // without fix, the getClassName() will throw:\r\n    //   java.lang.IllegalArgumentException: Cannot be used on an array type\r\n    final String cn = ii.getClassName(pool);\r\n    assertEquals(\"[Lorg.apache.bcel.data.PLSETestEnum;\", cn);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\PLSETestCase.java",
+  "methodName" : "testB295",
+  "sourceCode" : "/**\r\n * BCEL-295:\r\n */\r\n@Test\r\npublic void testB295() throws Exception {\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.PLSETestClass2\");\r\n    final ClassGen cg = new ClassGen(clazz);\r\n    final ConstantPoolGen pool = cg.getConstantPool();\r\n    // 'main'\r\n    final Method m = cg.getMethodAt(1);\r\n    final LocalVariableTable lvt = m.getLocalVariableTable();\r\n    // 'i'\r\n    final LocalVariable lv = lvt.getLocalVariable(2, 4);\r\n    //System.out.println(lv);\r\n    final MethodGen mg = new MethodGen(m, cg.getClassName(), pool);\r\n    final LocalVariableTable new_lvt = mg.getLocalVariableTable(mg.getConstantPool());\r\n    // 'i'\r\n    final LocalVariable new_lv = new_lvt.getLocalVariable(2, 4);\r\n    //System.out.println(new_lv);\r\n    assertEquals(lv.getLength(), new_lv.getLength(), \"live range length\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\PLSETestCase.java",
+  "methodName" : "testCoverage",
+  "sourceCode" : "/**\r\n * Test to improve BCEL tests code coverage for classfile/Utility.java.\r\n */\r\n@Test\r\npublic void testCoverage() throws ClassNotFoundException, java.io.IOException {\r\n    // load a class with a wide variety of byte codes - including tableswitch and lookupswitch\r\n    final JavaClass clazz = getTestClass(PACKAGE_BASE_NAME + \".data.ConstantPoolX\");\r\n    for (final Method m : clazz.getMethods()) {\r\n        final String signature = m.getSignature();\r\n        Utility.methodTypeToSignature(Utility.methodSignatureReturnType(signature), // discard result\r\n        Utility.methodSignatureArgumentTypes(signature));\r\n        final Code code = m.getCode();\r\n        if (code != null) {\r\n            final String encoded = Utility.encode(code.getCode(), true);\r\n            // following statement will throw exeception without classfile/Utility.encode fix\r\n            // discard result\r\n            Utility.decode(encoded, true);\r\n            // discard result\r\n            code.toString();\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\BCELifierTestCase.java",
+  "methodName" : "testJavapCompare",
+  "sourceCode" : "/*\r\n     * Dump a class using \"javap\" and compare with the same class recreated\r\n     * using BCELifier, \"javac\", \"java\" and dumped with \"javap\"\r\n     * TODO: detect if JDK present and skip test if not\r\n     */\r\n@Test\r\npublic void testJavapCompare() throws Exception {\r\n    testClassOnPath(\"target/test-classes/Java8Example.class\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\BCELifierTestCase.java",
+  "methodName" : "testStart",
+  "sourceCode" : "@Test\r\npublic void testStart() throws Exception {\r\n    final OutputStream os = new ByteArrayOutputStream();\r\n    final JavaClass java_class = BCELifier.getJavaClass(\"Java8Example\");\r\n    assertNotNull(java_class);\r\n    final BCELifier bcelifier = new BCELifier(java_class, os);\r\n    bcelifier.start();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\Class2HTMLTestCase.java",
+  "methodName" : "testConvertJavaUtil",
+  "sourceCode" : "@Test\r\npublic void testConvertJavaUtil() throws Exception {\r\n    final File outputDir = new File(\"target/test-output/html\");\r\n    if (!outputDir.mkdirs()) {\r\n        // either was not created or already existed\r\n        // fail if missing\r\n        assertTrue(outputDir.isDirectory());\r\n    }\r\n    try (FileInputStream file = new FileInputStream(\"target/test-classes/Java8Example.class\")) {\r\n        final ClassParser parser = new ClassParser(file, \"Java8Example.class\");\r\n        new Class2HTML(parser.parse(), outputDir.getAbsolutePath() + \"/\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\Class2HTMLTestCase.java",
+  "methodName" : "testReferenceToConstant",
+  "sourceCode" : "/**\r\n * Tests that we do not break binary compatibility with BCEL-330.\r\n */\r\n@Test\r\npublic void testReferenceToConstant() {\r\n    @SuppressWarnings(\"unused\")\r\n    final short referenceToConstant = Class2HTML.AALOAD;\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\ClassPathRepositoryTestCase.java",
+  "methodName" : "testClassPathRepository",
+  "sourceCode" : "@Test\r\npublic void testClassPathRepository() throws ClassNotFoundException, IOException {\r\n    try (final ClassPath classPath = new ClassPath(\"\")) {\r\n        verifyCaching(new ClassPathRepository(classPath));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\ClassPathRepositoryTestCase.java",
+  "methodName" : "testMemorySensitiveClassPathRepository",
+  "sourceCode" : "@Test\r\npublic void testMemorySensitiveClassPathRepository() throws ClassNotFoundException, IOException {\r\n    try (final ClassPath classPath = new ClassPath(\"\")) {\r\n        verifyCaching(new MemorySensitiveClassPathRepository(classPath));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\ClassPathRepositoryTestCase.java",
+  "methodName" : "testLruCacheClassPathRepository",
+  "sourceCode" : "@Test\r\npublic void testLruCacheClassPathRepository() throws ClassNotFoundException, IOException {\r\n    try (final ClassPath classPath = new ClassPath(\"\")) {\r\n        verifyCaching(new LruCacheClassPathRepository(classPath, 10));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\ClassPathRepositoryTestCase.java",
+  "methodName" : "testClassPath",
+  "sourceCode" : "@Test\r\npublic void testClassPath() throws IOException {\r\n    try (final ClassPath classPath = new ClassPath(\"\")) {\r\n        final ClassPathRepository repository = new ClassPathRepository(classPath);\r\n        assertEquals(classPath, repository.getClassPath());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\ClassPathRepositoryTestCase.java",
+  "methodName" : "testNoClassNotFound",
+  "sourceCode" : "@Test\r\npublic void testNoClassNotFound() throws IOException {\r\n    try (final ClassPath classPath = new ClassPath(\"\")) {\r\n        final ClassPathRepository repository = new ClassPathRepository(classPath);\r\n        assertThrows(ClassNotFoundException.class, () -> repository.loadClass(\"no.such.Class\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\ClassPathRepositoryTestCase.java",
+  "methodName" : "testClassWithoutPackage",
+  "sourceCode" : "@Test\r\npublic void testClassWithoutPackage() throws IOException {\r\n    try (final ClassPath classPath = new ClassPath(\"\")) {\r\n        final ClassPathRepository repository = new ClassPathRepository(classPath);\r\n        assertThrows(ClassNotFoundException.class, () -> repository.loadClass(\"ClassXYZ\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\ClassPathRepositoryTestCase.java",
+  "methodName" : "testEmptyInput",
+  "sourceCode" : "@Test\r\npublic void testEmptyInput() throws IOException {\r\n    try (final ClassPath classPath = new ClassPath(\"\")) {\r\n        final ClassPathRepository repository = new ClassPathRepository(classPath);\r\n        assertThrows(IllegalArgumentException.class, () -> repository.loadClass(\"\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\ClassPathRepositoryTestCase.java",
+  "methodName" : "testNullInput",
+  "sourceCode" : "@Test\r\npublic void testNullInput() throws IOException {\r\n    try (final ClassPath classPath = new ClassPath(\"\")) {\r\n        final ClassPathRepository repository = new ClassPathRepository(classPath);\r\n        assertThrows(IllegalArgumentException.class, () -> repository.loadClass((String) null));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\ClassPathTestCase.java",
+  "methodName" : "testGetClassFile",
+  "sourceCode" : "@Test\r\npublic void testGetClassFile() throws IOException {\r\n    assertNotNull(ClassPath.SYSTEM_CLASS_PATH.getClassFile(\"java.lang.String\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\ClassPathTestCase.java",
+  "methodName" : "testGetResource",
+  "sourceCode" : "@Test\r\npublic void testGetResource() {\r\n    assertNotNull(ClassPath.SYSTEM_CLASS_PATH.getResource(\"java/lang/String.class\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\ClassPathTestCase.java",
+  "methodName" : "testGetResourceAsStream",
+  "sourceCode" : "@Test\r\npublic void testGetResourceAsStream() throws IOException {\r\n    try (final InputStream inputStream = ClassPath.SYSTEM_CLASS_PATH.getResourceAsStream(\"java/lang/String.class\")) {\r\n        assertNotNull(inputStream);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\InstructionFinderTest.java",
+  "methodName" : "testSearch",
+  "sourceCode" : "@Test\r\npublic void testSearch() {\r\n    final InstructionList il = new InstructionList();\r\n    il.append(new ILOAD(1));\r\n    il.append(new ILOAD(2));\r\n    il.append(new IADD());\r\n    il.append(new ISTORE(3));\r\n    final InstructionFinder finder = new InstructionFinder(il);\r\n    final Iterator<?> it = finder.search(\"ILOAD IADD\", il.getInstructionHandles()[0], null);\r\n    final InstructionHandle[] ihs = (InstructionHandle[]) it.next();\r\n    assertEquals(2, ihs.length);\r\n    assertEquals(ihs[0].getInstruction(), new ILOAD(2));\r\n    assertEquals(ihs[1].getInstruction(), new IADD());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\LruCacheClassPathRepositoryTestCase.java",
+  "methodName" : "testCacheEviction",
+  "sourceCode" : "@Test\r\npublic void testCacheEviction() throws ClassNotFoundException, IOException {\r\n    try (final ClassPath classPath = new ClassPath(\"\")) {\r\n        final LruCacheClassPathRepository repository = new LruCacheClassPathRepository(classPath, 2);\r\n        final JavaClass class1 = repository.loadClass(\"java.lang.String\");\r\n        assertNotNull(class1);\r\n        final JavaClass class2 = repository.loadClass(\"java.lang.Long\");\r\n        assertNotNull(class2);\r\n        // Evicts class1\r\n        final JavaClass class3 = repository.loadClass(\"java.lang.Integer\");\r\n        assertNotNull(class3);\r\n        assertNull(repository.findClass(\"java.lang.String\"));\r\n        final JavaClass cachedClass2 = repository.findClass(\"java.lang.Long\");\r\n        assertEquals(class2, cachedClass2);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\LruCacheClassPathRepositoryTestCase.java",
+  "methodName" : "testLeastRecentlyUsedEviction",
+  "sourceCode" : "@Test\r\npublic void testLeastRecentlyUsedEviction() throws ClassNotFoundException, IOException {\r\n    try (final ClassPath classPath = new ClassPath(\"\")) {\r\n        final LruCacheClassPathRepository repository = new LruCacheClassPathRepository(classPath, 2);\r\n        final JavaClass class1 = repository.loadClass(\"java.lang.String\");\r\n        assertNotNull(class1);\r\n        final JavaClass class2 = repository.loadClass(\"java.lang.Long\");\r\n        assertNotNull(class2);\r\n        // Uses class1\r\n        repository.findClass(\"java.lang.String\");\r\n        // Evicts class2\r\n        final JavaClass class3 = repository.loadClass(\"java.lang.Integer\");\r\n        assertNotNull(class3);\r\n        assertNull(repository.findClass(\"java.lang.Long\"));\r\n        final JavaClass cachedClass1 = repository.findClass(\"java.lang.String\");\r\n        assertEquals(class1, cachedClass1);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\LruCacheClassPathRepositoryTestCase.java",
+  "methodName" : "testZeroCacheSize",
+  "sourceCode" : "@Test\r\npublic void testZeroCacheSize() throws IOException {\r\n    try (final ClassPath classPath = new ClassPath(\"\")) {\r\n        assertThrows(IllegalArgumentException.class, () -> new LruCacheClassPathRepository(classPath, 0));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\ModularRuntimeImageTestCase.java",
+  "methodName" : "testListJreModules",
+  "sourceCode" : "@ParameterizedTest\r\n@MethodSource(\"org.apache.bcel.generic.JdkGenericDumpTestCase#findJavaHomes\")\r\npublic void testListJreModules(final ModularRuntimeImage modularRuntimeImage) throws IOException {\r\n    final List<Path> listEntries = modularRuntimeImage.list(ModularRuntimeImage.MODULES_PATH);\r\n    assertFalse(listEntries.isEmpty());\r\n    assertTrue(listEntries.toString().indexOf(\"/java.base\") > -1);\r\n}",
+  "annotations" : [ "ParameterizedTest", "MethodSource" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\ModularRuntimeImageTestCase.java",
+  "methodName" : "testListJreModule",
+  "sourceCode" : "@ParameterizedTest\r\n@MethodSource(\"org.apache.bcel.generic.JdkGenericDumpTestCase#findJavaHomes\")\r\npublic void testListJreModule(final ModularRuntimeImage modularRuntimeImage) throws IOException {\r\n    final List<Path> listEntries = modularRuntimeImage.list(ModularRuntimeImage.MODULES_PATH + \"/java.base\");\r\n    assertFalse(listEntries.isEmpty());\r\n    assertTrue(listEntries.toString().indexOf(\"/java.base\") > -1);\r\n}",
+  "annotations" : [ "ParameterizedTest", "MethodSource" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\ModularRuntimeImageTestCase.java",
+  "methodName" : "testListJreModulePackageDir",
+  "sourceCode" : "@ParameterizedTest\r\n@MethodSource(\"org.apache.bcel.generic.JdkGenericDumpTestCase#findJavaHomes\")\r\npublic void testListJreModulePackageDir(final ModularRuntimeImage modularRuntimeImage) throws IOException {\r\n    final List<Path> listEntries = modularRuntimeImage.list(ModularRuntimeImage.MODULES_PATH + \"/java.base/java/lang\");\r\n    assertFalse(listEntries.isEmpty());\r\n    assertTrue(listEntries.toString().indexOf(\"/java.base/java/lang/String.class\") > -1);\r\n}",
+  "annotations" : [ "ParameterizedTest", "MethodSource" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\util\\ModularRuntimeImageTestCase.java",
+  "methodName" : "testListJrePackages",
+  "sourceCode" : "@ParameterizedTest\r\n@MethodSource(\"org.apache.bcel.generic.JdkGenericDumpTestCase#findJavaHomes\")\r\npublic void testListJrePackages(final ModularRuntimeImage modularRuntimeImage) throws IOException {\r\n    final List<Path> listEntries = modularRuntimeImage.list(ModularRuntimeImage.PACKAGES_PATH);\r\n    assertFalse(listEntries.isEmpty());\r\n    assertTrue(listEntries.toString().indexOf(\"java.lang\") > -1);\r\n}",
+  "annotations" : [ "ParameterizedTest", "MethodSource" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\verifier\\JiraBcel291TestCase.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() throws ClassNotFoundException {\r\n    Verifier.verifyType(\"org.apache.bcel.verifier.tests.JiraBcel291TestFixture\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\verifier\\statics\\Pass2VerifierTestCase.java",
+  "methodName" : "testReferenceToConstant",
+  "sourceCode" : "/**\r\n * Tests that we do not break binary compatibility with BCEL-330.\r\n */\r\n@Test\r\npublic void testReferenceToConstant() {\r\n    @SuppressWarnings(\"unused\")\r\n    final short referenceToConstant = Pass2Verifier.AALOAD;\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\verifier\\structurals\\UninitializedObjectTypeTestCase.java",
+  "methodName" : "testReferenceToConstant",
+  "sourceCode" : "/**\r\n * Tests that we do not break binary compatibility with BCEL-330.\r\n */\r\n@Test\r\npublic void testReferenceToConstant() {\r\n    @SuppressWarnings(\"unused\")\r\n    final short referenceToConstant = UninitializedObjectType.AALOAD;\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\verifier\\VerifierArrayAccessTestCase.java",
+  "methodName" : "testInvalidArrayAccess",
+  "sourceCode" : "@Test\r\npublic void testInvalidArrayAccess() throws IOException, ClassNotFoundException {\r\n    new TestArrayAccess03Creator().create();\r\n    assertVerifyRejected(\"TestArrayAccess03\", \"Verification of an arraystore instruction on an object must fail.\");\r\n    new TestArrayAccess04Creator().create();\r\n    assertVerifyRejected(\"TestArrayAccess04\", \"Verification of an arraystore instruction of an int on an array of references must fail.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\verifier\\VerifierArrayAccessTestCase.java",
+  "methodName" : "testValidArrayAccess",
+  "sourceCode" : "@Test\r\npublic void testValidArrayAccess() throws IOException, ClassNotFoundException {\r\n    assertVerifyOK(\"TestArrayAccess01\", \"Verification of an arraystore instruction on an array that is not compatible with the stored element must pass.\");\r\n    new TestArrayAccess02Creator().create();\r\n    assertVerifyOK(\"TestArrayAccess02\", \"Verification of an arraystore instruction on an array that is not compatible with the stored element must pass.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\verifier\\VerifierInvokeTestCase.java",
+  "methodName" : "testLegalInvokeVirtual",
+  "sourceCode" : "@Test\r\npublic void testLegalInvokeVirtual() throws ClassNotFoundException {\r\n    assertVerifyOK(\"TestLegalInvokeVirtual01\", \"Verification of invokevirtual on method defined in superclass must pass.\");\r\n    assertVerifyOK(\"TestLegalInvokeVirtual02\", \"Verification of invokevirtual on method defined in superinterface must pass.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\verifier\\VerifierInvokeTestCase.java",
+  "methodName" : "testLegalInvokeStatic",
+  "sourceCode" : "@Test\r\npublic void testLegalInvokeStatic() throws ClassNotFoundException {\r\n    assertVerifyOK(\"TestLegalInvokeStatic01\", \"Verification of invokestatic on method defined in superclass must pass.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\verifier\\VerifierInvokeTestCase.java",
+  "methodName" : "testLegalInvokeInterface",
+  "sourceCode" : "@Test\r\npublic void testLegalInvokeInterface() throws ClassNotFoundException {\r\n    assertVerifyOK(\"TestLegalInvokeInterface01\", \"Verification of invokeinterface on method defined in superinterface must pass.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\verifier\\VerifierInvokeTestCase.java",
+  "methodName" : "testLegalInvokeSpecial",
+  "sourceCode" : "@Test\r\npublic void testLegalInvokeSpecial() throws ClassNotFoundException {\r\n    assertVerifyOK(\"TestLegalInvokeSpecial01\", \"Verification of invokespecial on method defined in superclass must pass.\");\r\n    assertVerifyOK(\"TestLegalInvokeSpecial02\", \"Verification of invokespecial on method defined in superclass must pass.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\verifier\\VerifierReturnTestCase.java",
+  "methodName" : "testInvalidReturn",
+  "sourceCode" : "@Test\r\npublic void testInvalidReturn() throws IOException, ClassNotFoundException {\r\n    new TestReturn01Creator().create();\r\n    assertVerifyRejected(\"TestReturn01\", \"Verification of a void method that returns an object must fail.\");\r\n    new TestReturn03Creator().create();\r\n    assertVerifyRejected(\"TestReturn03\", \"Verification of an int method that returns null must fail.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\verifier\\VerifierReturnTestCase.java",
+  "methodName" : "testValidReturn",
+  "sourceCode" : "@Test\r\npublic void testValidReturn() throws ClassNotFoundException {\r\n    assertVerifyOK(\"TestReturn02\", \"Verification of a method that returns a newly created object must pass.\");\r\n    assertVerifyOK(\"TestArray01\", \"Verification of a method that returns an array must pass.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BCEL\\src\\test\\java\\org\\apache\\bcel\\verifier\\VerifierTestCase.java",
+  "methodName" : "testDefaultMethodValidation",
+  "sourceCode" : "@Test\r\npublic void testDefaultMethodValidation() {\r\n    final String classname = Collection.class.getName();\r\n    final Verifier verifier = VerifierFactory.getVerifier(classname);\r\n    VerificationResult result = verifier.doPass1();\r\n    assertEquals(VerificationResult.VERIFIED_OK, result.getStatus(), \"Pass 1 verification of \" + classname + \" failed: \" + result.getMessage());\r\n    result = verifier.doPass2();\r\n    assertEquals(VerificationResult.VERIFIED_OK, result.getStatus(), \"Pass 2 verification of \" + classname + \" failed: \" + result.getMessage());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+} ]

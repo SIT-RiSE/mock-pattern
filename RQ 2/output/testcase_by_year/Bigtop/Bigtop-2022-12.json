@@ -1,0 +1,415 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-bigpetstore\\bigpetstore-mapreduce\\src\\integrationTest\\java\\org\\apache\\bigtop\\bigpetstore\\BigPetStoreMahoutIT.java",
+  "methodName" : "testPetStorePipeline",
+  "sourceCode" : "@Test\r\npublic void testPetStorePipeline() throws Exception {\r\n    itemRecommender.recommend();\r\n    ITUtils.assertOutput(ALS_RECOMMENDATIONS_DIR, TEST_OUTPUT_FORMAT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-bigpetstore\\bigpetstore-mapreduce\\src\\integrationTest\\java\\org\\apache\\bigtop\\bigpetstore\\BigPetStorePigIT.java",
+  "methodName" : "testPetStoreCorePipeline",
+  "sourceCode" : "@Test\r\npublic void testPetStoreCorePipeline() throws Exception {\r\n    //outputs multiple data sets, Mahout, tsv, ...\tunder BPS_TEST_PIG_CLEANED_ROOT\r\n    runPig(BPS_TEST_GENERATED, BPS_TEST_PIG_CLEANED_ROOT, PIG_SCRIPT);\r\n    for (Entry<Path, Predicate<String>> e : TESTS.entrySet()) {\r\n        ITUtils.assertOutput(e.getKey(), e.getValue());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-bigpetstore\\bigpetstore-mapreduce\\src\\test\\java\\org\\apache\\bigtop\\bigpetstore\\docs\\TestDocs.java",
+  "methodName" : "testGraphViz",
+  "sourceCode" : "@Test\r\npublic void testGraphViz() throws Exception {\r\n    // test the graphviz file by grepping out the constants.\r\n    String graphviz = FileUtils.readFileToString(new File(\"arch.dot\"));\r\n    System.out.println(graphviz);\r\n    assertTrue(graphviz.contains(OUTPUTS.generated.name()));\r\n    assertTrue(graphviz.contains(OUTPUTS.cleaned.name()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-bigpetstore\\bigpetstore-mapreduce\\src\\test\\java\\org\\apache\\bigtop\\bigpetstore\\generator\\TestNumericalIdUtils.java",
+  "methodName" : "testName",
+  "sourceCode" : "@Test\r\npublic void testName() {\r\n    String strId = State.OK.name() + \"_\" + \"jay vyas\";\r\n    long id = NumericalIdUtils.toId(strId);\r\n    String strId2 = State.CO.name() + \"_\" + \"jay vyas\";\r\n    long id2 = NumericalIdUtils.toId(strId2);\r\n    System.out.println(id + \" \" + id2);\r\n    assertFalse(id == id2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-bigpetstore\\bigpetstore-mapreduce\\src\\test\\java\\org\\apache\\bigtop\\bigpetstore\\generator\\TestPetStoreTransactionGeneratorJob.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() throws Exception {\r\n    System.out.println(\"memory : \" + Runtime.getRuntime().freeMemory() / 1000000);\r\n    if (Runtime.getRuntime().freeMemory() / 1000000 < 75) {\r\n        // throw new\r\n        // RuntimeException(\"need more memory to run this test !\");\r\n    }\r\n    int records = 20;\r\n    /**\r\n     * Setup configuration with prop.\r\n     */\r\n    Configuration c = new Configuration();\r\n    c.setInt(props.bigpetstore_records.name(), records);\r\n    /**\r\n     * Run the job\r\n     */\r\n    Path output = new Path(\"petstoredata/\" + (new Date()).toString());\r\n    Job createInput = BPSGenerator.getCreateTransactionRecordsJob(output, c);\r\n    createInput.submit();\r\n    System.out.println(createInput);\r\n    createInput.waitForCompletion(true);\r\n    FileSystem fs = FileSystem.getLocal(new Configuration());\r\n    /**\r\n     * Read file output into string.\r\n     */\r\n    DataInputStream f = fs.open(new Path(output, \"part-r-00000\"));\r\n    BufferedReader br = new BufferedReader(new InputStreamReader(f));\r\n    String s;\r\n    int recordsSeen = 0;\r\n    boolean CTseen = false;\r\n    boolean AZseen = false;\r\n    // confirm that both CT and AZ are seen in the outputs.\r\n    while (br.ready()) {\r\n        s = br.readLine();\r\n        System.out.println(\"===>\" + s);\r\n        recordsSeen++;\r\n        if (s.contains(State.CT.name())) {\r\n            CTseen = true;\r\n        }\r\n        if (s.contains(State.AZ.name())) {\r\n            AZseen = true;\r\n        }\r\n    }\r\n    // records seen should = 20\r\n    assertEquals(records, recordsSeen);\r\n    // Assert that a couple of the states are seen (todo make it\r\n    // comprehensive for all states).\r\n    assertTrue(CTseen);\r\n    assertTrue(AZseen);\r\n    log.info(\"Created \" + records + \" , file was \" + fs.getFileStatus(new Path(output, \"part-r-00000\")).getLen() + \" bytes.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\datamodels\\TestProduct.java",
+  "methodName" : "testString",
+  "sourceCode" : "@Test\r\npublic void testString() {\r\n    Map<String, Object> fields = Maps.newHashMap();\r\n    fields.put(Constants.PRODUCT_CATEGORY, \"poop bags\");\r\n    fields.put(Constants.PRODUCT_QUANTITY, 120);\r\n    fields.put(\"price\", 12.80);\r\n    Product product = new Product(fields);\r\n    assertEquals(product.getFieldValueAsString(Constants.PRODUCT_CATEGORY), \"poop bags\");\r\n    assertEquals(product.getFieldValueAsString(\"price\"), \"12.8\");\r\n    assertEquals(product.getFieldValueAsString(Constants.PRODUCT_QUANTITY), \"120\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\datamodels\\TestProduct.java",
+  "methodName" : "testDouble",
+  "sourceCode" : "@Test\r\npublic void testDouble() {\r\n    Map<String, Object> fields = Maps.newHashMap();\r\n    fields.put(Constants.PRODUCT_CATEGORY, \"poop bags\");\r\n    fields.put(Constants.PRODUCT_QUANTITY, 120);\r\n    fields.put(\"price\", 12.80);\r\n    Product product = new Product(fields);\r\n    assertNull(product.getFieldValueAsDouble(Constants.PRODUCT_CATEGORY));\r\n    assertEquals(product.getFieldValueAsDouble(\"price\"), 12.80, 1e-5);\r\n    assertNull(product.getFieldValueAsDouble(Constants.PRODUCT_QUANTITY));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\datamodels\\TestProduct.java",
+  "methodName" : "testLong",
+  "sourceCode" : "@Test\r\npublic void testLong() {\r\n    Map<String, Object> fields = Maps.newHashMap();\r\n    fields.put(Constants.PRODUCT_CATEGORY, \"poop bags\");\r\n    fields.put(Constants.PRODUCT_QUANTITY, 120);\r\n    fields.put(\"price\", 12.80);\r\n    Product product = new Product(fields);\r\n    assertNull(product.getFieldValueAsLong(Constants.PRODUCT_CATEGORY));\r\n    assertNull(product.getFieldValueAsLong(\"price\"));\r\n    assertEquals((long) product.getFieldValueAsLong(Constants.PRODUCT_QUANTITY), 120L);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\customer\\TestCustomerLocationPDF.java",
+  "methodName" : "testProbability",
+  "sourceCode" : "@Test\r\npublic void testProbability() throws Exception {\r\n    List<Location> zipcodes = Arrays.asList(new Location[] { new Location(\"11111\", Pair.of(1.0, 1.0), \"AZ\", \"Tempte\", 30000.0, 100), new Location(\"22222\", Pair.of(2.0, 2.0), \"AZ\", \"Phoenix\", 45000.0, 200), new Location(\"33333\", Pair.of(3.0, 3.0), \"AZ\", \"Flagstaff\", 60000.0, 300) });\r\n    List<Store> stores = new ArrayList<Store>();\r\n    for (int i = 0; i < zipcodes.size(); i++) {\r\n        Store store = new Store(i, \"Store_\" + i, zipcodes.get(i));\r\n        stores.add(store);\r\n    }\r\n    CustomerLocationPDF customerLocationPDF = new CustomerLocationPDF(zipcodes, stores.get(0), Constants.AVERAGE_CUSTOMER_STORE_DISTANCE);\r\n    double prob = customerLocationPDF.probability(zipcodes.get(0));\r\n    assertTrue(prob > 0.0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\customer\\TestCustomerSampler.java",
+  "methodName" : "testBuild",
+  "sourceCode" : "@Test\r\npublic void testBuild() throws Exception {\r\n    SeedFactory factory = new SeedFactory(1234);\r\n    List<Pair<String, String>> nameList = Lists.newArrayList();\r\n    nameList.add(Pair.of(\"Fred\", \"Fred\"));\r\n    nameList.add(Pair.of(\"Gary\", \"Gary\"));\r\n    nameList.add(Pair.of(\"George\", \"George\"));\r\n    nameList.add(Pair.of(\"Fiona\", \"Fiona\"));\r\n    List<Location> zipcodes = Arrays.asList(new Location[] { new Location(\"11111\", Pair.of(1.0, 1.0), \"AZ\", \"Tempte\", 30000.0, 100), new Location(\"22222\", Pair.of(2.0, 2.0), \"AZ\", \"Phoenix\", 45000.0, 200), new Location(\"33333\", Pair.of(3.0, 3.0), \"AZ\", \"Flagstaff\", 60000.0, 300) });\r\n    List<Store> stores = new ArrayList<Store>();\r\n    for (int i = 0; i < zipcodes.size(); i++) {\r\n        Store store = new Store(i, \"Store_\" + i, zipcodes.get(i));\r\n        stores.add(store);\r\n    }\r\n    Sampler<Integer> idSampler = new SequenceSampler();\r\n    Sampler<Pair<String, String>> nameSampler = RouletteWheelSampler.createUniform(nameList, factory);\r\n    Sampler<Store> storeSampler = RouletteWheelSampler.createUniform(stores, factory);\r\n    ConditionalSampler<Location, Store> zipcodeSampler = buildLocationSampler(stores, zipcodes, factory);\r\n    Sampler<Customer> sampler = new CustomerSampler(idSampler, nameSampler, storeSampler, zipcodeSampler);\r\n    Customer customer = sampler.sample();\r\n    assertNotNull(customer);\r\n    assertTrue(customer.getId() >= 0);\r\n    assertNotNull(customer.getName());\r\n    assertTrue(nameList.contains(customer.getName()));\r\n    assertNotNull(customer.getLocation());\r\n    assertTrue(zipcodes.contains(customer.getLocation()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\customer\\TestCustomerSamplerBuilder.java",
+  "methodName" : "testSample",
+  "sourceCode" : "@Test\r\npublic void testSample() throws Exception {\r\n    List<Location> zipcodes = Arrays.asList(new Location[] { new Location(\"11111\", Pair.of(1.0, 1.0), \"AZ\", \"Tempte\", 30000.0, 100), new Location(\"22222\", Pair.of(2.0, 2.0), \"AZ\", \"Phoenix\", 45000.0, 200), new Location(\"33333\", Pair.of(3.0, 3.0), \"AZ\", \"Flagstaff\", 60000.0, 300) });\r\n    // don't need product categories for building customers\r\n    InputData inputData = new InputData(zipcodes);\r\n    List<Store> stores = Arrays.asList(new Store(0, \"Store_0\", zipcodes.get(0)), new Store(1, \"Store_1\", zipcodes.get(1)), new Store(2, \"Store_2\", zipcodes.get(2)));\r\n    SeedFactory factory = new SeedFactory(1234);\r\n    CustomerSamplerBuilder builder = new CustomerSamplerBuilder(stores, inputData, factory);\r\n    Sampler<Customer> sampler = builder.build();\r\n    Customer customer = sampler.sample();\r\n    assertNotNull(customer);\r\n    assertTrue(customer.getId() >= 0);\r\n    assertNotNull(customer.getName());\r\n    assertNotNull(customer.getLocation());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\products\\cartesian\\TestCartesianProductBase.java",
+  "methodName" : "testNext",
+  "sourceCode" : "@Test\r\npublic void testNext() {\r\n    Iterator<Map<String, Double>> iter = new CartesianProductBase<Double>(\"count\", Arrays.asList(1.0, 2.0, 3.0));\r\n    Assert.assertTrue(iter.hasNext());\r\n    Map<String, Double> map = iter.next();\r\n    Assert.assertEquals(1, map.size());\r\n    Assert.assertTrue(map.containsKey(\"count\"));\r\n    Assert.assertEquals((double) map.get(\"count\"), (double) 1.0, 0.0001);\r\n    Assert.assertTrue(iter.hasNext());\r\n    map = iter.next();\r\n    Assert.assertEquals(1, map.size());\r\n    Assert.assertTrue(map.containsKey(\"count\"));\r\n    Assert.assertEquals((double) map.get(\"count\"), (double) 2.0, 0.0001);\r\n    Assert.assertTrue(iter.hasNext());\r\n    map = iter.next();\r\n    Assert.assertEquals(1, map.size());\r\n    Assert.assertTrue(map.containsKey(\"count\"));\r\n    Assert.assertEquals((double) map.get(\"count\"), (double) 3.0, 0.0001);\r\n    Assert.assertFalse(iter.hasNext());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\products\\cartesian\\TestCartesianProductField.java",
+  "methodName" : "testTwoLevels",
+  "sourceCode" : "@Test\r\npublic void testTwoLevels() {\r\n    Iterator<Map<String, String>> iter = new CartesianProductField<String>(\"children\", Arrays.asList(\"1\", \"2\"), new CartesianProductBase<String>(\"animal\", Arrays.asList(\"cat\", \"dog\")));\r\n    Assert.assertEquals(iter.hasNext(), true);\r\n    Map<String, String> map = iter.next();\r\n    Assert.assertEquals(map.size(), 2);\r\n    Assert.assertTrue(map.containsKey(\"animal\"));\r\n    Assert.assertTrue(map.containsKey(\"children\"));\r\n    Assert.assertEquals(map.get(\"animal\"), \"cat\");\r\n    Assert.assertEquals(map.get(\"children\"), \"1\");\r\n    Assert.assertEquals(iter.hasNext(), true);\r\n    map = iter.next();\r\n    Assert.assertEquals(map.size(), 2);\r\n    Assert.assertTrue(map.containsKey(\"animal\"));\r\n    Assert.assertTrue(map.containsKey(\"children\"));\r\n    Assert.assertEquals(map.get(\"animal\"), \"cat\");\r\n    Assert.assertEquals(map.get(\"children\"), \"2\");\r\n    Assert.assertEquals(iter.hasNext(), true);\r\n    map = iter.next();\r\n    Assert.assertEquals(map.size(), 2);\r\n    Assert.assertTrue(map.containsKey(\"animal\"));\r\n    Assert.assertTrue(map.containsKey(\"children\"));\r\n    Assert.assertEquals(map.get(\"animal\"), \"dog\");\r\n    Assert.assertEquals(map.get(\"children\"), \"1\");\r\n    Assert.assertEquals(iter.hasNext(), true);\r\n    map = iter.next();\r\n    Assert.assertEquals(map.size(), 2);\r\n    Assert.assertTrue(map.containsKey(\"animal\"));\r\n    Assert.assertTrue(map.containsKey(\"children\"));\r\n    Assert.assertEquals(map.get(\"animal\"), \"dog\");\r\n    Assert.assertEquals(map.get(\"children\"), \"2\");\r\n    Assert.assertFalse(iter.hasNext());\r\n    Assert.assertFalse(iter.hasNext());\r\n    Assert.assertFalse(iter.hasNext());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\products\\rules\\TestAlwaysTrueRule.java",
+  "methodName" : "testRuleMatches",
+  "sourceCode" : "@Test\r\npublic void testRuleMatches() {\r\n    Rule rule = new AlwaysTrueRule();\r\n    Assert.assertTrue(rule.ruleMatches(null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\products\\rules\\TestAndRule.java",
+  "methodName" : "testRuleMatches",
+  "sourceCode" : "@Test\r\npublic void testRuleMatches() {\r\n    Rule rule = new AndRule(new AlwaysTrueRule(), new AlwaysTrueRule());\r\n    Assert.assertTrue(rule.ruleMatches(null));\r\n    rule = new AndRule(new AlwaysTrueRule(), new NotRule(new AlwaysTrueRule()));\r\n    Assert.assertFalse(rule.ruleMatches(null));\r\n    rule = new AndRule(new NotRule(new AlwaysTrueRule()), new AlwaysTrueRule());\r\n    Assert.assertFalse(rule.ruleMatches(null));\r\n    rule = new AndRule(new NotRule(new AlwaysTrueRule()), new NotRule(new AlwaysTrueRule()));\r\n    Assert.assertFalse(rule.ruleMatches(null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\products\\rules\\TestFieldPredicate.java",
+  "methodName" : "testRuleMatches",
+  "sourceCode" : "@Test\r\npublic void testRuleMatches() {\r\n    Map<String, Object> fields = ImmutableMap.of(\"brand\", (Object) \"Chef Corgi\", \"flavor\", (Object) \"chicken\");\r\n    Product product = new Product(fields);\r\n    Rule rule = new FieldPredicate(\"brand\", \"Chef Corgi\");\r\n    Assert.assertTrue(rule.ruleMatches(product));\r\n    rule = new FieldPredicate(\"brand\", \"Happy Pup\");\r\n    Assert.assertFalse(rule.ruleMatches(product));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\products\\rules\\TestNotRule.java",
+  "methodName" : "testRuleMatches",
+  "sourceCode" : "@Test\r\npublic void testRuleMatches() {\r\n    Rule rule = new NotRule(new AlwaysTrueRule());\r\n    Assert.assertFalse(rule.ruleMatches(null));\r\n    rule = new NotRule(new NotRule(new AlwaysTrueRule()));\r\n    Assert.assertTrue(rule.ruleMatches(null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\products\\rules\\TestOrRule.java",
+  "methodName" : "testRuleMatches",
+  "sourceCode" : "@Test\r\npublic void testRuleMatches() {\r\n    Rule rule = new OrRule(new AlwaysTrueRule(), new AlwaysTrueRule());\r\n    Assert.assertTrue(rule.ruleMatches(null));\r\n    rule = new OrRule(new AlwaysTrueRule(), new NotRule(new AlwaysTrueRule()));\r\n    Assert.assertTrue(rule.ruleMatches(null));\r\n    rule = new OrRule(new NotRule(new AlwaysTrueRule()), new AlwaysTrueRule());\r\n    Assert.assertTrue(rule.ruleMatches(null));\r\n    rule = new OrRule(new NotRule(new AlwaysTrueRule()), new NotRule(new AlwaysTrueRule()));\r\n    Assert.assertFalse(rule.ruleMatches(null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\purchase\\TestProductCategoryMarkovModelSampler.java",
+  "methodName" : "testSample",
+  "sourceCode" : "@Test\r\npublic void testSample() throws Exception {\r\n    SeedFactory seedFactory = new SeedFactory(1245);\r\n    List<ProductCategory> productCategories = createProducts();\r\n    ProductCategory productCategory = productCategories.get(0);\r\n    Sampler<Double> fieldWeightSampler = new UniformSampler(seedFactory);\r\n    Map<String, Double> fieldWeights = Maps.newHashMap();\r\n    for (String fieldName : productCategory.getFieldNames()) {\r\n        fieldWeights.put(fieldName, fieldWeightSampler.sample());\r\n    }\r\n    MarkovModelProductCategorySampler generator = new MarkovModelProductCategorySampler(productCategory, fieldWeights, new UniformSampler(seedFactory), new UniformSampler(seedFactory));\r\n    MarkovModel<Product> model = generator.sample();\r\n    assertNotNull(model);\r\n    assertNotNull(model.getStartWeights());\r\n    assertNotNull(model.getTransitionWeights());\r\n    assertTrue(model.getStartWeights().size() > 0);\r\n    assertTrue(model.getTransitionWeights().size() > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\purchase\\TestPurchasingModelSampler.java",
+  "methodName" : "testSample",
+  "sourceCode" : "@Test\r\npublic void testSample() throws Exception {\r\n    SeedFactory seedFactory = new SeedFactory(1245);\r\n    List<ProductCategory> productCategories = createProducts();\r\n    PurchasingModelSamplerBuilder builder = new PurchasingModelSamplerBuilder(productCategories, seedFactory);\r\n    Sampler<MarkovPurchasingModel> sampler = builder.buildMarkovPurchasingModel();\r\n    MarkovPurchasingModel profile = sampler.sample();\r\n    assertNotNull(profile);\r\n    assertNotNull(profile.getProductCategories());\r\n    assertTrue(profile.getProductCategories().size() > 0);\r\n    for (String label : profile.getProductCategories()) {\r\n        assertNotNull(profile.getProfile(label));\r\n        assertNotNull(profile.getProfile(label).getStartWeights());\r\n        assertTrue(profile.getProfile(label).getStartWeights().size() > 0);\r\n        assertNotNull(profile.getProfile(label).getTransitionWeights());\r\n        assertTrue(profile.getProfile(label).getTransitionWeights().size() > 0);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\purchase\\TestPurchasingModelSamplerBuilder.java",
+  "methodName" : "testBuild",
+  "sourceCode" : "@Test\r\npublic void testBuild() throws Exception {\r\n    SeedFactory seedFactory = new SeedFactory(1245);\r\n    List<ProductCategory> productCategories = createProducts();\r\n    PurchasingModelSamplerBuilder builder = new PurchasingModelSamplerBuilder(productCategories, seedFactory);\r\n    Sampler<MarkovPurchasingModel> sampler = builder.buildMarkovPurchasingModel();\r\n    MarkovPurchasingModel profile = sampler.sample();\r\n    assertNotNull(profile);\r\n    assertNotNull(profile.getProductCategories());\r\n    assertTrue(profile.getProductCategories().size() > 0);\r\n    for (String label : profile.getProductCategories()) {\r\n        assertNotNull(profile.getProfile(label));\r\n        assertNotNull(profile.getProfile(label).getStartWeights());\r\n        assertTrue(profile.getProfile(label).getStartWeights().size() > 0);\r\n        assertNotNull(profile.getProfile(label).getTransitionWeights());\r\n        assertTrue(profile.getProfile(label).getTransitionWeights().size() > 0);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\purchase\\TestPurchasingProcesses.java",
+  "methodName" : "testSimulatePurchase",
+  "sourceCode" : "@Test\r\npublic void testSimulatePurchase() throws Exception {\r\n    Map<Product, Double> productPDF = Maps.newHashMap();\r\n    for (int i = 0; i < 10; i++) {\r\n        Map<String, Object> fields = Maps.newHashMap();\r\n        fields.put(Constants.PRODUCT_CATEGORY, \"dog food\");\r\n        fields.put(Constants.PRODUCT_QUANTITY, (double) (i + 1));\r\n        Product product = new Product(fields);\r\n        productPDF.put(product, 0.1);\r\n    }\r\n    SeedFactory seedFactory = new SeedFactory(1234);\r\n    Sampler<Product> sampler = RouletteWheelSampler.create(productPDF, seedFactory);\r\n    Map<String, Sampler<Product>> processesMap = Maps.newHashMap();\r\n    processesMap.put(\"dog food\", sampler);\r\n    PurchasingProcesses processes = new PurchasingProcesses(processesMap);\r\n    Product product = processes.sample(\"dog food\");\r\n    assertNotNull(product);\r\n    assertNotNull(product.getFieldValue(Constants.PRODUCT_CATEGORY));\r\n    assertNotNull(product.getFieldValue(Constants.PRODUCT_QUANTITY));\r\n    product = processes.sample(\"dog food\");\r\n    assertNotNull(product);\r\n    assertNotNull(product.getFieldValue(Constants.PRODUCT_CATEGORY));\r\n    assertNotNull(product.getFieldValue(Constants.PRODUCT_QUANTITY));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\store\\TestStoreLocationIncomePDF.java",
+  "methodName" : "testProbability",
+  "sourceCode" : "@Test\r\npublic void testProbability() throws Exception {\r\n    List<Location> zipcodes = Arrays.asList(new Location[] { new Location(\"11111\", Pair.of(1.0, 1.0), \"AZ\", \"Tempte\", 30000.0, 100), new Location(\"22222\", Pair.of(2.0, 2.0), \"AZ\", \"Phoenix\", 45000.0, 200), new Location(\"33333\", Pair.of(3.0, 3.0), \"AZ\", \"Flagstaff\", 60000.0, 300) });\r\n    StoreLocationIncomePDF pdf = new StoreLocationIncomePDF(zipcodes, 100.0);\r\n    for (Location record : zipcodes) {\r\n        assertTrue(pdf.probability(record) > 0.0);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\store\\TestStoreLocationPopulationPDF.java",
+  "methodName" : "testProbability",
+  "sourceCode" : "@Test\r\npublic void testProbability() throws Exception {\r\n    List<Location> zipcodes = Arrays.asList(new Location[] { new Location(\"11111\", Pair.of(1.0, 1.0), \"AZ\", \"Tempte\", 30000.0, 100), new Location(\"22222\", Pair.of(2.0, 2.0), \"AZ\", \"Phoenix\", 45000.0, 200), new Location(\"33333\", Pair.of(3.0, 3.0), \"AZ\", \"Flagstaff\", 60000.0, 300) });\r\n    StoreLocationPopulationPDF pdf = new StoreLocationPopulationPDF(zipcodes);\r\n    for (Location record : zipcodes) {\r\n        assertTrue(pdf.probability(record) > 0.0);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\store\\TestStoreSampler.java",
+  "methodName" : "testSampler",
+  "sourceCode" : "@Test\r\npublic void testSampler() throws Exception {\r\n    Collection<Location> zipcodes = Arrays.asList(new Location[] { new Location(\"11111\", Pair.of(1.0, 1.0), \"AZ\", \"Tempte\", 30000.0, 100), new Location(\"22222\", Pair.of(2.0, 2.0), \"AZ\", \"Phoenix\", 45000.0, 200), new Location(\"33333\", Pair.of(3.0, 3.0), \"AZ\", \"Flagstaff\", 60000.0, 300) });\r\n    SeedFactory factory = new SeedFactory(1234);\r\n    Sampler<Store> sampler = new StoreSampler(new SequenceSampler(), RouletteWheelSampler.createUniform(zipcodes, factory));\r\n    Store store = sampler.sample();\r\n    assertNotNull(store);\r\n    assertTrue(store.getId() >= 0);\r\n    assertNotNull(store.getName());\r\n    assertNotNull(store.getLocation());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\store\\TestStoreSamplerBuilder.java",
+  "methodName" : "testBuild",
+  "sourceCode" : "@Test\r\npublic void testBuild() throws Exception {\r\n    List<Location> zipcodes = Arrays.asList(new Location[] { new Location(\"11111\", Pair.of(1.0, 1.0), \"AZ\", \"Tempte\", 30000.0, 100), new Location(\"22222\", Pair.of(2.0, 2.0), \"AZ\", \"Phoenix\", 45000.0, 200), new Location(\"33333\", Pair.of(3.0, 3.0), \"AZ\", \"Flagstaff\", 60000.0, 300) });\r\n    assertTrue(zipcodes.size() > 0);\r\n    SeedFactory factory = new SeedFactory(1234);\r\n    StoreSamplerBuilder builder = new StoreSamplerBuilder(zipcodes, factory);\r\n    Sampler<Store> sampler = builder.build();\r\n    Store store = sampler.sample();\r\n    assertNotNull(store);\r\n    assertTrue(store.getId() >= 0);\r\n    assertNotNull(store.getName());\r\n    assertNotNull(store.getLocation());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\transaction\\TestCustomerInventory.java",
+  "methodName" : "testPurchase",
+  "sourceCode" : "@Test\r\npublic void testPurchase() throws Exception {\r\n    SeedFactory seedFactory = new SeedFactory(1234);\r\n    CustomerTransactionParametersSamplerBuilder transParamsBuilder = new CustomerTransactionParametersSamplerBuilder(seedFactory);\r\n    Sampler<CustomerTransactionParameters> sampler = transParamsBuilder.build();\r\n    CustomerTransactionParameters parameters = sampler.sample();\r\n    ProductCategoryBuilder builder = new ProductCategoryBuilder();\r\n    builder.addApplicableSpecies(PetSpecies.DOG);\r\n    builder.setAmountUsedPetPetAverage(1.0);\r\n    builder.setAmountUsedPetPetVariance(1.0);\r\n    builder.setDailyUsageRate(2.0);\r\n    builder.setCategory(\"dog food\");\r\n    ProductCategory category = builder.build();\r\n    ProductCategoryInventory productInventory = new ProductCategoryInventory(category, parameters, seedFactory);\r\n    Map<String, ProductCategoryInventory> inventories = Maps.newHashMap();\r\n    inventories.put(\"dog food\", productInventory);\r\n    CustomerInventory inventory = new CustomerInventory(inventories);\r\n    for (Map.Entry<String, Double> entry : inventory.getExhaustionTimes().entrySet()) {\r\n        assertEquals(entry.getValue(), 0.0, 0.0001);\r\n    }\r\n    for (Map.Entry<String, Double> entry : inventory.getInventoryAmounts(0.0).entrySet()) {\r\n        assertEquals(entry.getValue(), 0.0, 0.0001);\r\n    }\r\n    Map<String, Object> fields = Maps.newHashMap();\r\n    fields.put(Constants.PRODUCT_CATEGORY, \"dog food\");\r\n    fields.put(Constants.PRODUCT_QUANTITY, 30.0);\r\n    Product product = new Product(fields);\r\n    inventory.simulatePurchase(1.0, product);\r\n    Map<String, Double> exhaustionTimes = inventory.getExhaustionTimes();\r\n    assertTrue(exhaustionTimes.containsKey(\"dog food\"));\r\n    assertTrue(exhaustionTimes.get(\"dog food\") > 0.0);\r\n    Map<String, Double> amounts = inventory.getInventoryAmounts(2.0);\r\n    assertTrue(amounts.containsKey(\"dog food\"));\r\n    assertTrue(amounts.get(\"dog food\") > 0.0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\transaction\\TestCustomerInventoryBuilder.java",
+  "methodName" : "testBuild",
+  "sourceCode" : "@Test\r\npublic void testBuild() throws Exception {\r\n    SeedFactory seedFactory = new SeedFactory(1234);\r\n    CustomerTransactionParametersSamplerBuilder transParamsBuilder = new CustomerTransactionParametersSamplerBuilder(seedFactory);\r\n    Sampler<CustomerTransactionParameters> sampler = transParamsBuilder.build();\r\n    CustomerTransactionParameters parameters = sampler.sample();\r\n    ProductCategoryBuilder builder = new ProductCategoryBuilder();\r\n    builder.addApplicableSpecies(PetSpecies.DOG);\r\n    builder.setAmountUsedPetPetAverage(1.0);\r\n    builder.setAmountUsedPetPetVariance(1.0);\r\n    builder.setDailyUsageRate(2.0);\r\n    builder.setCategory(\"dog food\");\r\n    ProductCategory category = builder.build();\r\n    CustomerInventoryBuilder inventoryBuilder = new CustomerInventoryBuilder(parameters, seedFactory);\r\n    inventoryBuilder.addProductCategory(category);\r\n    CustomerInventory inventory = inventoryBuilder.build();\r\n    for (Map.Entry<String, Double> entry : inventory.getExhaustionTimes().entrySet()) {\r\n        assertEquals(entry.getValue(), 0.0, 0.0001);\r\n    }\r\n    for (Map.Entry<String, Double> entry : inventory.getInventoryAmounts(0.0).entrySet()) {\r\n        assertEquals(entry.getValue(), 0.0, 0.0001);\r\n    }\r\n    Map<String, Object> fields = Maps.newHashMap();\r\n    fields.put(Constants.PRODUCT_CATEGORY, \"dog food\");\r\n    fields.put(Constants.PRODUCT_QUANTITY, 30.0);\r\n    Product product = new Product(fields);\r\n    inventory.simulatePurchase(1.0, product);\r\n    Map<String, Double> exhaustionTimes = inventory.getExhaustionTimes();\r\n    assertTrue(exhaustionTimes.containsKey(\"dog food\"));\r\n    assertTrue(exhaustionTimes.get(\"dog food\") > 0.0);\r\n    Map<String, Double> amounts = inventory.getInventoryAmounts(2.0);\r\n    assertTrue(amounts.containsKey(\"dog food\"));\r\n    assertTrue(amounts.get(\"dog food\") > 0.0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\transaction\\TestCustomerTransactionParameters.java",
+  "methodName" : "testCountPetsBySpecies",
+  "sourceCode" : "@Test\r\npublic void testCountPetsBySpecies() throws Exception {\r\n    Multiset<PetSpecies> petCounts = HashMultiset.create();\r\n    petCounts.add(PetSpecies.CAT);\r\n    petCounts.add(PetSpecies.CAT);\r\n    petCounts.add(PetSpecies.CAT);\r\n    CustomerTransactionParameters transParams = new CustomerTransactionParameters(petCounts, 0.0, 0.0);\r\n    assertEquals(transParams.countPetsBySpecies(PetSpecies.CAT), 3);\r\n    assertEquals(transParams.countPetsBySpecies(PetSpecies.DOG), 0);\r\n    assertEquals(transParams.countPets(), 3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\transaction\\TestCustomerTransactionParameters.java",
+  "methodName" : "testCountPetsByMultipleSpecies",
+  "sourceCode" : "@Test\r\npublic void testCountPetsByMultipleSpecies() throws Exception {\r\n    Multiset<PetSpecies> petCounts = HashMultiset.create();\r\n    petCounts.add(PetSpecies.CAT);\r\n    petCounts.add(PetSpecies.CAT);\r\n    petCounts.add(PetSpecies.DOG);\r\n    CustomerTransactionParameters transParams = new CustomerTransactionParameters(petCounts, 0.0, 0.0);\r\n    assertEquals(transParams.countPetsBySpecies(Arrays.asList(PetSpecies.values())), 3);\r\n    assertEquals(transParams.countPets(), 3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\transaction\\TestCustomerTransactionParametersBuilder.java",
+  "methodName" : "testBuild",
+  "sourceCode" : "@Test\r\npublic void testBuild() throws Exception {\r\n    CustomerTransactionParametersBuilder builder = new CustomerTransactionParametersBuilder();\r\n    builder.addPet(PetSpecies.DOG);\r\n    builder.addPet(PetSpecies.DOG);\r\n    builder.addPet(PetSpecies.DOG);\r\n    builder.setAveragePurchaseTriggerTime(1.0);\r\n    builder.setAverageTransactionTriggerTime(2.0);\r\n    CustomerTransactionParameters transParams = builder.build();\r\n    assertTrue(transParams.countPetsBySpecies(PetSpecies.DOG) == 3);\r\n    assertTrue(transParams.countPetsBySpecies(PetSpecies.CAT) == 0);\r\n    assertTrue(transParams.getAveragePurchaseTriggerTime() == 1.0);\r\n    assertTrue(transParams.getAverageTransactionTriggerTime() == 2.0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\transaction\\TestCustomerTransactionParametersSampler.java",
+  "methodName" : "testSample",
+  "sourceCode" : "@Test\r\npublic void testSample() throws Exception {\r\n    SeedFactory seedFactory = new SeedFactory(1234);\r\n    CustomerTransactionParametersSamplerBuilder builder = new CustomerTransactionParametersSamplerBuilder(seedFactory);\r\n    Sampler<CustomerTransactionParameters> sampler = builder.build();\r\n    CustomerTransactionParameters transParams = sampler.sample();\r\n    assertTrue(transParams.countPets() >= Constants.MIN_PETS);\r\n    assertTrue(transParams.countPets() <= Constants.MAX_PETS);\r\n    assertTrue(transParams.getAveragePurchaseTriggerTime() >= Constants.PURCHASE_TRIGGER_TIME_MIN);\r\n    assertTrue(transParams.getAveragePurchaseTriggerTime() <= Constants.PURCHASE_TRIGGER_TIME_MAX);\r\n    assertTrue(transParams.getAverageTransactionTriggerTime() >= Constants.TRANSACTION_TRIGGER_TIME_MIN);\r\n    assertTrue(transParams.getAverageTransactionTriggerTime() <= Constants.TRANSACTION_TRIGGER_TIME_MAX);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\transaction\\TestCustomerTransactionParametersSamplerBuilder.java",
+  "methodName" : "testBuild",
+  "sourceCode" : "@Test\r\npublic void testBuild() throws Exception {\r\n    SeedFactory seedFactory = new SeedFactory(1234);\r\n    CustomerTransactionParametersSamplerBuilder builder = new CustomerTransactionParametersSamplerBuilder(seedFactory);\r\n    Sampler<CustomerTransactionParameters> sampler = builder.build();\r\n    CustomerTransactionParameters transParams = sampler.sample();\r\n    assertTrue(transParams.countPets() >= Constants.MIN_PETS);\r\n    assertTrue(transParams.countPets() <= Constants.MAX_PETS);\r\n    assertTrue(transParams.getAveragePurchaseTriggerTime() >= Constants.PURCHASE_TRIGGER_TIME_MIN);\r\n    assertTrue(transParams.getAveragePurchaseTriggerTime() <= Constants.PURCHASE_TRIGGER_TIME_MAX);\r\n    assertTrue(transParams.getAverageTransactionTriggerTime() >= Constants.TRANSACTION_TRIGGER_TIME_MIN);\r\n    assertTrue(transParams.getAverageTransactionTriggerTime() <= Constants.TRANSACTION_TRIGGER_TIME_MAX);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\transaction\\TestProductCategoryInventory.java",
+  "methodName" : "testPurchase",
+  "sourceCode" : "@Test\r\npublic void testPurchase() throws Exception {\r\n    SeedFactory seedFactory = new SeedFactory(1234);\r\n    CustomerTransactionParametersSamplerBuilder transParamsBuilder = new CustomerTransactionParametersSamplerBuilder(seedFactory);\r\n    Sampler<CustomerTransactionParameters> sampler = transParamsBuilder.build();\r\n    CustomerTransactionParameters parameters = sampler.sample();\r\n    ProductCategoryBuilder builder = new ProductCategoryBuilder();\r\n    builder.addApplicableSpecies(PetSpecies.DOG);\r\n    builder.setAmountUsedPetPetAverage(1.0);\r\n    builder.setAmountUsedPetPetVariance(1.0);\r\n    builder.setDailyUsageRate(2.0);\r\n    ProductCategory category = builder.build();\r\n    ProductCategoryInventory inventory = new ProductCategoryInventory(category, parameters, seedFactory);\r\n    assertEquals(inventory.findExhaustionTime(), 0.0, 0.0001);\r\n    assertEquals(inventory.findRemainingAmount(0.0), 0.0, 0.0001);\r\n    Map<String, Object> fields = Maps.newHashMap();\r\n    fields.put(Constants.PRODUCT_CATEGORY, \"dog food\");\r\n    fields.put(Constants.PRODUCT_QUANTITY, 30.0);\r\n    Product product = new Product(fields);\r\n    inventory.simulatePurchase(1.0, product);\r\n    assertTrue(inventory.findExhaustionTime() > 1.0);\r\n    assertTrue(inventory.findRemainingAmount(1.0) > 0.0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\transaction\\TestProductCategoryUsageSimulator.java",
+  "methodName" : "testSimulate",
+  "sourceCode" : "@Test\r\npublic void testSimulate() throws Exception {\r\n    SeedFactory seedFactory = new SeedFactory(1234);\r\n    ProductCategoryUsageSimulator simulator = new ProductCategoryUsageSimulator(2.0, 1.0, 1.0, seedFactory);\r\n    ProductCategoryUsageTrajectory trajectory = simulator.simulate(0.0, 30.0);\r\n    assertEquals(0.0, trajectory.getLastAmount(), 0.0001);\r\n    Pair<Double, Double> previousEntry = trajectory.getStep(0);\r\n    for (int i = 1; i < trajectory.size(); i++) {\r\n        Pair<Double, Double> entry = trajectory.getStep(i);\r\n        // time should move forward\r\n        assertTrue(previousEntry.getLeft() <= entry.getLeft());\r\n        // remaining amounts should go down\r\n        assertTrue(previousEntry.getRight() >= entry.getRight());\r\n        previousEntry = entry;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\transaction\\TestProductCategoryUsageTrajectory.java",
+  "methodName" : "testTrajectory",
+  "sourceCode" : "@Test\r\npublic void testTrajectory() {\r\n    double initialAmount = 30.0;\r\n    double initialTime = 0.0;\r\n    ProductCategoryUsageTrajectory trajectory = new ProductCategoryUsageTrajectory(initialTime, initialAmount);\r\n    assertEquals(trajectory.size(), 1);\r\n    Pair<Double, Double> entry = trajectory.getStep(0);\r\n    assertEquals(initialTime, entry.getLeft(), 0.0001);\r\n    assertEquals(initialAmount, entry.getRight(), 0.0001);\r\n    trajectory.append(1.0, 25.0);\r\n    assertEquals(2, trajectory.size());\r\n    entry = trajectory.getStep(1);\r\n    assertEquals(1.0, entry.getLeft(), 0.0001);\r\n    assertEquals(25.0, entry.getRight(), 0.0001);\r\n    assertEquals(1.0, trajectory.getLastTime(), 0.0001);\r\n    assertEquals(25.0, trajectory.getLastAmount(), 0.0001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\transaction\\TestProductCategoryUsageTrajectory.java",
+  "methodName" : "testAmountAtTime",
+  "sourceCode" : "@Test\r\npublic void testAmountAtTime() {\r\n    ProductCategoryUsageTrajectory trajectory = new ProductCategoryUsageTrajectory(0.0, 30.0);\r\n    trajectory.append(1.0, 25.0);\r\n    trajectory.append(2.0, 20.0);\r\n    trajectory.append(3.0, 50.0);\r\n    trajectory.append(4.0, 40.0);\r\n    trajectory.append(4.0, 50.0);\r\n    trajectory.append(5.0, 30.0);\r\n    assertEquals(30.0, trajectory.amountAtTime(0.5), 0.0001);\r\n    assertEquals(50.0, trajectory.amountAtTime(4.0), 0.0001);\r\n    assertEquals(30.0, trajectory.amountAtTime(10.0), 0.0001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\transaction\\TestTransactionPurchasesHiddenMarkovModel.java",
+  "methodName" : "testChooseCategory",
+  "sourceCode" : "@Test\r\npublic void testChooseCategory() throws Exception {\r\n    TransactionPurchasesHiddenMarkovModel hmm = createHMM();\r\n    String category = hmm.chooseCategory(1.0, 0);\r\n    assertNotNull(category);\r\n    assertTrue(category.equals(TransactionPurchasesHiddenMarkovModel.STOP_STATE) || category.equals(\"dog food\") || category.equals(\"cat food\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\transaction\\TestTransactionPurchasesHiddenMarkovModel.java",
+  "methodName" : "testChooseProduct",
+  "sourceCode" : "@Test\r\npublic void testChooseProduct() throws Exception {\r\n    TransactionPurchasesHiddenMarkovModel hmm = createHMM();\r\n    Product product = hmm.chooseProduct(\"dog food\");\r\n    assertNotNull(product);\r\n    assertTrue(product.getFieldValue(Constants.PRODUCT_CATEGORY).equals(\"dog food\"));\r\n    product = hmm.chooseProduct(\"cat food\");\r\n    assertNotNull(product);\r\n    assertTrue(product.getFieldValue(Constants.PRODUCT_CATEGORY).equals(\"cat food\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\transaction\\TestTransactionPurchasesHiddenMarkovModel.java",
+  "methodName" : "testSample",
+  "sourceCode" : "@Test\r\npublic void testSample() throws Exception {\r\n    TransactionPurchasesHiddenMarkovModel hmm = createHMM();\r\n    List<Product> purchase = hmm.sample(1.0);\r\n    assertTrue(purchase.size() > 0);\r\n    for (int i = 0; i < purchase.size(); i++) {\r\n        Product product = purchase.get(i);\r\n        // first product should never be null\r\n        assertNotNull(product);\r\n        assertTrue(product.getFieldValue(Constants.PRODUCT_CATEGORY).equals(\"dog food\") || product.getFieldValue(Constants.PRODUCT_CATEGORY).equals(\"cat food\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigpetstore-data-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\bigpetstore\\generators\\transaction\\TestTransactionTimePDF.java",
+  "methodName" : "testProbability",
+  "sourceCode" : "@Test\r\npublic void testProbability() throws Exception {\r\n    TransactionTimePDF pdf = new TransactionTimePDF();\r\n    assertEquals(pdf.probability(0.5, 0.75), 0.0, 0.000001);\r\n    assertEquals(pdf.probability(0.5, 0.5), 1.0, 0.000001);\r\n    assertEquals(pdf.probability(0.75, 0.5), 1.0, 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigtop-name-generator\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\namegenerator\\TestNameGenerator.java",
+  "methodName" : "testBuild",
+  "sourceCode" : "@Test\r\npublic void testBuild() throws Exception {\r\n    SeedFactory factory = new SeedFactory(1234);\r\n    NameGenerator sampler = new NameGenerator(factory);\r\n    Pair<String, String> name = sampler.sample();\r\n    Assert.assertNotNull(name);\r\n    Assert.assertNotNull(name.getLeft());\r\n    Assert.assertNotNull(name.getRight());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigtop-samplers\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\samplers\\markovmodels\\TestMarkovModelBuilder.java",
+  "methodName" : "testAddStateState",
+  "sourceCode" : "@Test\r\npublic void testAddStateState() {\r\n    MarkovModelBuilder<String> builder = MarkovModelBuilder.create();\r\n    builder.addStartState(\"a\", 1.0);\r\n    MarkovModel<String> msm = builder.build();\r\n    assertThat(msm.getStartWeights().keySet(), hasItem(\"a\"));\r\n    assertEquals((double) msm.getStartWeights().get(\"a\"), (double) 1.0, 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigtop-samplers\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\samplers\\markovmodels\\TestMarkovModelBuilder.java",
+  "methodName" : "testAddEdgeTransition",
+  "sourceCode" : "@Test\r\npublic void testAddEdgeTransition() {\r\n    MarkovModelBuilder<String> builder = MarkovModelBuilder.create();\r\n    builder.addTransition(\"a\", \"b\", 1.0);\r\n    MarkovModel<String> msm = builder.build();\r\n    assertThat(msm.getTransitionWeights().keySet(), hasItem(\"a\"));\r\n    assertThat(msm.getTransitionWeights().get(\"a\").keySet(), hasItem(\"b\"));\r\n    assertEquals((double) msm.getTransitionWeights().get(\"a\").get(\"b\"), (double) 1.0, 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigtop-samplers\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\samplers\\markovmodels\\TestMarkovModelBuilder.java",
+  "methodName" : "testBuildMSM",
+  "sourceCode" : "@Test\r\npublic void testBuildMSM() {\r\n    MarkovModelBuilder<String> builder = MarkovModelBuilder.create();\r\n    builder.addStartState(\"a\", 1.0);\r\n    builder.addTransition(\"a\", \"b\", 1.0);\r\n    builder.addTransition(\"a\", \"c\", 1.0);\r\n    MarkovModel<String> msm = builder.build();\r\n    assertThat(msm.getStartWeights().keySet(), hasItem(\"a\"));\r\n    assertThat(msm.getTransitionWeights().keySet(), hasItem(\"a\"));\r\n    assertThat(msm.getTransitionWeights().get(\"a\").keySet(), hasItem(\"b\"));\r\n    assertThat(msm.getTransitionWeights().get(\"a\").keySet(), hasItem(\"c\"));\r\n    assertEquals((double) msm.getTransitionWeights().get(\"a\").get(\"b\"), (double) 1.0, 0.000001);\r\n    assertEquals((double) msm.getTransitionWeights().get(\"a\").get(\"c\"), (double) 1.0, 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigtop-samplers\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\samplers\\markovmodels\\TestMarkovProcess.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() throws Exception {\r\n    SeedFactory factory = new SeedFactory(1245);\r\n    MarkovModelBuilder<String> builder = MarkovModelBuilder.create();\r\n    builder.addStartState(\"a\", 1.0);\r\n    builder.addTransition(\"a\", \"b\", 1.0);\r\n    builder.addTransition(\"a\", \"c\", 1.0);\r\n    MarkovModel<String> msm = builder.build();\r\n    MarkovProcess<String> process = MarkovProcess.create(msm, factory);\r\n    String firstState = process.sample();\r\n    assertEquals(firstState, \"a\");\r\n    String secondState = process.sample();\r\n    assertThat(Arrays.asList(\"b\", \"c\"), hasItem(secondState));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigtop-samplers\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\samplers\\pdfs\\TestMultinomialPDF.java",
+  "methodName" : "testToString",
+  "sourceCode" : "@Test\r\npublic void testToString() {\r\n    Map<String, Double> objects = ImmutableMap.of(\"A\", 0.1, \"B\", 0.3, \"C\", 0.5);\r\n    MultinomialPDF<String> pdf = new MultinomialPDF<String>(objects);\r\n    String string = pdf.toString();\r\n    Set<String> observed = Sets.newHashSet(string.split(\"\\n\"));\r\n    Set<String> expected = Sets.newHashSet(\"0.1,A\", \"0.3,B\", \"0.5,C\");\r\n    Assert.assertEquals(expected, observed);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigtop-samplers\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\samplers\\samplers\\TestBoundedMultiModalGaussianSampler.java",
+  "methodName" : "testSample",
+  "sourceCode" : "@Test\r\npublic void testSample() throws Exception {\r\n    double upperbound = 10.0;\r\n    double lowerbound = 1.0;\r\n    List<Pair<Double, Double>> distributions = Lists.newArrayList(Pair.of(2.0, 2.0), Pair.of(7.5, 2.0));\r\n    SeedFactory seedFactory = new SeedFactory(1234);\r\n    Sampler<Double> sampler = new BoundedMultiModalGaussianSampler(distributions, lowerbound, upperbound, seedFactory);\r\n    Double result = sampler.sample();\r\n    assertTrue(result >= lowerbound);\r\n    assertTrue(result <= upperbound);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigtop-samplers\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\samplers\\samplers\\TestExponentialSampler.java",
+  "methodName" : "testSample",
+  "sourceCode" : "@Test\r\npublic void testSample() throws Exception {\r\n    double lambda = 1.0 / 2.0;\r\n    SeedFactory seedFactory = new SeedFactory(1234);\r\n    Sampler<Double> sampler = new ExponentialSampler(lambda, seedFactory);\r\n    Double result = sampler.sample();\r\n    assertTrue(result >= 0.0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigtop-samplers\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\samplers\\samplers\\TestGaussianSampler.java",
+  "methodName" : "testSample",
+  "sourceCode" : "@Test\r\npublic void testSample() throws Exception {\r\n    double mean = 2.0;\r\n    double var = 1.0;\r\n    SeedFactory seedFactory = new SeedFactory(1234);\r\n    Sampler<Double> sampler = new GaussianSampler(mean, var, seedFactory);\r\n    Double result = sampler.sample();\r\n    assertTrue(result >= -10);\r\n    assertTrue(result <= 10);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigtop-samplers\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\samplers\\samplers\\TestRouletteWheelSampler.java",
+  "methodName" : "testSample",
+  "sourceCode" : "@Test\r\npublic void testSample() throws Exception {\r\n    Map<String, Double> dataPoints = ImmutableMap.of(\"a\", 0.25, \"b\", 0.25, \"c\", 0.25, \"d\", 0.25);\r\n    SeedFactory seedFactory = new SeedFactory(1234);\r\n    Sampler<String> sampler = new RouletteWheelSampler<String>(dataPoints, seedFactory);\r\n    String result = sampler.sample();\r\n    assertThat(dataPoints.keySet(), hasItem(result));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigtop-samplers\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\samplers\\samplers\\TestRouletteWheelSampler.java",
+  "methodName" : "testSampleUnnormalized",
+  "sourceCode" : "@Test\r\npublic void testSampleUnnormalized() throws Exception {\r\n    Map<String, Double> dataPoints = ImmutableMap.of(\"a\", 1.0, \"b\", 1.0, \"c\", 1.0, \"d\", 1.0);\r\n    SeedFactory seedFactory = new SeedFactory(1234);\r\n    Sampler<String> sampler = new RouletteWheelSampler<String>(dataPoints, seedFactory);\r\n    String result = sampler.sample();\r\n    assertThat(dataPoints.keySet(), hasItem(result));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigtop-samplers\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\samplers\\samplers\\TestSequenceSampler.java",
+  "methodName" : "testSample",
+  "sourceCode" : "@Test\r\npublic void testSample() throws Exception {\r\n    Sampler<Integer> sampler = new SequenceSampler(0, 10, 1);\r\n    for (int i = 0; i < 10; i++) {\r\n        Integer value = sampler.sample();\r\n        assertEquals((int) value, i);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigtop-samplers\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\samplers\\samplers\\TestUniformIntSampler.java",
+  "methodName" : "testSample",
+  "sourceCode" : "@Test\r\npublic void testSample() throws Exception {\r\n    int upperbound = 10;\r\n    int lowerbound = 1;\r\n    SeedFactory seedFactory = new SeedFactory(1234);\r\n    Sampler<Integer> sampler = new UniformIntSampler(lowerbound, upperbound, seedFactory);\r\n    Integer result = sampler.sample();\r\n    assertTrue(result >= lowerbound);\r\n    assertTrue(result <= upperbound);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-data-generators\\bigtop-samplers\\src\\test\\java\\org\\apache\\bigtop\\datagenerators\\samplers\\samplers\\TestUniformIntSampler.java",
+  "methodName" : "testSampleInclusive",
+  "sourceCode" : "@Test\r\npublic void testSampleInclusive() throws Exception {\r\n    int upperbound = 2;\r\n    int lowerbound = 1;\r\n    SeedFactory seedFactory = new SeedFactory(1234);\r\n    Sampler<Integer> sampler = new UniformIntSampler(lowerbound, upperbound, seedFactory);\r\n    Integer result = sampler.sample();\r\n    assertTrue(result >= lowerbound);\r\n    assertTrue(result <= upperbound);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-test-framework\\src\\test\\groovy\\org\\apache\\bigtop\\itest\\TestContractJava.java",
+  "methodName" : "testPropSettings",
+  "sourceCode" : "@Test\r\npublic void testPropSettings() {\r\n    assertEquals(\"checking the value of foo_int1 from default value\", 1000, foo_int1);\r\n    assertEquals(\"checking the value of foo_int2 from foo.int2\", 100, foo_int2);\r\n    assertEquals(\"checking the value of foo_bar1 from default value\", \"xyz\", foo_bar1);\r\n    assertEquals(\"checking the value of foo_bar2 from unset value\", \"\", foo_bar2);\r\n    assertEquals(\"checking the value of foo_bool1 from unset value\", false, foo_bool1);\r\n    assertEquals(\"checking the value of foo_bar2 from foo.bool2\", true, foo_bool2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-test-framework\\src\\test\\groovy\\org\\apache\\bigtop\\itest\\TestContractJava.java",
+  "methodName" : "testEnvSettings",
+  "sourceCode" : "@Test\r\npublic void testEnvSettings() {\r\n    assertEquals(\"checking the value of $HOME\", System.getenv(\"HOME\"), HOME);\r\n    assertEquals(\"checking the value of $BIGTOP_UNLIKELY_FOO_ENV\", null, BIGTOP_UNLIKELY_FOO_ENV);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-test-framework\\src\\test\\groovy\\org\\apache\\bigtop\\itest\\TestContractJavaProc.java",
+  "methodName" : "testPropSettings",
+  "sourceCode" : "@Test\r\npublic void testPropSettings() {\r\n    assertEquals(\"checking the value of foo_int1 from default value\", 1000, foo_int1);\r\n    assertEquals(\"checking the value of foo_int2 from foo.int2\", 100, foo_int2);\r\n    assertEquals(\"checking the value of foo_bar1 from default value\", \"xyz\", foo_bar1);\r\n    assertEquals(\"checking the value of foo_bar2 from unset value\", \"\", foo_bar2);\r\n    assertEquals(\"checking the value of foo_bool1 from unset value\", false, foo_bool1);\r\n    assertEquals(\"checking the value of foo_bar2 from foo.bool2\", true, foo_bool2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-test-framework\\src\\test\\groovy\\org\\apache\\bigtop\\itest\\TestContractJavaProc.java",
+  "methodName" : "testEnvSettings",
+  "sourceCode" : "@Test\r\npublic void testEnvSettings() {\r\n    assertEquals(\"checking the value of $HOME\", System.getenv(\"HOME\"), HOME);\r\n    assertEquals(\"checking the value of $BIGTOP_UNLIKELY_FOO_ENV\", null, BIGTOP_UNLIKELY_FOO_ENV);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-tests\\test-artifacts\\hadoop\\src\\main\\groovy\\org\\apache\\bigtop\\itest\\hadoop\\hcfs\\TestCLI.java",
+  "methodName" : "testAll",
+  "sourceCode" : "@Test\r\n@Override\r\npublic void testAll() {\r\n    super.testAll();\r\n}",
+  "annotations" : [ "Test", "Override" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-tests\\test-artifacts\\hbase\\src\\main\\groovy\\org\\apache\\bigtop\\itest\\hbase\\smoke\\TestCopyTable.java",
+  "methodName" : "testCopyTable",
+  "sourceCode" : "/**\r\n * Validates the CopyTable utility.\r\n */\r\n@Test\r\npublic void testCopyTable() throws Exception {\r\n    sh.exec(copyTableCmd + \" --new.name=\" + new String(copy) + \" \" + new String(orig));\r\n    logError(sh);\r\n    assertTrue(sh.getRet() == 0);\r\n    String origDigest = HBaseTestUtil.checksumRows(origTable);\r\n    String copyDigest = HBaseTestUtil.checksumRows(copyTable);\r\n    assertTrue(\"Original and copy tables contain different data\", origDigest.equals(copyDigest));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-tests\\test-artifacts\\hbase\\src\\main\\groovy\\org\\apache\\bigtop\\itest\\hbase\\smoke\\TestHBaseSmoke.java",
+  "methodName" : "testSimplePutGet",
+  "sourceCode" : "/**\r\n * Test case that creates a table, writes a small number of rows,\r\n * disables the table, and exits.\r\n */\r\n@Test\r\npublic void testSimplePutGet() throws Exception {\r\n    Configuration conf = HBaseConfiguration.create();\r\n    HBaseAdmin admin = new HBaseAdmin(conf);\r\n    HTableDescriptor htd = HBaseTestUtil.createTestTableDescriptor(\"testSimplePutGet\", TEST_FAMILY);\r\n    admin.createTable(htd);\r\n    byte[] tableName = htd.getName();\r\n    try {\r\n        HTable table = new HTable(conf, tableName);\r\n        // Write some rows\r\n        for (int i = 0; i < NUM_ROWS; i++) {\r\n            byte[] row = Bytes.toBytes(\"row_\" + i);\r\n            Put p = new Put(row);\r\n            for (HColumnDescriptor hcd : htd.getFamilies()) {\r\n                p.add(hcd.getName(), TEST_QUALIFIER, TEST_VALUE);\r\n            }\r\n            table.put(p);\r\n        }\r\n        table.flushCommits();\r\n        // Read some rows\r\n        for (int i = 0; i < NUM_ROWS; i++) {\r\n            byte[] row = Bytes.toBytes(\"row_\" + i);\r\n            Get g = new Get(row);\r\n            Result result = table.get(g);\r\n            for (HColumnDescriptor hcd : htd.getFamilies()) {\r\n                byte[] value = result.getValue(hcd.getName(), TEST_QUALIFIER);\r\n                Assert.assertArrayEquals(TEST_VALUE, value);\r\n            }\r\n        }\r\n    } finally {\r\n        admin.disableTable(tableName);\r\n        admin.deleteTable(tableName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-tests\\test-artifacts\\hbase\\src\\main\\groovy\\org\\apache\\bigtop\\itest\\hbase\\smoke\\TestHFileOutputFormat.java",
+  "methodName" : "testMRIncrementalLoad",
+  "sourceCode" : "@Ignore(\"HBASE-1861\")\r\n@Test\r\npublic void testMRIncrementalLoad() throws Exception {\r\n    doIncrementalLoadTest(\"testMRIncrementalLoad\", false);\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-tests\\test-artifacts\\hbase\\src\\main\\groovy\\org\\apache\\bigtop\\itest\\hbase\\smoke\\TestHFileOutputFormat.java",
+  "methodName" : "testMRIncrementalLoadWithSplit",
+  "sourceCode" : "@Ignore(\"HBASE-1861\")\r\n@Test\r\npublic void testMRIncrementalLoadWithSplit() throws Exception {\r\n    doIncrementalLoadTest(\"testMRIncrementalLoadWithSplit\", true);\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-tests\\test-artifacts\\hbase\\src\\main\\groovy\\org\\apache\\bigtop\\itest\\hbase\\smoke\\TestLoadIncrementalHFiles.java",
+  "methodName" : "testSimpleLoad",
+  "sourceCode" : "/**\r\n * Test case that creates some regions and loads\r\n * HFiles that fit snugly inside those regions\r\n */\r\n@Test\r\npublic void testSimpleLoad() throws Exception {\r\n    runTest(\"testSimpleLoad\", new byte[][][] { new byte[][] { Bytes.toBytes(\"aaaa\"), Bytes.toBytes(\"cccc\") }, new byte[][] { Bytes.toBytes(\"ddd\"), Bytes.toBytes(\"ooo\") } });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-tests\\test-artifacts\\hbase\\src\\main\\groovy\\org\\apache\\bigtop\\itest\\hbase\\smoke\\TestLoadIncrementalHFiles.java",
+  "methodName" : "testRegionCrossingLoad",
+  "sourceCode" : "/**\r\n * Test case that creates some regions and loads\r\n * HFiles that cross the boundaries of those regions\r\n */\r\n@Test\r\npublic void testRegionCrossingLoad() throws Exception {\r\n    runTest(\"testRegionCrossingLoad\", new byte[][][] { new byte[][] { Bytes.toBytes(\"aaaa\"), Bytes.toBytes(\"eee\") }, new byte[][] { Bytes.toBytes(\"fff\"), Bytes.toBytes(\"zzz\") } });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-tests\\test-artifacts\\hbase\\src\\main\\groovy\\org\\apache\\bigtop\\itest\\hbase\\system\\TestConcurrentScanAndPut.java",
+  "methodName" : "testConcurrentScanAndPut",
+  "sourceCode" : "@Test\r\npublic void testConcurrentScanAndPut() {\r\n    String tableNameStr = Bytes.toString(tableName);\r\n    System.out.println(\"Starting puts to test table \" + tableNameStr);\r\n    putSh.exec(\"(HBASE_CLASSPATH=. \" + \"hbase org.apache.bigtop.itest.hbase.system.Putter \" + tableNameStr + \" 13 -l \" + putterLoops + \" > /dev/null 2>&1 & echo $! ) 2> /dev/null\");\r\n    putter_pid = putSh.getOut().get(0);\r\n    System.out.println(\"Starting concurrent scans of test table \" + tableNameStr);\r\n    scanSh.exec(\"HBASE_CLASSPATH=. hbase \" + \"org.apache.bigtop.itest.hbase.system.Scanner \" + tableNameStr + \" 13 -l \" + scannerLoops + \" 2>/dev/null\");\r\n    int splitRows = scanSh.getRet();\r\n    System.out.println(\"Split rows: \" + splitRows);\r\n    assertTrue(\"Rows were split when scanning table with concurrent writes\", splitRows == 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-tests\\test-artifacts\\hbase\\src\\main\\groovy\\org\\apache\\bigtop\\itest\\hbase\\system\\TestLoadAndVerify.java",
+  "methodName" : "testLoadAndVerify",
+  "sourceCode" : "@Test\r\npublic void testLoadAndVerify() throws Exception {\r\n    HTableDescriptor htd = HBaseTestUtil.createTestTableDescriptor(TEST_NAME, TEST_FAMILY);\r\n    HBaseAdmin admin = HBaseTestUtil.getAdmin();\r\n    assertNotNull(\"HBaseAdmin shouldn't be null\", admin);\r\n    int numPreCreate = 40;\r\n    admin.createTable(htd, Bytes.toBytes(0L), Bytes.toBytes(-1L), numPreCreate);\r\n    Configuration conf = HBaseConfiguration.create();\r\n    doLoad(conf, htd);\r\n    doVerify(conf, htd);\r\n    // Only disable and drop if we succeeded to verify - otherwise it's useful\r\n    // to leave it around for post-mortem\r\n    deleteTable(admin, htd);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Bigtop\\bigtop-tests\\test-artifacts\\hbase\\src\\main\\groovy\\org\\apache\\bigtop\\itest\\hbase\\system\\TestRegionMover.java",
+  "methodName" : "testRegionMover",
+  "sourceCode" : "@Test\r\npublic void testRegionMover() throws InterruptedException {\r\n    System.out.println(\"Beginning unloading and loading of region servers \" + load_iterations + \" times each\");\r\n    String cmd;\r\n    for (int i = 0; i < load_iterations; i++) {\r\n        for (String rs : regionservers) {\r\n            // Unload\r\n            cmd = unload_regionserver + rs;\r\n            System.out.println(cmd);\r\n            sh.exec(cmd);\r\n            waitForNoRegionsInTransition();\r\n            // Load\r\n            cmd = load_regionserver + rs;\r\n            System.out.println(cmd);\r\n            sh.exec(cmd);\r\n            waitForNoRegionsInTransition();\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

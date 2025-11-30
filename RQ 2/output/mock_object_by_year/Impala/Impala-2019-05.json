@@ -1,0 +1,769 @@
+[
+  {
+    "rawMockObjectId": 1,
+    "variableName": "mockEventsProcessor",
+    "variableType": "MetastoreEventsProcessor",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.catalog.events",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\catalog\\events\\MetastoreEventsProcessorTest.java"
+    },
+    "statements": [
+      {
+        "code": "MetastoreEventsProcessor mockEventsProcessor = Mockito.mock(MetastoreEventsProcessor.class);",
+        "line": 287,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testConfigValidationWithIncorrectValues",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Mock the eventsProcessor#getConfigValueFromMetastore method and make it return\r\n * incorrect values for the required configs for event processing. Verify that the\r\n * incorrect config leads to invalid result for each config.\r\n */\r\n@Test\r\npublic void testConfigValidationWithIncorrectValues() throws TException {\r\n    MetastoreEventsProcessor mockEventsProcessor = Mockito.mock(MetastoreEventsProcessor.class);\r\n    for (TestIncorrectMetastoreEventConfigs config : TestIncorrectMetastoreEventConfigs.values()) {\r\n        when(mockEventsProcessor.getConfigValueFromMetastore(config.conf_, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(config.incorrectValue_);\r\n        ValidationResult testResult = validateMetastoreConfigs(mockEventsProcessor);\r\n        assertFalse(testResult.isValid());\r\n        assertTrue(testResult.getReason().isPresent());\r\n        assertEquals(String.format(\"Incorrect configuration for %s. \" + \"Found : %s\", config.toString(), config.incorrectValue_), testResult.getReason().get());\r\n        when(mockEventsProcessor.getConfigValueFromMetastore(config.conf_, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(config.correctValue_);\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 2,
+    "variableName": "mockEventsProcessor",
+    "variableType": "MetastoreEventsProcessor",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.catalog.events",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\catalog\\events\\MetastoreEventsProcessorTest.java"
+    },
+    "statements": [
+      {
+        "code": "MetastoreEventsProcessor mockEventsProcessor = Mockito.mock(MetastoreEventsProcessor.class);",
+        "line": 316,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testParameterFilterValidation",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Test that when HiveConf.METASTORE_PARAMETER_EXCLUDE_PATTERNS contains a regex\r\n * that filters out any parameter required for event processing, the config\r\n * validation fails. Config validation should succeed when the regex does not match\r\n * any of the required parameters.\r\n */\r\n@Test\r\npublic void testParameterFilterValidation() throws TException {\r\n    MetastoreEventsProcessor mockEventsProcessor = Mockito.mock(MetastoreEventsProcessor.class);\r\n    //Regex to filter all parameters starting with impala\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala\");\r\n    ValidationResult testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"impala*\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertTrue(testResult.isValid());\r\n    assertFalse(testResult.getReason().isPresent());\r\n    // Test with default return value\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(DEFAULT_METASTORE_CONFIG_VALUE);\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertTrue(testResult.isValid());\r\n    assertFalse(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"randomString1, impala\" + \".disableHmsSync, randomString2\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    //Test when a required parameter is given as regex\r\n    String requiredParameter = MetastoreEventPropertyKey.CATALOG_SERVICE_ID.getKey();\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(requiredParameter);\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    // Verify that the error message is correct\r\n    assertEquals(String.format(\"Failed config validation. \" + \"Required Impala parameter %s is\" + \" filtered out using the Hive configuration %s=%s\", requiredParameter, METASTORE_PARAMETER_EXCLUDE_PATTERNS, requiredParameter), testResult.getReason().get());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala.events\" + \".catalogServiceId\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n}"
+        }
+      },
+      {
+        "code": "//Regex to filter all parameters starting with impala\r\nwhen(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala\");",
+        "line": 320,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testParameterFilterValidation",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Test that when HiveConf.METASTORE_PARAMETER_EXCLUDE_PATTERNS contains a regex\r\n * that filters out any parameter required for event processing, the config\r\n * validation fails. Config validation should succeed when the regex does not match\r\n * any of the required parameters.\r\n */\r\n@Test\r\npublic void testParameterFilterValidation() throws TException {\r\n    MetastoreEventsProcessor mockEventsProcessor = Mockito.mock(MetastoreEventsProcessor.class);\r\n    //Regex to filter all parameters starting with impala\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala\");\r\n    ValidationResult testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"impala*\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertTrue(testResult.isValid());\r\n    assertFalse(testResult.getReason().isPresent());\r\n    // Test with default return value\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(DEFAULT_METASTORE_CONFIG_VALUE);\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertTrue(testResult.isValid());\r\n    assertFalse(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"randomString1, impala\" + \".disableHmsSync, randomString2\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    //Test when a required parameter is given as regex\r\n    String requiredParameter = MetastoreEventPropertyKey.CATALOG_SERVICE_ID.getKey();\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(requiredParameter);\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    // Verify that the error message is correct\r\n    assertEquals(String.format(\"Failed config validation. \" + \"Required Impala parameter %s is\" + \" filtered out using the Hive configuration %s=%s\", requiredParameter, METASTORE_PARAMETER_EXCLUDE_PATTERNS, requiredParameter), testResult.getReason().get());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala.events\" + \".catalogServiceId\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n}"
+        }
+      },
+      {
+        "code": "when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"impala*\");",
+        "line": 328,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testParameterFilterValidation",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Test that when HiveConf.METASTORE_PARAMETER_EXCLUDE_PATTERNS contains a regex\r\n * that filters out any parameter required for event processing, the config\r\n * validation fails. Config validation should succeed when the regex does not match\r\n * any of the required parameters.\r\n */\r\n@Test\r\npublic void testParameterFilterValidation() throws TException {\r\n    MetastoreEventsProcessor mockEventsProcessor = Mockito.mock(MetastoreEventsProcessor.class);\r\n    //Regex to filter all parameters starting with impala\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala\");\r\n    ValidationResult testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"impala*\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertTrue(testResult.isValid());\r\n    assertFalse(testResult.getReason().isPresent());\r\n    // Test with default return value\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(DEFAULT_METASTORE_CONFIG_VALUE);\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertTrue(testResult.isValid());\r\n    assertFalse(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"randomString1, impala\" + \".disableHmsSync, randomString2\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    //Test when a required parameter is given as regex\r\n    String requiredParameter = MetastoreEventPropertyKey.CATALOG_SERVICE_ID.getKey();\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(requiredParameter);\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    // Verify that the error message is correct\r\n    assertEquals(String.format(\"Failed config validation. \" + \"Required Impala parameter %s is\" + \" filtered out using the Hive configuration %s=%s\", requiredParameter, METASTORE_PARAMETER_EXCLUDE_PATTERNS, requiredParameter), testResult.getReason().get());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala.events\" + \".catalogServiceId\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n}"
+        }
+      },
+      {
+        "code": "when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"\");",
+        "line": 336,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testParameterFilterValidation",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Test that when HiveConf.METASTORE_PARAMETER_EXCLUDE_PATTERNS contains a regex\r\n * that filters out any parameter required for event processing, the config\r\n * validation fails. Config validation should succeed when the regex does not match\r\n * any of the required parameters.\r\n */\r\n@Test\r\npublic void testParameterFilterValidation() throws TException {\r\n    MetastoreEventsProcessor mockEventsProcessor = Mockito.mock(MetastoreEventsProcessor.class);\r\n    //Regex to filter all parameters starting with impala\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala\");\r\n    ValidationResult testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"impala*\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertTrue(testResult.isValid());\r\n    assertFalse(testResult.getReason().isPresent());\r\n    // Test with default return value\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(DEFAULT_METASTORE_CONFIG_VALUE);\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertTrue(testResult.isValid());\r\n    assertFalse(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"randomString1, impala\" + \".disableHmsSync, randomString2\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    //Test when a required parameter is given as regex\r\n    String requiredParameter = MetastoreEventPropertyKey.CATALOG_SERVICE_ID.getKey();\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(requiredParameter);\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    // Verify that the error message is correct\r\n    assertEquals(String.format(\"Failed config validation. \" + \"Required Impala parameter %s is\" + \" filtered out using the Hive configuration %s=%s\", requiredParameter, METASTORE_PARAMETER_EXCLUDE_PATTERNS, requiredParameter), testResult.getReason().get());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala.events\" + \".catalogServiceId\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n}"
+        }
+      },
+      {
+        "code": "// Test with default return value\r\nwhen(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(DEFAULT_METASTORE_CONFIG_VALUE);",
+        "line": 345,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testParameterFilterValidation",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Test that when HiveConf.METASTORE_PARAMETER_EXCLUDE_PATTERNS contains a regex\r\n * that filters out any parameter required for event processing, the config\r\n * validation fails. Config validation should succeed when the regex does not match\r\n * any of the required parameters.\r\n */\r\n@Test\r\npublic void testParameterFilterValidation() throws TException {\r\n    MetastoreEventsProcessor mockEventsProcessor = Mockito.mock(MetastoreEventsProcessor.class);\r\n    //Regex to filter all parameters starting with impala\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala\");\r\n    ValidationResult testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"impala*\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertTrue(testResult.isValid());\r\n    assertFalse(testResult.getReason().isPresent());\r\n    // Test with default return value\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(DEFAULT_METASTORE_CONFIG_VALUE);\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertTrue(testResult.isValid());\r\n    assertFalse(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"randomString1, impala\" + \".disableHmsSync, randomString2\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    //Test when a required parameter is given as regex\r\n    String requiredParameter = MetastoreEventPropertyKey.CATALOG_SERVICE_ID.getKey();\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(requiredParameter);\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    // Verify that the error message is correct\r\n    assertEquals(String.format(\"Failed config validation. \" + \"Required Impala parameter %s is\" + \" filtered out using the Hive configuration %s=%s\", requiredParameter, METASTORE_PARAMETER_EXCLUDE_PATTERNS, requiredParameter), testResult.getReason().get());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala.events\" + \".catalogServiceId\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n}"
+        }
+      },
+      {
+        "code": "when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"randomString1, impala\" + \".disableHmsSync, randomString2\");",
+        "line": 354,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testParameterFilterValidation",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Test that when HiveConf.METASTORE_PARAMETER_EXCLUDE_PATTERNS contains a regex\r\n * that filters out any parameter required for event processing, the config\r\n * validation fails. Config validation should succeed when the regex does not match\r\n * any of the required parameters.\r\n */\r\n@Test\r\npublic void testParameterFilterValidation() throws TException {\r\n    MetastoreEventsProcessor mockEventsProcessor = Mockito.mock(MetastoreEventsProcessor.class);\r\n    //Regex to filter all parameters starting with impala\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala\");\r\n    ValidationResult testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"impala*\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertTrue(testResult.isValid());\r\n    assertFalse(testResult.getReason().isPresent());\r\n    // Test with default return value\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(DEFAULT_METASTORE_CONFIG_VALUE);\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertTrue(testResult.isValid());\r\n    assertFalse(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"randomString1, impala\" + \".disableHmsSync, randomString2\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    //Test when a required parameter is given as regex\r\n    String requiredParameter = MetastoreEventPropertyKey.CATALOG_SERVICE_ID.getKey();\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(requiredParameter);\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    // Verify that the error message is correct\r\n    assertEquals(String.format(\"Failed config validation. \" + \"Required Impala parameter %s is\" + \" filtered out using the Hive configuration %s=%s\", requiredParameter, METASTORE_PARAMETER_EXCLUDE_PATTERNS, requiredParameter), testResult.getReason().get());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala.events\" + \".catalogServiceId\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n}"
+        }
+      },
+      {
+        "code": "when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(requiredParameter);",
+        "line": 365,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testParameterFilterValidation",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Test that when HiveConf.METASTORE_PARAMETER_EXCLUDE_PATTERNS contains a regex\r\n * that filters out any parameter required for event processing, the config\r\n * validation fails. Config validation should succeed when the regex does not match\r\n * any of the required parameters.\r\n */\r\n@Test\r\npublic void testParameterFilterValidation() throws TException {\r\n    MetastoreEventsProcessor mockEventsProcessor = Mockito.mock(MetastoreEventsProcessor.class);\r\n    //Regex to filter all parameters starting with impala\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala\");\r\n    ValidationResult testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"impala*\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertTrue(testResult.isValid());\r\n    assertFalse(testResult.getReason().isPresent());\r\n    // Test with default return value\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(DEFAULT_METASTORE_CONFIG_VALUE);\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertTrue(testResult.isValid());\r\n    assertFalse(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"randomString1, impala\" + \".disableHmsSync, randomString2\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    //Test when a required parameter is given as regex\r\n    String requiredParameter = MetastoreEventPropertyKey.CATALOG_SERVICE_ID.getKey();\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(requiredParameter);\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    // Verify that the error message is correct\r\n    assertEquals(String.format(\"Failed config validation. \" + \"Required Impala parameter %s is\" + \" filtered out using the Hive configuration %s=%s\", requiredParameter, METASTORE_PARAMETER_EXCLUDE_PATTERNS, requiredParameter), testResult.getReason().get());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala.events\" + \".catalogServiceId\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n}"
+        }
+      },
+      {
+        "code": "when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala.events\" + \".catalogServiceId\");",
+        "line": 379,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testParameterFilterValidation",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Test that when HiveConf.METASTORE_PARAMETER_EXCLUDE_PATTERNS contains a regex\r\n * that filters out any parameter required for event processing, the config\r\n * validation fails. Config validation should succeed when the regex does not match\r\n * any of the required parameters.\r\n */\r\n@Test\r\npublic void testParameterFilterValidation() throws TException {\r\n    MetastoreEventsProcessor mockEventsProcessor = Mockito.mock(MetastoreEventsProcessor.class);\r\n    //Regex to filter all parameters starting with impala\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala\");\r\n    ValidationResult testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"impala*\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertTrue(testResult.isValid());\r\n    assertFalse(testResult.getReason().isPresent());\r\n    // Test with default return value\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(DEFAULT_METASTORE_CONFIG_VALUE);\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertTrue(testResult.isValid());\r\n    assertFalse(testResult.getReason().isPresent());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"randomString1, impala\" + \".disableHmsSync, randomString2\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    //Test when a required parameter is given as regex\r\n    String requiredParameter = MetastoreEventPropertyKey.CATALOG_SERVICE_ID.getKey();\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(requiredParameter);\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n    // Verify that the error message is correct\r\n    assertEquals(String.format(\"Failed config validation. \" + \"Required Impala parameter %s is\" + \" filtered out using the Hive configuration %s=%s\", requiredParameter, METASTORE_PARAMETER_EXCLUDE_PATTERNS, requiredParameter), testResult.getReason().get());\r\n    when(mockEventsProcessor.getConfigValueFromMetastore(METASTORE_PARAMETER_EXCLUDE_PATTERNS, DEFAULT_METASTORE_CONFIG_VALUE)).thenReturn(\"^impala.events\" + \".catalogServiceId\");\r\n    testResult = validateMetastoreEventParameters(mockEventsProcessor);\r\n    assertFalse(testResult.isValid());\r\n    assertTrue(testResult.getReason().isPresent());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 3,
+    "variableName": "mockDb",
+    "variableType": "FeDb",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "FeDb mockDb = mock(FeDb.class);",
+        "line": 74,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testScanNodeFsScheme",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * IMPALA-6050: Tests that explains plans for queries that read data from multiple\r\n * filesystems (e.g. S3, ADLS, HDFS) accurately report the number of partitions and\r\n * file read from each filesystem.\r\n */\r\n@Test\r\npublic void testScanNodeFsScheme() throws ImpalaException {\r\n    List<HdfsPartition> partitions = new ArrayList<>();\r\n    String dummyDbName = \"dummy-db\";\r\n    String dummyTblName = \"dummy-tbl\";\r\n    String dummyTblPath = \"hdfs://localhost/\" + dummyDbName + \".\" + dummyTblName;\r\n    FeDb mockDb = mock(FeDb.class);\r\n    when(mockDb.getName()).thenReturn(dummyDbName);\r\n    FeFsTable mockFeFsTable = createMockFeFsTable(partitions, dummyTblName, mockDb);\r\n    TupleDescriptor tupleDescriptor = createMockTupleDescriptor(mockFeFsTable);\r\n    TableRef mockTableRef = mock(TableRef.class);\r\n    when(mockTableRef.getTable()).thenReturn(mockFeFsTable);\r\n    partitions.add(createMockHdfsPartition(\"abfs://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-1\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfs://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-2\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfss://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-3\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfss://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-4\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"adl://dummy-account.azuredatalakestore\" + \".net/dummy-part-5\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"adl://dummy-account.azuredatalakestore\" + \".net/dummy-part-6\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"s3a://dummy-bucket/dummy-part-7\", FileSystemUtil.FsType.S3));\r\n    partitions.add(createMockHdfsPartition(\"s3a://dummy-bucket/dummy-part-8\", FileSystemUtil.FsType.S3));\r\n    partitions.add(createMockHdfsPartition(dummyTblPath + \"/dummy-part-9\", FileSystemUtil.FsType.HDFS));\r\n    partitions.add(createMockHdfsPartition(dummyTblPath + \"/dummy-part-10\", FileSystemUtil.FsType.HDFS));\r\n    HdfsScanNode hdfsScanNode = new HdfsScanNode(PlanNodeId.createGenerator().getNextId(), tupleDescriptor, new ArrayList<>(), partitions, mockTableRef, null, new ArrayList<>());\r\n    Analyzer mockAnalyer = createMockAnalyzer();\r\n    hdfsScanNode.init(mockAnalyer);\r\n    List<String> explainString = Lists.newArrayList(Splitter.on('\\n').omitEmptyStrings().trimResults().split(hdfsScanNode.getNodeExplainString(\"\", \"\", TExplainLevel.STANDARD)));\r\n    Assert.assertEquals(\"Scan node explain string not of expected size\", 4, explainString.size());\r\n    Assert.assertTrue(\"Scan node explain string does not contain correct base table \" + \"scheme\", explainString.get(0).contains(\"SCAN HDFS\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct ADLS metadata\", explainString.get(1).contains(\"ADLS partitions=6/10 files=6 size=6B\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct HDFS metadata\", explainString.get(2).contains(\"HDFS partitions=2/10 files=2 size=2B\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct S3 metadata\", explainString.get(3).contains(\"S3 partitions=2/10 files=2 size=2B\"));\r\n}"
+        }
+      },
+      {
+        "code": "when(mockDb.getName()).thenReturn(dummyDbName);",
+        "line": 75,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testScanNodeFsScheme",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * IMPALA-6050: Tests that explains plans for queries that read data from multiple\r\n * filesystems (e.g. S3, ADLS, HDFS) accurately report the number of partitions and\r\n * file read from each filesystem.\r\n */\r\n@Test\r\npublic void testScanNodeFsScheme() throws ImpalaException {\r\n    List<HdfsPartition> partitions = new ArrayList<>();\r\n    String dummyDbName = \"dummy-db\";\r\n    String dummyTblName = \"dummy-tbl\";\r\n    String dummyTblPath = \"hdfs://localhost/\" + dummyDbName + \".\" + dummyTblName;\r\n    FeDb mockDb = mock(FeDb.class);\r\n    when(mockDb.getName()).thenReturn(dummyDbName);\r\n    FeFsTable mockFeFsTable = createMockFeFsTable(partitions, dummyTblName, mockDb);\r\n    TupleDescriptor tupleDescriptor = createMockTupleDescriptor(mockFeFsTable);\r\n    TableRef mockTableRef = mock(TableRef.class);\r\n    when(mockTableRef.getTable()).thenReturn(mockFeFsTable);\r\n    partitions.add(createMockHdfsPartition(\"abfs://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-1\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfs://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-2\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfss://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-3\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfss://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-4\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"adl://dummy-account.azuredatalakestore\" + \".net/dummy-part-5\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"adl://dummy-account.azuredatalakestore\" + \".net/dummy-part-6\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"s3a://dummy-bucket/dummy-part-7\", FileSystemUtil.FsType.S3));\r\n    partitions.add(createMockHdfsPartition(\"s3a://dummy-bucket/dummy-part-8\", FileSystemUtil.FsType.S3));\r\n    partitions.add(createMockHdfsPartition(dummyTblPath + \"/dummy-part-9\", FileSystemUtil.FsType.HDFS));\r\n    partitions.add(createMockHdfsPartition(dummyTblPath + \"/dummy-part-10\", FileSystemUtil.FsType.HDFS));\r\n    HdfsScanNode hdfsScanNode = new HdfsScanNode(PlanNodeId.createGenerator().getNextId(), tupleDescriptor, new ArrayList<>(), partitions, mockTableRef, null, new ArrayList<>());\r\n    Analyzer mockAnalyer = createMockAnalyzer();\r\n    hdfsScanNode.init(mockAnalyer);\r\n    List<String> explainString = Lists.newArrayList(Splitter.on('\\n').omitEmptyStrings().trimResults().split(hdfsScanNode.getNodeExplainString(\"\", \"\", TExplainLevel.STANDARD)));\r\n    Assert.assertEquals(\"Scan node explain string not of expected size\", 4, explainString.size());\r\n    Assert.assertTrue(\"Scan node explain string does not contain correct base table \" + \"scheme\", explainString.get(0).contains(\"SCAN HDFS\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct ADLS metadata\", explainString.get(1).contains(\"ADLS partitions=6/10 files=6 size=6B\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct HDFS metadata\", explainString.get(2).contains(\"HDFS partitions=2/10 files=2 size=2B\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct S3 metadata\", explainString.get(3).contains(\"S3 partitions=2/10 files=2 size=2B\"));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 4,
+    "variableName": "mockTableRef",
+    "variableType": "TableRef",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "TableRef mockTableRef = mock(TableRef.class);",
+        "line": 78,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testScanNodeFsScheme",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * IMPALA-6050: Tests that explains plans for queries that read data from multiple\r\n * filesystems (e.g. S3, ADLS, HDFS) accurately report the number of partitions and\r\n * file read from each filesystem.\r\n */\r\n@Test\r\npublic void testScanNodeFsScheme() throws ImpalaException {\r\n    List<HdfsPartition> partitions = new ArrayList<>();\r\n    String dummyDbName = \"dummy-db\";\r\n    String dummyTblName = \"dummy-tbl\";\r\n    String dummyTblPath = \"hdfs://localhost/\" + dummyDbName + \".\" + dummyTblName;\r\n    FeDb mockDb = mock(FeDb.class);\r\n    when(mockDb.getName()).thenReturn(dummyDbName);\r\n    FeFsTable mockFeFsTable = createMockFeFsTable(partitions, dummyTblName, mockDb);\r\n    TupleDescriptor tupleDescriptor = createMockTupleDescriptor(mockFeFsTable);\r\n    TableRef mockTableRef = mock(TableRef.class);\r\n    when(mockTableRef.getTable()).thenReturn(mockFeFsTable);\r\n    partitions.add(createMockHdfsPartition(\"abfs://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-1\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfs://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-2\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfss://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-3\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfss://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-4\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"adl://dummy-account.azuredatalakestore\" + \".net/dummy-part-5\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"adl://dummy-account.azuredatalakestore\" + \".net/dummy-part-6\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"s3a://dummy-bucket/dummy-part-7\", FileSystemUtil.FsType.S3));\r\n    partitions.add(createMockHdfsPartition(\"s3a://dummy-bucket/dummy-part-8\", FileSystemUtil.FsType.S3));\r\n    partitions.add(createMockHdfsPartition(dummyTblPath + \"/dummy-part-9\", FileSystemUtil.FsType.HDFS));\r\n    partitions.add(createMockHdfsPartition(dummyTblPath + \"/dummy-part-10\", FileSystemUtil.FsType.HDFS));\r\n    HdfsScanNode hdfsScanNode = new HdfsScanNode(PlanNodeId.createGenerator().getNextId(), tupleDescriptor, new ArrayList<>(), partitions, mockTableRef, null, new ArrayList<>());\r\n    Analyzer mockAnalyer = createMockAnalyzer();\r\n    hdfsScanNode.init(mockAnalyer);\r\n    List<String> explainString = Lists.newArrayList(Splitter.on('\\n').omitEmptyStrings().trimResults().split(hdfsScanNode.getNodeExplainString(\"\", \"\", TExplainLevel.STANDARD)));\r\n    Assert.assertEquals(\"Scan node explain string not of expected size\", 4, explainString.size());\r\n    Assert.assertTrue(\"Scan node explain string does not contain correct base table \" + \"scheme\", explainString.get(0).contains(\"SCAN HDFS\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct ADLS metadata\", explainString.get(1).contains(\"ADLS partitions=6/10 files=6 size=6B\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct HDFS metadata\", explainString.get(2).contains(\"HDFS partitions=2/10 files=2 size=2B\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct S3 metadata\", explainString.get(3).contains(\"S3 partitions=2/10 files=2 size=2B\"));\r\n}"
+        }
+      },
+      {
+        "code": "when(mockTableRef.getTable()).thenReturn(mockFeFsTable);",
+        "line": 79,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testScanNodeFsScheme",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * IMPALA-6050: Tests that explains plans for queries that read data from multiple\r\n * filesystems (e.g. S3, ADLS, HDFS) accurately report the number of partitions and\r\n * file read from each filesystem.\r\n */\r\n@Test\r\npublic void testScanNodeFsScheme() throws ImpalaException {\r\n    List<HdfsPartition> partitions = new ArrayList<>();\r\n    String dummyDbName = \"dummy-db\";\r\n    String dummyTblName = \"dummy-tbl\";\r\n    String dummyTblPath = \"hdfs://localhost/\" + dummyDbName + \".\" + dummyTblName;\r\n    FeDb mockDb = mock(FeDb.class);\r\n    when(mockDb.getName()).thenReturn(dummyDbName);\r\n    FeFsTable mockFeFsTable = createMockFeFsTable(partitions, dummyTblName, mockDb);\r\n    TupleDescriptor tupleDescriptor = createMockTupleDescriptor(mockFeFsTable);\r\n    TableRef mockTableRef = mock(TableRef.class);\r\n    when(mockTableRef.getTable()).thenReturn(mockFeFsTable);\r\n    partitions.add(createMockHdfsPartition(\"abfs://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-1\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfs://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-2\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfss://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-3\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfss://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-4\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"adl://dummy-account.azuredatalakestore\" + \".net/dummy-part-5\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"adl://dummy-account.azuredatalakestore\" + \".net/dummy-part-6\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"s3a://dummy-bucket/dummy-part-7\", FileSystemUtil.FsType.S3));\r\n    partitions.add(createMockHdfsPartition(\"s3a://dummy-bucket/dummy-part-8\", FileSystemUtil.FsType.S3));\r\n    partitions.add(createMockHdfsPartition(dummyTblPath + \"/dummy-part-9\", FileSystemUtil.FsType.HDFS));\r\n    partitions.add(createMockHdfsPartition(dummyTblPath + \"/dummy-part-10\", FileSystemUtil.FsType.HDFS));\r\n    HdfsScanNode hdfsScanNode = new HdfsScanNode(PlanNodeId.createGenerator().getNextId(), tupleDescriptor, new ArrayList<>(), partitions, mockTableRef, null, new ArrayList<>());\r\n    Analyzer mockAnalyer = createMockAnalyzer();\r\n    hdfsScanNode.init(mockAnalyer);\r\n    List<String> explainString = Lists.newArrayList(Splitter.on('\\n').omitEmptyStrings().trimResults().split(hdfsScanNode.getNodeExplainString(\"\", \"\", TExplainLevel.STANDARD)));\r\n    Assert.assertEquals(\"Scan node explain string not of expected size\", 4, explainString.size());\r\n    Assert.assertTrue(\"Scan node explain string does not contain correct base table \" + \"scheme\", explainString.get(0).contains(\"SCAN HDFS\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct ADLS metadata\", explainString.get(1).contains(\"ADLS partitions=6/10 files=6 size=6B\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct HDFS metadata\", explainString.get(2).contains(\"HDFS partitions=2/10 files=2 size=2B\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct S3 metadata\", explainString.get(3).contains(\"S3 partitions=2/10 files=2 size=2B\"));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 5,
+    "variableName": "tupleDescriptor",
+    "variableType": "TupleDescriptor",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "TupleDescriptor tupleDescriptor = mock(TupleDescriptor.class);",
+        "line": 134,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockTupleDescriptor",
+          "methodAnnotations": [],
+          "methodRawCode": "private TupleDescriptor createMockTupleDescriptor(FeFsTable mockFeFsTable) {\r\n    TupleDescriptor tupleDescriptor = mock(TupleDescriptor.class);\r\n    when(tupleDescriptor.getTable()).thenReturn(mockFeFsTable);\r\n    when(tupleDescriptor.getId()).thenReturn(TupleId.createGenerator().getNextId());\r\n    when(tupleDescriptor.getPath()).thenReturn(mock(Path.class));\r\n    return tupleDescriptor;\r\n}"
+        }
+      },
+      {
+        "code": "when(tupleDescriptor.getTable()).thenReturn(mockFeFsTable);",
+        "line": 135,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockTupleDescriptor",
+          "methodAnnotations": [],
+          "methodRawCode": "private TupleDescriptor createMockTupleDescriptor(FeFsTable mockFeFsTable) {\r\n    TupleDescriptor tupleDescriptor = mock(TupleDescriptor.class);\r\n    when(tupleDescriptor.getTable()).thenReturn(mockFeFsTable);\r\n    when(tupleDescriptor.getId()).thenReturn(TupleId.createGenerator().getNextId());\r\n    when(tupleDescriptor.getPath()).thenReturn(mock(Path.class));\r\n    return tupleDescriptor;\r\n}"
+        }
+      },
+      {
+        "code": "when(tupleDescriptor.getId()).thenReturn(TupleId.createGenerator().getNextId());",
+        "line": 136,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockTupleDescriptor",
+          "methodAnnotations": [],
+          "methodRawCode": "private TupleDescriptor createMockTupleDescriptor(FeFsTable mockFeFsTable) {\r\n    TupleDescriptor tupleDescriptor = mock(TupleDescriptor.class);\r\n    when(tupleDescriptor.getTable()).thenReturn(mockFeFsTable);\r\n    when(tupleDescriptor.getId()).thenReturn(TupleId.createGenerator().getNextId());\r\n    when(tupleDescriptor.getPath()).thenReturn(mock(Path.class));\r\n    return tupleDescriptor;\r\n}"
+        }
+      },
+      {
+        "code": "when(tupleDescriptor.getPath()).thenReturn(mock(Path.class));",
+        "line": 137,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockTupleDescriptor",
+          "methodAnnotations": [],
+          "methodRawCode": "private TupleDescriptor createMockTupleDescriptor(FeFsTable mockFeFsTable) {\r\n    TupleDescriptor tupleDescriptor = mock(TupleDescriptor.class);\r\n    when(tupleDescriptor.getTable()).thenReturn(mockFeFsTable);\r\n    when(tupleDescriptor.getId()).thenReturn(TupleId.createGenerator().getNextId());\r\n    when(tupleDescriptor.getPath()).thenReturn(mock(Path.class));\r\n    return tupleDescriptor;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 6,
+    "variableName": "mockFeFsTable",
+    "variableType": "FeFsTable",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "FeFsTable mockFeFsTable = mock(FeFsTable.class);",
+        "line": 143,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockFeFsTable",
+          "methodAnnotations": [],
+          "methodRawCode": "private FeFsTable createMockFeFsTable(List<HdfsPartition> partitions, String dummyTblName, FeDb mockDb) {\r\n    FeFsTable mockFeFsTable = mock(FeFsTable.class);\r\n    when(mockFeFsTable.getFsType()).thenReturn(FileSystemUtil.FsType.HDFS);\r\n    when(mockFeFsTable.getMetaStoreTable()).thenReturn(mock(Table.class));\r\n    doReturn(partitions).when(mockFeFsTable).getPartitions();\r\n    when(mockFeFsTable.getDb()).thenReturn(mockDb);\r\n    when(mockFeFsTable.getName()).thenReturn(dummyTblName);\r\n    return mockFeFsTable;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockFeFsTable.getFsType()).thenReturn(FileSystemUtil.FsType.HDFS);",
+        "line": 144,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockFeFsTable",
+          "methodAnnotations": [],
+          "methodRawCode": "private FeFsTable createMockFeFsTable(List<HdfsPartition> partitions, String dummyTblName, FeDb mockDb) {\r\n    FeFsTable mockFeFsTable = mock(FeFsTable.class);\r\n    when(mockFeFsTable.getFsType()).thenReturn(FileSystemUtil.FsType.HDFS);\r\n    when(mockFeFsTable.getMetaStoreTable()).thenReturn(mock(Table.class));\r\n    doReturn(partitions).when(mockFeFsTable).getPartitions();\r\n    when(mockFeFsTable.getDb()).thenReturn(mockDb);\r\n    when(mockFeFsTable.getName()).thenReturn(dummyTblName);\r\n    return mockFeFsTable;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockFeFsTable.getMetaStoreTable()).thenReturn(mock(Table.class));",
+        "line": 145,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockFeFsTable",
+          "methodAnnotations": [],
+          "methodRawCode": "private FeFsTable createMockFeFsTable(List<HdfsPartition> partitions, String dummyTblName, FeDb mockDb) {\r\n    FeFsTable mockFeFsTable = mock(FeFsTable.class);\r\n    when(mockFeFsTable.getFsType()).thenReturn(FileSystemUtil.FsType.HDFS);\r\n    when(mockFeFsTable.getMetaStoreTable()).thenReturn(mock(Table.class));\r\n    doReturn(partitions).when(mockFeFsTable).getPartitions();\r\n    when(mockFeFsTable.getDb()).thenReturn(mockDb);\r\n    when(mockFeFsTable.getName()).thenReturn(dummyTblName);\r\n    return mockFeFsTable;\r\n}"
+        }
+      },
+      {
+        "code": "doReturn(partitions).when(mockFeFsTable).getPartitions();",
+        "line": 146,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockFeFsTable",
+          "methodAnnotations": [],
+          "methodRawCode": "private FeFsTable createMockFeFsTable(List<HdfsPartition> partitions, String dummyTblName, FeDb mockDb) {\r\n    FeFsTable mockFeFsTable = mock(FeFsTable.class);\r\n    when(mockFeFsTable.getFsType()).thenReturn(FileSystemUtil.FsType.HDFS);\r\n    when(mockFeFsTable.getMetaStoreTable()).thenReturn(mock(Table.class));\r\n    doReturn(partitions).when(mockFeFsTable).getPartitions();\r\n    when(mockFeFsTable.getDb()).thenReturn(mockDb);\r\n    when(mockFeFsTable.getName()).thenReturn(dummyTblName);\r\n    return mockFeFsTable;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockFeFsTable.getDb()).thenReturn(mockDb);",
+        "line": 147,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockFeFsTable",
+          "methodAnnotations": [],
+          "methodRawCode": "private FeFsTable createMockFeFsTable(List<HdfsPartition> partitions, String dummyTblName, FeDb mockDb) {\r\n    FeFsTable mockFeFsTable = mock(FeFsTable.class);\r\n    when(mockFeFsTable.getFsType()).thenReturn(FileSystemUtil.FsType.HDFS);\r\n    when(mockFeFsTable.getMetaStoreTable()).thenReturn(mock(Table.class));\r\n    doReturn(partitions).when(mockFeFsTable).getPartitions();\r\n    when(mockFeFsTable.getDb()).thenReturn(mockDb);\r\n    when(mockFeFsTable.getName()).thenReturn(dummyTblName);\r\n    return mockFeFsTable;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockFeFsTable.getName()).thenReturn(dummyTblName);",
+        "line": 148,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockFeFsTable",
+          "methodAnnotations": [],
+          "methodRawCode": "private FeFsTable createMockFeFsTable(List<HdfsPartition> partitions, String dummyTblName, FeDb mockDb) {\r\n    FeFsTable mockFeFsTable = mock(FeFsTable.class);\r\n    when(mockFeFsTable.getFsType()).thenReturn(FileSystemUtil.FsType.HDFS);\r\n    when(mockFeFsTable.getMetaStoreTable()).thenReturn(mock(Table.class));\r\n    doReturn(partitions).when(mockFeFsTable).getPartitions();\r\n    when(mockFeFsTable.getDb()).thenReturn(mockDb);\r\n    when(mockFeFsTable.getName()).thenReturn(dummyTblName);\r\n    return mockFeFsTable;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 7,
+    "variableName": "mockHdfsPartition",
+    "variableType": "HdfsPartition",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);",
+        "line": 154,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));",
+        "line": 162,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);",
+        "line": 164,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);",
+        "line": 165,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockHdfsPartition.getFsType()).thenReturn(fsType);",
+        "line": 166,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 8,
+    "variableName": "mockFileDesc",
+    "variableType": "HdfsPartition.FileDescriptor",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);",
+        "line": 157,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockFileDesc.getFileLength()).thenReturn(1L);",
+        "line": 158,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockFileDesc.getRelativePath()).thenReturn(\"\");",
+        "line": 159,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      },
+      {
+        "code": "mockFilesDescs.add(mockFileDesc);",
+        "line": 160,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 9,
+    "variableName": "mockAnalyer",
+    "variableType": "Analyzer",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "Analyzer mockAnalyer = mock(Analyzer.class);",
+        "line": 171,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);",
+        "line": 181,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));",
+        "line": 182,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));",
+        "line": 183,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);",
+        "line": 184,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));",
+        "line": 185,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 10,
+    "variableName": "mockQueryCtx",
+    "variableType": "TQueryCtx",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "TQueryCtx mockQueryCtx = mock(TQueryCtx.class);",
+        "line": 173,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);",
+        "line": 181,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 11,
+    "variableName": "tClientRequest",
+    "variableType": "TClientRequest",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "TClientRequest tClientRequest = mock(TClientRequest.class);",
+        "line": 174,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));",
+        "line": 175,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 12,
+    "variableName": "mockDescriptorTable",
+    "variableType": "DescriptorTable",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);",
+        "line": 178,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));",
+        "line": 179,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);",
+        "line": 184,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      }
+    ]
+  }
+]

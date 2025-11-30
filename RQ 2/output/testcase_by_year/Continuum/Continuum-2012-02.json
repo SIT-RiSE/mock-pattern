@@ -1,0 +1,853 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\example-projects\\continuum-build-queue-test-data\\src\\test\\java\\org\\apache\\continuum\\examples\\BasicThreadTest.java",
+  "methodName" : "testThread",
+  "sourceCode" : "@Test\r\npublic void testThread() {\r\n    try {\r\n        // 1 * 60 seconds\r\n        long numMillisecondsToSleep = 60000;\r\n        Thread.sleep(numMillisecondsToSleep);\r\n    } catch (InterruptedException e) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\AntProjectTest.java",
+  "methodName" : "testAddAntProject",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddProjectGroup\" })\r\npublic void testAddAntProject() throws Exception {\r\n    String ANT_NAME = getProperty(\"ANT_NAME\");\r\n    String ANT_DESCRIPTION = getProperty(\"ANT_DESCRIPTION\");\r\n    String ANT_VERSION = getProperty(\"ANT_VERSION\");\r\n    String ANT_TAG = getProperty(\"ANT_TAG\");\r\n    String ANT_SCM_URL = getProperty(\"ANT_SCM_URL\");\r\n    String ANT_SCM_USERNAME = getProperty(\"ANT_SCM_USERNAME\");\r\n    String ANT_SCM_PASSWORD = getProperty(\"ANT_SCM_PASSWORD\");\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String TEST_PROJ_GRP_ID = getProperty(\"TEST_PROJ_GRP_ID\");\r\n    String TEST_PROJ_GRP_DESCRIPTION = getProperty(\"TEST_PROJ_GRP_DESCRIPTION\");\r\n    goToAddAntProjectPage();\r\n    addProject(ANT_NAME, ANT_DESCRIPTION, ANT_VERSION, ANT_SCM_URL, ANT_SCM_USERNAME, ANT_SCM_PASSWORD, ANT_TAG, false, TEST_PROJ_GRP_NAME, null, true, \"ant\");\r\n    assertProjectGroupSummaryPage(TEST_PROJ_GRP_NAME, TEST_PROJ_GRP_ID, TEST_PROJ_GRP_DESCRIPTION);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\AntProjectTest.java",
+  "methodName" : "testAddAntProjectWithInvalidValues",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddProjectGroup\" })\r\npublic void testAddAntProjectWithInvalidValues() throws Exception {\r\n    String ANT_NAME = \"!@#$<>?etc\";\r\n    String ANT_DESCRIPTION = \"![]<>'^&etc\";\r\n    String ANT_VERSION = \"<>whitespaces!#etc\";\r\n    String ANT_TAG = \"!<>*%etc\";\r\n    String ANT_SCM_URL = \"!<>*%etc\";\r\n    String ANT_SCM_USERNAME = getProperty(\"ANT_SCM_USERNAME\");\r\n    String ANT_SCM_PASSWORD = getProperty(\"ANT_SCM_PASSWORD\");\r\n    String DEFAULT_PROJ_GRP_NAME = getProperty(\"DEFAULT_PROJ_GRP_NAME\");\r\n    String DEFAULT_PROJ_GRP_ID = getProperty(\"DEFAULT_PROJ_GRP_ID\");\r\n    String DEFAULT_PROJ_GRP_DESCRIPTION = getProperty(\"DEFAULT_PROJ_GRP_DESCRIPTION\");\r\n    goToAddAntProjectPage();\r\n    addProject(ANT_NAME, ANT_DESCRIPTION, ANT_VERSION, ANT_SCM_URL, ANT_SCM_USERNAME, ANT_SCM_PASSWORD, ANT_TAG, false, DEFAULT_PROJ_GRP_NAME, null, false, \"ant\");\r\n    assertTextPresent(\"Name contains invalid characters.\");\r\n    assertTextPresent(\"Description contains invalid characters.\");\r\n    assertTextPresent(\"Version contains invalid characters.\");\r\n    assertTextPresent(\"SCM Url contains invalid characters.\");\r\n    assertTextPresent(\"SCM Tag contains invalid characters.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\AntProjectTest.java",
+  "methodName" : "testAddDuplicateAntProject",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddAntProject\" })\r\npublic void testAddDuplicateAntProject() throws Exception {\r\n    String ANT_NAME = getProperty(\"ANT_NAME\");\r\n    String ANT_DESCRIPTION = getProperty(\"ANT_DESCRIPTION\");\r\n    String ANT_VERSION = getProperty(\"ANT_VERSION\");\r\n    String ANT_TAG = getProperty(\"ANT_TAG\");\r\n    String ANT_SCM_URL = getProperty(\"ANT_SCM_URL\");\r\n    String ANT_SCM_USERNAME = getProperty(\"ANT_SCM_USERNAME\");\r\n    String ANT_SCM_PASSWORD = getProperty(\"ANT_SCM_PASSWORD\");\r\n    goToAddAntProjectPage();\r\n    addProject(ANT_NAME, ANT_DESCRIPTION, ANT_VERSION, ANT_SCM_URL, ANT_SCM_USERNAME, ANT_SCM_PASSWORD, ANT_TAG, false, null, null, false, \"ant\");\r\n    assertTextPresent(\"Project name already exist\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildAgentsTest.java",
+  "methodName" : "testAddAnExistingBuildAgent",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testEditBuildAgent\" })\r\npublic void testAddAnExistingBuildAgent() {\r\n    String BUILD_AGENT_NAME = getProperty(\"BUILD_AGENT_NAME\");\r\n    String BUILD_AGENT_DESCRIPTION = getProperty(\"BUILD_AGENT_DESCRIPTION\");\r\n    try {\r\n        enableDistributedBuilds();\r\n        goToAddBuildAgent();\r\n        addBuildAgent(BUILD_AGENT_NAME, BUILD_AGENT_DESCRIPTION, false, false, false);\r\n        assertTextPresent(\"Build agent already exists\");\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildAgentsTest.java",
+  "methodName" : "testEditBuildAgent",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddBuildAgent\" })\r\npublic void testEditBuildAgent() {\r\n    String BUILD_AGENT_NAME = getProperty(\"BUILD_AGENT_NAME\");\r\n    String BUILD_AGENT_DESCRIPTION = getProperty(\"BUILD_AGENT_DESCRIPTION\");\r\n    String new_agentDescription = \"new_agentDescription\";\r\n    try {\r\n        enableDistributedBuilds();\r\n        goToEditBuildAgent(BUILD_AGENT_NAME, BUILD_AGENT_DESCRIPTION);\r\n        addEditBuildAgent(BUILD_AGENT_NAME, new_agentDescription);\r\n        goToEditBuildAgent(BUILD_AGENT_NAME, new_agentDescription);\r\n        addEditBuildAgent(BUILD_AGENT_NAME, BUILD_AGENT_DESCRIPTION);\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildAgentsTest.java",
+  "methodName" : "testDeleteBuildAgent",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddAnExistingBuildAgent\" })\r\npublic void testDeleteBuildAgent() throws Exception {\r\n    try {\r\n        enableDistributedBuilds();\r\n        goToBuildAgentPage();\r\n        String BUILD_AGENT_NAME = getProperty(\"BUILD_AGENT_NAME\");\r\n        removeBuildAgent(BUILD_AGENT_NAME);\r\n        assertTextNotPresent(BUILD_AGENT_NAME);\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildAgentsTest.java",
+  "methodName" : "testAddEmptyBuildAgent",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testDeleteBuildAgent\" })\r\npublic void testAddEmptyBuildAgent() {\r\n    String BUILD_AGENT_DESCRIPTION = getProperty(\"BUILD_AGENT_DESCRIPTION\");\r\n    try {\r\n        enableDistributedBuilds();\r\n        goToAddBuildAgent();\r\n        addBuildAgent(\"\", BUILD_AGENT_DESCRIPTION, false, false, false);\r\n        assertTextPresent(\"Build agent url is required.\");\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildAgentsTest.java",
+  "methodName" : "testBuildSuccessWithDistributedBuildsAfterDisableEnableOfBuildAgent",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testDeleteBuildAgent\" }, enabled = false)\r\npublic void testBuildSuccessWithDistributedBuildsAfterDisableEnableOfBuildAgent() throws Exception {\r\n    String BUILD_AGENT_NAME = getProperty(\"BUILD_AGENT_NAME2\");\r\n    String BUILD_AGENT_DESCRIPTION = getProperty(\"BUILD_AGENT_DESCRIPTION2\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_DELETE_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_ID = getProperty(\"M2_DELETE_PROJ_GRP_ID\");\r\n    String M2_POM_URL = getProperty(\"M2_DELETE_POM_URL\");\r\n    String M2_POM_USERNAME = getProperty(\"M2_POM_USERNAME\");\r\n    String M2_POM_PASSWORD = getProperty(\"M2_POM_PASSWORD\");\r\n    String M2_PROJ_GRP_DESCRIPTION = getProperty(\"M2_DELETE_PROJ_GRP_DESCRIPTION\");\r\n    try {\r\n        enableDistributedBuilds();\r\n        addMavenTwoProject(M2_POM_URL, M2_POM_USERNAME, M2_POM_PASSWORD, null, true);\r\n        goToProjectGroupsSummaryPage();\r\n        assertLinkPresent(M2_PROJ_GRP_NAME);\r\n        clickLinkWithText(M2_PROJ_GRP_NAME);\r\n        assertPage(\"Continuum - Project Group\");\r\n        // disable then enable build agent\r\n        goToEditBuildAgent(BUILD_AGENT_NAME, BUILD_AGENT_DESCRIPTION);\r\n        enableDisableBuildAgent(BUILD_AGENT_NAME, false);\r\n        goToEditBuildAgent(BUILD_AGENT_NAME, BUILD_AGENT_DESCRIPTION);\r\n        enableDisableBuildAgent(BUILD_AGENT_NAME, true);\r\n        buildProjectGroup(M2_PROJ_GRP_NAME, M2_PROJ_GRP_ID, \"\", M2_PROJ_GRP_NAME, true);\r\n        removeProjectGroup(M2_PROJ_GRP_NAME);\r\n        assertLinkNotPresent(M2_PROJ_GRP_NAME);\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildAgentsTest.java",
+  "methodName" : "testAddBuildAgentGroupXSS",
+  "sourceCode" : "//TESTS FOR BUILD AGENT GROUPS\r\n@Test(dependsOnMethods = { \"testAddBuildAgent\" })\r\npublic void testAddBuildAgentGroupXSS() throws Exception {\r\n    try {\r\n        enableDistributedBuilds();\r\n        goToAddBuildAgentGroup();\r\n        addEditBuildAgentGroup(\"%3Cscript%3Ealert%28%27xss%27%29%3C/script%3E\", new String[] {}, new String[] {}, false);\r\n        assertTextPresent(\"Build agent group name contains invalid characters\");\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildAgentsTest.java",
+  "methodName" : "testAddBuildAgentGroup",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddBuildAgent\", \"testDeleteBuildAgent\" })\r\npublic void testAddBuildAgentGroup() throws Exception {\r\n    String BUILD_AGENT_NAME2 = getProperty(\"BUILD_AGENT_NAME2\");\r\n    String BUILD_AGENT_NAME3 = getProperty(\"BUILD_AGENT_NAME3\");\r\n    String BUILD_AGENT_GROUPNAME = getProperty(\"BUILD_AGENT_GROUPNAME\");\r\n    try {\r\n        enableDistributedBuilds();\r\n        goToAddBuildAgentGroup();\r\n        addEditBuildAgentGroup(BUILD_AGENT_GROUPNAME, new String[] { BUILD_AGENT_NAME2, BUILD_AGENT_NAME3 }, new String[] {}, true);\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildAgentsTest.java",
+  "methodName" : "testEditBuildAgentGroup",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddBuildAgentGroup\" })\r\npublic void testEditBuildAgentGroup() throws Exception {\r\n    String BUILD_AGENT_NAME2 = getProperty(\"BUILD_AGENT_NAME2\");\r\n    String BUILD_AGENT_NAME3 = getProperty(\"BUILD_AGENT_NAME3\");\r\n    String BUILD_AGENT_GROUPNAME = getProperty(\"BUILD_AGENT_GROUPNAME\");\r\n    String newName = \"new_agentgroupname\";\r\n    try {\r\n        enableDistributedBuilds();\r\n        goToEditBuildAgentGroup(BUILD_AGENT_GROUPNAME, new String[] { BUILD_AGENT_NAME2, BUILD_AGENT_NAME3 });\r\n        addEditBuildAgentGroup(newName, new String[] {}, new String[] { BUILD_AGENT_NAME3 }, true);\r\n        goToEditBuildAgentGroup(newName, new String[] { BUILD_AGENT_NAME2 });\r\n        addEditBuildAgentGroup(BUILD_AGENT_GROUPNAME, new String[] { BUILD_AGENT_NAME3 }, new String[] {}, true);\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildAgentsTest.java",
+  "methodName" : "testAddAnExistingBuildAgentGroup",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testEditBuildAgentGroup\" })\r\npublic void testAddAnExistingBuildAgentGroup() throws Exception {\r\n    String BUILD_AGENT_NAME2 = getProperty(\"BUILD_AGENT_NAME2\");\r\n    String BUILD_AGENT_NAME3 = getProperty(\"BUILD_AGENT_NAME3\");\r\n    String BUILD_AGENT_GROUPNAME = getProperty(\"BUILD_AGENT_GROUPNAME\");\r\n    try {\r\n        enableDistributedBuilds();\r\n        goToAddBuildAgentGroup();\r\n        addEditBuildAgentGroup(BUILD_AGENT_GROUPNAME, new String[] { BUILD_AGENT_NAME2, BUILD_AGENT_NAME3 }, new String[] {}, false);\r\n        assertTextPresent(\"Build agent group already exists.\");\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildAgentsTest.java",
+  "methodName" : "testAddEmptyBuildAgentGroupName",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddAnExistingBuildAgentGroup\" })\r\npublic void testAddEmptyBuildAgentGroupName() throws Exception {\r\n    try {\r\n        enableDistributedBuilds();\r\n        goToAddBuildAgentGroup();\r\n        addEditBuildAgentGroup(\"\", new String[] {}, new String[] {}, false);\r\n        assertTextPresent(\"Build agent group name is required.\");\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildAgentsTest.java",
+  "methodName" : "testDeleteBuildAgentGroup",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddEmptyBuildAgentGroupName\" })\r\npublic void testDeleteBuildAgentGroup() {\r\n    String BUILD_AGENT_GROUPNAME = getProperty(\"BUILD_AGENT_GROUPNAME\");\r\n    try {\r\n        enableDistributedBuilds();\r\n        removeBuildAgentGroup(BUILD_AGENT_GROUPNAME);\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildAgentsTest.java",
+  "methodName" : "testAddBuildAgentGroupWithEmptyBuildAgent",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testDeleteBuildAgentGroup\" })\r\npublic void testAddBuildAgentGroupWithEmptyBuildAgent() throws Exception {\r\n    String BUILD_AGENT_GROUPNAME = getProperty(\"BUILD_AGENT_GROUPNAME\");\r\n    try {\r\n        enableDistributedBuilds();\r\n        goToAddBuildAgentGroup();\r\n        addEditBuildAgentGroup(BUILD_AGENT_GROUPNAME, new String[] {}, new String[] {}, true);\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildDefinitionTemplateTest.java",
+  "methodName" : "testEditTemplate",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddTemplate\" })\r\npublic void testEditTemplate() throws Exception {\r\n    String TEMPLATE_NAME = getProperty(\"TEMPLATE_NAME\");\r\n    String newName = \"new_name\";\r\n    goToEditTemplate(TEMPLATE_NAME, new String[] { \"Default Maven Build Definition\", \"Default Maven 1 Build Definition\" });\r\n    addEditTemplate(newName, new String[] { \"Default Shell Build Definition\" }, new String[] { \"Default Maven Build Definition\" }, true);\r\n    goToEditTemplate(newName, new String[] { \"Default Maven 1 Build Definition\", \"Default Shell Build Definition\" });\r\n    addEditTemplate(TEMPLATE_NAME, new String[] { \"Default Maven Build Definition\" }, new String[] { \"Default Shell Build Definition\" }, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildDefinitionTemplateTest.java",
+  "methodName" : "testDeleteTemplate",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testEditTemplate\" })\r\npublic void testDeleteTemplate() {\r\n    String TEMPLATE_NAME = getProperty(\"TEMPLATE_NAME\");\r\n    removeTemplate(TEMPLATE_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildDefinitionTemplateTest.java",
+  "methodName" : "testEditBuildDefinitionTemplate",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddBuildDefinitionTemplate\" })\r\npublic void testEditBuildDefinitionTemplate() throws Exception {\r\n    String TEMPLATE_BUILD_POM_NAME = getProperty(\"TEMPLATE_BUILD_POM_NAME\");\r\n    String TEMPLATE_BUILD_GOALS = getProperty(\"TEMPLATE_BUILD_GOALS\");\r\n    String TEMPLATE_BUILD_ARGUMENTS = getProperty(\"TEMPLATE_BUILD_ARGUMENTS\");\r\n    String TEMPLATE_BUILD_DESCRIPTION = getProperty(\"TEMPLATE_BUILD_DESCRIPTION\");\r\n    goToEditBuildDefinitionTemplate(TEMPLATE_BUILD_DESCRIPTION);\r\n    addEditBuildDefinitionTemplate(TEMPLATE_BUILD_POM_NAME, TEMPLATE_BUILD_GOALS, TEMPLATE_BUILD_ARGUMENTS, TEMPLATE_BUILD_DESCRIPTION, false, false, false, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildDefinitionTemplateTest.java",
+  "methodName" : "testDeleteBuildDefinitionTemplate",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testEditBuildDefinitionTemplate\" })\r\npublic void testDeleteBuildDefinitionTemplate() {\r\n    String TEMPLATE_BUILD_DESCRIPTION = getProperty(\"TEMPLATE_BUILD_DESCRIPTION\");\r\n    removeBuildDefinitionTemplate(TEMPLATE_BUILD_DESCRIPTION);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildDefinitionTest.java",
+  "methodName" : "testAddInvalidGroupBuildDefinition",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddProjectGroup2\" })\r\npublic void testAddInvalidGroupBuildDefinition() throws Exception {\r\n    String TEST2_PROJ_GRP_NAME = getProperty(\"TEST2_PROJ_GRP_NAME\");\r\n    String TEST2_PROJ_GRP_ID = getProperty(\"TEST2_PROJ_GRP_ID\");\r\n    String TEST2_PROJ_GRP_DESCRIPTION = getProperty(\"TEST2_PROJ_GRP_DESCRIPTION\");\r\n    goToGroupBuildDefinitionPage(TEST2_PROJ_GRP_NAME, TEST2_PROJ_GRP_ID, TEST2_PROJ_GRP_DESCRIPTION);\r\n    clickButtonWithValue(\"Add\");\r\n    setFieldValue(\"buildFile\", \"\");\r\n    clickButtonWithValue(\"Save\");\r\n    assertTextPresent(\"Build file is required and cannot contain spaces only\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildDefinitionTest.java",
+  "methodName" : "testAddGroupBuildDefinitionWithXSS",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddProjectGroup2\" })\r\npublic void testAddGroupBuildDefinitionWithXSS() throws Exception {\r\n    String TEST2_PROJ_GRP_NAME = getProperty(\"TEST2_PROJ_GRP_NAME\");\r\n    String TEST2_PROJ_GRP_ID = getProperty(\"TEST2_PROJ_GRP_ID\");\r\n    String TEST2_PROJ_GRP_DESCRIPTION = getProperty(\"TEST2_PROJ_GRP_DESCRIPTION\");\r\n    goToGroupBuildDefinitionPage(TEST2_PROJ_GRP_NAME, TEST2_PROJ_GRP_ID, TEST2_PROJ_GRP_DESCRIPTION);\r\n    clickButtonWithValue(\"Add\");\r\n    setFieldValue(\"buildFile\", \"<script>alert('xss')</script>\");\r\n    setFieldValue(\"description\", \"<script>alert('xss')</script>\");\r\n    clickButtonWithValue(\"Save\");\r\n    assertTextPresent(\"Build file contains invalid characters.\");\r\n    assertTextPresent(\"Description contains invalid characters.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildDefinitionTest.java",
+  "methodName" : "testBuildFromGroupBuildDefinition",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddProjectGroup2\" })\r\npublic void testBuildFromGroupBuildDefinition() throws Exception {\r\n    String TEST2_PROJ_GRP_NAME = getProperty(\"TEST2_PROJ_GRP_NAME\");\r\n    String TEST2_PROJ_GRP_ID = getProperty(\"TEST2_PROJ_GRP_ID\");\r\n    String TEST2_PROJ_GRP_DESCRIPTION = getProperty(\"TEST2_PROJ_GRP_DESCRIPTION\");\r\n    goToGroupBuildDefinitionPage(TEST2_PROJ_GRP_NAME, TEST2_PROJ_GRP_ID, TEST2_PROJ_GRP_DESCRIPTION);\r\n    clickImgWithAlt(\"Build\");\r\n    assertProjectGroupSummaryPage(TEST2_PROJ_GRP_NAME, TEST2_PROJ_GRP_ID, TEST2_PROJ_GRP_DESCRIPTION);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildDefinitionTest.java",
+  "methodName" : "testAddDefautltGroupBuildDefinition",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddProjectGroup2\" })\r\npublic void testAddDefautltGroupBuildDefinition() throws Exception {\r\n    String TEST2_PROJ_GRP_NAME = getProperty(\"TEST2_PROJ_GRP_NAME\");\r\n    String TEST2_PROJ_GRP_ID = getProperty(\"TEST2_PROJ_GRP_ID\");\r\n    String TEST2_PROJ_GRP_DESCRIPTION = getProperty(\"TEST2_PROJ_GRP_DESCRIPTION\");\r\n    String BUILD_POM_NAME = getProperty(\"BUILD_POM_NAME\");\r\n    String BUILD_GOALS = getProperty(\"BUILD_GOALS\");\r\n    String BUILD_ARGUMENTS = getProperty(\"BUILD_ARGUMENTS\");\r\n    String BUILD_DESCRIPTION = getProperty(\"BUILD_DESCRIPTION\");\r\n    goToGroupBuildDefinitionPage(TEST2_PROJ_GRP_NAME, TEST2_PROJ_GRP_ID, TEST2_PROJ_GRP_DESCRIPTION);\r\n    clickButtonWithValue(\"Add\");\r\n    addEditGroupBuildDefinition(TEST2_PROJ_GRP_NAME, BUILD_POM_NAME, BUILD_GOALS, BUILD_ARGUMENTS, BUILD_DESCRIPTION, true, false, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildDefinitionTest.java",
+  "methodName" : "testAddNotDefautltGroupBuildDefinition",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddProjectGroup2\" })\r\npublic void testAddNotDefautltGroupBuildDefinition() throws Exception {\r\n    String TEST2_PROJ_GRP_NAME = getProperty(\"TEST2_PROJ_GRP_NAME\");\r\n    String TEST2_PROJ_GRP_ID = getProperty(\"TEST2_PROJ_GRP_ID\");\r\n    String TEST2_PROJ_GRP_DESCRIPTION = getProperty(\"TEST2_PROJ_GRP_DESCRIPTION\");\r\n    String BUILD_POM_NAME = getProperty(\"BUILD_POM_NAME\");\r\n    String BUILD_GOALS = getProperty(\"BUILD_GOALS\");\r\n    String BUILD_ARGUMENTS = getProperty(\"BUILD_ARGUMENTS\");\r\n    String BUILD_DESCRIPTION = getProperty(\"BUILD_DESCRIPTION\");\r\n    goToGroupBuildDefinitionPage(TEST2_PROJ_GRP_NAME, TEST2_PROJ_GRP_ID, TEST2_PROJ_GRP_DESCRIPTION);\r\n    clickButtonWithValue(\"Add\");\r\n    addEditGroupBuildDefinition(TEST2_PROJ_GRP_NAME, BUILD_POM_NAME, BUILD_GOALS, BUILD_ARGUMENTS, BUILD_DESCRIPTION, false, false, false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildDefinitionTest.java",
+  "methodName" : "testEditGroupBuildDefinition",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddNotDefautltGroupBuildDefinition\" })\r\npublic void testEditGroupBuildDefinition() throws Exception {\r\n    String TEST2_PROJ_GRP_NAME = getProperty(\"TEST2_PROJ_GRP_NAME\");\r\n    String TEST2_PROJ_GRP_ID = getProperty(\"TEST2_PROJ_GRP_ID\");\r\n    String TEST2_PROJ_GRP_DESCRIPTION = getProperty(\"TEST2_PROJ_GRP_DESCRIPTION\");\r\n    String BUILD_POM_NAME = getProperty(\"BUILD_POM_NAME\");\r\n    String BUILD_GOALS = getProperty(\"BUILD_GOALS\");\r\n    String BUILD_ARGUMENTS = getProperty(\"BUILD_ARGUMENTS\");\r\n    String BUILD_DESCRIPTION = getProperty(\"BUILD_DESCRIPTION\");\r\n    String newPom = \"newpom.xml\";\r\n    String newGoals = \"new goals\";\r\n    String newArguments = \"new arguments\";\r\n    String newDescription = \"new description\";\r\n    goToGroupBuildDefinitionPage(TEST2_PROJ_GRP_NAME, TEST2_PROJ_GRP_ID, TEST2_PROJ_GRP_DESCRIPTION);\r\n    clickImgWithAlt(\"Edit\");\r\n    addEditGroupBuildDefinition(TEST2_PROJ_GRP_NAME, newPom, newGoals, newArguments, newDescription, false, false, false);\r\n    clickImgWithAlt(\"Edit\");\r\n    addEditGroupBuildDefinition(TEST2_PROJ_GRP_NAME, BUILD_POM_NAME, BUILD_GOALS, BUILD_ARGUMENTS, BUILD_DESCRIPTION, true, true, false);\r\n    clickImgWithAlt(\"Edit\");\r\n    addEditGroupBuildDefinition(TEST2_PROJ_GRP_NAME, BUILD_POM_NAME, BUILD_GOALS, BUILD_ARGUMENTS, BUILD_DESCRIPTION, false, true, false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildDefinitionTest.java",
+  "methodName" : "testDeleteGroupBuildDefinition",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testEditGroupBuildDefinition\" })\r\npublic void testDeleteGroupBuildDefinition() throws Exception {\r\n    String TEST2_PROJ_GRP_NAME = getProperty(\"TEST2_PROJ_GRP_NAME\");\r\n    String TEST2_PROJ_GRP_ID = getProperty(\"TEST2_PROJ_GRP_ID\");\r\n    String TEST2_PROJ_GRP_DESCRIPTION = getProperty(\"TEST2_PROJ_GRP_DESCRIPTION\");\r\n    String BUILD_GOALS = getProperty(\"BUILD_GOALS\");\r\n    String BUILD_DESCRIPTION = getProperty(\"BUILD_DESCRIPTION\");\r\n    goToGroupBuildDefinitionPage(TEST2_PROJ_GRP_NAME, TEST2_PROJ_GRP_ID, TEST2_PROJ_GRP_DESCRIPTION);\r\n    // Click in Delete Image\r\n    clickLinkWithXPath(\"(//a[contains(@href,'removeGroupBuildDefinition')])//img\");\r\n    assertDeleteBuildDefinitionPage(BUILD_DESCRIPTION, BUILD_GOALS);\r\n    clickButtonWithValue(\"Delete\");\r\n    assertGroupBuildDefinitionPage(TEST2_PROJ_GRP_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildDefinitionTest.java",
+  "methodName" : "testAddNotDefautltProjectBuildDefinition",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testMoveProject\" })\r\npublic void testAddNotDefautltProjectBuildDefinition() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    String BUILD_POM_NAME = getProperty(\"BUILD_POM_NAME\");\r\n    String BUILD_GOALS = getProperty(\"BUILD_GOALS\");\r\n    String BUILD_ARGUMENTS = getProperty(\"BUILD_ARGUMENTS\");\r\n    String BUILD_DESCRIPTION = getProperty(\"BUILD_DESCRIPTION\");\r\n    goToProjectInformationPage(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME);\r\n    clickLinkWithXPath(\"//input[contains(@id,'buildDefinition')]\");\r\n    addEditGroupBuildDefinition(null, BUILD_POM_NAME, BUILD_GOALS, BUILD_ARGUMENTS, BUILD_DESCRIPTION, false, false, false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildDefinitionTest.java",
+  "methodName" : "testDeleteProjectBuildDefinition",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddNotDefautltProjectBuildDefinition\" })\r\npublic void testDeleteProjectBuildDefinition() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    String BUILD_GOALS = getProperty(\"BUILD_GOALS\");\r\n    String BUILD_DESCRIPTION = getProperty(\"BUILD_DESCRIPTION\");\r\n    goToProjectInformationPage(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME);\r\n    // Click in Delete Image\r\n    clickLinkWithXPath(\"(//a[contains(@href,'removeProjectBuildDefinition')])//img\");\r\n    assertDeleteBuildDefinitionPage(BUILD_DESCRIPTION, BUILD_GOALS);\r\n    clickButtonWithValue(\"Delete\");\r\n    assertProjectInformationPage();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildEnvironmentTest.java",
+  "methodName" : "testEditInvalidBuildEnvironment",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddBuildEnvironment\" })\r\npublic void testEditInvalidBuildEnvironment() {\r\n    String BUILD_ENV_NAME = getProperty(\"BUILD_ENV_NAME\");\r\n    goToEditBuildEnvironment(BUILD_ENV_NAME);\r\n    editBuildEnvironment(\"\", new String[] {}, false);\r\n    assertTextPresent(\"You must define a name\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildEnvironmentTest.java",
+  "methodName" : "testAddDuplicatedBuildEnvironment",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddBuildEnvironment\" })\r\npublic void testAddDuplicatedBuildEnvironment() {\r\n    String BUILD_ENV_NAME = getProperty(\"BUILD_ENV_NAME\");\r\n    goToAddBuildEnvironment();\r\n    addBuildEnvironment(BUILD_ENV_NAME, new String[] {}, false);\r\n    assertTextPresent(\"A Build Environment with the same name already exists\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildEnvironmentTest.java",
+  "methodName" : "testEditBuildEnvironment",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddBuildEnvironment\" })\r\npublic void testEditBuildEnvironment() {\r\n    String BUILD_ENV_NAME = getProperty(\"BUILD_ENV_NAME\");\r\n    String newName = \"new_name\";\r\n    goToEditBuildEnvironment(BUILD_ENV_NAME);\r\n    editBuildEnvironment(newName, new String[] {}, true);\r\n    // TODO: ADD INSTALLATIONS TO ENVIROTMENT\r\n    goToEditBuildEnvironment(newName);\r\n    editBuildEnvironment(BUILD_ENV_NAME, new String[] {}, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildEnvironmentTest.java",
+  "methodName" : "testDeleteBuildEnvironment",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testEditInvalidBuildEnvironment\", \"testEditBuildEnvironment\", \"testAddDuplicatedBuildEnvironment\", \"testEditInvalidBuildEnvironment\" })\r\npublic void testDeleteBuildEnvironment() {\r\n    String BUILD_ENV_NAME = getProperty(\"BUILD_ENV_NAME\");\r\n    removeBuildEnvironment(BUILD_ENV_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildEnvironmentTest.java",
+  "methodName" : "testAddBuildEnvironmentWithBuildAgentGroup",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testDeleteBuildEnvironment\", \"testAddBuildAgentGroupWithEmptyBuildAgent\" })\r\npublic void testAddBuildEnvironmentWithBuildAgentGroup() {\r\n    try {\r\n        enableDistributedBuilds();\r\n        String BUILD_ENV_NAME = getProperty(\"BUILD_ENV_NAME\");\r\n        String BUILD_AGENT_GROUPNAME = getProperty(\"BUILD_AGENT_GROUPNAME\");\r\n        goToAddBuildEnvironment();\r\n        addBuildEnvironmentWithBuildAgentGroup(BUILD_ENV_NAME, new String[] {}, BUILD_AGENT_GROUPNAME, true);\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildEnvironmentTest.java",
+  "methodName" : "testEditDuplicatedBuildEnvironmentParallelBuilds",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddBuildEnvironmentWithBuildAgentGroup\" })\r\npublic void testEditDuplicatedBuildEnvironmentParallelBuilds() {\r\n    String BUILD_ENV_NAME = getProperty(\"BUILD_ENV_NAME\");\r\n    String newName = \"NEW_BUILD_ENV\";\r\n    goToAddBuildEnvironment();\r\n    addBuildEnvironment(newName, new String[] {}, true);\r\n    goToEditBuildEnvironment(newName);\r\n    editBuildEnvironment(BUILD_ENV_NAME, new String[] {}, false);\r\n    assertTextPresent(\"A Build Environment with the same name already exists\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\BuildEnvironmentTest.java",
+  "methodName" : "testEditDuplicatedBuildEnvironmentDistributedBuilds",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testEditDuplicatedBuildEnvironmentParallelBuilds\" })\r\npublic void testEditDuplicatedBuildEnvironmentDistributedBuilds() {\r\n    try {\r\n        enableDistributedBuilds();\r\n        String BUILD_ENV_NAME = getProperty(\"BUILD_ENV_NAME\");\r\n        String BUILD_AGENT_GROUPNAME = getProperty(\"BUILD_AGENT_GROUPNAME\");\r\n        String newName = \"NEW_BUILD_ENV\";\r\n        goToEditBuildEnvironment(newName);\r\n        editBuildEnvironmentWithBuildAgentGroup(BUILD_ENV_NAME, new String[] {}, BUILD_AGENT_GROUPNAME, false);\r\n        assertTextPresent(\"A Build Environment with the same name already exists\");\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ConfigurationTest.java",
+  "methodName" : "editConfiguration",
+  "sourceCode" : "@Test(dependsOnMethods = { \"defaultConfiguration\" })\r\npublic void editConfiguration() {\r\n    String newWorking = \"newWorking\";\r\n    String newUrl = \"http://localhost:8181\";\r\n    String newBuildOutput = \"newBuildOutput\";\r\n    String newReleaseOutput = \"newReleaseOutput\";\r\n    String newDeployRepository = \"newDeployRepository\";\r\n    String newNumberParallel = \"9\";\r\n    goToConfigurationPage();\r\n    submitConfiguration(newWorking, newBuildOutput, newReleaseOutput, newDeployRepository, newUrl, newNumberParallel, true, true);\r\n    clickButtonWithValue(\"Edit\");\r\n    submitConfiguration(WORKING_DIRECTORY, BUILD_OUTPUT_DIRECTORY, RELEASE_OUTPUT_DIRECTORY, DEPLOYMENT_REPOSITORY_DIRECTORY, BASE_URL, NUMBER_ALLOWED_PARALLEL, false, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\InstallationTest.java",
+  "methodName" : "testAddDuplicatedInstallationTool",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddJdkToolWithoutBuildEnvironment\" })\r\npublic void testAddDuplicatedInstallationTool() {\r\n    String INSTALL_TOOL_JDK_NAME = getProperty(\"INSTALL_TOOL_JDK_NAME\");\r\n    String INSTALL_TOOL_JDK_PATH = isWindows() ? getProperty(\"INSTALL_TOOL_JDK_PATH\") : getEscapeProperty(\"INSTALL_TOOL_JDK_PATH\");\r\n    goToAddInstallationTool();\r\n    addInstallation(INSTALL_TOOL_JDK_NAME, \"JDK\", INSTALL_TOOL_JDK_PATH, false, true, false);\r\n    assertTextPresent(\"Installation name already exists\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\InstallationTest.java",
+  "methodName" : "testAddDuplicatedInstallationVariable",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddInstallationVariableWithBuildEnvironment\" })\r\npublic void testAddDuplicatedInstallationVariable() {\r\n    String INSTALL_VAR_NAME = getProperty(\"INSTALL_VAR_NAME\");\r\n    String INSTALL_VAR_VARIABLE_NAME = getProperty(\"INSTALL_VAR_VARIABLE_NAME\");\r\n    String INSTALL_VAR_PATH = getProperty(\"INSTALL_VAR_PATH\");\r\n    goToAddInstallationVariable();\r\n    addInstallation(INSTALL_VAR_NAME, INSTALL_VAR_VARIABLE_NAME, INSTALL_VAR_PATH, false, false, false);\r\n    assertTextPresent(\"Installation name already exists\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\InstallationTest.java",
+  "methodName" : "testEditInstallationTool",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddJdkToolWithoutBuildEnvironment\" })\r\npublic void testEditInstallationTool() {\r\n    String INSTALL_TOOL_JDK_NAME = getProperty(\"INSTALL_TOOL_JDK_NAME\");\r\n    String INSTALL_TOOL_JDK_PATH = isWindows() ? getProperty(\"INSTALL_TOOL_JDK_PATH\") : getEscapeProperty(\"INSTALL_TOOL_JDK_PATH\");\r\n    String newName = \"new_name\";\r\n    goToEditInstallation(INSTALL_TOOL_JDK_NAME, \"JDK\", INSTALL_TOOL_JDK_PATH, true);\r\n    editInstallation(newName, \"JDK\", INSTALL_TOOL_JDK_PATH, true, true);\r\n    goToEditInstallation(newName, \"JDK\", INSTALL_TOOL_JDK_PATH, true);\r\n    editInstallation(INSTALL_TOOL_JDK_NAME, \"JDK\", INSTALL_TOOL_JDK_PATH, true, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\InstallationTest.java",
+  "methodName" : "testEditInstallationVariable",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddInstallationVariableWithBuildEnvironment\" })\r\npublic void testEditInstallationVariable() {\r\n    String INSTALL_VAR_NAME = getProperty(\"INSTALL_VAR_NAME\");\r\n    String INSTALL_VAR_VARIABLE_NAME = getProperty(\"INSTALL_VAR_VARIABLE_NAME\");\r\n    String INSTALL_VAR_PATH = getProperty(\"INSTALL_VAR_PATH\");\r\n    String newName = \"new_name\";\r\n    String newVarName = \"new_var_name\";\r\n    String newPath = \"new_path\";\r\n    goToEditInstallation(INSTALL_VAR_NAME, INSTALL_VAR_VARIABLE_NAME, INSTALL_VAR_PATH, false);\r\n    editInstallation(newName, newVarName, newPath, false, true);\r\n    goToEditInstallation(newName, newVarName, newPath, false);\r\n    editInstallation(INSTALL_VAR_NAME, INSTALL_VAR_VARIABLE_NAME, INSTALL_VAR_PATH, false, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\InstallationTest.java",
+  "methodName" : "testDeleteInstallationTool",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testEditInstallationTool\", \"testAddDuplicatedInstallationTool\" })\r\npublic void testDeleteInstallationTool() {\r\n    String INSTALL_TOOL_JDK_NAME = getProperty(\"INSTALL_TOOL_JDK_NAME\");\r\n    removeInstallation(INSTALL_TOOL_JDK_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\InstallationTest.java",
+  "methodName" : "testDeleteInstallationVariable",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testEditInstallationVariable\", \"testAddDuplicatedInstallationVariable\" })\r\npublic void testDeleteInstallationVariable() {\r\n    String INSTALL_VAR_NAME = getProperty(\"INSTALL_VAR_NAME\");\r\n    removeInstallation(INSTALL_VAR_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\LocalRepositoriesTest.java",
+  "methodName" : "testAddDuplicatedLocalRepository",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddLocalRepository\" })\r\npublic void testAddDuplicatedLocalRepository() {\r\n    String LOCAL_REPOSITORY_NAME = getProperty(\"LOCAL_REPOSITORY_NAME\");\r\n    String LOCAL_REPOSITORY_LOCATION = getProperty(\"LOCAL_REPOSITORY_LOCATION\");\r\n    goToAddLocalRepository();\r\n    addEditLocalRepository(LOCAL_REPOSITORY_NAME, LOCAL_REPOSITORY_LOCATION, false);\r\n    assertTextPresent(\"Local repository name must be unique\");\r\n    assertTextPresent(\"Local repository location must be unique\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\LocalRepositoriesTest.java",
+  "methodName" : "testAddDuplicateLocalRepositoryWithTrailingWhitespaces",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddDuplicatedLocalRepository\" })\r\npublic void testAddDuplicateLocalRepositoryWithTrailingWhitespaces() {\r\n    String duplicateRepositoryName = addTrailingWhitespace(getProperty(\"LOCAL_REPOSITORY_NAME\"));\r\n    String duplicateRepositoryLocation = addTrailingWhitespace(getProperty(\"LOCAL_REPOSITORY_LOCATION\"));\r\n    goToAddLocalRepository();\r\n    addEditLocalRepository(duplicateRepositoryName, duplicateRepositoryLocation, false);\r\n    assertTextPresent(\"Local repository name must be unique\");\r\n    assertTextPresent(\"Local repository location must be unique\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\LocalRepositoriesTest.java",
+  "methodName" : "testEditLocalRepository",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddDuplicateLocalRepositoryWithTrailingWhitespaces\" })\r\npublic void testEditLocalRepository() {\r\n    String LOCAL_REPOSITORY_NAME = getProperty(\"LOCAL_REPOSITORY_NAME\");\r\n    String LOCAL_REPOSITORY_LOCATION = getProperty(\"LOCAL_REPOSITORY_LOCATION\");\r\n    String newName = \"new_name\";\r\n    String newLocation = \"new_location\";\r\n    goToEditLocalRepository(LOCAL_REPOSITORY_NAME, LOCAL_REPOSITORY_LOCATION);\r\n    addEditLocalRepository(newName, newLocation, true);\r\n    goToEditLocalRepository(newName, newLocation);\r\n    addEditLocalRepository(LOCAL_REPOSITORY_NAME, LOCAL_REPOSITORY_LOCATION, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\LocalRepositoriesTest.java",
+  "methodName" : "testDeleteLocalRepository",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testEditLocalRepository\" })\r\npublic void testDeleteLocalRepository() {\r\n    String LOCAL_REPOSITORY_NAME = getProperty(\"LOCAL_REPOSITORY_NAME\");\r\n    removeLocalRepository(LOCAL_REPOSITORY_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\LoginTest.java",
+  "methodName" : "testWithBadPassword",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testWithBadUsername\" }, alwaysRun = true)\r\npublic void testWithBadPassword() {\r\n    goToLoginPage();\r\n    getSelenium().type(\"loginForm_username\", getProperty(\"ADMIN_USERNAME\"));\r\n    getSelenium().type(\"loginForm_password\", \"badPassword\");\r\n    getSelenium().click(\"loginForm__login\");\r\n    getSelenium().waitForPageToLoad(maxWaitTimeInMs);\r\n    assertTextPresent(\"You have entered an incorrect username and/or password\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\LoginTest.java",
+  "methodName" : "testWithEmptyUsername",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testWithBadPassword\" }, alwaysRun = true)\r\npublic void testWithEmptyUsername() {\r\n    goToLoginPage();\r\n    getSelenium().type(\"loginForm_password\", \"password\");\r\n    getSelenium().click(\"loginForm__login\");\r\n    getSelenium().waitForPageToLoad(maxWaitTimeInMs);\r\n    assertTextPresent(\"User Name is required\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\LoginTest.java",
+  "methodName" : "testWithEmptyPassword",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testWithEmptyUsername\" }, alwaysRun = true)\r\npublic void testWithEmptyPassword() {\r\n    goToLoginPage();\r\n    getSelenium().type(\"loginForm_username\", getProperty(\"ADMIN_USERNAME\"));\r\n    getSelenium().click(\"loginForm__login\");\r\n    getSelenium().waitForPageToLoad(maxWaitTimeInMs);\r\n    assertTextPresent(\"You have entered an incorrect username and/or password\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\LoginTest.java",
+  "methodName" : "testWithCorrectUsernamePassword",
+  "sourceCode" : "@Test(groups = { \"loginSuccess\" }, dependsOnMethods = { \"testWithEmptyPassword\" }, alwaysRun = true)\r\npublic void testWithCorrectUsernamePassword() {\r\n    goToLoginPage();\r\n    getSelenium().type(\"loginForm_username\", getProperty(\"ADMIN_USERNAME\"));\r\n    getSelenium().type(\"loginForm_password\", getProperty(\"ADMIN_PASSWORD\"));\r\n    getSelenium().click(\"loginForm__login\");\r\n    getSelenium().waitForPageToLoad(maxWaitTimeInMs);\r\n    assertTextPresent(\"Edit Details\");\r\n    assertTextPresent(\"Logout\");\r\n    assertTextPresent(getProperty(\"ADMIN_USERNAME\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\MavenOneProjectTest.java",
+  "methodName" : "testValidPomUrl",
+  "sourceCode" : "/**\r\n * test with valid pom url\r\n */\r\n@Test(dependsOnMethods = { \"testAddMavenOneProjectWithNoDefaultBuildDefinitionFromTemplate\" })\r\npublic void testValidPomUrl() throws Exception {\r\n    String M1_POM_URL = getProperty(\"M1_POM_URL\");\r\n    String M1_POM_USERNAME = getProperty(\"M1_POM_USERNAME\");\r\n    String M1_POM_PASSWORD = getProperty(\"M1_POM_PASSWORD\");\r\n    String M1_PROJ_GRP_NAME = getProperty(\"M1_PROJ_GRP_NAME\");\r\n    String M1_PROJ_GRP_ID = getProperty(\"M1_PROJ_GRP_ID\");\r\n    String M1_PROJ_GRP_DESCRIPTION = getProperty(\"M1_PROJ_GRP_DESCRIPTION\");\r\n    // Enter values into Add Maven Two Project fields, and submit\r\n    goToAddMavenOneProjectPage();\r\n    addMavenOneProject(M1_POM_URL, M1_POM_USERNAME, M1_POM_PASSWORD, null, null, true);\r\n    assertProjectGroupSummaryPage(M1_PROJ_GRP_NAME, M1_PROJ_GRP_ID, M1_PROJ_GRP_DESCRIPTION);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\MavenOneProjectTest.java",
+  "methodName" : "testAddMavenOneProjectFromRemoteSourceToNonDefaultProjectGroup",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddProjectGroup\" })\r\npublic void testAddMavenOneProjectFromRemoteSourceToNonDefaultProjectGroup() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String TEST_PROJ_GRP_ID = getProperty(\"TEST_PROJ_GRP_ID\");\r\n    String TEST_PROJ_GRP_DESCRIPTION = getProperty(\"TEST_PROJ_GRP_DESCRIPTION\");\r\n    String M1_POM_URL = getProperty(\"M1_POM_URL\");\r\n    String M1_POM_USERNAME = getProperty(\"M1_POM_USERNAME\");\r\n    String M1_POM_PASSWORD = getProperty(\"M1_POM_PASSWORD\");\r\n    goToAddMavenOneProjectPage();\r\n    addMavenOneProject(M1_POM_URL, M1_POM_USERNAME, M1_POM_PASSWORD, TEST_PROJ_GRP_NAME, null, true);\r\n    assertProjectGroupSummaryPage(TEST_PROJ_GRP_NAME, TEST_PROJ_GRP_ID, TEST_PROJ_GRP_DESCRIPTION);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\MavenOneProjectTest.java",
+  "methodName" : "testDeleteMavenOneProject",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testValidPomUrl\" })\r\npublic void testDeleteMavenOneProject() throws Exception {\r\n    boolean isExisting = false;\r\n    String M1_PROJ_GRP_NAME = getProperty(\"M1_DELETE_PROJ_GRP_NAME\");\r\n    goToProjectGroupsSummaryPage();\r\n    if (isLinkPresent(M1_PROJ_GRP_NAME)) {\r\n        isExisting = true;\r\n    } else {\r\n        addMaven1Project(M1_PROJ_GRP_NAME);\r\n    }\r\n    // delete project - delete icon\r\n    clickLinkWithText(M1_PROJ_GRP_NAME);\r\n    clickLinkWithXPath(\"//tbody/tr['0']/td['10']/a/img[@alt='Delete']\");\r\n    assertTextPresent(\"Delete Continuum Project\");\r\n    clickButtonWithValue(\"Delete\");\r\n    assertPage(\"Continuum - Project Group\");\r\n    assertLinkNotPresent(M1_PROJ_GRP_NAME);\r\n    // remove group for next test\r\n    removeProjectGroup(M1_PROJ_GRP_NAME);\r\n    // delete project - \"Delete Project(s)\" button\r\n    addMaven1Project(M1_PROJ_GRP_NAME);\r\n    clickLinkWithText(M1_PROJ_GRP_NAME);\r\n    checkField(\"//tbody/tr['0']/td['0']/input[@name='selectedProjects']\");\r\n    clickButtonWithValue(\"Delete Project(s)\");\r\n    assertTextPresent(\"Delete Continuum Projects\");\r\n    clickButtonWithValue(\"Delete\");\r\n    assertPage(\"Continuum - Project Group\");\r\n    assertLinkNotPresent(M1_PROJ_GRP_NAME);\r\n    if (!isExisting) {\r\n        removeProjectGroup(M1_PROJ_GRP_NAME);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\MavenTwoProjectTest.java",
+  "methodName" : "testAddMavenTwoProject",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddMavenTwoProjectWithNoDefaultBuildDefinitionInTemplate\" })\r\npublic void testAddMavenTwoProject() throws Exception {\r\n    String M2_POM_URL = getProperty(\"M2_POM_URL\");\r\n    String M2_POM_USERNAME = getProperty(\"M2_POM_USERNAME\");\r\n    String M2_POM_PASSWORD = getProperty(\"M2_POM_PASSWORD\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_ID = getProperty(\"M2_PROJ_GRP_ID\");\r\n    String M2_PROJ_GRP_DESCRIPTION = getProperty(\"M2_PROJ_GRP_DESCRIPTION\");\r\n    String M2_PROJ_GRP_SCM_ROOT_URL = getProperty(\"M2_PROJ_GRP_SCM_ROOT_URL\");\r\n    // Enter values into Add Maven Two Project fields, and submit\r\n    addMavenTwoProject(M2_POM_URL, M2_POM_USERNAME, M2_POM_PASSWORD, null, true);\r\n    // Wait Struct Listener\r\n    assertProjectGroupSummaryPage(M2_PROJ_GRP_NAME, M2_PROJ_GRP_ID, M2_PROJ_GRP_DESCRIPTION);\r\n    assertTextPresent(M2_PROJ_GRP_SCM_ROOT_URL);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\MavenTwoProjectTest.java",
+  "methodName" : "testAddMavenTwoProjectFromRemoteSourceToNonDefaultProjectGroup",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddProjectGroup\" })\r\npublic void testAddMavenTwoProjectFromRemoteSourceToNonDefaultProjectGroup() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String TEST_PROJ_GRP_ID = getProperty(\"TEST_PROJ_GRP_ID\");\r\n    String TEST_PROJ_GRP_DESCRIPTION = getProperty(\"TEST_PROJ_GRP_DESCRIPTION\");\r\n    String TEST_PROJ_GRP_SCM_ROOT_URL = getProperty(\"M2_PROJ_GRP_SCM_ROOT_URL\");\r\n    String M2_POM_URL = getProperty(\"M2_POM_URL\");\r\n    String M2_POM_USERNAME = getProperty(\"M2_POM_USERNAME\");\r\n    String M2_POM_PASSWORD = getProperty(\"M2_POM_PASSWORD\");\r\n    addMavenTwoProject(M2_POM_URL, M2_POM_USERNAME, M2_POM_PASSWORD, TEST_PROJ_GRP_NAME, true);\r\n    assertProjectGroupSummaryPage(TEST_PROJ_GRP_NAME, TEST_PROJ_GRP_ID, TEST_PROJ_GRP_DESCRIPTION);\r\n    assertTextPresent(TEST_PROJ_GRP_SCM_ROOT_URL);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\MavenTwoProjectTest.java",
+  "methodName" : "testDeleteMavenTwoProject",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddMavenTwoProject\" })\r\npublic void testDeleteMavenTwoProject() throws Exception {\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_DELETE_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_SCM_ROOT_URL = getProperty(\"M2_DELETE_PROJ_GRP_SCM_ROOT_URL\");\r\n    goToProjectGroupsSummaryPage();\r\n    // delete project - delete icon\r\n    addMaven2Project(M2_PROJ_GRP_NAME);\r\n    clickLinkWithText(M2_PROJ_GRP_NAME);\r\n    assertPage(\"Continuum - Project Group\");\r\n    assertTextPresent(M2_PROJ_GRP_SCM_ROOT_URL);\r\n    // TODO: this doesn't always seem to work, perhaps because of changes in the way icons are displayed\r\n    // wait for project to finish checkout\r\n    waitForProjectCheckout();\r\n    clickLinkWithXPath(\"//tbody/tr['0']/td['10']/a/img[@alt='Delete']\");\r\n    assertTextPresent(\"Delete Continuum Project\");\r\n    clickButtonWithValue(\"Delete\");\r\n    assertPage(\"Continuum - Project Group\");\r\n    assertTextNotPresent(\"Unable to delete project\");\r\n    assertLinkNotPresent(M2_PROJ_GRP_NAME);\r\n    assertTextNotPresent(M2_PROJ_GRP_SCM_ROOT_URL);\r\n    // remove group for next test\r\n    removeProjectGroup(M2_PROJ_GRP_NAME);\r\n    assertLinkNotPresent(M2_PROJ_GRP_NAME);\r\n    // delete project - \"Delete Project(s)\" button\r\n    addMaven2Project(M2_PROJ_GRP_NAME);\r\n    clickLinkWithText(M2_PROJ_GRP_NAME);\r\n    assertPage(\"Continuum - Project Group\");\r\n    //wait for project to finish checkout\r\n    waitForProjectCheckout();\r\n    checkField(\"//tbody/tr['0']/td['0']/input[@name='selectedProjects']\");\r\n    clickButtonWithValue(\"Delete Project(s)\");\r\n    assertTextPresent(\"Delete Continuum Projects\");\r\n    clickButtonWithValue(\"Delete\");\r\n    assertPage(\"Continuum - Project Group\");\r\n    assertTextNotPresent(\"Unable to delete project\");\r\n    assertLinkNotPresent(M2_PROJ_GRP_NAME);\r\n    assertTextNotPresent(M2_PROJ_GRP_SCM_ROOT_URL);\r\n    // remove project group\r\n    removeProjectGroup(M2_PROJ_GRP_NAME);\r\n    assertLinkNotPresent(M2_PROJ_GRP_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\MavenTwoProjectTest.java",
+  "methodName" : "testProjectGroupAllBuildSuccessWithDistributedBuilds",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testDeleteMavenTwoProject\", \"testAddBuildAgent\" })\r\npublic void testProjectGroupAllBuildSuccessWithDistributedBuilds() throws Exception {\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_DELETE_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_ID = getProperty(\"M2_DELETE_PROJ_GRP_ID\");\r\n    try {\r\n        enableDistributedBuilds();\r\n        addMaven2Project(M2_PROJ_GRP_NAME);\r\n        clickLinkWithText(M2_PROJ_GRP_NAME);\r\n        assertPage(\"Continuum - Project Group\");\r\n        showProjectGroup(M2_PROJ_GRP_NAME, M2_PROJ_GRP_ID, \"\");\r\n        clickButtonWithValue(\"Build all projects\");\r\n        buildProjectGroup(M2_PROJ_GRP_NAME, M2_PROJ_GRP_ID, \"\", M2_PROJ_GRP_NAME, true);\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\MavenTwoProjectTest.java",
+  "methodName" : "testProjectGroupNoBuildAgentConfiguredInBuildAgentGroup",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddBuildAgentGroupWithEmptyBuildAgent\", \"testAddBuildEnvironmentWithBuildAgentGroup\" })\r\npublic void testProjectGroupNoBuildAgentConfiguredInBuildAgentGroup() throws Exception {\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_DELETE_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_ID = getProperty(\"M2_DELETE_PROJ_GRP_ID\");\r\n    String BUILD_ENV_NAME = getProperty(\"BUILD_ENV_NAME\");\r\n    try {\r\n        enableDistributedBuilds();\r\n        addMaven2Project(M2_PROJ_GRP_NAME);\r\n        clickLinkWithText(M2_PROJ_GRP_NAME);\r\n        assertPage(\"Continuum - Project Group\");\r\n        goToGroupBuildDefinitionPage(M2_PROJ_GRP_NAME, M2_PROJ_GRP_ID, \"\");\r\n        clickImgWithAlt(\"Edit\");\r\n        assertAddEditBuildDefinitionPage();\r\n        selectValue(\"profileId\", BUILD_ENV_NAME);\r\n        submit();\r\n        assertGroupBuildDefinitionPage(M2_PROJ_GRP_NAME);\r\n        clickLinkWithText(\"Project Group Summary\");\r\n        clickButtonWithValue(\"Build all projects\");\r\n        assertTextPresent(\"Unable to build projects because no build agent is configured in the build agent group\");\r\n        removeProjectGroup(M2_PROJ_GRP_NAME);\r\n        assertLinkNotPresent(M2_PROJ_GRP_NAME);\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\MavenTwoProjectTest.java",
+  "methodName" : "testBuildMaven2ProjectWithTagDistributedBuild",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddBuildAgent\" })\r\npublic void testBuildMaven2ProjectWithTagDistributedBuild() throws Exception {\r\n    String M2_POM_URL = getProperty(\"M2_PROJ_WITH_TAG_POM_URL\");\r\n    String M2_POM_USERNAME = getProperty(\"M2_POM_USERNAME\");\r\n    String M2_POM_PASSWORD = getProperty(\"M2_POM_PASSWORD\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_WITH_TAG_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_ID = getProperty(\"M2_PROJ_WITH_TAG_PROJ_GRP_ID\");\r\n    String M2_PROJ_GRP_DESCRIPTION = \"\";\r\n    try {\r\n        enableDistributedBuilds();\r\n        addMavenTwoProject(M2_POM_URL, M2_POM_USERNAME, M2_POM_PASSWORD, null, true);\r\n        assertProjectGroupSummaryPage(M2_PROJ_GRP_NAME, M2_PROJ_GRP_ID, M2_PROJ_GRP_DESCRIPTION);\r\n        buildProjectGroup(M2_PROJ_GRP_NAME, M2_PROJ_GRP_ID, M2_PROJ_GRP_DESCRIPTION, M2_PROJ_GRP_NAME, true);\r\n        removeProjectGroup(M2_PROJ_GRP_NAME);\r\n        assertLinkNotPresent(M2_PROJ_GRP_NAME);\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditValidMailProjectNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidMailProjectNotifier\" })\r\npublic void testEditValidMailProjectNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    String MAIL_NOTIFIER_ADDRESS = getProperty(\"MAIL_NOTIFIER_ADDRESS\");\r\n    String newMail = \"newmail@mail.com\";\r\n    goToProjectInformationPage(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME);\r\n    editMailNotifier(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME, MAIL_NOTIFIER_ADDRESS, newMail, true);\r\n    editMailNotifier(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME, newMail, MAIL_NOTIFIER_ADDRESS, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditInvalidMailProjectNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidMailProjectNotifier\" })\r\npublic void testEditInvalidMailProjectNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    String MAIL_NOTIFIER_ADDRESS = getProperty(\"MAIL_NOTIFIER_ADDRESS\");\r\n    goToProjectInformationPage(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME);\r\n    editMailNotifier(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME, MAIL_NOTIFIER_ADDRESS, \"invalid_email_add\", false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditValidMailGroupNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidMailGroupNotifier\" })\r\npublic void testEditValidMailGroupNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String TEST_PROJ_GRP_ID = getProperty(\"TEST_PROJ_GRP_ID\");\r\n    String TEST_PROJ_GRP_DESCRIPTION = getProperty(\"TEST_PROJ_GRP_DESCRIPTION\");\r\n    String MAIL_NOTIFIER_ADDRESS = getProperty(\"MAIL_NOTIFIER_ADDRESS\");\r\n    String newMail = \"newmail@mail.com\";\r\n    showProjectGroup(TEST_PROJ_GRP_NAME, TEST_PROJ_GRP_ID, TEST_PROJ_GRP_DESCRIPTION);\r\n    clickLinkWithText(\"Notifiers\");\r\n    assertGroupNotifierPage(TEST_PROJ_GRP_NAME);\r\n    editMailNotifier(TEST_PROJ_GRP_NAME, null, MAIL_NOTIFIER_ADDRESS, newMail, true);\r\n    editMailNotifier(TEST_PROJ_GRP_NAME, null, newMail, MAIL_NOTIFIER_ADDRESS, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditInvalidMailGroupNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidMailGroupNotifier\" })\r\npublic void testEditInvalidMailGroupNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String TEST_PROJ_GRP_ID = getProperty(\"TEST_PROJ_GRP_ID\");\r\n    String TEST_PROJ_GRP_DESCRIPTION = getProperty(\"TEST_PROJ_GRP_DESCRIPTION\");\r\n    String MAIL_NOTIFIER_ADDRESS = getProperty(\"MAIL_NOTIFIER_ADDRESS\");\r\n    showProjectGroup(TEST_PROJ_GRP_NAME, TEST_PROJ_GRP_ID, TEST_PROJ_GRP_DESCRIPTION);\r\n    clickLinkWithText(\"Notifiers\");\r\n    assertGroupNotifierPage(TEST_PROJ_GRP_NAME);\r\n    editMailNotifier(TEST_PROJ_GRP_NAME, null, MAIL_NOTIFIER_ADDRESS, \"invalid_email_add\", false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditValidIrcProjectNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidIrcProjectNotifier\" })\r\npublic void testEditValidIrcProjectNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    String IRC_NOTIFIER_HOST = getProperty(\"IRC_NOTIFIER_HOST\");\r\n    String IRC_NOTIFIER_CHANNEL = getProperty(\"IRC_NOTIFIER_CHANNEL\");\r\n    String newHost = \"new.test.com\";\r\n    String newChannel = \"new_test_channel\";\r\n    goToProjectInformationPage(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME);\r\n    editIrcNotifier(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME, IRC_NOTIFIER_HOST, IRC_NOTIFIER_CHANNEL, newHost, newChannel, true);\r\n    editIrcNotifier(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME, newHost, newChannel, IRC_NOTIFIER_HOST, IRC_NOTIFIER_CHANNEL, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditInvalidIrcProjectNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidIrcProjectNotifier\" })\r\npublic void testEditInvalidIrcProjectNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    String IRC_NOTIFIER_HOST = getProperty(\"IRC_NOTIFIER_HOST\");\r\n    String IRC_NOTIFIER_CHANNEL = getProperty(\"IRC_NOTIFIER_CHANNEL\");\r\n    goToProjectInformationPage(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME);\r\n    editIrcNotifier(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME, IRC_NOTIFIER_HOST, IRC_NOTIFIER_CHANNEL, \"\", \"\", false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditValidIrcGroupNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidIrcGroupNotifier\" })\r\npublic void testEditValidIrcGroupNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String TEST_PROJ_GRP_ID = getProperty(\"TEST_PROJ_GRP_ID\");\r\n    String TEST_PROJ_GRP_DESCRIPTION = getProperty(\"TEST_PROJ_GRP_DESCRIPTION\");\r\n    String IRC_NOTIFIER_HOST = getProperty(\"IRC_NOTIFIER_HOST\");\r\n    String IRC_NOTIFIER_CHANNEL = getProperty(\"IRC_NOTIFIER_CHANNEL\");\r\n    String newHost = \"new.test.com\";\r\n    String newChannel = \"new_test_channel\";\r\n    showProjectGroup(TEST_PROJ_GRP_NAME, TEST_PROJ_GRP_ID, TEST_PROJ_GRP_DESCRIPTION);\r\n    clickLinkWithText(\"Notifiers\");\r\n    assertGroupNotifierPage(TEST_PROJ_GRP_NAME);\r\n    editIrcNotifier(TEST_PROJ_GRP_NAME, null, IRC_NOTIFIER_HOST, IRC_NOTIFIER_CHANNEL, newHost, newChannel, true);\r\n    editIrcNotifier(TEST_PROJ_GRP_NAME, null, newHost, newChannel, IRC_NOTIFIER_HOST, IRC_NOTIFIER_CHANNEL, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditInvalidIrcGroupNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidIrcGroupNotifier\" })\r\npublic void testEditInvalidIrcGroupNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String TEST_PROJ_GRP_ID = getProperty(\"TEST_PROJ_GRP_ID\");\r\n    String TEST_PROJ_GRP_DESCRIPTION = getProperty(\"TEST_PROJ_GRP_DESCRIPTION\");\r\n    String IRC_NOTIFIER_HOST = getProperty(\"IRC_NOTIFIER_HOST\");\r\n    String IRC_NOTIFIER_CHANNEL = getProperty(\"IRC_NOTIFIER_CHANNEL\");\r\n    showProjectGroup(TEST_PROJ_GRP_NAME, TEST_PROJ_GRP_ID, TEST_PROJ_GRP_DESCRIPTION);\r\n    clickLinkWithText(\"Notifiers\");\r\n    assertGroupNotifierPage(TEST_PROJ_GRP_NAME);\r\n    editIrcNotifier(TEST_PROJ_GRP_NAME, null, IRC_NOTIFIER_HOST, IRC_NOTIFIER_CHANNEL, \"\", \"\", false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditValidJabberProjectNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidJabberProjectNotifier\" })\r\npublic void testEditValidJabberProjectNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    String JABBER_NOTIFIER_HOST = getProperty(\"JABBER_NOTIFIER_HOST\");\r\n    String JABBER_NOTIFIER_LOGIN = getProperty(\"JABBER_NOTIFIER_LOGIN\");\r\n    String JABBER_NOTIFIER_PASSWORD = getProperty(\"JABBER_NOTIFIER_PASSWORD\");\r\n    String JABBER_NOTIFIER_ADDRESS = getProperty(\"JABBER_NOTIFIER_ADDRESS\");\r\n    String newHost = \"new_test\";\r\n    String newLogin = \"new_test_login\";\r\n    String newPassword = \"new_password\";\r\n    String newAddress = \"new.test@mail.com\";\r\n    goToProjectInformationPage(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME);\r\n    editJabberNotifier(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME, JABBER_NOTIFIER_HOST, JABBER_NOTIFIER_LOGIN, JABBER_NOTIFIER_ADDRESS, newHost, newLogin, newPassword, newAddress, true);\r\n    editJabberNotifier(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME, newHost, newLogin, newAddress, JABBER_NOTIFIER_HOST, JABBER_NOTIFIER_LOGIN, JABBER_NOTIFIER_PASSWORD, JABBER_NOTIFIER_ADDRESS, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditInvalidJabberProjectNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidJabberProjectNotifier\" })\r\npublic void testEditInvalidJabberProjectNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    String JABBER_NOTIFIER_HOST = getProperty(\"JABBER_NOTIFIER_HOST\");\r\n    String JABBER_NOTIFIER_LOGIN = getProperty(\"JABBER_NOTIFIER_LOGIN\");\r\n    String JABBER_NOTIFIER_ADDRESS = getProperty(\"JABBER_NOTIFIER_ADDRESS\");\r\n    goToProjectInformationPage(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME);\r\n    editJabberNotifier(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME, JABBER_NOTIFIER_HOST, JABBER_NOTIFIER_LOGIN, JABBER_NOTIFIER_ADDRESS, \"\", \"\", \"\", \"\", false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditValidJabberGroupNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidJabberGroupNotifier\" })\r\npublic void testEditValidJabberGroupNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String TEST_PROJ_GRP_ID = getProperty(\"TEST_PROJ_GRP_ID\");\r\n    String TEST_PROJ_GRP_DESCRIPTION = getProperty(\"TEST_PROJ_GRP_DESCRIPTION\");\r\n    String JABBER_NOTIFIER_HOST = getProperty(\"JABBER_NOTIFIER_HOST\");\r\n    String JABBER_NOTIFIER_LOGIN = getProperty(\"JABBER_NOTIFIER_LOGIN\");\r\n    String JABBER_NOTIFIER_PASSWORD = getProperty(\"JABBER_NOTIFIER_PASSWORD\");\r\n    String JABBER_NOTIFIER_ADDRESS = getProperty(\"JABBER_NOTIFIER_ADDRESS\");\r\n    String newHost = \"new_test\";\r\n    String newLogin = \"new_test_login\";\r\n    String newPassword = \"new_password\";\r\n    String newAddress = \"new.test@mail.com\";\r\n    showProjectGroup(TEST_PROJ_GRP_NAME, TEST_PROJ_GRP_ID, TEST_PROJ_GRP_DESCRIPTION);\r\n    clickLinkWithText(\"Notifiers\");\r\n    assertGroupNotifierPage(TEST_PROJ_GRP_NAME);\r\n    editJabberNotifier(TEST_PROJ_GRP_NAME, null, JABBER_NOTIFIER_HOST, JABBER_NOTIFIER_LOGIN, JABBER_NOTIFIER_ADDRESS, newHost, newLogin, newPassword, newAddress, true);\r\n    editJabberNotifier(TEST_PROJ_GRP_NAME, null, newHost, newLogin, newAddress, JABBER_NOTIFIER_HOST, JABBER_NOTIFIER_LOGIN, JABBER_NOTIFIER_PASSWORD, JABBER_NOTIFIER_ADDRESS, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditInvalidJabberGroupNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidJabberGroupNotifier\" })\r\npublic void testEditInvalidJabberGroupNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String TEST_PROJ_GRP_ID = getProperty(\"TEST_PROJ_GRP_ID\");\r\n    String TEST_PROJ_GRP_DESCRIPTION = getProperty(\"TEST_PROJ_GRP_DESCRIPTION\");\r\n    String JABBER_NOTIFIER_HOST = getProperty(\"JABBER_NOTIFIER_HOST\");\r\n    String JABBER_NOTIFIER_LOGIN = getProperty(\"JABBER_NOTIFIER_LOGIN\");\r\n    String JABBER_NOTIFIER_ADDRESS = getProperty(\"JABBER_NOTIFIER_ADDRESS\");\r\n    showProjectGroup(TEST_PROJ_GRP_NAME, TEST_PROJ_GRP_ID, TEST_PROJ_GRP_DESCRIPTION);\r\n    clickLinkWithText(\"Notifiers\");\r\n    assertGroupNotifierPage(TEST_PROJ_GRP_NAME);\r\n    editJabberNotifier(TEST_PROJ_GRP_NAME, null, JABBER_NOTIFIER_HOST, JABBER_NOTIFIER_LOGIN, JABBER_NOTIFIER_ADDRESS, \"\", \"\", \"\", \"\", false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditValidMsnProjectNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidMsnProjectNotifier\" })\r\npublic void testEditValidMsnProjectNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    String MSN_NOTIFIER_ADDRESS = getProperty(\"MSN_NOTIFIER_ADDRESS\");\r\n    String MSN_NOTIFIER_LOGIN = getProperty(\"MSN_NOTIFIER_LOGIN\");\r\n    String MSN_NOTIFIER_PASSWORD = getProperty(\"MSN_NOTIFIER_PASSWORD\");\r\n    String newLogin = \"new_test_login\";\r\n    String newPassword = \"new_password\";\r\n    String newAddress = \"new.test@mail.com\";\r\n    goToProjectInformationPage(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME);\r\n    editMsnNotifier(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME, MSN_NOTIFIER_LOGIN, MSN_NOTIFIER_ADDRESS, newLogin, newPassword, newAddress, true);\r\n    editMsnNotifier(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME, newLogin, newAddress, MSN_NOTIFIER_LOGIN, MSN_NOTIFIER_PASSWORD, MSN_NOTIFIER_ADDRESS, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditInvalidMsnProjectNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidMsnProjectNotifier\" })\r\npublic void testEditInvalidMsnProjectNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    String MSN_NOTIFIER_ADDRESS = getProperty(\"MSN_NOTIFIER_ADDRESS\");\r\n    String MSN_NOTIFIER_LOGIN = getProperty(\"MSN_NOTIFIER_LOGIN\");\r\n    goToProjectInformationPage(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME);\r\n    editMsnNotifier(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME, MSN_NOTIFIER_LOGIN, MSN_NOTIFIER_ADDRESS, \"\", \"\", \"\", false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditValidMsnGroupNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidMsnGroupNotifier\" })\r\npublic void testEditValidMsnGroupNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String TEST_PROJ_GRP_ID = getProperty(\"TEST_PROJ_GRP_ID\");\r\n    String TEST_PROJ_GRP_DESCRIPTION = getProperty(\"TEST_PROJ_GRP_DESCRIPTION\");\r\n    String MSN_NOTIFIER_ADDRESS = getProperty(\"MSN_NOTIFIER_ADDRESS\");\r\n    String MSN_NOTIFIER_LOGIN = getProperty(\"MSN_NOTIFIER_LOGIN\");\r\n    String MSN_NOTIFIER_PASSWORD = getProperty(\"MSN_NOTIFIER_PASSWORD\");\r\n    String newLogin = \"new_test_login\";\r\n    String newPassword = \"new_password\";\r\n    String newAddress = \"new.test@mail.com\";\r\n    showProjectGroup(TEST_PROJ_GRP_NAME, TEST_PROJ_GRP_ID, TEST_PROJ_GRP_DESCRIPTION);\r\n    clickLinkWithText(\"Notifiers\");\r\n    assertGroupNotifierPage(TEST_PROJ_GRP_NAME);\r\n    editMsnNotifier(TEST_PROJ_GRP_NAME, null, MSN_NOTIFIER_LOGIN, MSN_NOTIFIER_ADDRESS, newLogin, newPassword, newAddress, true);\r\n    editMsnNotifier(TEST_PROJ_GRP_NAME, null, newLogin, newAddress, MSN_NOTIFIER_LOGIN, MSN_NOTIFIER_PASSWORD, MSN_NOTIFIER_ADDRESS, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditInvalidMsnGroupNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidMsnGroupNotifier\" })\r\npublic void testEditInvalidMsnGroupNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String TEST_PROJ_GRP_ID = getProperty(\"TEST_PROJ_GRP_ID\");\r\n    String TEST_PROJ_GRP_DESCRIPTION = getProperty(\"TEST_PROJ_GRP_DESCRIPTION\");\r\n    String MSN_NOTIFIER_ADDRESS = getProperty(\"MSN_NOTIFIER_ADDRESS\");\r\n    String MSN_NOTIFIER_LOGIN = getProperty(\"MSN_NOTIFIER_LOGIN\");\r\n    showProjectGroup(TEST_PROJ_GRP_NAME, TEST_PROJ_GRP_ID, TEST_PROJ_GRP_DESCRIPTION);\r\n    clickLinkWithText(\"Notifiers\");\r\n    assertGroupNotifierPage(TEST_PROJ_GRP_NAME);\r\n    editMsnNotifier(TEST_PROJ_GRP_NAME, null, MSN_NOTIFIER_LOGIN, MSN_NOTIFIER_ADDRESS, \"\", \"\", \"\", false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditValidWagonProjectNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidWagonProjectNotifier\" })\r\npublic void testEditValidWagonProjectNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    String WAGON_NOTIFIER_URL = getProperty(\"WAGON_NOTIFIER_URL\");\r\n    String WAGON_SERVER_ID = getProperty(\"WAGON_SERVER_ID\");\r\n    String newId = \"newId\";\r\n    String newUrl = WAGON_NOTIFIER_URL;\r\n    goToProjectInformationPage(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME);\r\n    editWagonNotifier(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME, WAGON_NOTIFIER_URL, WAGON_SERVER_ID, newUrl, newId, true);\r\n    editWagonNotifier(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME, newUrl, newId, WAGON_NOTIFIER_URL, WAGON_SERVER_ID, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditInvalidWagonProjectNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidWagonProjectNotifier\" })\r\npublic void testEditInvalidWagonProjectNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    String WAGON_NOTIFIER_URL = getProperty(\"WAGON_NOTIFIER_URL\");\r\n    String WAGON_SERVER_ID = getProperty(\"WAGON_SERVER_ID\");\r\n    goToProjectInformationPage(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME);\r\n    editWagonNotifier(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME, WAGON_NOTIFIER_URL, WAGON_SERVER_ID, \"\", \"\", false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditValidWagonGroupNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidWagonGroupNotifier\" })\r\npublic void testEditValidWagonGroupNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String TEST_PROJ_GRP_ID = getProperty(\"TEST_PROJ_GRP_ID\");\r\n    String TEST_PROJ_GRP_DESCRIPTION = getProperty(\"TEST_PROJ_GRP_DESCRIPTION\");\r\n    String WAGON_NOTIFIER_URL = getProperty(\"WAGON_NOTIFIER_URL\");\r\n    String WAGON_SERVER_ID = getProperty(\"WAGON_SERVER_ID\");\r\n    String newId = \"newId\";\r\n    String newUrl = WAGON_NOTIFIER_URL;\r\n    showProjectGroup(TEST_PROJ_GRP_NAME, TEST_PROJ_GRP_ID, TEST_PROJ_GRP_DESCRIPTION);\r\n    clickLinkWithText(\"Notifiers\");\r\n    assertGroupNotifierPage(TEST_PROJ_GRP_NAME);\r\n    editWagonNotifier(TEST_PROJ_GRP_NAME, null, WAGON_NOTIFIER_URL, WAGON_SERVER_ID, newUrl, newId, true);\r\n    editWagonNotifier(TEST_PROJ_GRP_NAME, null, newUrl, newId, WAGON_NOTIFIER_URL, WAGON_SERVER_ID, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testEditInvalidWagonGroupNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddValidWagonGroupNotifier\" })\r\npublic void testEditInvalidWagonGroupNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String TEST_PROJ_GRP_ID = getProperty(\"TEST_PROJ_GRP_ID\");\r\n    String TEST_PROJ_GRP_DESCRIPTION = getProperty(\"TEST_PROJ_GRP_DESCRIPTION\");\r\n    String WAGON_NOTIFIER_URL = getProperty(\"WAGON_NOTIFIER_URL\");\r\n    String WAGON_SERVER_ID = getProperty(\"WAGON_SERVER_ID\");\r\n    showProjectGroup(TEST_PROJ_GRP_NAME, TEST_PROJ_GRP_ID, TEST_PROJ_GRP_DESCRIPTION);\r\n    clickLinkWithText(\"Notifiers\");\r\n    assertGroupNotifierPage(TEST_PROJ_GRP_NAME);\r\n    editWagonNotifier(TEST_PROJ_GRP_NAME, null, WAGON_NOTIFIER_URL, WAGON_SERVER_ID, \"\", \"\", false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testDeleteGroupNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testEditValidMailGroupNotifier\", \"testEditInvalidMailGroupNotifier\" })\r\npublic void testDeleteGroupNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String TEST_PROJ_GRP_ID = getProperty(\"TEST_PROJ_GRP_ID\");\r\n    String TEST_PROJ_GRP_DESCRIPTION = getProperty(\"TEST_PROJ_GRP_DESCRIPTION\");\r\n    showProjectGroup(TEST_PROJ_GRP_NAME, TEST_PROJ_GRP_ID, TEST_PROJ_GRP_DESCRIPTION);\r\n    clickLinkWithText(\"Notifiers\");\r\n    assertGroupNotifierPage(TEST_PROJ_GRP_NAME);\r\n    clickLinkWithXPath(\"(//a[contains(@href,'deleteProjectGroupNotifier') and contains(@href,'mail')])//img\");\r\n    assertButtonWithValuePresent(\"Delete\");\r\n    assertButtonWithValuePresent(\"Cancel\");\r\n    clickButtonWithValue(\"Delete\");\r\n    assertGroupNotifierPage(TEST_PROJ_GRP_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\NotifierTest.java",
+  "methodName" : "testDeleteProjectNotifier",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testEditValidMailProjectNotifier\", \"testEditInvalidMailProjectNotifier\" })\r\npublic void testDeleteProjectNotifier() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    goToProjectInformationPage(TEST_PROJ_GRP_NAME, M2_PROJ_GRP_NAME);\r\n    // Delete\r\n    clickLinkWithXPath(\"(//a[contains(@href,'deleteProjectNotifier') and contains(@href,'mail')])//img\");\r\n    assertButtonWithValuePresent(\"Delete\");\r\n    assertButtonWithValuePresent(\"Cancel\");\r\n    clickButtonWithValue(\"Delete\");\r\n    assertProjectInformationPage();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ProjectGroupTest.java",
+  "methodName" : "testMoveProject",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddMavenTwoProjectFromRemoteSourceToNonDefaultProjectGroup\" })\r\npublic void testMoveProject() throws Exception {\r\n    String TEST_PROJ_GRP_NAME = getProperty(\"TEST_PROJ_GRP_NAME\");\r\n    String TEST_PROJ_GRP_ID = getProperty(\"TEST_PROJ_GRP_ID\");\r\n    String TEST_PROJ_GRP_DESCRIPTION = getProperty(\"TEST_PROJ_GRP_DESCRIPTION\");\r\n    String DEFAULT_PROJ_GRP_NAME = getProperty(\"DEFAULT_PROJ_GRP_NAME\");\r\n    String DEFAULT_PROJ_GRP_ID = getProperty(\"DEFAULT_PROJ_GRP_NAME\");\r\n    String DEFAULT_PROJ_GRP_DESCRIPTION = getProperty(\"DEFAULT_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    // TODO: need to wait for checkout to complete. Can we add a special IT type of project that doesn't require checkout?\r\n    //       currently we get away with it due to the usualy duration between the dependant test and this test\r\n    // move the project of the test project group to the default project group\r\n    moveProjectToProjectGroup(TEST_PROJ_GRP_NAME, TEST_PROJ_GRP_ID, TEST_PROJ_GRP_DESCRIPTION, M2_PROJ_GRP_NAME, DEFAULT_PROJ_GRP_NAME);\r\n    showProjectGroup(DEFAULT_PROJ_GRP_NAME, DEFAULT_PROJ_GRP_ID, DEFAULT_PROJ_GRP_DESCRIPTION);\r\n    assertTextPresent(\"Member Projects\");\r\n    // Restore project to test project group\r\n    moveProjectToProjectGroup(DEFAULT_PROJ_GRP_NAME, DEFAULT_PROJ_GRP_ID, DEFAULT_PROJ_GRP_DESCRIPTION, M2_PROJ_GRP_NAME, TEST_PROJ_GRP_NAME);\r\n    showProjectGroup(TEST_PROJ_GRP_NAME, TEST_PROJ_GRP_ID, TEST_PROJ_GRP_DESCRIPTION);\r\n    assertTextPresent(\"Member Projects\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ProjectGroupTest.java",
+  "methodName" : "testEditProjectGroupWithValidValues",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddProjectGroup2\" })\r\npublic void testEditProjectGroupWithValidValues() throws Exception {\r\n    final String sNewProjectName = \"New Project Group Name\";\r\n    final String sNewProjectDescription = \"New Project Group Description\";\r\n    String TEST2_PROJ_GRP_NAME = getProperty(\"TEST2_PROJ_GRP_NAME\");\r\n    String TEST2_PROJ_GRP_ID = getProperty(\"TEST2_PROJ_GRP_ID\");\r\n    String TEST2_PROJ_GRP_DESCRIPTION = getProperty(\"TEST2_PROJ_GRP_DESCRIPTION\");\r\n    editProjectGroup(TEST2_PROJ_GRP_NAME, TEST2_PROJ_GRP_ID, TEST2_PROJ_GRP_DESCRIPTION, sNewProjectName, sNewProjectDescription);\r\n    assertProjectGroupSummaryPage(sNewProjectName, TEST2_PROJ_GRP_ID, sNewProjectDescription);\r\n    editProjectGroup(sNewProjectName, TEST2_PROJ_GRP_ID, sNewProjectDescription, TEST2_PROJ_GRP_NAME, TEST2_PROJ_GRP_DESCRIPTION);\r\n    assertProjectGroupSummaryPage(TEST2_PROJ_GRP_NAME, TEST2_PROJ_GRP_ID, TEST2_PROJ_GRP_DESCRIPTION);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ProjectGroupTest.java",
+  "methodName" : "testEditProjectGroupWithInvalidValues",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddProjectGroup2\" })\r\npublic void testEditProjectGroupWithInvalidValues() throws Exception {\r\n    String TEST2_PROJ_GRP_NAME = getProperty(\"TEST2_PROJ_GRP_NAME\");\r\n    String TEST2_PROJ_GRP_ID = getProperty(\"TEST2_PROJ_GRP_ID\");\r\n    String TEST2_PROJ_GRP_DESCRIPTION = getProperty(\"TEST2_PROJ_GRP_DESCRIPTION\");\r\n    editProjectGroup(TEST2_PROJ_GRP_NAME, TEST2_PROJ_GRP_ID, TEST2_PROJ_GRP_DESCRIPTION, \" \", TEST2_PROJ_GRP_DESCRIPTION);\r\n    assertTextPresent(\"Project Group Name cannot contain spaces only\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ProjectGroupTest.java",
+  "methodName" : "testEditProjectGroupWithXSS",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddProjectGroup2\" })\r\npublic void testEditProjectGroupWithXSS() throws Exception {\r\n    String TEST2_PROJ_GRP_NAME = getProperty(\"TEST2_PROJ_GRP_NAME\");\r\n    String TEST2_PROJ_GRP_ID = getProperty(\"TEST2_PROJ_GRP_ID\");\r\n    String TEST2_PROJ_GRP_DESCRIPTION = getProperty(\"TEST2_PROJ_GRP_DESCRIPTION\");\r\n    String NEW_PROJ_GRP_NAME = \"<script>alert('XSS')</script>\";\r\n    String NEW_PROJ_GRP_DESCRIPTION = \"<script>alert('XSS')</script>\";\r\n    editProjectGroup(TEST2_PROJ_GRP_NAME, TEST2_PROJ_GRP_ID, TEST2_PROJ_GRP_DESCRIPTION, NEW_PROJ_GRP_NAME, NEW_PROJ_GRP_DESCRIPTION);\r\n    assertTextPresent(\"Name contains invalid characters.\");\r\n    assertTextPresent(\"Description contains invalid characters.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ProjectGroupTest.java",
+  "methodName" : "testProjectGroupAllBuildSuccess",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddMavenTwoProject\" })\r\npublic void testProjectGroupAllBuildSuccess() throws Exception {\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_ID = getProperty(\"M2_PROJ_GRP_ID\");\r\n    String M2_PROJ_GRP_DESCRIPTION = getProperty(\"M2_PROJ_GRP_DESCRIPTION\");\r\n    buildProjectGroup(M2_PROJ_GRP_NAME, M2_PROJ_GRP_ID, M2_PROJ_GRP_DESCRIPTION, M2_PROJ_GRP_NAME, true);\r\n    clickButtonWithValue(\"Release\");\r\n    assertReleaseSuccess();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ProjectGroupTest.java",
+  "methodName" : "testDeleteProjectGroup",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddProjectGroup\" })\r\npublic void testDeleteProjectGroup() throws Exception {\r\n    String TEST_GRP_NAME = getProperty(\"TEST_DELETE_GRP_NAME\");\r\n    String TEST_GRP_ID = getProperty(\"TEST_DELETE_GRP_ID\");\r\n    String TEST_GRP_DESCRIPTION = getProperty(\"TEST_DELETE_GRP_DESCRIPTION\");\r\n    // delete group - delete icon\r\n    addProjectGroup(TEST_GRP_NAME, TEST_GRP_ID, TEST_GRP_DESCRIPTION, true);\r\n    assertLinkPresent(TEST_GRP_NAME);\r\n    clickLinkWithXPath(\"//tbody/tr['0']/td['4']/a/img[@alt='Delete Group']\");\r\n    assertTextPresent(\"Project Group Removal\");\r\n    clickButtonWithValue(\"Delete\");\r\n    assertProjectGroupsSummaryPage();\r\n    assertLinkNotPresent(TEST_GRP_NAME);\r\n    // delete group - \"Delete Group\" button\r\n    addProjectGroup(TEST_GRP_NAME, TEST_GRP_ID, TEST_GRP_DESCRIPTION, true);\r\n    assertLinkPresent(TEST_GRP_NAME);\r\n    removeProjectGroup(TEST_GRP_NAME);\r\n    assertLinkNotPresent(TEST_GRP_NAME);\r\n    assertProjectGroupsSummaryPage();\r\n    assertLinkNotPresent(TEST_GRP_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\PurgeTest.java",
+  "methodName" : "testEditRepositoryPurge",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddRepositoryPurge\" })\r\npublic void testEditRepositoryPurge() {\r\n    String PURGE_REPOSITORY_DESCRIPTION = getProperty(\"PURGE_REPOSITORY_DESCRIPTION\");\r\n    String PURGE_REPOSITORY_DAYS = getProperty(\"PURGE_REPOSITORY_DAYS\");\r\n    String PURGE_REPOSITORY_RETETION = getProperty(\"PURGE_REPOSITORY_RETETION\");\r\n    String newDescription = \"new_description\";\r\n    String newDays = \"45\";\r\n    String newRetention = \"4\";\r\n    goToEditRepositoryPurge(PURGE_REPOSITORY_DAYS, PURGE_REPOSITORY_RETETION, PURGE_REPOSITORY_DESCRIPTION);\r\n    addEditRepositoryPurge(newDays, newRetention, newDescription, true);\r\n    goToEditRepositoryPurge(newDays, newRetention, newDescription);\r\n    addEditRepositoryPurge(PURGE_REPOSITORY_DAYS, PURGE_REPOSITORY_RETETION, PURGE_REPOSITORY_DESCRIPTION, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\PurgeTest.java",
+  "methodName" : "testDeleteRepositoryPurge",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testEditRepositoryPurge\" })\r\npublic void testDeleteRepositoryPurge() {\r\n    String PURGE_REPOSITORY_DESCRIPTION = getProperty(\"PURGE_REPOSITORY_DESCRIPTION\");\r\n    removeRepositoryPurge(PURGE_REPOSITORY_DESCRIPTION);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\PurgeTest.java",
+  "methodName" : "testEditDirectoryPurge",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddDirectoryPurge\" })\r\npublic void testEditDirectoryPurge() {\r\n    String PURGE_DIRECTORY_DESCRIPTION = getProperty(\"PURGE_DIRECTORY_DESCRIPTION\");\r\n    String PURGE_DIRECTORY_DAYS = getProperty(\"PURGE_DIRECTORY_DAYS\");\r\n    String PURGE_DIRECTORY_RETETION = getProperty(\"PURGE_DIRECTORY_RETETION\");\r\n    String newDescription = \"new_description\";\r\n    String newDays = \"45\";\r\n    String newRetention = \"4\";\r\n    goToEditDirectoryPurge(PURGE_DIRECTORY_DAYS, PURGE_DIRECTORY_RETETION, PURGE_DIRECTORY_DESCRIPTION);\r\n    addEditDirectoryPurge(newDays, newRetention, newDescription, true);\r\n    goToEditDirectoryPurge(newDays, newRetention, newDescription);\r\n    addEditDirectoryPurge(PURGE_DIRECTORY_DAYS, PURGE_DIRECTORY_RETETION, PURGE_DIRECTORY_DESCRIPTION, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\PurgeTest.java",
+  "methodName" : "testDeleteDirectoryPurge",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testEditDirectoryPurge\" })\r\npublic void testDeleteDirectoryPurge() {\r\n    String PURGE_DIRECTORY_DESCRIPTION = getProperty(\"PURGE_DIRECTORY_DESCRIPTION\");\r\n    removeDirectoryPurge(PURGE_DIRECTORY_DESCRIPTION);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\QueueTest.java",
+  "methodName" : "testQueuePageWithoutBuild",
+  "sourceCode" : "//\"testDeleteBuildQueue\" } )\r\n@Test(dependsOnMethods = { \"testAddBuildQueue\" })\r\npublic void testQueuePageWithoutBuild() {\r\n    clickAndWait(\"link=Queues\");\r\n    assertPage(\"Continuum - Build Queue\");\r\n    assertTextPresent(\"Nothing is building\");\r\n    assertTextNotPresent(\"Project Name* Build Definition\");\r\n    assertTextPresent(\"Current Build\");\r\n    assertTextPresent(\"Build Queue\");\r\n    assertTextPresent(\"Current Checkout\");\r\n    assertTextPresent(\"Checkout Queue \");\r\n    assertTextPresent(\"Current Prepare Build\");\r\n    assertTextPresent(\"Prepare Build Queue\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\QueueTest.java",
+  "methodName" : "testAddBuildQueueToSchedule",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddBuildQueue\", \"testAddSchedule\" })\r\npublic void testAddBuildQueueToSchedule() {\r\n    ScheduleTest sched = new ScheduleTest();\r\n    String SCHEDULE_NAME = getProperty(\"SCHEDULE_NAME\");\r\n    String SCHEDULE_DESCRIPTION = getProperty(\"SCHEDULE_DESCRIPTION\");\r\n    String SCHEDULE_EXPR_SECOND = getProperty(\"SCHEDULE_EXPR_SECOND\");\r\n    String SCHEDULE_EXPR_MINUTE = getProperty(\"SCHEDULE_EXPR_MINUTE\");\r\n    String SCHEDULE_EXPR_HOUR = getProperty(\"SCHEDULE_EXPR_HOUR\");\r\n    String SCHEDULE_EXPR_DAY_MONTH = getProperty(\"SCHEDULE_EXPR_DAY_MONTH\");\r\n    String SCHEDULE_EXPR_MONTH = getProperty(\"SCHEDULE_EXPR_MONTH\");\r\n    String SCHEDULE_EXPR_DAY_WEEK = getProperty(\"SCHEDULE_EXPR_DAY_WEEK\");\r\n    String SCHEDULE_EXPR_YEAR = getProperty(\"SCHEDULE_EXPR_YEAR\");\r\n    String SCHEDULE_MAX_TIME = getProperty(\"SCHEDULE_MAX_TIME\");\r\n    String SCHEDULE_PERIOD = getProperty(\"SCHEDULE_PERIOD\");\r\n    String BUILD_QUEUE_NAME = getProperty(\"BUILD_QUEUE_NAME\");\r\n    sched.goToEditSchedule(SCHEDULE_NAME, SCHEDULE_DESCRIPTION, SCHEDULE_EXPR_SECOND, SCHEDULE_EXPR_MINUTE, SCHEDULE_EXPR_HOUR, SCHEDULE_EXPR_DAY_MONTH, SCHEDULE_EXPR_MONTH, SCHEDULE_EXPR_DAY_WEEK, SCHEDULE_EXPR_YEAR, SCHEDULE_MAX_TIME, SCHEDULE_PERIOD);\r\n    getSelenium().addSelection(\"saveSchedule_availableBuildQueuesIds\", \"label=\" + BUILD_QUEUE_NAME);\r\n    getSelenium().click(\"//input[@value='->']\");\r\n    submit();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\QueueTest.java",
+  "methodName" : "testAddNotAllowedBuildQueue",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddBuildQueue\" })\r\npublic void testAddNotAllowedBuildQueue() {\r\n    setMaxBuildQueue(1);\r\n    String secodQueue = \"second_queue_name\";\r\n    addBuildQueue(secodQueue, false);\r\n    assertTextPresent(\"You are only allowed 1 number of builds in parallel.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\QueueTest.java",
+  "methodName" : "testAddAlreadyExistBuildQueue",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddBuildQueue\" })\r\npublic void testAddAlreadyExistBuildQueue() {\r\n    setMaxBuildQueue(3);\r\n    String BUILD_QUEUE_NAME = getProperty(\"BUILD_QUEUE_NAME\");\r\n    addBuildQueue(BUILD_QUEUE_NAME, false);\r\n    assertTextPresent(\"Build queue name already exists.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\QueueTest.java",
+  "methodName" : "testAddEmptyBuildQueue",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddAlreadyExistBuildQueue\" })\r\npublic void testAddEmptyBuildQueue() {\r\n    setMaxBuildQueue(3);\r\n    addBuildQueue(\"\", false);\r\n    assertTextPresent(\"You must define a name\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\QueueTest.java",
+  "methodName" : "testDeleteBuildQueue",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddBuildQueueToSchedule\" })\r\npublic void testDeleteBuildQueue() {\r\n    goToBuildQueuePage();\r\n    String BUILD_QUEUE_NAME = getProperty(\"BUILD_QUEUE_NAME\");\r\n    removeBuildQueue(BUILD_QUEUE_NAME);\r\n    assertTextNotPresent(BUILD_QUEUE_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\QueueTest.java",
+  "methodName" : "testQueuePageWithProjectCurrentlyBuilding",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddMavenTwoProject\" })\r\npublic void testQueuePageWithProjectCurrentlyBuilding() throws Exception {\r\n    //build a project\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_ID = getProperty(\"M2_PROJ_GRP_ID\");\r\n    String M2_PROJ_GRP_DESCRIPTION = getProperty(\"M2_PROJ_GRP_DESCRIPTION\");\r\n    buildProjectForQueuePageTest(M2_PROJ_GRP_NAME, M2_PROJ_GRP_ID, M2_PROJ_GRP_DESCRIPTION, M2_PROJ_GRP_NAME);\r\n    String location = getSelenium().getLocation();\r\n    //check queue page while building\r\n    getSelenium().open(\"/continuum/admin/displayQueues!display.action\");\r\n    assertPage(\"Continuum - Build Queue\");\r\n    assertTextPresent(\"Current Build\");\r\n    assertTextPresent(\"Build Queue\");\r\n    assertTextPresent(\"Current Checkout\");\r\n    assertTextPresent(\"Checkout Queue \");\r\n    assertTextPresent(\"Current Prepare Build\");\r\n    assertTextPresent(\"Prepare Build Queue\");\r\n    assertElementPresent(\"//table[@id='ec_table']/tbody/tr/td[4]\");\r\n    assertTextPresent(M2_PROJ_GRP_NAME);\r\n    getSelenium().open(location);\r\n    waitPage();\r\n    waitForElementPresent(\"//img[@alt='Success']\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\QueueTest.java",
+  "methodName" : "testQueuePageWithProjectCurrentlyBuildingInDistributedBuilds",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testQueuePageWithProjectCurrentlyBuilding\", \"testAddBuildAgent\" })\r\npublic void testQueuePageWithProjectCurrentlyBuildingInDistributedBuilds() throws Exception {\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_ID = getProperty(\"M2_PROJ_GRP_ID\");\r\n    String M2_PROJ_GRP_DESCRIPTION = getProperty(\"M2_PROJ_GRP_DESCRIPTION\");\r\n    try {\r\n        enableDistributedBuilds();\r\n        buildProjectForQueuePageTest(M2_PROJ_GRP_NAME, M2_PROJ_GRP_ID, M2_PROJ_GRP_DESCRIPTION, M2_PROJ_GRP_NAME);\r\n        //check queue page while building\r\n        getSelenium().open(\"/continuum/admin/displayQueues!display.action\");\r\n        assertPage(\"Continuum - View Distributed Builds\");\r\n        assertTextPresent(\"Current Build\");\r\n        assertTextPresent(\"Build Queue\");\r\n        assertTextPresent(\"Current Prepare Build\");\r\n        assertTextPresent(\"Prepare Build Queue\");\r\n        assertTextPresent(M2_PROJ_GRP_NAME);\r\n        assertTextPresent(\"Build Agent URL\");\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ReleaseTest.java",
+  "methodName" : "testReleasePrepareProjectWithInvalidUsernamePasswordInDistributedBuilds",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testProjectGroupAllBuildSuccessWithDistributedBuilds\" })\r\npublic void testReleasePrepareProjectWithInvalidUsernamePasswordInDistributedBuilds() throws Exception {\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_DELETE_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_ID = getProperty(\"M2_DELETE_PROJ_GRP_ID\");\r\n    String M2_PROJ_USERNAME = \"invalid\";\r\n    String M2_PROJ_PASSWORD = \"invalid\";\r\n    String M2_PROJ_TAGBASE = getProperty(\"M2_DELETE_PROJ_TAGBASE\");\r\n    String M2_PROJ_TAG = getProperty(\"M2_DELETE_PROJ_TAG\");\r\n    String M2_PROJ_RELEASE_VERSION = getProperty(\"M2_DELETE_PROJ_RELEASE_VERSION\");\r\n    String M2_PROJ_DEVELOPMENT_VERSION = getProperty(\"M2_DELETE_PROJ_DEVELOPMENT_VERSION\");\r\n    init();\r\n    try {\r\n        enableDistributedBuilds();\r\n        String M2_PROJECT_BUILD_ENV = getProperty(\"M2_RELEASE_BUILD_ENV\");\r\n        createBuildEnvAndBuildagentGroup();\r\n        showProjectGroup(M2_PROJ_GRP_NAME, M2_PROJ_GRP_ID, \"\");\r\n        clickButtonWithValue(\"Release\");\r\n        assertReleaseSuccess();\r\n        releasePrepareProject(M2_PROJ_USERNAME, M2_PROJ_PASSWORD, M2_PROJ_TAGBASE, M2_PROJ_TAG, M2_PROJ_RELEASE_VERSION, M2_PROJ_DEVELOPMENT_VERSION, M2_PROJECT_BUILD_ENV, false);\r\n        assertPreparedReleasesFileCreated();\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ReleaseTest.java",
+  "methodName" : "testReleasePrepareProjectWithNoBuildagentInBuildEnvironment",
+  "sourceCode" : "/*\r\n     * Test release prepare with no build agent configured in the selected build environment.\r\n     */\r\n@Test(dependsOnMethods = { \"testReleasePrepareProjectWithInvalidUsernamePasswordInDistributedBuilds\" })\r\npublic void testReleasePrepareProjectWithNoBuildagentInBuildEnvironment() throws Exception {\r\n    String M2_PROJECT_POM_URL = getProperty(\"M2_RELEASE_POM_URL\");\r\n    String M2_PROJECT_NAME = getProperty(\"M2_RELEASE_PROJECT_NAME\");\r\n    String M2_PROJECT_GROUP_NAME = getProperty(\"M2_RELEASE_GRP_NAME\");\r\n    String M2_PROJECT_GROUP_ID = getProperty(\"M2_RELEASE_GRP_ID\");\r\n    String M2_PROJECT_DESCRIPTION = getProperty(\"M2_RELEASE_GRP_DESCRIPTION\");\r\n    String M2_PROJECT_TAGBASE = getProperty(\"M2_RELEASE_TAGBASE_URL\");\r\n    String M2_PROJECT_TAG = getProperty(\"M2_RELEASE_TAG\");\r\n    String M2_PROJECT_RELEASE_VERSION = getProperty(\"M2_RELEASE_RELEASE_VERSION\");\r\n    String M2_PROJECT_DEVELOPMENT_VERSION = getProperty(\"M2_RELEASE_DEVELOPMENT_VERSION\");\r\n    String ERROR_TEXT = getProperty(\"M2_RELEASE_NO_AGENT_MESSAGE\");\r\n    addProjectGroup(M2_PROJECT_GROUP_NAME, M2_PROJECT_GROUP_ID, M2_PROJECT_DESCRIPTION, true);\r\n    addMavenTwoProject(M2_PROJECT_POM_URL, \"\", \"\", M2_PROJECT_GROUP_NAME, true);\r\n    init();\r\n    try {\r\n        enableDistributedBuilds();\r\n        String M2_PROJECT_BUILD_ENV = getProperty(\"M2_RELEASE_BUILD_ENV\");\r\n        createBuildEnvAndBuildagentGroup();\r\n        detachBuildagentFromGroup();\r\n        buildProjectGroup(M2_PROJECT_GROUP_NAME, M2_PROJECT_GROUP_ID, M2_PROJECT_DESCRIPTION, M2_PROJECT_NAME, true);\r\n        clickButtonWithValue(\"Release\");\r\n        assertReleaseSuccess();\r\n        releasePrepareProject(\"\", \"\", M2_PROJECT_TAGBASE, M2_PROJECT_TAG, M2_PROJECT_RELEASE_VERSION, M2_PROJECT_DEVELOPMENT_VERSION, M2_PROJECT_BUILD_ENV);\r\n        assertTextPresent(\"Release Error\");\r\n        assertTextPresent(ERROR_TEXT);\r\n    } finally {\r\n        attachBuildagentInGroup();\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ReleaseTest.java",
+  "methodName" : "testReleasePrepareProjectWithNoBuildagentGroupInBuildEnvironment",
+  "sourceCode" : "/*\r\n     * Test release prepare with no build agent group in the selected build environment.\r\n     */\r\n@Test(dependsOnMethods = { \"testReleasePrepareProjectWithNoBuildagentInBuildEnvironment\" })\r\npublic void testReleasePrepareProjectWithNoBuildagentGroupInBuildEnvironment() throws Exception {\r\n    String M2_PROJECT_NAME = getProperty(\"M2_RELEASE_PROJECT_NAME\");\r\n    String M2_PROJECT_GROUP_NAME = getProperty(\"M2_RELEASE_GRP_NAME\");\r\n    String M2_PROJECT_GROUP_ID = getProperty(\"M2_RELEASE_GRP_ID\");\r\n    String M2_PROJECT_DESCRIPTION = getProperty(\"M2_RELEASE_GRP_DESCRIPTION\");\r\n    String M2_PROJECT_TAGBASE = getProperty(\"M2_RELEASE_TAGBASE_URL\");\r\n    String M2_PROJECT_TAG = getProperty(\"M2_RELEASE_TAG\");\r\n    String M2_PROJECT_RELEASE_VERSION = getProperty(\"M2_RELEASE_RELEASE_VERSION\");\r\n    String M2_PROJECT_DEVELOPMENT_VERSION = getProperty(\"M2_RELEASE_DEVELOPMENT_VERSION\");\r\n    String ERROR_TEXT = getProperty(\"M2_RELEASE_NO_AGENT_MESSAGE\");\r\n    init();\r\n    try {\r\n        enableDistributedBuilds();\r\n        String M2_PROJECT_BUILD_ENV = getProperty(\"M2_RELEASE_BUILD_ENV\");\r\n        createBuildEnvAndBuildagentGroup();\r\n        removeBuildagentGroupFromBuildEnv();\r\n        showProjectGroup(M2_PROJECT_GROUP_NAME, M2_PROJECT_GROUP_ID, M2_PROJECT_GROUP_ID);\r\n        clickButtonWithValue(\"Release\");\r\n        assertReleaseSuccess();\r\n        releasePrepareProject(\"\", \"\", M2_PROJECT_TAGBASE, M2_PROJECT_TAG, M2_PROJECT_RELEASE_VERSION, M2_PROJECT_DEVELOPMENT_VERSION, M2_PROJECT_BUILD_ENV);\r\n        assertTextPresent(\"Release Error\");\r\n        assertTextPresent(ERROR_TEXT);\r\n    } finally {\r\n        attachBuildagentGroupToBuildEnv();\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ReleaseTest.java",
+  "methodName" : "testReleasePrepareProjectWithNoBuildEnvironment",
+  "sourceCode" : "/*\r\n     * Test release prepare with no build environment selected.\r\n     */\r\n@Test(dependsOnMethods = { \"testReleasePrepareProjectWithNoBuildagentGroupInBuildEnvironment\" })\r\npublic void testReleasePrepareProjectWithNoBuildEnvironment() throws Exception {\r\n    String M2_PROJECT_NAME = getProperty(\"M2_RELEASE_PROJECT_NAME\");\r\n    String M2_PROJECT_GROUP_NAME = getProperty(\"M2_RELEASE_GRP_NAME\");\r\n    String M2_PROJECT_GROUP_ID = getProperty(\"M2_RELEASE_GRP_ID\");\r\n    String M2_PROJECT_DESCRIPTION = getProperty(\"M2_RELEASE_GRP_DESCRIPTION\");\r\n    String M2_PROJECT_TAGBASE = getProperty(\"M2_RELEASE_TAGBASE_URL\");\r\n    String M2_PROJECT_TAG = getProperty(\"M2_RELEASE_TAG\");\r\n    String M2_PROJECT_RELEASE_VERSION = getProperty(\"M2_RELEASE_RELEASE_VERSION\");\r\n    String M2_PROJECT_DEVELOPMENT_VERSION = getProperty(\"M2_RELEASE_DEVELOPMENT_VERSION\");\r\n    String ERROR_TEXT = getProperty(\"M2_RELEASE_NO_AGENT_MESSAGE\");\r\n    init();\r\n    try {\r\n        enableDistributedBuilds();\r\n        showProjectGroup(M2_PROJECT_GROUP_NAME, M2_PROJECT_GROUP_ID, M2_PROJECT_GROUP_ID);\r\n        clickButtonWithValue(\"Release\");\r\n        assertReleaseSuccess();\r\n        releasePrepareProject(\"\", \"\", M2_PROJECT_TAGBASE, M2_PROJECT_TAG, M2_PROJECT_RELEASE_VERSION, M2_PROJECT_DEVELOPMENT_VERSION, \"\");\r\n        assertTextPresent(\"Release Error\");\r\n        assertTextPresent(ERROR_TEXT);\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ReleaseTest.java",
+  "methodName" : "testReleasePerformUsingProvideParamtersWithDistributedBuilds",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testReleasePrepareProjectWithNoBuildEnvironment\" })\r\npublic void testReleasePerformUsingProvideParamtersWithDistributedBuilds() throws Exception {\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_DELETE_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_ID = getProperty(\"M2_DELETE_PROJ_GRP_ID\");\r\n    String M2_PROJ_USERNAME = \"invalid\";\r\n    String M2_PROJ_PASSWORD = \"invalid\";\r\n    String M2_PROJ_TAGBASE = getProperty(\"M2_DELETE_PROJ_TAGBASE_PERFORM\");\r\n    String M2_PROJ_TAG = getProperty(\"M2_DELETE_PROJ_TAG\");\r\n    String M2_PROJ_SCM_URL = getProperty(\"M2_DELETE_PROJ_GRP_SCM_ROOT_URL\");\r\n    init();\r\n    try {\r\n        enableDistributedBuilds();\r\n        String M2_PROJECT_BUILD_ENV = getProperty(\"M2_RELEASE_BUILD_ENV\");\r\n        createBuildEnvAndBuildagentGroup();\r\n        showProjectGroup(M2_PROJ_GRP_NAME, M2_PROJ_GRP_ID, \"\");\r\n        clickButtonWithValue(\"Release\");\r\n        assertReleaseSuccess();\r\n        releasePerformProjectWithProvideParameters(M2_PROJ_USERNAME, M2_PROJ_PASSWORD, M2_PROJ_TAGBASE, M2_PROJ_TAG, M2_PROJ_SCM_URL, M2_PROJECT_BUILD_ENV, false);\r\n        assertPreparedReleasesFileCreated();\r\n        removeProjectGroup(M2_PROJ_GRP_NAME);\r\n        assertLinkNotPresent(M2_PROJ_GRP_NAME);\r\n    } finally {\r\n        disableDistributedBuilds();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ReportTest.java",
+  "methodName" : "testViewBuildsReportWithSuccessfulBuild",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testProjectGroupAllBuildSuccess\" })\r\npublic void testViewBuildsReportWithSuccessfulBuild() throws Exception {\r\n    goToProjectBuildsReport();\r\n    selectValue(\"buildStatus\", \"Ok\");\r\n    clickButtonWithValue(\"View Report\");\r\n    assertProjectBuildReportWithResult();\r\n    assertTextPresent(getProperty(\"M2_PROJ_GRP_NAME\"));\r\n    assertImgWithAlt(\"Success\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ReportTest.java",
+  "methodName" : "testBuildsReportWithInvalidRowCount",
+  "sourceCode" : "/*@Test( dependsOnMethods = { \"testProjectGroupAllBuildSuccess\" } )\r\n    public void testBuildsReportPagination()\r\n        throws Exception\r\n    {\r\n        String M2_PROJ_GRP_NAME = getProperty( \"M2_PROJ_GRP_NAME\" );\r\n        String M2_PROJ_GRP_ID = getProperty( \"M2_PROJ_GRP_ID\" );\r\n        String M2_PROJ_GRP_DESCRIPTION = getProperty( \"M2_PROJ_GRP_DESCRIPTION\" );\r\n        \r\n        for ( int ctr = 0; ctr < 10; ctr++ )\r\n        {\r\n            buildProjectGroup( M2_PROJ_GRP_NAME, M2_PROJ_GRP_ID, M2_PROJ_GRP_DESCRIPTION, M2_PROJ_GRP_NAME, true );\r\n            clickButtonWithValue( \"Release\" );\r\n            assertReleaseSuccess();\r\n        }\r\n\r\n        goToProjectBuildsReport();\r\n        setFieldValue( \"rowCount\", \"10\" );\r\n        clickButtonWithValue( \"View Report\" );\r\n\r\n        assertProjectBuildReportWithResult();\r\n        assertLinkNotPresent( \"Prev\" );\r\n        assertLinkNotPresent( \"1\" );\r\n        assertLinkPresent( \"2\" );\r\n        assertLinkPresent( \"Next\" );\r\n\r\n        clickLinkWithText( \"2\" );\r\n        assertProjectBuildReportWithResult();\r\n        assertLinkNotPresent( \"Next\" );\r\n        assertLinkNotPresent( \"2\" );\r\n        assertLinkPresent( \"1\" );\r\n        assertLinkPresent( \"Prev\" );\r\n\r\n        clickLinkWithText( \"Prev\" );\r\n        assertProjectBuildReportWithResult();\r\n        assertLinkNotPresent( \"Prev\" );\r\n        assertLinkNotPresent( \"1\" );\r\n        assertLinkPresent( \"2\" );\r\n        assertLinkPresent( \"Next\" );\r\n    }*/\r\n@Test\r\npublic void testBuildsReportWithInvalidRowCount() {\r\n    goToProjectBuildsReport();\r\n    setFieldValue(\"rowCount\", \"1\");\r\n    clickButtonWithValue(\"View Report\");\r\n    assertProjectBuildReportWithFieldError();\r\n    assertTextPresent(\"Row count should be at least 10.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ReportTest.java",
+  "methodName" : "testBuildsReportWithInvalidDates",
+  "sourceCode" : "@Test\r\npublic void testBuildsReportWithInvalidDates() {\r\n    goToProjectBuildsReport();\r\n    setFieldValue(\"startDate\", \"05/25/2010\");\r\n    setFieldValue(\"endDate\", \"05/24/2010\");\r\n    clickButtonWithValue(\"View Report\");\r\n    assertProjectBuildReportWithFieldError();\r\n    assertTextPresent(\"Start Date must be earlier than the End Date\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ReportTest.java",
+  "methodName" : "testViewBuildsReportWithFailedBuild",
+  "sourceCode" : "@Test\r\npublic void testViewBuildsReportWithFailedBuild() throws Exception {\r\n    String M2_POM_URL = getProperty(\"M2_FAILING_PROJ_POM_URL\");\r\n    String M2_POM_USERNAME = getProperty(\"M2_POM_USERNAME\");\r\n    String M2_POM_PASSWORD = getProperty(\"M2_POM_PASSWORD\");\r\n    String M2_PROJ_GRP_NAME = getProperty(\"M2_FAILING_PROJ_GRP_NAME\");\r\n    String M2_PROJ_GRP_ID = getProperty(\"M2_FAILING_PROJ_GRP_ID\");\r\n    String M2_PROJ_GRP_DESCRIPTION = getProperty(\"M2_FAILING_PROJ_DESCRIPTION\");\r\n    addMavenTwoProject(M2_POM_URL, M2_POM_USERNAME, M2_POM_PASSWORD, null, true);\r\n    assertProjectGroupSummaryPage(M2_PROJ_GRP_NAME, M2_PROJ_GRP_ID, M2_PROJ_GRP_DESCRIPTION);\r\n    buildProjectGroup(M2_PROJ_GRP_NAME, M2_PROJ_GRP_ID, M2_PROJ_GRP_DESCRIPTION, M2_PROJ_GRP_NAME, false);\r\n    goToProjectBuildsReport();\r\n    selectValue(\"buildStatus\", \"Failed\");\r\n    clickButtonWithValue(\"View Report\");\r\n    assertProjectBuildReportWithResult();\r\n    assertImgWithAlt(\"Failed\");\r\n    assertTextPresent(M2_PROJ_GRP_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ReportTest.java",
+  "methodName" : "testViewBuildsReportWithErrorBuild",
+  "sourceCode" : "@Test\r\npublic void testViewBuildsReportWithErrorBuild() {\r\n    goToProjectBuildsReport();\r\n    selectValue(\"buildStatus\", \"Error\");\r\n    clickButtonWithValue(\"View Report\");\r\n    assertProjectBuildReportWithNoResult();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ScheduleTest.java",
+  "methodName" : "testAddSchedule",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddScheduleNoBuildQueueToBeUsed\" })\r\npublic void testAddSchedule() {\r\n    String SCHEDULE_NAME = getProperty(\"SCHEDULE_NAME\");\r\n    String SCHEDULE_DESCRIPTION = getProperty(\"SCHEDULE_DESCRIPTION\");\r\n    String SCHEDULE_EXPR_SECOND = getProperty(\"SCHEDULE_EXPR_SECOND\");\r\n    String SCHEDULE_EXPR_MINUTE = getProperty(\"SCHEDULE_EXPR_MINUTE\");\r\n    String SCHEDULE_EXPR_HOUR = getProperty(\"SCHEDULE_EXPR_HOUR\");\r\n    String SCHEDULE_EXPR_DAY_MONTH = getProperty(\"SCHEDULE_EXPR_DAY_MONTH\");\r\n    String SCHEDULE_EXPR_MONTH = getProperty(\"SCHEDULE_EXPR_MONTH\");\r\n    String SCHEDULE_EXPR_DAY_WEEK = getProperty(\"SCHEDULE_EXPR_DAY_WEEK\");\r\n    String SCHEDULE_EXPR_YEAR = getProperty(\"SCHEDULE_EXPR_YEAR\");\r\n    String SCHEDULE_MAX_TIME = getProperty(\"SCHEDULE_MAX_TIME\");\r\n    String SCHEDULE_PERIOD = getProperty(\"SCHEDULE_PERIOD\");\r\n    goToAddSchedule();\r\n    addEditSchedule(SCHEDULE_NAME, SCHEDULE_DESCRIPTION, SCHEDULE_EXPR_SECOND, SCHEDULE_EXPR_MINUTE, SCHEDULE_EXPR_HOUR, SCHEDULE_EXPR_DAY_MONTH, SCHEDULE_EXPR_MONTH, SCHEDULE_EXPR_DAY_WEEK, SCHEDULE_EXPR_YEAR, SCHEDULE_MAX_TIME, SCHEDULE_PERIOD, true, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ScheduleTest.java",
+  "methodName" : "testAddScheduleWithInvalidValues",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddScheduleNoBuildQueueToBeUsed\" })\r\npublic void testAddScheduleWithInvalidValues() {\r\n    String SCHEDULE_NAME = \"!@#$<>?etc\";\r\n    String SCHEDULE_DESCRIPTION = \"![]<>'^&etc\";\r\n    String SCHEDULE_EXPR_SECOND = getProperty(\"SCHEDULE_EXPR_SECOND\");\r\n    String SCHEDULE_EXPR_MINUTE = getProperty(\"SCHEDULE_EXPR_MINUTE\");\r\n    String SCHEDULE_EXPR_HOUR = getProperty(\"SCHEDULE_EXPR_HOUR\");\r\n    String SCHEDULE_EXPR_DAY_MONTH = getProperty(\"SCHEDULE_EXPR_DAY_MONTH\");\r\n    String SCHEDULE_EXPR_MONTH = getProperty(\"SCHEDULE_EXPR_MONTH\");\r\n    String SCHEDULE_EXPR_DAY_WEEK = getProperty(\"SCHEDULE_EXPR_DAY_WEEK\");\r\n    String SCHEDULE_EXPR_YEAR = getProperty(\"SCHEDULE_EXPR_YEAR\");\r\n    String SCHEDULE_MAX_TIME = getProperty(\"SCHEDULE_MAX_TIME\");\r\n    String SCHEDULE_PERIOD = getProperty(\"SCHEDULE_PERIOD\");\r\n    goToAddSchedule();\r\n    addEditSchedule(SCHEDULE_NAME, SCHEDULE_DESCRIPTION, SCHEDULE_EXPR_SECOND, SCHEDULE_EXPR_MINUTE, SCHEDULE_EXPR_HOUR, SCHEDULE_EXPR_DAY_MONTH, SCHEDULE_EXPR_MONTH, SCHEDULE_EXPR_DAY_WEEK, SCHEDULE_EXPR_YEAR, SCHEDULE_MAX_TIME, SCHEDULE_PERIOD, true, false);\r\n    assertTextPresent(\"Name contains invalid characters.\");\r\n    assertTextPresent(\"Description contains invalid characters.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ScheduleTest.java",
+  "methodName" : "testAddDuplicatedSchedule",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddSchedule\" })\r\npublic void testAddDuplicatedSchedule() {\r\n    String SCHEDULE_NAME = getProperty(\"SCHEDULE_NAME\");\r\n    String SCHEDULE_DESCRIPTION = getProperty(\"SCHEDULE_DESCRIPTION\");\r\n    String SCHEDULE_EXPR_SECOND = getProperty(\"SCHEDULE_EXPR_SECOND\");\r\n    String SCHEDULE_EXPR_MINUTE = getProperty(\"SCHEDULE_EXPR_MINUTE\");\r\n    String SCHEDULE_EXPR_HOUR = getProperty(\"SCHEDULE_EXPR_HOUR\");\r\n    String SCHEDULE_EXPR_DAY_MONTH = getProperty(\"SCHEDULE_EXPR_DAY_MONTH\");\r\n    String SCHEDULE_EXPR_MONTH = getProperty(\"SCHEDULE_EXPR_MONTH\");\r\n    String SCHEDULE_EXPR_DAY_WEEK = getProperty(\"SCHEDULE_EXPR_DAY_WEEK\");\r\n    String SCHEDULE_EXPR_YEAR = getProperty(\"SCHEDULE_EXPR_YEAR\");\r\n    String SCHEDULE_MAX_TIME = getProperty(\"SCHEDULE_MAX_TIME\");\r\n    String SCHEDULE_PERIOD = getProperty(\"SCHEDULE_PERIOD\");\r\n    goToAddSchedule();\r\n    addEditSchedule(SCHEDULE_NAME, SCHEDULE_DESCRIPTION, SCHEDULE_EXPR_SECOND, SCHEDULE_EXPR_MINUTE, SCHEDULE_EXPR_HOUR, SCHEDULE_EXPR_DAY_MONTH, SCHEDULE_EXPR_MONTH, SCHEDULE_EXPR_DAY_WEEK, SCHEDULE_EXPR_YEAR, SCHEDULE_MAX_TIME, SCHEDULE_PERIOD, true, false);\r\n    assertTextPresent(\"A Schedule with the same name already exists\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ScheduleTest.java",
+  "methodName" : "testEditSchedule",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddDuplicatedSchedule\" })\r\npublic void testEditSchedule() {\r\n    String SCHEDULE_NAME = getProperty(\"SCHEDULE_NAME\");\r\n    String SCHEDULE_DESCRIPTION = getProperty(\"SCHEDULE_DESCRIPTION\");\r\n    String SCHEDULE_EXPR_SECOND = getProperty(\"SCHEDULE_EXPR_SECOND\");\r\n    String SCHEDULE_EXPR_MINUTE = getProperty(\"SCHEDULE_EXPR_MINUTE\");\r\n    String SCHEDULE_EXPR_HOUR = getProperty(\"SCHEDULE_EXPR_HOUR\");\r\n    String SCHEDULE_EXPR_DAY_MONTH = getProperty(\"SCHEDULE_EXPR_DAY_MONTH\");\r\n    String SCHEDULE_EXPR_MONTH = getProperty(\"SCHEDULE_EXPR_MONTH\");\r\n    String SCHEDULE_EXPR_DAY_WEEK = getProperty(\"SCHEDULE_EXPR_DAY_WEEK\");\r\n    String SCHEDULE_EXPR_YEAR = getProperty(\"SCHEDULE_EXPR_YEAR\");\r\n    String SCHEDULE_MAX_TIME = getProperty(\"SCHEDULE_MAX_TIME\");\r\n    String SCHEDULE_PERIOD = getProperty(\"SCHEDULE_PERIOD\");\r\n    String name = \"new_name\";\r\n    String description = \"new_description\";\r\n    String second = \"1\";\r\n    String minute = \"20\";\r\n    String hour = \"15\";\r\n    String dayMonth = \"20\";\r\n    String month = \"9\";\r\n    String dayWeek = \"?\";\r\n    String year = \"\";\r\n    String maxTime = \"9000\";\r\n    String period = \"0\";\r\n    goToEditSchedule(SCHEDULE_NAME, SCHEDULE_DESCRIPTION, SCHEDULE_EXPR_SECOND, SCHEDULE_EXPR_MINUTE, SCHEDULE_EXPR_HOUR, SCHEDULE_EXPR_DAY_MONTH, SCHEDULE_EXPR_MONTH, SCHEDULE_EXPR_DAY_WEEK, SCHEDULE_EXPR_YEAR, SCHEDULE_MAX_TIME, SCHEDULE_PERIOD);\r\n    addEditSchedule(name, description, second, minute, hour, dayMonth, month, dayWeek, year, maxTime, period, false, true);\r\n    goToEditSchedule(name, description, second, minute, hour, dayMonth, month, dayWeek, year, maxTime, period);\r\n    addEditSchedule(SCHEDULE_NAME, SCHEDULE_DESCRIPTION, SCHEDULE_EXPR_SECOND, SCHEDULE_EXPR_MINUTE, SCHEDULE_EXPR_HOUR, SCHEDULE_EXPR_DAY_MONTH, SCHEDULE_EXPR_MONTH, SCHEDULE_EXPR_DAY_WEEK, SCHEDULE_EXPR_YEAR, SCHEDULE_MAX_TIME, SCHEDULE_PERIOD, false, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ScheduleTest.java",
+  "methodName" : "testDeleteSchedule",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testEditSchedule\" })\r\npublic void testDeleteSchedule() {\r\n    String SCHEDULE_NAME = getProperty(\"SCHEDULE_NAME\");\r\n    removeSchedule(SCHEDULE_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ShellProjectTest.java",
+  "methodName" : "testAddDuplicateShellProject",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddShellProject\" })\r\npublic void testAddDuplicateShellProject() throws Exception {\r\n    String SHELL_NAME = getProperty(\"SHELL_NAME\");\r\n    String SHELL_DESCRIPTION = getProperty(\"SHELL_DESCRIPTION\");\r\n    String SHELL_VERSION = getProperty(\"SHELL_VERSION\");\r\n    String SHELL_TAG = getProperty(\"SHELL_TAG\");\r\n    String SHELL_SCM_URL = getProperty(\"SHELL_SCM_URL\");\r\n    String SHELL_SCM_USERNAME = getProperty(\"SHELL_SCM_USERNAME\");\r\n    String SHELL_SCM_PASSWORD = getProperty(\"SHELL_SCM_PASSWORD\");\r\n    goToAddShellProjectPage();\r\n    addProject(SHELL_NAME, SHELL_DESCRIPTION, SHELL_VERSION, SHELL_SCM_URL, SHELL_SCM_USERNAME, SHELL_SCM_PASSWORD, SHELL_TAG, false, null, null, false, \"shell\");\r\n    assertTextPresent(\"Project name already exist\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\ShellProjectTest.java",
+  "methodName" : "testBuildShellProjectWithDistributedBuildsEnabled",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddBuildAgent\" })\r\npublic void testBuildShellProjectWithDistributedBuildsEnabled() throws Exception {\r\n    String SHELL_GROUP_NAME = getProperty(\"SHELL_GROUP_NAME\");\r\n    String SHELL_GROUP_ID = getProperty(\"SHELL_GROUP_ID\");\r\n    String SHELL_GROUP_DESC = getProperty(\"SHELL_GROUP_DESC\");\r\n    String SHELL_NAME = getProperty(\"SHELL_NAME_TWO\");\r\n    String SHELL_DESCRIPTION = getProperty(\"SHELL_DESCRIPTION_TWO\");\r\n    String SHELL_VERSION = getProperty(\"SHELL_VERSION_TWO\");\r\n    String SHELL_TAG = getProperty(\"SHELL_TAG_TWO\");\r\n    String SHELL_SCM_URL = getProperty(\"SHELL_SCM_URL_TWO\");\r\n    String SHELL_SCM_USERNAME = getProperty(\"SHELL_SCM_USERNAME_TWO\");\r\n    String SHELL_SCM_PASSWORD = getProperty(\"SHELL_SCM_PASSWORD_TWO\");\r\n    addProjectGroup(SHELL_GROUP_NAME, SHELL_GROUP_ID, SHELL_GROUP_DESC, true);\r\n    goToAddShellProjectPage();\r\n    addProject(SHELL_NAME, SHELL_DESCRIPTION, SHELL_VERSION, SHELL_SCM_URL, SHELL_SCM_USERNAME, SHELL_SCM_PASSWORD, SHELL_TAG, false, SHELL_GROUP_NAME, null, true, \"shell\");\r\n    assertProjectGroupSummaryPage(SHELL_GROUP_NAME, SHELL_GROUP_ID, SHELL_GROUP_DESC);\r\n    goToProjectGroupsSummaryPage();\r\n    clickLinkWithText(SHELL_GROUP_NAME);\r\n    clickLinkWithText(\"Build Definitions\");\r\n    clickLinkWithXPath(\"//table[@id='ec_table']/tbody/tr/td[14]/a/img\");\r\n    editBuildDefinitionShellType(\"build.sh\", \"\", \"description\", \"shell\", true);\r\n    enableDistributedBuilds();\r\n    goToProjectGroupsSummaryPage();\r\n    buildProjectGroup(SHELL_GROUP_NAME, SHELL_GROUP_ID, SHELL_GROUP_DESC, SHELL_NAME, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testAddUserWithGuestRole",
+  "sourceCode" : "/*\r\n     * GUEST USER ROLE\r\n     * Guest Role could only view the About Page. Project Groups should not be shown when clicking\r\n     * Show Project Group link.\r\n    */\r\n@Test(dependsOnMethods = { \"testBasicAddDeleteUser\" })\r\npublic void testAddUserWithGuestRole() {\r\n    username = getProperty(\"GUEST_USERNAME\");\r\n    fullname = getProperty(\"GUEST_FULLNAME\");\r\n    createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);\r\n    assertCreatedUserInfo(username);\r\n    //checkUserRoleWithValue( fullname );\r\n    clickLinkWithLocator(\"addRolesToUser_addNDSelectedRoles\", false);\r\n    clickButtonWithValue(\"Submit\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRolePassword());\r\n    changePassword(getUserRolePassword(), getUserRoleNewPassword());\r\n    //assertTextPresent( \"Password successfully changed\" );\r\n    clickLinkWithText(\"Logout\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testGuestUserRoleFunction",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddUserWithGuestRole\" })\r\npublic void testGuestUserRoleFunction() {\r\n    username = getProperty(\"GUEST_USERNAME\");\r\n    fullname = getProperty(\"GUEST_FULLNAME\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertLeftNavMenuWithRole(fullname);\r\n    goToAboutPage();\r\n    clickLinkWithText(\"Show Project Groups\");\r\n    assertTextPresent(\"Project Groups list is empty\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testAddUserWithRegisteredUserRole",
+  "sourceCode" : "/*\r\n     * REGISTERED USER ROLE\r\n     * Registered User Role could only view the About Page. Project Groups should not be shown when clicking\r\n     * Show Project Group link.\r\n    */\r\n@Test(dependsOnMethods = { \"testBasicAddDeleteUser\", \"testGuestUserRoleFunction\" })\r\npublic void testAddUserWithRegisteredUserRole() {\r\n    username = getProperty(\"REGISTERED_USERNAME\");\r\n    fullname = getProperty(\"REGISTERED_FULLNAME\");\r\n    createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);\r\n    assertCreatedUserInfo(username);\r\n    checkUserRoleWithValue(fullname);\r\n    clickButtonWithValue(\"Submit\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRolePassword());\r\n    changePassword(getUserRolePassword(), getUserRoleNewPassword());\r\n    assertTextPresent(\"Password successfully changed\");\r\n    clickLinkWithText(\"Logout\");\r\n    // assertTextPresent(\"You are already logged in.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testRegisteredRoleFunction",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddUserWithRegisteredUserRole\" })\r\npublic void testRegisteredRoleFunction() {\r\n    username = getProperty(\"REGISTERED_USERNAME\");\r\n    fullname = getProperty(\"REGISTERED_FULLNAME\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertLeftNavMenuWithRole(fullname);\r\n    goToAboutPage();\r\n    clickLinkWithText(\"Show Project Groups\");\r\n    assertTextPresent(\"Project Groups list is empty.\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testAddUserWithSystemAdminRole",
+  "sourceCode" : "/*\r\n     * SYSTEM ADMINISTRATOR ROLE\r\n     * Has access to all functions in the application.\r\n     *\r\n     * The following tests only asserts elements that could be shown \r\n     * when system admin user is logged in since the user that is used \r\n     * to test the other functionalities is a system admin user.\r\n     */\r\n@Test(dependsOnMethods = { \"testBasicAddDeleteUser\", \"testRegisteredRoleFunction\" })\r\npublic void testAddUserWithSystemAdminRole() {\r\n    username = getProperty(\"SYSAD_USERNAME\");\r\n    fullname = getProperty(\"SYSAD_FULLNAME\");\r\n    createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);\r\n    assertCreatedUserInfo(username);\r\n    checkUserRoleWithValue(fullname);\r\n    clickButtonWithValue(\"Submit\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRolePassword());\r\n    changePassword(getUserRolePassword(), getUserRoleNewPassword());\r\n    assertTextPresent(\"Password successfully changed\");\r\n    clickLinkWithText(\"Logout\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testSystemAdminRoleFunction",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddUserWithSystemAdminRole\" })\r\npublic void testSystemAdminRoleFunction() {\r\n    username = getProperty(\"SYSAD_USERNAME\");\r\n    fullname = getProperty(\"SYSAD_FULLNAME\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertLeftNavMenuWithRole(fullname);\r\n    clickLinkWithText(\"Show Project Groups\");\r\n    assertTextNotPresent(\"Project Groups list is empty.\");\r\n    assertLinkPresent(\"Default Project Group\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testAddUserWithUserAdminRole",
+  "sourceCode" : "/* \r\n     * USER ADMIN ROLE\r\n     * User Admin role could only add/edit/delete users and can view user Roles. Cannot view Project Groups\r\n     * but can assign a User to a project.\r\n     *\r\n     */\r\n@Test(dependsOnMethods = { \"testBasicAddDeleteUser\", \"testSystemAdminRoleFunction\" })\r\npublic void testAddUserWithUserAdminRole() {\r\n    username = getProperty(\"USERADMIN_USERNAME\");\r\n    fullname = getProperty(\"USERADMIN_FULLNAME\");\r\n    createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);\r\n    assertCreatedUserInfo(username);\r\n    checkUserRoleWithValue(fullname);\r\n    clickButtonWithValue(\"Submit\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRolePassword());\r\n    changePassword(getUserRolePassword(), getUserRoleNewPassword());\r\n    assertTextPresent(\"Password successfully changed\");\r\n    clickLinkWithText(\"Logout\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testUserAdminFunction",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddUserWithUserAdminRole\" })\r\npublic void testUserAdminFunction() {\r\n    username = getProperty(\"USERADMIN_USERNAME\");\r\n    fullname = getProperty(\"USERADMIN_FULLNAME\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertLeftNavMenuWithRole(fullname);\r\n    clickLinkWithText(\"Show Project Groups\");\r\n    assertTextPresent(\"Project Groups list is empty.\");\r\n    // add user\r\n    clickLinkWithText(\"Users\");\r\n    clickButtonWithValue(\"Create New User\");\r\n    assertCreateUserPage();\r\n    setFieldValue(\"user.username\", \"guest0\");\r\n    setFieldValue(\"user.fullName\", \"guest0\");\r\n    setFieldValue(\"user.email\", \"guest0@guest0.com\");\r\n    setFieldValue(\"user.password\", \"pass\");\r\n    setFieldValue(\"user.confirmPassword\", \"pass\");\r\n    submit();\r\n    assertUserRolesPage();\r\n    clickButtonWithValue(\"Submit\");\r\n    selectValue(\"name=ec_rd\", \"50\");\r\n    waitPage();\r\n    // delete user\r\n    deleteUser(\"guest0\", \"guest0\", \"guest0@guest0.com\");\r\n    // TODO edit user\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testAddUserWithContinuumGroupProjectAdminRole",
+  "sourceCode" : "/*\r\n     * CONTINUUM GROUP PROJECT ADMIN\r\n     * - Can Add/Edit/Delete Project Group, can Add/Edit/Delete projects, can assign Users\r\n     *    roles to existing projects, can add/edit/delete schedules, can view existing roles for the\r\n     *    projects, can build/release projects\r\n     * - Cannot add users, --- --- ---\r\n     */\r\n@Test(dependsOnMethods = { \"testBasicAddDeleteUser\", \"testUserAdminFunction\" })\r\npublic void testAddUserWithContinuumGroupProjectAdminRole() {\r\n    username = getProperty(\"GROUPPROJECTADMIN_USERNAME\");\r\n    fullname = getProperty(\"GROUPPROJECTADMIN_FULLNAME\");\r\n    createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);\r\n    assertCreatedUserInfo(username);\r\n    checkUserRoleWithValue(fullname);\r\n    clickButtonWithValue(\"Submit\");\r\n    // enable distributed build\r\n    clickLinkWithText(\"Configuration\");\r\n    clickLinkWithLocator(\"configuration_distributedBuildEnabled\", false);\r\n    clickButtonWithValue(\"Save\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRolePassword());\r\n    changePassword(getUserRolePassword(), getUserRoleNewPassword());\r\n    assertTextPresent(\"Password successfully changed\");\r\n    assertProjectAdministratorAccess();\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n    // disable distributed build\r\n    clickLinkWithText(\"Configuration\");\r\n    clickLinkWithLocator(\"configuration_distributedBuildEnabled\", false);\r\n    clickButtonWithValue(\"Save\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertProjectAdministratorAccess();\r\n    clickLinkWithText(\"Logout\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testContinuumGroupProjectAdmin_AddProjectGroup",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddUserWithContinuumGroupProjectAdminRole\" })\r\npublic void testContinuumGroupProjectAdmin_AddProjectGroup() throws Exception {\r\n    username = getProperty(\"GROUPPROJECTADMIN_USERNAME\");\r\n    fullname = getProperty(\"GROUPPROJECTADMIN_FULLNAME\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertLeftNavMenuWithRole(fullname);\r\n    clickLinkWithText(\"Show Project Groups\");\r\n    assertTextNotPresent(\"Project Groups list is empty.\");\r\n    // test add project group\r\n    clickButtonWithValue(\"Add Project Group\");\r\n    setFieldValue(\"name\", \"Test Group\");\r\n    setFieldValue(\"groupId\", \"Test Group\");\r\n    setFieldValue(\"description\", \"testing project group\");\r\n    submit();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testContinuumGroupProjectAdmin_AddProjectToProjectGroup",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testContinuumGroupProjectAdmin_AddProjectGroup\" })\r\npublic void testContinuumGroupProjectAdmin_AddProjectToProjectGroup() throws Exception {\r\n    clickLinkWithText(\"Test Group\");\r\n    clickButtonWithValue(\"Add\");\r\n    assertAddMavenTwoProjectPage();\r\n    setFieldValue(\"m2PomUrl\", getProperty(\"M2_POM_URL\"));\r\n    clickButtonWithValue(\"Add\");\r\n    waitAddProject(\"Continuum - Project Group\");\r\n    assertTextPresent(\"ContinuumBuildQueueTestData\");\r\n    waitForProjectCheckout();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testContinuumGroupProjectAdmin_BuildProject",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testContinuumGroupProjectAdmin_AddProjectToProjectGroup\" })\r\npublic void testContinuumGroupProjectAdmin_BuildProject() throws Exception {\r\n    buildProjectGroup(\"Test Group\", \"Test Group\", \"testing project group\", \"ContinuumBuildQueueTestData\", true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testContinuumGroupProjectAdmin_AssignUserToAGroup",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testContinuumGroupProjectAdmin_BuildProject\" })\r\npublic void testContinuumGroupProjectAdmin_AssignUserToAGroup() {\r\n    clickLinkWithText(\"Users\");\r\n    clickLinkWithText(\"guest1\");\r\n    clickLinkWithText(\"Edit Roles\");\r\n    checkUserRoleWithValue(\"Guest\");\r\n    checkResourceRoleWithValue(\"Project Developer - Test Group\");\r\n    submit();\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testUserWithContinuumGroupProjectDeveloperRole",
+  "sourceCode" : "/*\r\n     * Uncomment the lines below to release a Project provided that you add\r\n     * the values under RELEASE A PROJECT in testng.properties file (project's pom url, access to project to be released.)\r\n    \t\r\n    @Test( dependsOnMethods = { \"testContinuumGroupProjectAdmin_AssignUserToAGroup\" } )\r\n    public void testContinuumGroupProjectAdmin_ReleaseProject() throws Exception\r\n    {\r\n\tString projectUrl = getProperty( \"PROJECT_URL_TO_BE_RELEASED\" );\r\n\tString projectName = getProperty( \"PROJECT_NAME_TO_BE_RELEASED\" );\r\n\tString projectUsername = getProperty( \"PROJECT_USERNAME\" );\r\n\tString projectPassword = getProperty( \"PROJECT_USERNAME\" );\r\n\t// add a project group\r\n\tclickLinkWithText( \"Show Project Groups\" );\r\n\tclickButtonWithValue( \"Add Project Group\" );\r\n\tsetFieldValue( \"name\", \"Project Group\" );\r\n        setFieldValue( \"groupId\", \"Project Group\" );\r\n        setFieldValue( \"description\", \"project group for projects to be released\" );\r\n\tsubmit();\r\n\t// add a project to a project group\r\n\tclickLinkWithText( \"Project Group\" );\r\n\tclickButtonWithValue( \"Add\" );\r\n\tassertAddMavenTwoProjectPage();\r\n\tsetFieldValue( \"m2PomUrl\", projectUrl );\r\n\t// set username and password here\r\n\tsetFieldValue( \"scmUsername\", projectUsername );\r\n\tsetFieldValue( \"scmPassword\", projectPassword );\r\n\tclickButtonWithValue( \"Add\" );\r\n\tString title;\r\n\tboolean success = true;\r\n\tif ( success )\r\n        {\r\n            title = \"Continuum - Project Group\";\r\n        }\r\n        else\r\n        {\r\n            title = \"Continuum - Add Maven Project\";\r\n        }\r\n        waitAddProject( title );\r\n\t// build the project added in the project group\r\n\tbuildProjectGroup( \"Project Group\", \"Project Group\", \"project group for projects to be released\", projectName );\r\n\t// release the project\r\n\tclickButtonWithValue( \"Release\" );\r\n\tclickLinkWithText( \"Logout\" );\r\n        login( getAdminUsername(), getAdminPassword() );\r\n    }\r\n    */\r\n@Test(dependsOnMethods = { \"testContinuumGroupProjectAdmin_AssignUserToAGroup\" })\r\npublic void testUserWithContinuumGroupProjectDeveloperRole() {\r\n    username = getProperty(\"GROUPPROJECTDEVELOPER_USERNAME\");\r\n    fullname = getProperty(\"GROUPPROJECTDEVELOPER_FULLNAME\");\r\n    createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);\r\n    assertCreatedUserInfo(username);\r\n    checkUserRoleWithValue(fullname);\r\n    clickButtonWithValue(\"Submit\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRolePassword());\r\n    changePassword(getUserRolePassword(), getUserRoleNewPassword());\r\n    assertTextPresent(\"Password successfully changed\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertLeftNavMenuWithRole(fullname);\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testUserWithContinuumGroupProjectUserRole",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testUserWithContinuumGroupProjectDeveloperRole\" })\r\npublic void testUserWithContinuumGroupProjectUserRole() {\r\n    username = getProperty(\"GROUPPROJECTUSER_USERNAME\");\r\n    fullname = getProperty(\"GROUPPROJECTUSER_FULLNAME\");\r\n    createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);\r\n    assertCreatedUserInfo(username);\r\n    checkUserRoleWithValue(fullname);\r\n    clickButtonWithValue(\"Submit\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRolePassword());\r\n    changePassword(getUserRolePassword(), getUserRoleNewPassword());\r\n    assertTextPresent(\"Password successfully changed\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertLeftNavMenuWithRole(fullname);\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testUserWithContinuumManageBuildEnvironmentRole",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testUserWithContinuumGroupProjectUserRole\" })\r\npublic void testUserWithContinuumManageBuildEnvironmentRole() {\r\n    username = getProperty(\"MANAGEBUILDENVIRONMENT_USERNAME\");\r\n    fullname = getProperty(\"MANAGEBUILDENVIRONMENT_FULLNAME\");\r\n    createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);\r\n    assertCreatedUserInfo(username);\r\n    checkUserRoleWithValue(fullname);\r\n    clickButtonWithValue(\"Submit\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRolePassword());\r\n    changePassword(getUserRolePassword(), getUserRoleNewPassword());\r\n    assertTextPresent(\"Password successfully changed\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertLeftNavMenuWithRole(fullname);\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testUserWithContinuumManageBuildTemplatesRole",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testUserWithContinuumManageBuildEnvironmentRole\" })\r\npublic void testUserWithContinuumManageBuildTemplatesRole() {\r\n    username = getProperty(\"MANAGEBUILDTEMPLATES_USERNAME\");\r\n    fullname = getProperty(\"MANAGEBUILDTEMPLATES_FULLNAME\");\r\n    createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);\r\n    assertCreatedUserInfo(username);\r\n    checkUserRoleWithValue(fullname);\r\n    clickButtonWithValue(\"Submit\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRolePassword());\r\n    changePassword(getUserRolePassword(), getUserRoleNewPassword());\r\n    assertTextPresent(\"Password successfully changed\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertLeftNavMenuWithRole(fullname);\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testUserWithContinuumManageInstallationsRole",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testUserWithContinuumManageBuildTemplatesRole\" })\r\npublic void testUserWithContinuumManageInstallationsRole() {\r\n    username = getProperty(\"MANAGEINSTALLATIONS_USERNAME\");\r\n    fullname = getProperty(\"MANAGEINSTALLATIONS_FULLNAME\");\r\n    createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);\r\n    assertCreatedUserInfo(username);\r\n    checkUserRoleWithValue(fullname);\r\n    clickButtonWithValue(\"Submit\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRolePassword());\r\n    changePassword(getUserRolePassword(), getUserRoleNewPassword());\r\n    assertTextPresent(\"Password successfully changed\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertLeftNavMenuWithRole(fullname);\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testUserWithContinuumManageLocalRepoRole",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testUserWithContinuumManageInstallationsRole\" })\r\npublic void testUserWithContinuumManageLocalRepoRole() {\r\n    username = getProperty(\"MANAGELOCALREPOS_USERNAME\");\r\n    fullname = getProperty(\"MANAGELOCALREPOS_FULLNAME\");\r\n    createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);\r\n    assertCreatedUserInfo(username);\r\n    checkUserRoleWithValue(fullname);\r\n    clickButtonWithValue(\"Submit\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRolePassword());\r\n    changePassword(getUserRolePassword(), getUserRoleNewPassword());\r\n    assertTextPresent(\"Password successfully changed\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertLeftNavMenuWithRole(fullname);\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testUserWithContinuumManagePurgingRole",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testUserWithContinuumManageLocalRepoRole\" })\r\npublic void testUserWithContinuumManagePurgingRole() {\r\n    username = getProperty(\"MANAGEPURGING_USERNAME\");\r\n    fullname = getProperty(\"MANAGEPURGING_FULLNAME\");\r\n    createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);\r\n    assertCreatedUserInfo(username);\r\n    checkUserRoleWithValue(fullname);\r\n    clickButtonWithValue(\"Submit\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRolePassword());\r\n    changePassword(getUserRolePassword(), getUserRoleNewPassword());\r\n    assertTextPresent(\"Password successfully changed\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertLeftNavMenuWithRole(fullname);\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testUserWithContinuumManageQueuesRole",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testUserWithContinuumManagePurgingRole\" })\r\npublic void testUserWithContinuumManageQueuesRole() {\r\n    username = getProperty(\"MANAGEQUEUES_USERNAME\");\r\n    fullname = getProperty(\"MANAGEQUEUES_FULLNAME\");\r\n    createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);\r\n    assertCreatedUserInfo(username);\r\n    checkUserRoleWithValue(fullname);\r\n    clickButtonWithValue(\"Submit\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRolePassword());\r\n    changePassword(getUserRolePassword(), getUserRoleNewPassword());\r\n    assertTextPresent(\"Password successfully changed\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertLeftNavMenuWithRole(fullname);\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testUserWithContinuumManageSchedulingRole",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testUserWithContinuumManageQueuesRole\" })\r\npublic void testUserWithContinuumManageSchedulingRole() {\r\n    username = getProperty(\"MANAGESCHEDULING_USERNAME\");\r\n    fullname = getProperty(\"MANAGESCHEDULING_FULLNAME\");\r\n    createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);\r\n    assertCreatedUserInfo(username);\r\n    checkUserRoleWithValue(fullname);\r\n    clickButtonWithValue(\"Submit\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRolePassword());\r\n    changePassword(getUserRolePassword(), getUserRoleNewPassword());\r\n    assertTextPresent(\"Password successfully changed\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertLeftNavMenuWithRole(fullname);\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testUserWithProjectAdminDefaultProjectGroup",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testUserWithContinuumManageSchedulingRole\" })\r\npublic void testUserWithProjectAdminDefaultProjectGroup() {\r\n    username = getProperty(\"PROJECTADMINISTRATOR_DEFAULTPROJECTGROUP_USERNAME\");\r\n    fullname = getProperty(\"PROJECTADMINISTRATOR_DEFAULTPROJECTGROUP_FULLNAME\");\r\n    createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);\r\n    assertCreatedUserInfo(username);\r\n    checkResourceRoleWithValue(fullname);\r\n    clickButtonWithValue(\"Submit\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRolePassword());\r\n    changePassword(getUserRolePassword(), getUserRoleNewPassword());\r\n    assertTextPresent(\"Password successfully changed\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertLeftNavMenuWithRole(fullname);\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testUserWithProjectDevDefaultProjectGroup",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testUserWithProjectAdminDefaultProjectGroup\" })\r\npublic void testUserWithProjectDevDefaultProjectGroup() {\r\n    username = getProperty(\"PROJECTDEVELOPER_DEFAULTPROJECTGROUP_USERNAME\");\r\n    fullname = getProperty(\"PROJECTDEVELOPER_DEFAULTPROJECTGROUP_FULLNAME\");\r\n    createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);\r\n    assertCreatedUserInfo(username);\r\n    checkResourceRoleWithValue(fullname);\r\n    clickButtonWithValue(\"Submit\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRolePassword());\r\n    changePassword(getUserRolePassword(), getUserRoleNewPassword());\r\n    assertTextPresent(\"Password successfully changed\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertLeftNavMenuWithRole(fullname);\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Continuum\\continuum-webapp-test\\src\\test\\testng\\org\\apache\\continuum\\web\\test\\UserRolesManagementTest.java",
+  "methodName" : "testUserWithProjectUserDefaultProjectGroup",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testUserWithProjectDevDefaultProjectGroup\" })\r\npublic void testUserWithProjectUserDefaultProjectGroup() {\r\n    username = getProperty(\"PROJECTUSER_DEFAULTPROJECTGROUP_USERNAME\");\r\n    fullname = getProperty(\"PROJECTUSER_DEFAULTPROJECTGROUP_FULLNAME\");\r\n    createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);\r\n    assertCreatedUserInfo(username);\r\n    checkResourceRoleWithValue(fullname);\r\n    clickButtonWithValue(\"Submit\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRolePassword());\r\n    changePassword(getUserRolePassword(), getUserRoleNewPassword());\r\n    assertTextPresent(\"Password successfully changed\");\r\n    clickLinkWithText(\"Logout\");\r\n    login(username, getUserRoleNewPassword());\r\n    assertLeftNavMenuWithRole(fullname);\r\n    clickLinkWithText(\"Logout\");\r\n    login(getAdminUsername(), getAdminPassword());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+} ]

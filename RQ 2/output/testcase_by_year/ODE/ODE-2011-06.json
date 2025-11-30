@@ -1,0 +1,1435 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\BpelActivityTest.java",
+  "methodName" : "testThrowOnEvent",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testThrowOnEvent() throws Exception {\r\n    final String bundleName = \"TestThrowOnEvent\";\r\n    // deploy the required service\r\n    server.deployService(DummyService.class.getCanonicalName());\r\n    if (server.isDeployed(bundleName))\r\n        server.undeployProcess(bundleName);\r\n    server.deployProcess(bundleName);\r\n    new Thread(\"SECOND CLIENT\") {\r\n\r\n        public void run() {\r\n            try {\r\n                Thread.sleep(3000);\r\n                String response = sendRequestFile(\"http://localhost:8888/ode/processes/OnEventCorrelation/\", bundleName, \"testRequest.soap\");\r\n            } catch (Exception e) {\r\n                fail(e.getMessage());\r\n            }\r\n        }\r\n    }.start();\r\n    new Thread(\"THIRD CLIENT\") {\r\n\r\n        public void run() {\r\n            try {\r\n                Thread.sleep(6000);\r\n                sendRequestFile(\"http://localhost:8888/ode/processes/OnEventCorrelation/\", bundleName, \"testRequest.soap\");\r\n            } catch (Exception e) {\r\n                fail(e.getMessage());\r\n            } finally {\r\n                try {\r\n                    Thread.sleep(1000);\r\n                } catch (Exception e2) {\r\n                }\r\n                server.undeployProcess(bundleName);\r\n            }\r\n        }\r\n    }.start();\r\n    try {\r\n        Thread.currentThread().setName(\"FIRST CLIENT\");\r\n        sendRequestFile(\"http://localhost:8888/ode/processes/OnEventCorrelation/\", bundleName, \"testRequest.soap\");\r\n        Thread.sleep(9000);\r\n    } catch (Exception e) {\r\n        fail(e.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\ClusteredOutgoingTrafficTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void test() throws Exception {\r\n    String bundleName = \"TestClusteredOutgoingTraffic\";\r\n    if (server.isDeployed(bundleName))\r\n        server.undeployProcess(bundleName);\r\n    server.deployProcess(bundleName);\r\n    try {\r\n        String response = sendRequestFile(\"http://localhost:8888/ode/processes/PingPongService/\", bundleName, \"testRequest.soap\");\r\n        System.out.println(response);\r\n        assertTrue(response.contains(\"clusterOutput\"));\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\correlation\\CorrelationJoinLazyTest.java",
+  "methodName" : "testCorrelationJoin",
+  "sourceCode" : "/**\r\n * Tests a message being saved by no instance waiting for it. The saved message is picked up\r\n * when the third message arrives, and is consumed.\r\n *\r\n * @throws Exception\r\n */\r\n@Test(dataProvider = \"configs\")\r\npublic void testCorrelationJoin() throws Exception {\r\n    final String bundleName = \"TestCorrelationJoinLazy\";\r\n    // deploy the required service\r\n    server.deployService(DummyService.class.getCanonicalName());\r\n    if (server.isDeployed(bundleName))\r\n        server.undeployProcess(bundleName);\r\n    server.deployProcess(bundleName);\r\n    new Thread() {\r\n\r\n        public void run() {\r\n            try {\r\n                Thread.sleep(3000);\r\n                sendRequestFile(\"http://localhost:8888/processes/correlationMultiTest\", bundleName, \"testRequest2.soap\");\r\n            } catch (Exception e) {\r\n                fail(e.getMessage());\r\n            }\r\n        }\r\n    }.start();\r\n    new Thread() {\r\n\r\n        public void run() {\r\n            try {\r\n                Thread.sleep(6000);\r\n                sendRequestFile(\"http://localhost:8888/processes/correlationMultiTest\", bundleName, \"testRequest3.soap\");\r\n            } catch (Exception e) {\r\n                fail(e.getMessage());\r\n            }\r\n        }\r\n    }.start();\r\n    try {\r\n        String response = sendRequestFile(\"http://localhost:8888/processes/correlationMultiTest\", bundleName, \"testRequest.soap\");\r\n        System.out.println(\"=>\\n\" + response);\r\n        assertTrue(response.contains(\">1;3;2;<\"));\r\n    } catch (Exception e) {\r\n        fail(e.getMessage());\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\correlation\\CorrelationJoinTest.java",
+  "methodName" : "testCorrelationJoin",
+  "sourceCode" : "/**\r\n * Tests rendezvous\r\n *\r\n * @throws Exception\r\n */\r\n@Test(dataProvider = \"configs\")\r\npublic void testCorrelationJoin() throws Exception {\r\n    final String bundleName = \"TestCorrelationJoin\";\r\n    // deploy the required service\r\n    server.deployService(DummyService.class.getCanonicalName());\r\n    if (server.isDeployed(bundleName))\r\n        server.undeployProcess(bundleName);\r\n    server.deployProcess(bundleName);\r\n    new Thread() {\r\n\r\n        public void run() {\r\n            try {\r\n                Thread.sleep(3000);\r\n                sendRequestFile(\"http://localhost:8888/processes/correlationMultiTest\", bundleName, \"testRequest2.soap\");\r\n            } catch (Exception e) {\r\n                fail(e.getMessage());\r\n            }\r\n        }\r\n    }.start();\r\n    new Thread() {\r\n\r\n        public void run() {\r\n            try {\r\n                Thread.sleep(6000);\r\n                sendRequestFile(\"http://localhost:8888/processes/correlationMultiTest\", bundleName, \"testRequest3.soap\");\r\n            } catch (Exception e) {\r\n                fail(e.getMessage());\r\n            }\r\n        }\r\n    }.start();\r\n    try {\r\n        String response = sendRequestFile(\"http://localhost:8888/processes/correlationMultiTest\", bundleName, \"testRequest.soap\");\r\n        System.out.println(\"=>\\n\" + response);\r\n        assertTrue(response.contains(\">1;2;3;<\"));\r\n    } catch (Exception e) {\r\n        fail(e.getMessage());\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\correlation\\CorrelationMultiTest.java",
+  "methodName" : "testCorrelationMulti",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCorrelationMulti() throws Exception {\r\n    final String bundleName = \"TestCorrelationMulti\";\r\n    // deploy the required service\r\n    server.deployService(DummyService.class.getCanonicalName());\r\n    if (server.isDeployed(bundleName))\r\n        server.undeployProcess(bundleName);\r\n    server.deployProcess(bundleName);\r\n    new Thread() {\r\n\r\n        public void run() {\r\n            try {\r\n                Thread.sleep(3000);\r\n                sendRequestFile(\"http://localhost:8888/processes/correlationMultiTest\", bundleName, \"testRequest2.soap\");\r\n            } catch (Exception e) {\r\n                fail(e.getMessage());\r\n            }\r\n        }\r\n    }.start();\r\n    try {\r\n        String response = sendRequestFile(\"http://localhost:8888/processes/correlationMultiTest\", bundleName, \"testRequest.soap\");\r\n        assertTrue(response.contains(\">1;2;<\"));\r\n    } catch (Exception e) {\r\n        fail(e.getMessage());\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\correlation\\CorrelationUnicityTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void test() throws Exception {\r\n    String bundleName = \"TestCorrelationUnicity\";\r\n    if (server.isDeployed(bundleName))\r\n        server.undeployProcess(bundleName);\r\n    server.deployProcess(bundleName);\r\n    try {\r\n        {\r\n            String response = sendRequestFile(\"http://localhost:8888/processes/correlationMultiTest\", bundleName, \"testRequest.soap\");\r\n            System.out.println(response);\r\n            assertTrue(response.contains(\"correlationUnicity1\"));\r\n        }\r\n        {\r\n            String response = sendRequestFile(\"http://localhost:8888/processes/correlationMultiTest\", bundleName, \"testRequest.soap\");\r\n            System.out.println(response);\r\n            assertTrue(response.contains(\"correlationUnicity1\"));\r\n        }\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\EndpointConfigurationTest.java",
+  "methodName" : "testEndpointProperties",
+  "sourceCode" : "@Test\r\npublic void testEndpointProperties() throws Exception {\r\n    executeProcess();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\EndpointConfigurationTest.java",
+  "methodName" : "testHttpAuthentication",
+  "sourceCode" : "/**\r\n * Redo the exact same test but with Basic Authentication activated on the external service\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testHttpAuthentication() throws Exception {\r\n    ContextHandler securedEchoContext;\r\n    {\r\n        Constraint constraint = new Constraint();\r\n        constraint.setName(Constraint.__BASIC_AUTH);\r\n        constraint.setRoles(new String[] { \"user\" });\r\n        constraint.setAuthenticate(true);\r\n        ConstraintMapping cm = new ConstraintMapping();\r\n        cm.setConstraint(constraint);\r\n        cm.setPathSpec(\"/*\");\r\n        SecurityHandler sh = new SecurityHandler();\r\n        sh.setUserRealm(new HashUserRealm(\"MyRealm\", getClass().getResource(\"/TestEndpointProperties/jetty-realm.properties\").toURI().toString()));\r\n        sh.setConstraintMappings(new ConstraintMapping[] { cm });\r\n        securedEchoContext = new ContextHandler();\r\n        securedEchoContext.setContextPath(\"/EchoService\");\r\n        HandlerList hc = new HandlerList();\r\n        hc.addHandler(sh);\r\n        hc.addHandler(new JettyWrapper.EchoServiceHandler());\r\n        securedEchoContext.addHandler(hc);\r\n    }\r\n    executeProcess(securedEchoContext);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\EndpointTimeoutsTest.java",
+  "methodName" : "testTimeouts",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testTimeouts() throws Exception {\r\n    String bundleName = \"TestEndpointTimeouts\";\r\n    // deploy the required service\r\n    server.deployService(DummyService.class.getCanonicalName());\r\n    if (server.isDeployed(bundleName))\r\n        server.undeployProcess(bundleName);\r\n    server.deployProcess(bundleName);\r\n    try {\r\n        String response = sendRequestFile(\"http://localhost:8888/processes/helloWorld\", bundleName, \"testRequest.soap\");\r\n        System.out.println(response);\r\n        assertTrue(\"A timeout exception was expected\", response.contains(\"<soapenv:Fault\") && response.contains(\"Timeout or execution error when waiting for response to MEX\"));\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\FailureInvokeTest.java",
+  "methodName" : "testSimpleFaultCatch",
+  "sourceCode" : "@Test(enabled = false)\r\npublic void testSimpleFaultCatch() throws Exception {\r\n    String bundleName = \"TestFailureInInvoke\";\r\n    // deploy the required service\r\n    server.deployService(DummyService.class.getCanonicalName());\r\n    if (server.isDeployed(bundleName))\r\n        server.undeployProcess(bundleName);\r\n    server.deployProcess(bundleName);\r\n    try {\r\n        new Thread(new Killer(this)).start();\r\n        try {\r\n            String response = sendRequestFile(\"http://localhost:8888/processes/invokeFailureTest\", bundleName, \"testRequest.soap\");\r\n            System.out.println(\"=> \" + response);\r\n        } catch (Exception e) {\r\n            e.printStackTrace();\r\n        }\r\n        startServer();\r\n        Thread.sleep(15000);\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\httpbinding\\HttpBindingTest.java",
+  "methodName" : "testHttpBinding",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testHttpBinding() throws Exception {\r\n    String bundleName = \"TestHttpBinding\";\r\n    // deploy the required service\r\n    if (!server.isDeployed(bundleName))\r\n        server.deployProcess(bundleName);\r\n    try {\r\n        String response = sendRequestFile(\"http://localhost:8888/processes/helloWorld\", bundleName, \"testRequest.soap\");\r\n        if (log.isDebugEnabled())\r\n            log.debug(response);\r\n        int valueInSoapRequest = 100;\r\n        int n = 5 + valueInSoapRequest;\r\n        String expectedResult = String.valueOf(n * (n + 1) / 2);\r\n        assertTrue(\"Expected Result: \" + expectedResult + \". Answer was \" + response, response.indexOf(expectedResult) >= 0);\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\httpbinding\\HttpBindingTest.java",
+  "methodName" : "testHttpBindingExt_GET",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testHttpBindingExt_GET() throws Exception {\r\n    String bundleName = \"TestHttpBindingExt_GET\";\r\n    executeBundle(bundleName);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\httpbinding\\HttpBindingTest.java",
+  "methodName" : "testHttpBindingExt_DELETE",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testHttpBindingExt_DELETE() throws Exception {\r\n    String bundleName = \"TestHttpBindingExt_DELETE\";\r\n    executeBundle(bundleName);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\httpbinding\\HttpBindingTest.java",
+  "methodName" : "testHttpBindingExt_POST",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testHttpBindingExt_POST() throws Exception {\r\n    String bundleName = \"TestHttpBindingExt_POST\";\r\n    executeBundle(bundleName);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\httpbinding\\HttpBindingTest.java",
+  "methodName" : "testHttpBindingExt_PUT",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testHttpBindingExt_PUT() throws Exception {\r\n    String bundleName = \"TestHttpBindingExt_PUT\";\r\n    executeBundle(bundleName);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\hydration\\InstanceCountTest.java",
+  "methodName" : "testCorrelationJoin",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCorrelationJoin() throws Exception {\r\n    final String bundleName = \"TestCorrelationJoin\";\r\n    firstResponse = secondResponse = null;\r\n    secondStarted = true;\r\n    server.getODEServer().getBpelServer().setInstanceThrottledMaximumCount(1);\r\n    // deploy the required service\r\n    server.deployService(DummyService.class.getCanonicalName());\r\n    if (server.isDeployed(bundleName))\r\n        server.undeployProcess(bundleName);\r\n    server.deployProcess(bundleName);\r\n    new Thread() {\r\n\r\n        public void run() {\r\n            try {\r\n                Thread.sleep(3000);\r\n                sendRequestFile(\"http://localhost:8888/processes/correlationMultiTest\", bundleName, \"testRequest2.soap\");\r\n            } catch (Exception e) {\r\n                fail(e.getMessage());\r\n            }\r\n        }\r\n    }.start();\r\n    Thread processOne = new Thread() {\r\n\r\n        public void run() {\r\n            try {\r\n                firstResponse = sendRequestFile(\"http://localhost:8888/processes/correlationMultiTest\", bundleName, \"testRequest.soap\");\r\n                System.out.println(\"=>\\n\" + firstResponse);\r\n            } catch (Exception e) {\r\n                fail(e.getMessage());\r\n            }\r\n        }\r\n    };\r\n    processOne.start();\r\n    Thread processTwo = new Thread() {\r\n\r\n        public void run() {\r\n            try {\r\n                Thread.sleep(3000);\r\n                secondResponse = sendRequestFile(\"http://localhost:8888/processes/correlationMultiTest\", bundleName, \"testRequest.soap\");\r\n            } catch (Exception e) {\r\n                fail(e.getMessage());\r\n            }\r\n        }\r\n    };\r\n    processTwo.start();\r\n    processTwo.join();\r\n    try {\r\n        assertTrue(secondResponse.contains(\"tooManyInstances\"));\r\n    } catch (Exception e) {\r\n        server.undeployProcess(bundleName);\r\n        fail(\"The second instance was allowed to start\");\r\n    }\r\n    new Thread() {\r\n\r\n        public void run() {\r\n            try {\r\n                Thread.sleep(6000);\r\n                sendRequestFile(\"http://localhost:8888/processes/correlationMultiTest\", bundleName, \"testRequest3.soap\");\r\n            } catch (Exception e) {\r\n                fail(e.getMessage());\r\n            }\r\n        }\r\n    }.start();\r\n    try {\r\n        processOne.join();\r\n        assertTrue(firstResponse.contains(\">1;2;3;<\"));\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\hydration\\ProcessCountTest.java",
+  "methodName" : "testCorrelationJoin",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCorrelationJoin() throws Exception {\r\n    final String bundleOne = \"TestCorrelationJoin\", bundleTwo = \"TestAttributeNamespaces\";\r\n    firstResponse = secondResponse = null;\r\n    secondStarted = true;\r\n    server.getODEServer().getBpelServer().setProcessThrottledMaximumCount(0);\r\n    // deploy the first service\r\n    server.deployService(DummyService.class.getCanonicalName());\r\n    if (server.isDeployed(bundleOne))\r\n        server.undeployProcess(bundleOne);\r\n    server.deployProcess(bundleOne);\r\n    Thread processOne = new Thread() {\r\n\r\n        public void run() {\r\n            try {\r\n                firstResponse = sendRequestFile(\"http://localhost:8888/processes/correlationMultiTest\", bundleOne, \"testRequest.soap\");\r\n                System.out.println(\"=>\\n\" + firstResponse);\r\n            } catch (Exception e) {\r\n                fail(e.getMessage());\r\n            }\r\n        }\r\n    };\r\n    processOne.start();\r\n    processOne.join();\r\n    try {\r\n        processOne.join();\r\n        assertTrue(firstResponse.contains(\"tooManyProcesses\"), firstResponse);\r\n    } finally {\r\n        server.undeployProcess(bundleOne);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\hydration\\ProcessSizeTest.java",
+  "methodName" : "testCorrelationJoin",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCorrelationJoin() throws Exception {\r\n    final String bundleOne = \"TestCorrelationJoin\", bundleTwo = \"TestAttributeNamespaces\";\r\n    firstResponse = secondResponse = null;\r\n    secondStarted = true;\r\n    server.getODEServer().getBpelServer().setProcessThrottledMaximumSize(0);\r\n    // deploy the first service\r\n    server.deployService(DummyService.class.getCanonicalName());\r\n    if (server.isDeployed(bundleOne))\r\n        server.undeployProcess(bundleOne);\r\n    server.deployProcess(bundleOne);\r\n    Thread processOne = new Thread() {\r\n\r\n        public void run() {\r\n            try {\r\n                firstResponse = sendRequestFile(\"http://localhost:8888/processes/correlationMultiTest\", bundleOne, \"testRequest.soap\");\r\n                System.out.println(\"=>\\n\" + firstResponse);\r\n            } catch (Exception e) {\r\n                fail(e.getMessage());\r\n            }\r\n        }\r\n    };\r\n    processOne.start();\r\n    processOne.join();\r\n    try {\r\n        processOne.join();\r\n        assertTrue(firstResponse.contains(\"tooHugeProcesses\"), firstResponse);\r\n    } finally {\r\n        server.undeployProcess(bundleOne);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\instancecleanup\\CleanFailureTest.java",
+  "methodName" : "testCleanAll",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCleanAll() throws Exception {\r\n    String bundleName = \"TestCleanFailure\";\r\n    // deploy the required service\r\n    server.deployService(DummyService.class.getCanonicalName());\r\n    if (server.isDeployed(bundleName))\r\n        server.undeployProcess(bundleName);\r\n    server.deployProcess(bundleName);\r\n    try {\r\n        initialLargeDataCount = getLargeDataCount(0);\r\n        sendRequestFile(\"http://localhost:8888/processes/helloWorld\", bundleName, \"testRequest.soap\");\r\n    } finally {\r\n        ProcessDAO process = getProcess();\r\n        server.undeployProcess(bundleName);\r\n        assertProcessCleanup(process);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\instancecleanup\\CleanFaultTest.java",
+  "methodName" : "testCleanNone",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCleanNone() throws Exception {\r\n    go(\"TestCleanFault_None\", 1, 0, 0, 1, 2, 0, 4, 2, 3, 2, 38, 47);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\instancecleanup\\CleanFaultTest.java",
+  "methodName" : "testCleanInstance",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCleanInstance() throws Exception {\r\n    try {\r\n        go(\"TestCleanSuccess_Instance\", 0, 0, 0, 0, 3, 0, 6, 2, 3, 6, 59, 70);\r\n        fail(\"Shoud throw a runtime exception: you cannot use the instance category without the variables and correlations categories.\");\r\n    } catch (ContextException re) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\instancecleanup\\CleanFaultTest.java",
+  "methodName" : "testCleanVariables",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCleanVariables() throws Exception {\r\n    go(\"TestCleanFault_Variables\", 1, 0, 0, 1, 2, 0, 4, 0, 0, 0, 38, 45);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\instancecleanup\\CleanFaultTest.java",
+  "methodName" : "testCleanMessages",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCleanMessages() throws Exception {\r\n    go(\"TestCleanFault_Messages\", 1, 0, 0, 1, 0, 0, 0, 2, 3, 2, 38, 41);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\instancecleanup\\CleanFaultTest.java",
+  "methodName" : "testCleanCorrelations",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCleanCorrelations() throws Exception {\r\n    go(\"TestCleanFault_Correlations\", 1, 0, 0, 1, 2, 0, 4, 2, 3, 2, 38, 47);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\instancecleanup\\CleanFaultTest.java",
+  "methodName" : "testCleanEvents",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCleanEvents() throws Exception {\r\n    go(\"TestCleanFault_Events\", 1, 0, 0, 1, 2, 0, 4, 2, 3, 2, 0, 9);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\instancecleanup\\CleanFaultTest.java",
+  "methodName" : "testCleanMessageCorrEvents",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCleanMessageCorrEvents() throws Exception {\r\n    go(\"TestCleanFault_MessageCorrEvents\", 1, 0, 0, 1, 0, 0, 0, 2, 3, 2, 0, 3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\instancecleanup\\CleanFaultTest.java",
+  "methodName" : "testCleanAll",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCleanAll() throws Exception {\r\n    go(\"TestCleanFault_All\", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\instancecleanup\\CleanSuccessTest.java",
+  "methodName" : "testCleanNone",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCleanNone() throws Exception {\r\n    go(\"TestCleanSuccess_None\", 1, 0, 0, 0, 3, 0, 6, 2, 3, 6, 59, 76);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\instancecleanup\\CleanSuccessTest.java",
+  "methodName" : "testCleanInstance",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCleanInstance() throws Exception {\r\n    try {\r\n        go(\"TestCleanSuccess_Instance\", 0, 0, 0, 0, 3, 0, 6, 2, 3, 6, 59, 70);\r\n        fail(\"Shoud throw a runtime exception: you cannot use the instance category without the variables and correlations categories.\");\r\n    } catch (ContextException re) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\instancecleanup\\CleanSuccessTest.java",
+  "methodName" : "testCleanVariables",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCleanVariables() throws Exception {\r\n    go(\"TestCleanSuccess_Variables\", 1, 0, 0, 0, 3, 0, 6, 0, 0, 0, 59, 70);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\instancecleanup\\CleanSuccessTest.java",
+  "methodName" : "testCleanMessages",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCleanMessages() throws Exception {\r\n    go(\"TestCleanSuccess_Messages\", 1, 0, 0, 0, 0, 0, 0, 2, 3, 6, 59, 65);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\instancecleanup\\CleanSuccessTest.java",
+  "methodName" : "testCleanCorrelations",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCleanCorrelations() throws Exception {\r\n    go(\"TestCleanSuccess_Correlations\", 1, 0, 0, 0, 3, 0, 6, 2, 3, 6, 59, 76);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\instancecleanup\\CleanSuccessTest.java",
+  "methodName" : "testCleanEvents",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCleanEvents() throws Exception {\r\n    go(\"TestCleanSuccess_Events\", 1, 0, 0, 0, 3, 0, 6, 2, 3, 6, 0, 17);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\instancecleanup\\CleanSuccessTest.java",
+  "methodName" : "testCleanMessageCorrEvents",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCleanMessageCorrEvents() throws Exception {\r\n    go(\"TestCleanSuccess_MessageCorrEvents\", 1, 0, 0, 0, 0, 0, 0, 2, 3, 6, 0, 6);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\instancecleanup\\CleanSuccessTest.java",
+  "methodName" : "testCleanAll",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testCleanAll() throws Exception {\r\n    go(\"TestCleanSuccess_All\", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\DeploymentTest.java",
+  "methodName" : "testDeployUndeploy",
+  "sourceCode" : "@Test\r\npublic void testDeployUndeploy() throws Exception {\r\n    // Setup and tear down are doing ost of the job here, just checking in the middle\r\n    // Check deployment\r\n    OMElement listRoot = _client.buildMessage(\"listProcesses\", new String[0], new String[0]);\r\n    OMElement result = sendToPM(listRoot);\r\n    // look for DynPartnerMain-xxx\r\n    listRoot = _client.buildMessage(\"listProcesses\", new String[] { \"filter\", \"orderKeys\" }, new String[] { \"name=\" + _deployed.get(0).getLocalPart(), \"\" });\r\n    result = sendToPM(listRoot);\r\n    result = result.getFirstElement();\r\n    assertEquals(\"process-info-list\", result.getLocalName());\r\n    OMElement child = result.getFirstElement();\r\n    assertNotNull(\"Missing deployed process\", child);\r\n    assertEquals(\"process-info\", child.getLocalName());\r\n    OMElement pid = child.getFirstElement();\r\n    assertEquals(_deployed.get(0).toString(), pid.getText());\r\n    // look for DynPartnerResponder-xxx\r\n    listRoot = _client.buildMessage(\"listProcesses\", new String[] { \"filter\", \"orderKeys\" }, new String[] { \"name=\" + _deployed.get(1).getLocalPart(), \"\" });\r\n    result = sendToPM(listRoot);\r\n    result = result.getFirstElement();\r\n    assertEquals(\"process-info-list\", result.getLocalName());\r\n    child = result.getFirstElement();\r\n    assertNotNull(\"Missing deployed process\", child);\r\n    assertEquals(\"process-info\", child.getLocalName());\r\n    assertEquals(\"process-info\", child.getLocalName());\r\n    pid = child.getFirstElement();\r\n    assertEquals(_deployed.get(1).toString(), pid.getText());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\DeploymentTest.java",
+  "methodName" : "testListDeployedPackages",
+  "sourceCode" : "@Test\r\npublic void testListDeployedPackages() throws Exception {\r\n    OMElement root = _client.buildMessage(\"listDeployedPackages\", new String[] {}, new String[] {});\r\n    OMElement result = sendToDeployment(root);\r\n    assertTrue(result.toString().indexOf(_package) > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\DeploymentTest.java",
+  "methodName" : "testListProcesses",
+  "sourceCode" : "@Test\r\npublic void testListProcesses() throws Exception {\r\n    OMElement root = _client.buildMessage(\"listProcesses\", new String[] { \"packagesNames\" }, new String[] { _package });\r\n    OMElement result = sendToDeployment(root);\r\n    assertTrue(result.toString().indexOf(\"http://ode/bpel/unit-test\") >= 0);\r\n    assertTrue(result.toString().indexOf(\"DynPartnerMain\") >= 0);\r\n    assertTrue(result.toString().indexOf(\"http://ode/bpel/responder\") >= 0);\r\n    assertTrue(result.toString().indexOf(\"DynPartnerResponder\") >= 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\DeploymentTest.java",
+  "methodName" : "testGetProcessPackage",
+  "sourceCode" : "@Test\r\npublic void testGetProcessPackage() throws Exception {\r\n    OMElement root = _client.buildMessage(\"getProcessPackage\", new String[] { \"processId\" }, new Object[] { _deployed.get(0) });\r\n    OMElement result = sendToDeployment(root);\r\n    assertEquals(_package, result.getFirstElement().getText());\r\n    OMElement root2 = _client.buildMessage(\"getProcessPackage\", new String[] { \"processId\" }, new Object[] { _deployed.get(1) });\r\n    OMElement result2 = sendToDeployment(root2);\r\n    assertEquals(_package, result2.getFirstElement().getText());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\DeploymentTest.java",
+  "methodName" : "testMultipleDeployUndeployVersion",
+  "sourceCode" : "@Test\r\npublic void testMultipleDeployUndeployVersion() throws Exception {\r\n    ArrayList<String> deployed = new ArrayList<String>();\r\n    // Testing that versions are monotonically increased\r\n    int lastVer = Integer.parseInt(_package.substring(_package.lastIndexOf(\"-\") + 1, _package.length()));\r\n    for (int m = 1; m <= 3; m++) {\r\n        String depPack = deploy();\r\n        int ver = Integer.parseInt(depPack.substring(depPack.lastIndexOf(\"-\") + 1, depPack.length()));\r\n        assertEquals(lastVer + m, ver);\r\n        deployed.add(depPack);\r\n    }\r\n    // Deploying a couple of \"tagged\" versions\r\n    String depPack = deploy(\"foo\");\r\n    int ver = Integer.parseInt(depPack.substring(depPack.lastIndexOf(\"-\") + 1, depPack.length()));\r\n    assertTrue(lastVer + 4 <= ver);\r\n    deployed.add(depPack);\r\n    depPack = deploy(\"bar\");\r\n    ver = Integer.parseInt(depPack.substring(depPack.lastIndexOf(\"-\") + 1, depPack.length()));\r\n    assertTrue(lastVer + 5 <= ver);\r\n    deployed.add(depPack);\r\n    // Cleaning up\r\n    for (String aDeployed : deployed) {\r\n        undeploy(aDeployed);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\DeploymentTest.java",
+  "methodName" : "undeployBlankPackage",
+  "sourceCode" : "@Test\r\npublic void undeployBlankPackage() {\r\n    try {\r\n        undeploy(null);\r\n        fail(\"Undeploying a null or empty package must fail\");\r\n    } catch (Exception e) {\r\n        __log.debug(\"got exception from deployment\" + e.getMessage());\r\n        String expectedMsg = \"Invalid bundle name\";\r\n        assertTrue(\"Unexpected exception received\", e.getMessage().contains(\"operation undeploy\") && e.getMessage().contains(expectedMsg));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\InstanceManagementTest.java",
+  "methodName" : "testListInstances",
+  "sourceCode" : "@Test\r\npublic void testListInstances() throws Exception {\r\n    OMElement listRoot = _client.buildMessage(\"listInstances\", new String[] { \"filter\", \"order\", \"limit\" }, new String[] { \"name=DynPartnerMain\", \"\", \"10\" });\r\n    OMElement result = sendToIM(listRoot);\r\n    assertTrue(\"Ensures that there's only one process instance\", instanceNb(result) == 1);\r\n    // Another query with more options\r\n    Calendar notSoLongAgo = Calendar.getInstance();\r\n    notSoLongAgo.add(Calendar.MINUTE, -2);\r\n    String notSoLongAgoStr = xsdDF.format(notSoLongAgo.getTime());\r\n    listRoot = _client.buildMessage(\"listInstances\", new String[] { \"filter\", \"order\", \"limit\" }, new String[] { \"name=DynPartnerResponder namespace=http://ode/bpel/responder \" + \"started>=\" + notSoLongAgoStr, \"\", \"10\" });\r\n    result = sendToIM(listRoot);\r\n    assertTrue(instanceNb(result) == 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\InstanceManagementTest.java",
+  "methodName" : "testListInstancesWithGarbageFilter",
+  "sourceCode" : "@Test\r\npublic void testListInstancesWithGarbageFilter() throws Exception {\r\n    OMElement listRoot = _client.buildMessage(\"listInstances\", new String[] { \"filter\", \"order\", \"limit\" }, new String[] { \"\", \"\", \"10\" });\r\n    OMElement result = sendToIM(listRoot);\r\n    assertTrue(\"Ensures that there are process instances: \" + instanceNb(result), instanceNb(result) > 0);\r\n    listRoot = _client.buildMessage(\"listInstances\", new String[] { \"filter\", \"order\", \"limit\" }, new String[] { \"blah\", \"\", \"10\" });\r\n    result = sendToIM(listRoot);\r\n    assertTrue(\"Ensures that there are no process instances: \" + instanceNb(result), instanceNb(result) == 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\InstanceManagementTest.java",
+  "methodName" : "testListAllInstances",
+  "sourceCode" : "@Test\r\npublic void testListAllInstances() throws Exception {\r\n    OMElement root = _client.buildMessage(\"listAllInstancesWithLimit\", new String[] { \"limit\" }, new String[] { \"1\" });\r\n    OMElement result = sendToIM(root);\r\n    // We should have only one instance (so 2 opening/closing elmts)\r\n    assertTrue(\"Must contain exactly 1 instance-info element\", instanceNb(result) == 1);\r\n    // And one of our executed instances are there\r\n    assertTrue(result.toString().indexOf(\"DynPartnerMain\") >= 0 || result.toString().indexOf(\"DynPartnerResponder\") >= 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\InstanceManagementTest.java",
+  "methodName" : "testInstanceSummaryListProcess",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testInstanceSummaryListProcess() throws Exception {\r\n    OMElement listRoot = _client.buildMessage(\"listProcesses\", new String[] { \"filter\", \"orderKeys\" }, new String[] { \"name=DynPartnerMain\", \"\" });\r\n    OMElement result = sendToPM(listRoot);\r\n    // Ensures that there's only 2 process-info string (ending and closing tags) and hence only one process\r\n    String ns = \"http://www.apache.org/ode/pmapi/types/2006/08/02/\";\r\n    Iterator iter = result.getFirstElement().getFirstElement().getFirstChildWithName(new QName(ns, \"instance-summary\")).getChildrenWithName(new QName(ns, \"instances\"));\r\n    int count = 0;\r\n    while (iter.hasNext()) {\r\n        OMElement omelmt = (OMElement) iter.next();\r\n        count += Integer.parseInt(omelmt.getAttributeValue(new QName(null, \"count\")));\r\n    }\r\n    assertTrue(count == 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\InstanceManagementTest.java",
+  "methodName" : "testGetInstanceInfo",
+  "sourceCode" : "@Test\r\npublic void testGetInstanceInfo() throws Exception {\r\n    OMElement root = _client.buildMessage(\"listAllInstances\", new String[] {}, new String[] {});\r\n    OMElement result = sendToIM(root);\r\n    String iid = instances(result).get(0).getFirstChildWithName(new QName(Namespaces.ODE_PMAPI_TYPES_NS, \"iid\")).getText();\r\n    root = _client.buildMessage(\"getInstanceInfo\", new String[] { \"iid\" }, new String[] { iid });\r\n    result = sendToIM(root);\r\n    assertTrue(\"Must return one <instance-info> element\", instance(result) != null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\InstanceManagementTest.java",
+  "methodName" : "testGetInstanceInfoFault",
+  "sourceCode" : "@Test\r\npublic void testGetInstanceInfoFault() throws Exception {\r\n    // Hopefully this id won't exist\r\n    OMElement root = _client.buildMessage(\"getInstanceInfo\", new String[] { \"iid\" }, new String[] { \"65431\" });\r\n    try {\r\n        @SuppressWarnings(\"unused\")\r\n        OMElement result = sendToIM(root);\r\n    } catch (AxisFault axisFault) {\r\n        assertTrue(\"Should contain InstanceNotFoundException\", axisFault.getMessage().contains(\"InstanceNotFoundException\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\InstanceManagementTest.java",
+  "methodName" : "testGetScopeInfo",
+  "sourceCode" : "@Test\r\npublic void testGetScopeInfo() throws Exception {\r\n    OMElement root = _client.buildMessage(\"listInstances\", new String[] { \"filter\", \"order\", \"limit\" }, new String[] { \"name=DynPartnerMain\", \"\", \"10\" });\r\n    OMElement result = sendToIM(root);\r\n    String siid = instances(result).get(0).getFirstChildWithName(new QName(Namespaces.ODE_PMAPI_TYPES_NS, \"root-scope\")).getAttributeValue(new QName(null, \"siid\"));\r\n    root = _client.buildMessage(\"getScopeInfoWithActivity\", new String[] { \"siid\", \"activityInfo\" }, new String[] { siid, \"true\" });\r\n    result = sendToIM(root);\r\n    assertTrue(result.toString().split(\"scope-info\").length == 3);\r\n    assertTrue(result.toString().indexOf(\"activity-info\") >= 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\InstanceManagementTest.java",
+  "methodName" : "testGetVariableInfo",
+  "sourceCode" : "@Test\r\npublic void testGetVariableInfo() throws Exception {\r\n    OMElement root = _client.buildMessage(\"listInstances\", new String[] { \"filter\", \"order\", \"limit\" }, new String[] { \"name=DynPartnerMain\", \"\", \"10\" });\r\n    OMElement result = sendToIM(root);\r\n    String siid = instances(result).get(0).getFirstChildWithName(new QName(Namespaces.ODE_PMAPI_TYPES_NS, \"root-scope\")).getAttributeValue(new QName(null, \"siid\"));\r\n    root = _client.buildMessage(\"getVariableInfo\", new String[] { \"sid\", \"varName\" }, new String[] { siid, \"dummy\" });\r\n    result = sendToIM(root);\r\n    assertTrue(result.toString().indexOf(\"fire!\") >= 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\InstanceManagementTest.java",
+  "methodName" : "testListEvents",
+  "sourceCode" : "//    TODO uncomment when events querying is fixes on OpenJPA\r\n@Test(enabled = false)\r\npublic void testListEvents() throws Exception {\r\n    OMElement root = _client.buildMessage(\"listEvents\", new String[] { \"instanceFilter\", \"eventFilter\", \"maxCount\" }, new String[] { \"\", \"\", \"0\" });\r\n    OMElement result = sendToIM(root);\r\n    assertTrue(result.toString().split(\"event-info\").length > 10);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\InstanceManagementTest.java",
+  "methodName" : "testGetEventTimeline",
+  "sourceCode" : "@Test(enabled = false)\r\npublic void testGetEventTimeline() throws Exception {\r\n    OMElement root = _client.buildMessage(\"getEventTimeline\", new String[] { \"instanceFilter\", \"eventFilter\" }, new String[] { \"\", \"\" });\r\n    OMElement result = sendToIM(root);\r\n    assertTrue(result.toString().split(\"element\").length > 10);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\InstanceManagementTest.java",
+  "methodName" : "testDeleteInstances",
+  "sourceCode" : "@Test\r\npublic void testDeleteInstances() throws Exception {\r\n    OMElement root = _client.buildMessage(\"listAllInstancesWithLimit\", new String[] { \"limit\" }, new String[] { \"1\" });\r\n    OMElement result = sendToIM(root);\r\n    String iid = instances(result).get(0).getFirstElement().getText();\r\n    System.out.println(\"=> \" + iid);\r\n    OMElement msg = _client.buildMessage(\"delete\", new String[] { \"filter\" }, new String[] { \"iid=\" + iid });\r\n    OMElement response = sendToIM(msg);\r\n    System.out.println(response);\r\n    List<OMElement> elements = IteratorUtils.toList(response.getFirstElement().getChildrenWithName(new QName(\"\", \"element\")));\r\n    assertTrue(\"Must delete only one instance\", elements.size() == 1);\r\n    assertTrue(iid.equals(elements.get(0).getText()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\Retire2Test.java",
+  "methodName" : "testRetiredInstance",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testRetiredInstance() throws Exception {\r\n    String bundleName = \"TestInstanceRetire2\";\r\n    System.out.println(\"=> \" + server.getODEServer().getProcessStore().getPackages());\r\n    if (server.isDeployed(\"1\"))\r\n        server.undeployProcess(bundleName + \"/1\");\r\n    if (server.isDeployed(\"2\"))\r\n        server.undeployProcess(bundleName + \"/2\");\r\n    QName deployedQName = server.deployProcess(bundleName + \"/1\").iterator().next();\r\n    String response = sendRequestFile(\"http://localhost:8888/processes/testretire\", bundleName + \"/1\", \"testRequest1.soap\");\r\n    assertTrue(response.indexOf(\"TEST1\") > 0);\r\n    server.getODEServer().getProcessManagement().setRetired(deployedQName, true);\r\n    server.deployProcess(bundleName + \"/2\");\r\n    response = sendRequestFile(\"http://localhost:8888/processes/testretire\", bundleName + \"/1\", \"testRequest2.soap\");\r\n    System.out.println(\"###############################################\");\r\n    System.out.println(response);\r\n    System.out.println(\"###############################################\");\r\n    assertTrue(response.indexOf(\"TEST2\") > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\RetireTest.java",
+  "methodName" : "testRetiredInstance",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testRetiredInstance() throws Exception {\r\n    String bundleName = \"TestInstanceRetire\";\r\n    System.out.println(\"=> \" + server.getODEServer().getProcessStore().getPackages());\r\n    if (server.isDeployed(\"1\"))\r\n        server.undeployProcess(bundleName + \"/1\");\r\n    if (server.isDeployed(\"2\"))\r\n        server.undeployProcess(bundleName + \"/2\");\r\n    QName deployedQName = server.deployProcess(bundleName + \"/1\").iterator().next();\r\n    sendRequestFile(\"http://localhost:8888/processes/testretire\", bundleName + \"/1\", \"testRequest1.soap\");\r\n    server.getODEServer().getProcessManagement().setRetired(deployedQName, true);\r\n    server.deployProcess(bundleName + \"/2\");\r\n    String response = sendRequestFile(\"http://localhost:8888/processes/testretire\", bundleName + \"/1\", \"testRequest2.soap\");\r\n    System.out.println(\"###############################################\");\r\n    System.out.println(response);\r\n    System.out.println(\"###############################################\");\r\n    assertTrue(response.indexOf(\"DONE\") > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\management\\RetireTestVar.java",
+  "methodName" : "testRetiredInstance",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testRetiredInstance() throws Exception {\r\n    String response = null;\r\n    String bundleName = \"TestInstanceRetire\";\r\n    System.out.println(\"=> \" + server.getODEServer().getProcessStore().getPackages());\r\n    if (server.isDeployed(\"withVar\"))\r\n        server.undeployProcess(bundleName + \"/withVar\");\r\n    if (server.isDeployed(\"noVar\"))\r\n        server.undeployProcess(bundleName + \"/noVar\");\r\n    QName deployedQName = server.deployProcess(bundleName + \"/withVar\").iterator().next();\r\n    sendRequestFile(\"http://localhost:8888/processes/testretire\", bundleName + \"/1\", \"testRequest1.soap\");\r\n    server.getODEServer().getProcessManagement().setRetired(deployedQName, true);\r\n    server.deployProcess(bundleName + \"/noVar\");\r\n    response = sendRequestFile(\"http://localhost:8888/processes/testretire\", bundleName + \"/1\", \"testRequest2.soap\");\r\n    assertTrue(\"'\" + response + \"' does not contain 'DONE'.\", response.indexOf(\"DONE\") > 0);\r\n    sendRequestFile(\"http://localhost:8888/processes/testretire\", bundleName + \"/1\", \"testRequest1.soap\");\r\n    response = sendRequestFile(\"http://localhost:8888/processes/testretire\", bundleName + \"/1\", \"testRequest2.soap\");\r\n    assertTrue(\"'\" + response + \"' does not contain 'XYZ'.\", response.indexOf(\"XYZ\") > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\MessageStructureTest.java",
+  "methodName" : "testAttrWithNsValue",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testAttrWithNsValue() throws Exception {\r\n    String bundleName = \"TestAttributeNamespaces\";\r\n    // deploy the required service\r\n    server.deployService(DummyService.class.getCanonicalName());\r\n    if (server.isDeployed(bundleName))\r\n        server.undeployProcess(bundleName);\r\n    server.deployProcess(bundleName);\r\n    try {\r\n        String response = sendRequestFile(\"http://localhost:8888/processes/attrNSWorld\", bundleName, \"testRequest.soap\");\r\n        Element domResponse = DOMUtils.stringToDOM(response);\r\n        Element out = DOMUtils.getFirstChildElement(DOMUtils.getFirstChildElement(DOMUtils.getFirstChildElement(domResponse)));\r\n        String nsAttr = out.getAttribute(\"xmlns:myns\");\r\n        System.out.println(\"=> \" + response);\r\n        assertTrue(nsAttr != null);\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\MultiPartMessageTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void test() throws Exception {\r\n    String bundleName = \"TestMultiPartMessage\";\r\n    if (server.isDeployed(bundleName))\r\n        server.undeployProcess(bundleName);\r\n    server.deployProcess(bundleName);\r\n    try {\r\n        String response = sendRequestFile(\"http://localhost:8888/ode/processes/helloWorld\", bundleName, \"testRequest.soap\");\r\n        System.out.println(response);\r\n        assertTrue(response.contains(\"abc1\") && response.contains(\"abc2\"));\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\NoP2PTest.java",
+  "methodName" : "testNoP2P",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testNoP2P() throws Exception {\r\n    String bundleName = \"TestNoP2P\";\r\n    if (server.isDeployed(bundleName))\r\n        server.undeployProcess(bundleName);\r\n    server.deployProcess(bundleName);\r\n    try {\r\n        String response = sendRequestFile(\"http://localhost:8888/ode/processes/PingPongService/\", bundleName, \"testRequest.soap\");\r\n        System.out.println(response);\r\n        assertTrue(response.contains(\"magic\"));\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\rampart\\basic\\SecuredProcessesTest.java",
+  "methodName" : "invokeSecuredProcesses",
+  "sourceCode" : "@Test(dataProvider = \"secured-processes-bundles\")\r\npublic void invokeSecuredProcesses(String bundleName, String clientRepo, String clientConfigFile) throws Exception {\r\n    if (server.isDeployed(new File(bundleName).getName())) {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n    server.deployProcess(bundleName);\r\n    try {\r\n        ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(clientRepo, clientConfigFile);\r\n        ServiceClient client = new ServiceClient(ctx, null);\r\n        Options options = new Options();\r\n        options.setTo(new EndpointReference(\"http://localhost:\" + getTestPort(0) + \"/processes/helloWorld\"));\r\n        client.setOptions(options);\r\n        OMElement responseElement = client.sendReceive(getPayload(bundleName));\r\n        String response = DOMUtils.domToString(OMUtils.toDOM(responseElement));\r\n        System.out.println(response);\r\n        System.out.println(response);\r\n        assertTrue(response.contains(\"<helloResponse\") && response.contains(\"Hello \" + bundleName + \"!\"));\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\rampart\\basic\\SecuredServicesTest.java",
+  "methodName" : "executeProcess",
+  "sourceCode" : "@Test(dataProvider = \"secured-services-bundles\")\r\npublic void executeProcess(String bundleName) throws Exception {\r\n    if (server.isDeployed(new File(bundleName).getName())) {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n    server.deployProcess(bundleName);\r\n    try {\r\n        String response = sendRequestFile(\"http://localhost:8888/processes/helloWorld\", bundleName, \"testRequest.soap\");\r\n        System.out.println(response);\r\n        assertTrue(response.contains(\"helloResponse\") && response.contains(\"Hello World\"));\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\rampart\\policy\\SecuredProcessesTest.java",
+  "methodName" : "invokeSecuredProcesses",
+  "sourceCode" : "@Test(dataProvider = \"secured-processes-bundles\")\r\npublic void invokeSecuredProcesses(String bundleName, String clientRepo, String policyFile) throws Exception {\r\n    if (server.isDeployed(new File(bundleName).getName())) {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n    server.deployProcess(bundleName);\r\n    try {\r\n        ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(clientRepo, null);\r\n        ServiceClient client = new ServiceClient(ctx, null);\r\n        Options options = new Options();\r\n        // Rampart SymetricBinding (sample04) blows up if not provided with a soap action\r\n        options.setAction(\"\");\r\n        options.setTo(new EndpointReference(\"http://localhost:\" + getTestPort(0) + \"/processes/helloWorld\"));\r\n        options.setProperty(RampartMessageData.KEY_RAMPART_POLICY, loadPolicy(policyFile));\r\n        client.setOptions(options);\r\n        client.engageModule(\"rampart\");\r\n        client.engageModule(\"rahas\");\r\n        OMElement responseElement = client.sendReceive(getPayload(bundleName));\r\n        String response = DOMUtils.domToString(OMUtils.toDOM(responseElement));\r\n        System.out.println(response);\r\n        System.out.println(response);\r\n        assertTrue(response.contains(\"<helloResponse\") && response.contains(\"Hello \" + bundleName + \"!\"));\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\rampart\\policy\\SecuredProcessesTest.java",
+  "methodName" : "standAlonePolicy",
+  "sourceCode" : "@Test\r\npublic void standAlonePolicy() throws Exception {\r\n    invokeSecuredProcesses(testDir + \"/process-sample02_standalone_policy\", clientRepo, clientRepo + \"/sample02-policy.xml\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\rampart\\policy\\SecuredServicesTest.java",
+  "methodName" : "executeProcess",
+  "sourceCode" : "@Test(dataProvider = \"secured-services-bundles\")\r\npublic void executeProcess(String bundleName) throws Exception {\r\n    if (server.isDeployed(new File(bundleName).getName())) {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n    server.deployProcess(bundleName);\r\n    try {\r\n        String response = sendRequestFile(\"http://localhost:8888/processes/helloWorld\", bundleName, \"testRequest.soap\");\r\n        System.out.println(response);\r\n        assertTrue(response.contains(\"helloResponse\") && response.contains(\"Hello World\"));\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\rampart\\policy\\SecuredServicesTest.java",
+  "methodName" : "testPolicyInServiceXml",
+  "sourceCode" : "@Test\r\npublic void testPolicyInServiceXml() throws Exception {\r\n    executeProcess(testDir + \"/process-sample04_policy_in_service.xml\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\SelectorsTest.java",
+  "methodName" : "testNoP2P",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testNoP2P() throws Exception {\r\n    String bundleName = \"TestSelectors\";\r\n    if (server.isDeployed(bundleName))\r\n        server.undeployProcess(bundleName);\r\n    server.deployProcess(bundleName);\r\n    String response = sendRequestFile(\"http://localhost:8888/ode/processes/Project-Reproduce-Isolation-Problem/ReproduceIsolationProblem/Pool2/Pool\", bundleName, \"testRequest.soap\");\r\n    System.out.println(response);\r\n    assertTrue(response.contains(\"_21Response\"));\r\n    if (server.isDeployed(bundleName))\r\n        server.undeployProcess(bundleName);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\ServiceFaultCatchTest.java",
+  "methodName" : "testSimpleFaultCatch",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testSimpleFaultCatch() throws Exception {\r\n    String bundleName = \"TestStructuredFault\";\r\n    // deploy the required service\r\n    server.deployService(DummyService.class.getCanonicalName());\r\n    if (server.isDeployed(bundleName))\r\n        server.undeployProcess(bundleName);\r\n    server.deployProcess(bundleName);\r\n    try {\r\n        String response = sendRequestFile(\"http://localhost:8888/processes/helloWorld\", bundleName, \"testRequest.soap\");\r\n        assertTrue(response.contains(\"helloResponse\") && response.contains(\"Something went wrong. Fortunately, it was meant to be.\"));\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\SoapHeader2Test.java",
+  "methodName" : "testSoapHeaders",
+  "sourceCode" : "@Test\r\npublic void testSoapHeaders() throws Exception {\r\n    String bundleName = \"TestSoapHeader2\";\r\n    // deploy the required service\r\n    if (!server.isDeployed(bundleName))\r\n        server.deployProcess(bundleName);\r\n    try {\r\n        String response = sendRequestFile(\"http://localhost:8888/processes/hello/hello/process/client\", bundleName, \"testRequest.soap\");\r\n        if (log.isDebugEnabled())\r\n            log.debug(response);\r\n        assertTrue(\"Soap headers missing!\", response.contains(\"TestSoapHeader2 passed\"));\r\n    } finally {\r\n        server.undeployProcess(bundleName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\SoapHeaderTest.java",
+  "methodName" : "testSimplePassing",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testSimplePassing() throws Exception {\r\n    server.deployService(\"TestSoapHeader\", \"dummy-service.wsdl\", new QName(\"http://axis2.ode.apache.org\", \"DummyService\"), \"DummyServiceSOAP11port_http\", new MessageReceiver() {\r\n\r\n        @SuppressWarnings(\"deprecation\")\r\n        public void receive(MessageContext messageCtx) throws AxisFault {\r\n            OMElement cidElmt = messageCtx.getEnvelope().getHeader().getFirstElement();\r\n            assertEquals(\"ConversationId\", cidElmt.getLocalName());\r\n            assertEquals(\"ZZZXYZ\", cidElmt.getText());\r\n            MessageContext outMsgContext = Utils.createOutMessageContext(messageCtx);\r\n            outMsgContext.getOperationContext().addMessageContext(outMsgContext);\r\n            // Far too many lines of code...\r\n            SOAPFactory factory = OMAbstractFactory.getSOAP11Factory();\r\n            SOAPEnvelope env = factory.createSOAPEnvelope();\r\n            SOAPHeader header = factory.createSOAPHeader(env);\r\n            SOAPBody body = factory.createSOAPBody(env);\r\n            outMsgContext.setEnvelope(env);\r\n            OMElement respElmt = factory.createOMElement(new QName(\"http://axis2.ode.apache.org\", \"faultTestResponse\"));\r\n            body.addChild(respElmt);\r\n            respElmt.setText(\"dummy\");\r\n            SOAPHeaderBlock headerBlock = factory.createSOAPHeaderBlock(\"ConversationId\", factory.createOMNamespace(\"http://my.company/super/protocol\", \"pns\"), header);\r\n            headerBlock.setText(\"ZZYV\");\r\n            AxisEngine.send(outMsgContext);\r\n        }\r\n    });\r\n    if (!server.isDeployed(\"TestSoapHeader\"))\r\n        server.deployProcess(\"TestSoapHeader\");\r\n    String response = sendRequestFile(\"http://localhost:8888/processes/headerTest\", \"TestSoapHeader\", \"testRequest.soap\");\r\n    System.out.println(response);\r\n    Element rootElemt = DOMUtils.stringToDOM(response);\r\n    Element cidElemt = DOMUtils.getFirstChildElement(DOMUtils.getFirstChildElement(rootElemt));\r\n    assertEquals(\"ConversationId\", cidElemt.getLocalName());\r\n    assertEquals(\"ZZYV\", cidElemt.getTextContent());\r\n    server.undeployProcess(\"TestSoapHeader\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\axis2-war\\src\\test\\java\\org\\apache\\ode\\axis2\\XSDReferencesDeployTest.java",
+  "methodName" : "testSimpleFaultCatch",
+  "sourceCode" : "@Test(dataProvider = \"configs\")\r\npublic void testSimpleFaultCatch() throws Exception {\r\n    server.deployService(DummyService.class.getCanonicalName());\r\n    // If we have a bug, this will throw an exception, no need to assert\r\n    server.deployProcess(\"XSDReferences\");\r\n    server.undeployProcess(\"XSDReferences\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-api\\src\\test\\java\\org\\apache\\ode\\bpel\\common\\CorrelationKeySetTest.java",
+  "methodName" : "testCanonicalString",
+  "sourceCode" : "@Test\r\npublic void testCanonicalString() throws Exception {\r\n    CorrelationKeySet setA = new CorrelationKeySet();\r\n    setA.add(keyX);\r\n    setA.add(optY);\r\n    assertEquals(\"@2[1~a~b],[2~b~c]\", setA.toCanonicalString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-api\\src\\test\\java\\org\\apache\\ode\\bpel\\common\\CorrelationKeySetTest.java",
+  "methodName" : "testContainsAll",
+  "sourceCode" : "@Test\r\npublic void testContainsAll() throws Exception {\r\n    CorrelationKeySet setA = new CorrelationKeySet();\r\n    CorrelationKeySet setB = new CorrelationKeySet();\r\n    assertTrue(setA.containsAll(setB));\r\n    setA.add(keyX);\r\n    assertTrue(setA.containsAll(setB));\r\n    setB.add(keyY);\r\n    assertFalse(setA.containsAll(setB));\r\n    setA.clear();\r\n    setA.add(keyY);\r\n    assertTrue(setA.containsAll(setB));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-api\\src\\test\\java\\org\\apache\\ode\\bpel\\common\\CorrelationKeySetTest.java",
+  "methodName" : "testRestoreFromCanonicalForm",
+  "sourceCode" : "@Test\r\npublic void testRestoreFromCanonicalForm() throws Exception {\r\n    assertEquals(new CorrelationKeySet(null), new CorrelationKeySet());\r\n    assertEquals(new CorrelationKeySet(\"\"), new CorrelationKeySet());\r\n    assertEquals(new CorrelationKeySet(\"-1~session_key\"), new CorrelationKeySet().add(new CorrelationKey(\"-1\", new String[] { \"session_key\" })));\r\n    assertEquals(new CorrelationKeySet(\"1~key1~key2\"), new CorrelationKeySet().add(new CorrelationKey(\"1\", new String[] { \"key1\", \"key2\" })));\r\n    assertEquals(new CorrelationKeySet(\"@2\"), new CorrelationKeySet());\r\n    assertEquals(new CorrelationKeySet(\"@2[-1~session_key]\"), new CorrelationKeySet().add(new CorrelationKey(\"-1\", new String[] { \"session_key\" })));\r\n    assertEquals(new CorrelationKeySet(\"@2[1~key1~key2]\"), new CorrelationKeySet().add(new CorrelationKey(\"1\", new String[] { \"key1\", \"key2\" })));\r\n    assertEquals(new CorrelationKeySet(\"@2[1~key1],[2~key2~key3]\"), new CorrelationKeySet().add(new CorrelationKey(\"1\", new String[] { \"key1\" })).add(new CorrelationKey(\"2\", new String[] { \"key2\", \"key3\" })));\r\n    assertEquals(new CorrelationKeySet(\"@2[1~key1],[2~key2~key3]?\"), new CorrelationKeySet().add(new CorrelationKey(\"1\", new String[] { \"key1\" })).add(new CorrelationKey(\"2\", new String[] { \"key2\", \"key3\" })));\r\n    assertEquals(3, new CorrelationKeySet(\"@2[1~key1],[2~key2~key3]?\").findSubSets().size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-api\\src\\test\\java\\org\\apache\\ode\\bpel\\common\\CorrelationKeySetTest.java",
+  "methodName" : "testRoutableTo",
+  "sourceCode" : "@Test\r\npublic void testRoutableTo() throws Exception {\r\n    CorrelationKeySet setA = new CorrelationKeySet();\r\n    CorrelationKeySet setB = new CorrelationKeySet();\r\n    assertTrue(setA.isRoutableTo(setB, false));\r\n    assertTrue(setA.isRoutableTo(setB, true));\r\n    setA.add(keyX);\r\n    assertTrue(setA.isRoutableTo(setB, false));\r\n    assertTrue(setA.isRoutableTo(setB, true));\r\n    setB.add(keyY);\r\n    assertFalse(setA.isRoutableTo(setB, false));\r\n    assertFalse(setA.isRoutableTo(setB, true));\r\n    setA.clear();\r\n    setA.add(keyY);\r\n    assertTrue(setA.isRoutableTo(setB, false));\r\n    assertTrue(setA.isRoutableTo(setB, true));\r\n    CorrelationKeySet inbound = new CorrelationKeySet();\r\n    CorrelationKeySet candidate = new CorrelationKeySet();\r\n    candidate.add(new CorrelationKey(\"-1~session_key\"));\r\n    assertFalse(inbound.isRoutableTo(candidate, false));\r\n    assertTrue(inbound.isRoutableTo(candidate, true));\r\n    inbound.add(new CorrelationKey(\"-1~session_key_different\"));\r\n    assertFalse(inbound.isRoutableTo(candidate, false));\r\n    assertFalse(inbound.isRoutableTo(candidate, true));\r\n    inbound.clear();\r\n    inbound.add(keyX);\r\n    inbound.add(implicit);\r\n    candidate.clear();\r\n    candidate.add(keyX);\r\n    assertTrue(inbound.isRoutableTo(candidate, false));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-api\\src\\test\\java\\org\\apache\\ode\\bpel\\common\\CorrelationKeySetTest.java",
+  "methodName" : "testFindSubSets",
+  "sourceCode" : "@Test\r\npublic void testFindSubSets() throws Exception {\r\n    StringBuffer buf = new StringBuffer();\r\n    for (CorrelationKeySet subSet : new CorrelationKeySet().findSubSets()) {\r\n        if (buf.length() > 0) {\r\n            buf.append(\",\");\r\n        }\r\n        buf.append(\"'\").append(subSet.toCanonicalString()).append(\"'\");\r\n    }\r\n    assertEquals(\"'@2'\", buf.toString());\r\n    CorrelationKeySet keySet = new CorrelationKeySet();\r\n    keySet.add(keyX);\r\n    keySet.add(keyY);\r\n    keySet.add(keyZ);\r\n    assertTrue(keySet.findSubSets().size() == 7);\r\n    keySet = new CorrelationKeySet();\r\n    keySet.add(optX);\r\n    keySet.add(optY);\r\n    keySet.add(optZ);\r\n    buf = new StringBuffer();\r\n    for (CorrelationKeySet subSet : keySet.findSubSets()) {\r\n        if (buf.length() > 0) {\r\n            buf.append(\",\");\r\n        }\r\n        buf.append(\"'\").append(subSet.toCanonicalString()).append(\"'\");\r\n    }\r\n    assertEquals(\"'@2[1~a~b]','@2[2~b~c]','@2[1~a~b],[2~b~c]','@2[3~c~d]','@2[1~a~b],[3~c~d]','@2[2~b~c],[3~c~d]','@2[1~a~b],[2~b~c],[3~c~d]'\", buf.toString());\r\n    keySet = new CorrelationKeySet();\r\n    keySet.add(keyX);\r\n    keySet.add(keyY);\r\n    keySet.add(optZ);\r\n    buf = new StringBuffer();\r\n    for (CorrelationKeySet subSet : keySet.findSubSets()) {\r\n        if (buf.length() > 0) {\r\n            buf.append(\",\");\r\n        }\r\n        buf.append(\"'\").append(subSet.toCanonicalString()).append(\"'\");\r\n    }\r\n    assertEquals(\"'@2[1~a~b]','@2[2~b~c]','@2[1~a~b],[2~b~c]','@2[3~c~d]','@2[1~a~b],[3~c~d]','@2[2~b~c],[3~c~d]','@2[1~a~b],[2~b~c],[3~c~d]'\", buf.toString());\r\n    keySet = new CorrelationKeySet();\r\n    keySet.add(keyX);\r\n    keySet.add(optY);\r\n    keySet.add(optZ);\r\n    buf = new StringBuffer();\r\n    for (CorrelationKeySet subSet : keySet.findSubSets()) {\r\n        if (buf.length() > 0) {\r\n            buf.append(\",\");\r\n        }\r\n        buf.append(\"'\").append(subSet.toCanonicalString()).append(\"'\");\r\n    }\r\n    assertEquals(\"'@2[1~a~b]','@2[2~b~c]','@2[1~a~b],[2~b~c]','@2[3~c~d]','@2[1~a~b],[3~c~d]','@2[2~b~c],[3~c~d]','@2[1~a~b],[2~b~c],[3~c~d]'\", buf.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testAssign1_BPEL20",
+  "sourceCode" : "@Test\r\npublic void testAssign1_BPEL20() throws Exception {\r\n    runTest(\"/2.0/good/assign/Assign1-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testAssign2_BPEL20",
+  "sourceCode" : "@Test\r\npublic void testAssign2_BPEL20() throws Exception {\r\n    runTest(\"/2.0/good/assign/Assign2-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testAssign3_BPEL20",
+  "sourceCode" : "@Test\r\npublic void testAssign3_BPEL20() throws Exception {\r\n    runTest(\"/2.0/good/assign/Assign3-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testAssign5_BPEL20",
+  "sourceCode" : "@Test\r\npublic void testAssign5_BPEL20() throws Exception {\r\n    runTest(\"/2.0/good/assign/Assign5-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testAssign6_BPEL20",
+  "sourceCode" : "@Test\r\npublic void testAssign6_BPEL20() throws Exception {\r\n    runTest(\"/2.0/good/assign/Assign6-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testAssign7_BPEL20",
+  "sourceCode" : "@Test\r\npublic void testAssign7_BPEL20() throws Exception {\r\n    runTest(\"/2.0/good/assign/Assign7-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testAssign8_BPEL20",
+  "sourceCode" : "@Test\r\npublic void testAssign8_BPEL20() throws Exception {\r\n    runTest(\"/2.0/good/assign/Assign8-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testAssign9_BPEL20",
+  "sourceCode" : "@Test\r\npublic void testAssign9_BPEL20() throws Exception {\r\n    runTest(\"/2.0/good/assign/Assign9-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testAsyncProcess",
+  "sourceCode" : "@Test\r\npublic void testAsyncProcess() throws Exception {\r\n    runTest(\"/2.0/good/AsyncProcess/AsyncProcess2.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testCompensation1",
+  "sourceCode" : "@Test\r\npublic void testCompensation1() throws Exception {\r\n    runTest(\"/2.0/good/compensation/comp1-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testCompensation2",
+  "sourceCode" : "@Test\r\npublic void testCompensation2() throws Exception {\r\n    runTest(\"/2.0/good/compensation/comp2-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testFlow2",
+  "sourceCode" : "@Test\r\npublic void testFlow2() throws Exception {\r\n    runTest(\"/2.0/good/flow/flow2-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testFlow3",
+  "sourceCode" : "@Test\r\npublic void testFlow3() throws Exception {\r\n    runTest(\"/2.0/good/flow/flow3-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testFlow4",
+  "sourceCode" : "@Test\r\npublic void testFlow4() throws Exception {\r\n    runTest(\"/2.0/good/flow/flow4-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testFlow5",
+  "sourceCode" : "@Test\r\npublic void testFlow5() throws Exception {\r\n    runTest(\"/2.0/good/flow/flow5-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testFlow6",
+  "sourceCode" : "@Test\r\npublic void testFlow6() throws Exception {\r\n    runTest(\"/2.0/good/flow/flow6-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testFlow7",
+  "sourceCode" : "@Test\r\npublic void testFlow7() throws Exception {\r\n    runTest(\"/2.0/good/flow/flow7-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testIf1",
+  "sourceCode" : "@Test\r\npublic void testIf1() throws Exception {\r\n    runTest(\"/2.0/good/if/If1-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testIf2",
+  "sourceCode" : "@Test\r\npublic void testIf2() throws Exception {\r\n    runTest(\"/2.0/good/if/If2-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testIf3",
+  "sourceCode" : "@Test\r\npublic void testIf3() throws Exception {\r\n    runTest(\"/2.0/good/if/If3-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testPick3",
+  "sourceCode" : "@Test\r\npublic void testPick3() throws Exception {\r\n    runTest(\"/2.0/good/pick/Pick3-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testPick4",
+  "sourceCode" : "@Test\r\npublic void testPick4() throws Exception {\r\n    runTest(\"/2.0/good/pick/Pick4-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testPick5",
+  "sourceCode" : "@Test\r\npublic void testPick5() throws Exception {\r\n    runTest(\"/2.0/good/pick/Pick5-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testPick6",
+  "sourceCode" : "@Test\r\npublic void testPick6() throws Exception {\r\n    runTest(\"/2.0/good/pick/Pick6-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testRethrow1",
+  "sourceCode" : "@Test\r\npublic void testRethrow1() throws Exception {\r\n    runTest(\"/2.0/good/rethrow/Rethrow1-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testRethrow2",
+  "sourceCode" : "@Test\r\npublic void testRethrow2() throws Exception {\r\n    runTest(\"/2.0/good/rethrow/Rethrow2-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testThrow1",
+  "sourceCode" : "@Test\r\npublic void testThrow1() throws Exception {\r\n    runTest(\"/2.0/good/throw/Throw1-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testThrow2",
+  "sourceCode" : "@Test\r\npublic void testThrow2() throws Exception {\r\n    runTest(\"/2.0/good/throw/Throw2-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testThrow3",
+  "sourceCode" : "@Test\r\npublic void testThrow3() throws Exception {\r\n    runTest(\"/2.0/good/throw/Throw3-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testThrow4",
+  "sourceCode" : "@Test\r\npublic void testThrow4() throws Exception {\r\n    runTest(\"/2.0/good/throw/Throw4-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testThrow5",
+  "sourceCode" : "@Test\r\npublic void testThrow5() throws Exception {\r\n    runTest(\"/2.0/good/throw/Throw5-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testThrow6",
+  "sourceCode" : "@Test\r\npublic void testThrow6() throws Exception {\r\n    runTest(\"/2.0/good/throw/Throw6-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testThrow7",
+  "sourceCode" : "@Test\r\npublic void testThrow7() throws Exception {\r\n    runTest(\"/2.0/good/throw/Throw7-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testWait1",
+  "sourceCode" : "@Test\r\npublic void testWait1() throws Exception {\r\n    runTest(\"/2.0/good/wait/Wait1-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testWait2",
+  "sourceCode" : "@Test\r\npublic void testWait2() throws Exception {\r\n    runTest(\"/2.0/good/wait/Wait2-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testWhile",
+  "sourceCode" : "@Test\r\npublic void testWhile() throws Exception {\r\n    runTest(\"/2.0/good/while/While1-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testXPath10GetVariableData1",
+  "sourceCode" : "@Test\r\npublic void testXPath10GetVariableData1() throws Exception {\r\n    runTest(\"/2.0/good/xpath10-func/GetVariableData1-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testXPath10GetVariableData2",
+  "sourceCode" : "@Test\r\npublic void testXPath10GetVariableData2() throws Exception {\r\n    runTest(\"/2.0/good/xpath10-func/GetVariableData2-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testXPath10GetVariableData3",
+  "sourceCode" : "@Test\r\npublic void testXPath10GetVariableData3() throws Exception {\r\n    runTest(\"/2.0/good/xpath10-func/GetVariableData3-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testXPath10GetVariableData4",
+  "sourceCode" : "@Test\r\npublic void testXPath10GetVariableData4() throws Exception {\r\n    runTest(\"/2.0/good/xpath10-func/GetVariableData4-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testXPath10GetVariableProperty1",
+  "sourceCode" : "@Test\r\npublic void testXPath10GetVariableProperty1() throws Exception {\r\n    runTest(\"/2.0/good/xpath10-func/GetVariableProperty1-2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testXPath20GetVariableData2",
+  "sourceCode" : "@Test\r\npublic void testXPath20GetVariableData2() throws Exception {\r\n    runTest(\"/2.0/good/xpath20-func/GetVariableData2-xp2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testXPath20GetVariableData3",
+  "sourceCode" : "@Test\r\npublic void testXPath20GetVariableData3() throws Exception {\r\n    runTest(\"/2.0/good/xpath20-func/GetVariableData3-xp2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testXPath20GetVariableData4",
+  "sourceCode" : "@Test\r\npublic void testXPath20GetVariableData4() throws Exception {\r\n    runTest(\"/2.0/good/xpath20-func/GetVariableData4-xp2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testXPath20GetVariableProperty1",
+  "sourceCode" : "@Test\r\npublic void testXPath20GetVariableProperty1() throws Exception {\r\n    runTest(\"/2.0/good/xpath20-func/GetVariableProperty1-xp2.0.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testXSDImport",
+  "sourceCode" : "@Test\r\npublic void testXSDImport() throws Exception {\r\n    runTest(\"/2.0/good/xsd-import/helloworld-Server.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testCircularReference",
+  "sourceCode" : "@Test\r\npublic void testCircularReference() throws Exception {\r\n    runTest(\"/2.0/good/circularReference/CircularReference.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\GoodCompileTest.java",
+  "methodName" : "testMultipleEmbeddedSchemas",
+  "sourceCode" : "@Test\r\npublic void testMultipleEmbeddedSchemas() throws Exception {\r\n    runTest(\"/org/apache/ode/bpel/compiler/MultipleEmbeddedSchemas.bpel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\XslTest.java",
+  "methodName" : "testUTFEncoding",
+  "sourceCode" : "@Test\r\npublic void testUTFEncoding() throws Exception {\r\n    Document original = DOMUtils.parse(getClass().getResourceAsStream(\"/xslt/test-utf8.xslt\"));\r\n    OProcess op = compile(\"xsl-utf8\");\r\n    OXslSheet sheet = op.xslSheets.get(URI.create(\"test-utf8.xslt\"));\r\n    Assert.assertNotNull(sheet);\r\n    Assert.assertEquals(DOMUtils.domToString(original), sheet.sheetBody);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\compiler_2_0\\XslTest.java",
+  "methodName" : "testISOEncoding",
+  "sourceCode" : "@Test\r\npublic void testISOEncoding() throws Exception {\r\n    Document original = DOMUtils.parse(getClass().getResourceAsStream(\"/xslt/test-iso.xslt\"));\r\n    OProcess op = compile(\"xsl-iso\");\r\n    OXslSheet sheet = op.xslSheets.get(URI.create(\"test-iso.xslt\"));\r\n    Assert.assertNotNull(sheet);\r\n    Assert.assertEquals(DOMUtils.domToString(original), sheet.sheetBody);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\elang\\xpath20\\compiler\\XPath20ExpressionCompilerImplTest.java",
+  "methodName" : "testresolvedFunctionsExpr",
+  "sourceCode" : "@Test\r\npublic void testresolvedFunctionsExpr() throws Exception {\r\n    XPath20ExpressionCompilerImpl xp20Exp = new XPath20ExpressionCompilerImpl(TEST_NAMESPACE);\r\n    final Method[] methods = xp20Exp.getClass().getDeclaredMethods();\r\n    for (int i = 0; i < methods.length; ++i) {\r\n        if (methods[i].getName().equals(EXTRACT_FUNCTION_EXPRS)) {\r\n            final Object[] params = { \"count(count(1))\" };\r\n            methods[i].setAccessible(true);\r\n            Object ret = methods[i].invoke(xp20Exp, params);\r\n            List<?> values = (List<?>) ret;\r\n            Assert.assertEquals(1, values.size());\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\elang\\xpath20\\compiler\\XPath20ExpressionCompilerImplTest.java",
+  "methodName" : "testTimeStampInFunction",
+  "sourceCode" : "@Test\r\npublic void testTimeStampInFunction() throws Exception {\r\n    XPath20ExpressionCompilerImpl xp20Exp = new XPath20ExpressionCompilerImpl(TEST_NAMESPACE);\r\n    final Method[] methods = xp20Exp.getClass().getDeclaredMethods();\r\n    for (int i = 0; i < methods.length; ++i) {\r\n        if (methods[i].getName().equals(EXTRACT_FUNCTION_EXPRS)) {\r\n            final Object[] params = { \"concat(xs:concat(\\\"P\\\", \\\"08:30:00.000+08:00\\\"))\" };\r\n            methods[i].setAccessible(true);\r\n            Object ret = methods[i].invoke(xp20Exp, params);\r\n            List<?> values = (List<?>) ret;\r\n            Assert.assertEquals(1, values.size());\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\elang\\xpath20\\compiler\\XPath20ExpressionCompilerImplTest.java",
+  "methodName" : "testresolvedFunctionsTimeStamp",
+  "sourceCode" : "@Test\r\npublic void testresolvedFunctionsTimeStamp() throws Exception {\r\n    XPath20ExpressionCompilerImpl xp20Exp = new XPath20ExpressionCompilerImpl(TEST_NAMESPACE);\r\n    final Method[] methods = xp20Exp.getClass().getDeclaredMethods();\r\n    for (int i = 0; i < methods.length; ++i) {\r\n        if (methods[i].getName().equals(EXTRACT_FUNCTION_EXPRS)) {\r\n            String multipleFunctions = \"concat(current-date() + xs:dayTimeDuration(concat(\\\"P\\\", $DAYS_TO_NEXT_REMINDER, \\\"D\\\")), \\\"T\\\", \\\"08:30:00.000+08:00\\\")\";\r\n            final Object[] params = { multipleFunctions };\r\n            methods[i].setAccessible(true);\r\n            Object ret = methods[i].invoke(xp20Exp, params);\r\n            List<?> values = (List<?>) ret;\r\n            Assert.assertEquals(1, values.size());\r\n            Assert.assertEquals(\"Unexpected Function value\", multipleFunctions, (String) values.get(0));\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-compiler\\src\\test\\java\\org\\apache\\ode\\bpel\\elang\\xpath20\\compiler\\XPath20ExpressionCompilerImplTest.java",
+  "methodName" : "testExtractFunctionsExprs",
+  "sourceCode" : "@Test\r\npublic void testExtractFunctionsExprs() throws Exception {\r\n    XPath20ExpressionCompilerImpl xp20Exp = new XPath20ExpressionCompilerImpl(TEST_NAMESPACE);\r\n    final Method[] methods = xp20Exp.getClass().getDeclaredMethods();\r\n    String ODE_840 = \"bpel:doXslTransform(\\\"1.0.1/some.xsl\\\", $Variable.body, \\\"someParameter\\\", $OtherVariable.body, \\\"someParameter2\\\", $SwsHeaderRQ, \\\"someParameter3\\\", true(), \\\"someXpathParameter\\\", $XPath)\";\r\n    for (int i = 0; i < methods.length; ++i) {\r\n        if (methods[i].getName().equals(EXTRACT_FUNCTION_EXPRS)) {\r\n            final Object[] params = { ODE_840 };\r\n            methods[i].setAccessible(true);\r\n            Object ret = methods[i].invoke(xp20Exp, params);\r\n            List<?> values = (List<?>) ret;\r\n            Assert.assertEquals(1, values.size());\r\n            Assert.assertEquals(\"Unexpected Function value\", ODE_840, (String) values.get(0));\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-obj\\src\\test\\java\\org\\apache\\ode\\bpel\\o\\SerializerTest.java",
+  "methodName" : "testOnMessageBackwardCompatibility",
+  "sourceCode" : "@Test\r\npublic void testOnMessageBackwardCompatibility() throws Exception {\r\n    OPickReceive.OnMessage onMessage = new OPickReceive.OnMessage(null);\r\n    // had a value in matchCorrelation variable\r\n    OScope.CorrelationSet cset1 = new OScope.CorrelationSet(null);\r\n    cset1.name = \"cset1\";\r\n    Field matchCorrelationField = OPickReceive.OnMessage.class.getDeclaredField(\"matchCorrelation\");\r\n    matchCorrelationField.setAccessible(true);\r\n    matchCorrelationField.set(onMessage, cset1);\r\n    // joinCorrelations variable was not defined\r\n    Field joinCorrelationsField = OPickReceive.OnMessage.class.getDeclaredField(\"joinCorrelations\");\r\n    joinCorrelationsField.setAccessible(true);\r\n    joinCorrelationsField.set(onMessage, null);\r\n    // had a value in joinCorrelation variable\r\n    OScope.CorrelationSet cset2 = new OScope.CorrelationSet(null);\r\n    cset2.name = \"cset2\";\r\n    Field joinCorrelationField = OPickReceive.OnMessage.class.getDeclaredField(\"joinCorrelation\");\r\n    joinCorrelationField.setAccessible(true);\r\n    joinCorrelationField.set(onMessage, cset2);\r\n    ObjectOutputStream os = null;\r\n    ObjectInputStream is = null;\r\n    try {\r\n        ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n        os = new ObjectOutputStream(baos);\r\n        os.writeObject(onMessage);\r\n        is = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));\r\n        onMessage = (OPickReceive.OnMessage) is.readObject();\r\n        assertEquals(\"The value in 'matchCorrelation' member should've been transferred to 'matchCorrelations'\", \"cset1\", onMessage.matchCorrelations.get(0).name);\r\n        assertNotNull(\"'joinCorrelations' member cannot be null\", onMessage.joinCorrelations);\r\n        assertEquals(\"The value in 'joinCorrelation' member should've been transferred to 'joinCorrelations'\", \"cset2\", onMessage.joinCorrelations.get(0).name);\r\n    } finally {\r\n        if (os != null)\r\n            os.close();\r\n        if (is != null)\r\n            is.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-obj\\src\\test\\java\\org\\apache\\ode\\bpel\\o\\SerializerTest.java",
+  "methodName" : "testOEventBackwardCompatibility",
+  "sourceCode" : "@Test\r\npublic void testOEventBackwardCompatibility() throws Exception {\r\n    OEventHandler.OEvent oEvent = new OEventHandler.OEvent(null, null);\r\n    OScope.CorrelationSet cset1 = new OScope.CorrelationSet(null);\r\n    cset1.name = \"cset1\";\r\n    Field matchCorrelationField = OEventHandler.OEvent.class.getDeclaredField(\"matchCorrelation\");\r\n    matchCorrelationField.setAccessible(true);\r\n    matchCorrelationField.set(oEvent, cset1);\r\n    Field joinCorrelationsField = OEventHandler.OEvent.class.getDeclaredField(\"joinCorrelations\");\r\n    joinCorrelationsField.setAccessible(true);\r\n    joinCorrelationsField.set(oEvent, null);\r\n    OScope.CorrelationSet cset2 = new OScope.CorrelationSet(null);\r\n    cset2.name = \"cset2\";\r\n    Field joinCorrelationField = OEventHandler.OEvent.class.getDeclaredField(\"joinCorrelation\");\r\n    joinCorrelationField.setAccessible(true);\r\n    joinCorrelationField.set(oEvent, cset2);\r\n    ObjectOutputStream os = null;\r\n    ObjectInputStream is = null;\r\n    try {\r\n        ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n        os = new ObjectOutputStream(baos);\r\n        os.writeObject(oEvent);\r\n        is = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));\r\n        oEvent = (OEventHandler.OEvent) is.readObject();\r\n        assertEquals(\"The value in 'matchCorrelation' member should've been transferred to 'matchCorrelations'\", \"cset1\", oEvent.matchCorrelations.get(0).name);\r\n        assertNotNull(\"'joinCorrelations' member cannot be null\", oEvent.joinCorrelations);\r\n        assertEquals(\"The value in 'joinCorrelation' member should've been transferred to 'joinCorrelations'\", \"cset2\", oEvent.joinCorrelations.get(0).name);\r\n    } finally {\r\n        if (os != null)\r\n            os.close();\r\n        if (is != null)\r\n            is.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-obj\\src\\test\\java\\org\\apache\\ode\\bpel\\o\\SerializerTest.java",
+  "methodName" : "testOReplyBackwardCompatibility",
+  "sourceCode" : "@Test\r\npublic void testOReplyBackwardCompatibility() throws Exception {\r\n    OReply reply = new OReply(null, null);\r\n    Field joinCorrelationsField = OReply.class.getDeclaredField(\"joinCorrelations\");\r\n    joinCorrelationsField.setAccessible(true);\r\n    joinCorrelationsField.set(reply, null);\r\n    ObjectOutputStream os = null;\r\n    ObjectInputStream is = null;\r\n    try {\r\n        ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n        os = new ObjectOutputStream(baos);\r\n        os.writeObject(reply);\r\n        is = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));\r\n        reply = (OReply) is.readObject();\r\n        assertNotNull(\"'joinCorrelations' member cannot be null\", reply.joinCorrelations);\r\n    } finally {\r\n        if (os != null)\r\n            os.close();\r\n        if (is != null)\r\n            is.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-obj\\src\\test\\java\\org\\apache\\ode\\bpel\\o\\SerializerTest.java",
+  "methodName" : "testOInvokeBackwardCompatibility",
+  "sourceCode" : "@Test\r\npublic void testOInvokeBackwardCompatibility() throws Exception {\r\n    OInvoke invoke = new OInvoke(null, null);\r\n    Field joinCorrelationsField = OInvoke.class.getDeclaredField(\"joinCorrelationsInput\");\r\n    joinCorrelationsField.setAccessible(true);\r\n    joinCorrelationsField.set(invoke, null);\r\n    joinCorrelationsField = OInvoke.class.getDeclaredField(\"joinCorrelationsOutput\");\r\n    joinCorrelationsField.setAccessible(true);\r\n    joinCorrelationsField.set(invoke, null);\r\n    ObjectOutputStream os = null;\r\n    ObjectInputStream is = null;\r\n    try {\r\n        ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n        os = new ObjectOutputStream(baos);\r\n        os.writeObject(invoke);\r\n        is = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));\r\n        invoke = (OInvoke) is.readObject();\r\n        assertNotNull(\"'joinCorrelationsInput' member cannot be null\", invoke.joinCorrelationsInput);\r\n        assertNotNull(\"'joinCorrelationsOutput' member cannot be null\", invoke.joinCorrelationsOutput);\r\n    } finally {\r\n        if (os != null)\r\n            os.close();\r\n        if (is != null)\r\n            is.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-runtime\\src\\test\\java\\org\\apache\\ode\\bpel\\elang\\URIResolverTest.java",
+  "methodName" : "testResolveExistingFile",
+  "sourceCode" : "@Test\r\npublic void testResolveExistingFile() throws Exception {\r\n    OXPath10Expression expr = new OXPath10Expression(null, null, null, null);\r\n    URI baseResourceURI = getClass().getResource(\"/xpath20/\").toURI();\r\n    XslRuntimeUriResolver resolver = new XslRuntimeUriResolver(expr, baseResourceURI);\r\n    Source source = resolver.resolve(\"variables.xml\", null);\r\n    Document doc = DOMUtils.sourceToDOM(source);\r\n    assertThat(DOMUtils.domToString(doc), containsString(\"<variables>\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-runtime\\src\\test\\java\\org\\apache\\ode\\bpel\\elang\\URIResolverTest.java",
+  "methodName" : "testResolveNonExistingFile",
+  "sourceCode" : "@Test\r\npublic void testResolveNonExistingFile() throws Exception {\r\n    OXPath10Expression expr = new OXPath10Expression(null, null, null, null);\r\n    URI baseResourceURI = getClass().getResource(\"/xpath20/\").toURI();\r\n    XslRuntimeUriResolver resolver = new XslRuntimeUriResolver(expr, baseResourceURI);\r\n    assertNull(resolver.resolve(\"variablesa.xml\", null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-runtime\\src\\test\\java\\org\\apache\\ode\\bpel\\elang\\URIResolverTest.java",
+  "methodName" : "testEncoding",
+  "sourceCode" : "@Test\r\npublic void testEncoding() throws Exception {\r\n    Document original = DOMUtils.parse(getClass().getResourceAsStream(\"/xslt/test.xml\"));\r\n    OXPath10Expression expr = new OXPath10Expression(null, null, null, null);\r\n    URI baseResourceURI = getClass().getResource(\"/xslt/\").toURI();\r\n    XslRuntimeUriResolver resolver = new XslRuntimeUriResolver(expr, baseResourceURI);\r\n    Document doc = DOMUtils.sourceToDOM(resolver.resolve(\"test.xml\", null));\r\n    assertArrayEquals(original.getDocumentElement().getTextContent().trim().getBytes(), doc.getDocumentElement().getTextContent().trim().getBytes());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-runtime\\src\\test\\java\\org\\apache\\ode\\bpel\\elang\\URIResolverTest.java",
+  "methodName" : "testResolveURL",
+  "sourceCode" : "@Test\r\n@Ignore(\"automated tests should not rely on remote connections.\")\r\npublic void testResolveURL() throws Exception {\r\n    OXPath10Expression expr = new OXPath10Expression(null, null, null, null);\r\n    URI baseResourceURI = getClass().getResource(\"/xpath20/\").toURI();\r\n    XslRuntimeUriResolver resolver = new XslRuntimeUriResolver(expr, baseResourceURI);\r\n    Source source = resolver.resolve(\"https://svn.apache.org/repos/asf/ode/trunk/bpel-schemas/src/main/xsd/pmapi.xsd\", null);\r\n    Document doc = DOMUtils.sourceToDOM(source);\r\n    assertThat(DOMUtils.domToString(doc), containsString(\"activity-info\"));\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-runtime\\src\\test\\java\\org\\apache\\ode\\bpel\\elang\\xpath20\\runtime\\XPath20ExpressionRuntimeTest.java",
+  "methodName" : "testCompilation",
+  "sourceCode" : "@Test\r\npublic void testCompilation() throws Exception {\r\n    compile(\"$foo\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-runtime\\src\\test\\java\\org\\apache\\ode\\bpel\\elang\\xpath20\\runtime\\XPath20ExpressionRuntimeTest.java",
+  "methodName" : "testVariableSelection",
+  "sourceCode" : "@Test\r\npublic void testVariableSelection() throws Exception {\r\n    OXPath20ExpressionBPEL20 exp = compile(\"$foo\");\r\n    Node retVal = _runtime.evaluateNode(exp, this);\r\n    assertNotNull(retVal);\r\n    assertSame(retVal, _vars.get(\"foo\"));\r\n    assertSame(retVal.getOwnerDocument(), _vardoc);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-runtime\\src\\test\\java\\org\\apache\\ode\\bpel\\elang\\xpath20\\runtime\\XPath20ExpressionRuntimeTest.java",
+  "methodName" : "testVariableSelectionEmpty",
+  "sourceCode" : "@Test\r\npublic void testVariableSelectionEmpty() throws Exception {\r\n    OXPath20ExpressionBPEL20 exp = compile(\"$emptyVar\");\r\n    Node retVal = _runtime.evaluateNode(exp, this);\r\n    assertNotNull(retVal);\r\n    assertSame(retVal, _vars.get(\"emptyVar\"));\r\n    assertTrue(DOMUtils.getFirstChildElement((Element) retVal).getLocalName().equals(\"empty\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-runtime\\src\\test\\java\\org\\apache\\ode\\bpel\\elang\\xpath20\\runtime\\XPath20ExpressionRuntimeTest.java",
+  "methodName" : "testVariableSelectionReallyEmpty",
+  "sourceCode" : "@Test\r\npublic void testVariableSelectionReallyEmpty() throws Exception {\r\n    OXPath20ExpressionBPEL20 exp = compile(\"$reallyEmptyVar\");\r\n    Node retVal = _runtime.evaluateNode(exp, this);\r\n    assertNotNull(retVal);\r\n    assertSame(retVal, _vars.get(\"reallyEmptyVar\"));\r\n    assertNull(DOMUtils.getFirstChildElement((Element) retVal));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-runtime\\src\\test\\java\\org\\apache\\ode\\bpel\\elang\\xpath20\\runtime\\XPath20ExpressionRuntimeTest.java",
+  "methodName" : "testXpathDocFunction",
+  "sourceCode" : "@Test\r\npublic void testXpathDocFunction() throws Exception {\r\n    URL url = getClass().getResource(\"/xpath20/variables.xml\");\r\n    OXPath20ExpressionBPEL20 exp = compile(\"doc('\" + url.toExternalForm() + \"')\");\r\n    Node retVal = _runtime.evaluateNode(exp, this);\r\n    assertNotNull(retVal);\r\n    assertEquals(\"Unexpected root node\", \"variables\", retVal.getNodeName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-runtime\\src\\test\\java\\org\\apache\\ode\\bpel\\extvar\\jdbc\\JdbcExternalVariableEngineTest.java",
+  "methodName" : "testConfigurationParsing",
+  "sourceCode" : "@Test\r\npublic void testConfigurationParsing() throws Exception {\r\n    Document deploydoc = DOMUtils.parse(getClass().getResourceAsStream(\"evardeploy.xml\"));\r\n    NodeList nl = deploydoc.getElementsByTagNameNS(ExternalVariableConf.EXTVARCONF_ELEMENT.getNamespaceURI(), ExternalVariableConf.EXTVARCONF_ELEMENT.getLocalPart());\r\n    ArrayList<Element> al = new ArrayList<Element>();\r\n    for (int i = 0; i < nl.getLength(); ++i) {\r\n        al.add((Element) nl.item(i));\r\n    }\r\n    assertTrue(al.size() >= 1);\r\n    _econf = new ExternalVariableConf(al);\r\n    assertEquals(al.size(), _econf.getVariables().size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-runtime\\src\\test\\java\\org\\apache\\ode\\bpel\\extvar\\jdbc\\JdbcExternalVariableEngineTest.java",
+  "methodName" : "testConfigure",
+  "sourceCode" : "@Test\r\npublic void testConfigure() throws Exception {\r\n    testConfigurationParsing();\r\n    for (Variable v : _econf.getVariables()) _engine.configure(_pid, v.extVariableId, v.configuration);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-runtime\\src\\test\\java\\org\\apache\\ode\\bpel\\extvar\\jdbc\\JdbcExternalVariableEngineTest.java",
+  "methodName" : "testInitWriteValue",
+  "sourceCode" : "@Test\r\npublic void testInitWriteValue() throws Exception {\r\n    testConfigure();\r\n    Locator locator = new Locator(\"evar1\", _pid, _iid);\r\n    Value value = new Value(locator, _el1, null);\r\n    value = _engine.writeValue(_varType, value);\r\n    assertNotNull(value);\r\n    assertNotNull(value.locator);\r\n    System.out.println(DOMUtils.domToString(value.locator.reference));\r\n    assertTrue(DOMUtils.domToString((Element) value.locator.reference).indexOf(\"id1\") != -1);\r\n    assertTrue(DOMUtils.domToString((Element) value.locator.reference).indexOf(\"id2\") != -1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-runtime\\src\\test\\java\\org\\apache\\ode\\bpel\\extvar\\jdbc\\JdbcExternalVariableEngineTest.java",
+  "methodName" : "testWriteUpdate",
+  "sourceCode" : "@Test\r\npublic void testWriteUpdate() throws Exception {\r\n    testConfigure();\r\n    Locator locator = new Locator(\"evar1\", _pid, _iid);\r\n    Value value = new Value(locator, _el1, null);\r\n    value = _engine.writeValue(_varType, value);\r\n    String domstr = DOMUtils.domToStringLevel2(value.value);\r\n    Value newvalue = new Value(value.locator, DOMUtils.stringToDOM(domstr.replaceAll(\"<bar>bar</bar>\", \"<bar>boohoo</bar>\")), null);\r\n    _engine.writeValue(_varType, newvalue);\r\n    QName qname = new QName(\"http://example.com\", \"bar\");\r\n    Value reread = _engine.readValue(qname, newvalue.locator);\r\n    domstr = DOMUtils.domToString(reread.value);\r\n    assertTrue(domstr.contains(\"boohoo\"));\r\n    assertFalse(domstr.contains(\">bar<\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-runtime\\src\\test\\java\\org\\apache\\ode\\bpel\\extvar\\jdbc\\JdbcExternalVariableEngineTest.java",
+  "methodName" : "testRead",
+  "sourceCode" : "@Test\r\npublic void testRead() throws Exception {\r\n    testConfigure();\r\n    Locator locator = new Locator(\"evar1\", _pid, _iid);\r\n    Value value = new Value(locator, _el1, null);\r\n    value = _engine.writeValue(_varType, value);\r\n    Value readVal = _engine.readValue(_varType, value.locator);\r\n    assertEquals(_iid, readVal.locator.iid);\r\n    assertEquals(_pid, readVal.locator.pid);\r\n    assertEquals(2, DOMUtils.countKids((Element) readVal.locator.reference, Node.ELEMENT_NODE));\r\n    assertEquals(DOMUtils.domToString(value.locator.reference), DOMUtils.domToString(readVal.locator.reference));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\BasicActivities20Test.java",
+  "methodName" : "testHelloWorld2",
+  "sourceCode" : "@Test\r\npublic void testHelloWorld2() throws Throwable {\r\n    go(\"/bpel/2.0/HelloWorld2\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\BasicActivities20Test.java",
+  "methodName" : "testNegativeTargetNS1",
+  "sourceCode" : "@Test\r\npublic void testNegativeTargetNS1() throws Throwable {\r\n    /**\r\n     * Test for an invalid targetNamespace has been entered into the WSDL. See JIRA ODE-67 Test for a specific exception\r\n     * message.\r\n     */\r\n    Deployment deployment = addDeployment(\"/bpel/2.0/NegativeTargetNSTest1\");\r\n    deployment.expectedException = ContextException.class;\r\n    go();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\BasicActivities20Test.java",
+  "methodName" : "testTimer",
+  "sourceCode" : "@Test\r\npublic void testTimer() throws Throwable {\r\n    go(\"/bpel/2.0/TestTimer\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\BasicActivities20Test.java",
+  "methodName" : "testIf",
+  "sourceCode" : "@Test\r\npublic void testIf() throws Throwable {\r\n    go(\"/bpel/2.0/TestIf\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\BasicActivities20Test.java",
+  "methodName" : "testIfBoolean",
+  "sourceCode" : "@Test\r\npublic void testIfBoolean() throws Throwable {\r\n    go(\"/bpel/2.0/TestIfBoolean\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\BasicActivities20Test.java",
+  "methodName" : "testWaitFor",
+  "sourceCode" : "/**\r\n * Tests the wait \"for\" syntax.\r\n * @throws Throwable\r\n */\r\n@Test\r\npublic void testWaitFor() throws Throwable {\r\n    deploy(\"/bpel/2.0/TestWait1\");\r\n    Invocation inv = addInvoke(\"Wait1#1\", new QName(\"http://ode/bpel/unit-test.wsdl\", \"testService\"), \"testOperation\", \"<message><TestPart/><Time/></message>\", null);\r\n    inv.minimumWaitMs = 5 * 1000L;\r\n    inv.maximumWaitMs = 7 * 1000L;\r\n    inv.expectedStatus = MessageExchange.Status.ASYNC;\r\n    inv.expectedFinalStatus = MessageExchange.Status.RESPONSE;\r\n    go();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\BasicActivities20Test.java",
+  "methodName" : "testWaitUntil",
+  "sourceCode" : "/**\r\n * Test the wait \"until\" syntax.\r\n */\r\n@Test\r\npublic void testWaitUntil() throws Throwable {\r\n    deploy(\"/bpel/2.0/TestWaitUntil\");\r\n    DateFormat idf = new SimpleDateFormat(\"yyyy-MM-dd'T'HH:mm:ss.SSS\");\r\n    String isountil = idf.format(new Date(System.currentTimeMillis() + 5000));\r\n    Invocation inv = addInvoke(\"WaitUntil\", new QName(\"http://ode/bpel/unit-test.wsdl\", \"testService\"), \"testOperation\", \"<message><TestPart/><Time>\" + isountil + \"</Time></message>\", null);\r\n    inv.minimumWaitMs = 4 * 1000L;\r\n    inv.maximumWaitMs = 7 * 1000L;\r\n    inv.expectedStatus = MessageExchange.Status.ASYNC;\r\n    inv.expectedFinalStatus = MessageExchange.Status.RESPONSE;\r\n    go();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\BasicActivities20Test.java",
+  "methodName" : "testWaitUntilPast",
+  "sourceCode" : "/**\r\n * Test the wait \"until\" syntax.\r\n */\r\n@Test\r\npublic void testWaitUntilPast() throws Throwable {\r\n    deploy(\"/bpel/2.0/TestWaitUntil\");\r\n    DateFormat idf = new SimpleDateFormat(\"yyyy-MM-dd'T'HH:mm:ss.SSS\");\r\n    String isountil = idf.format(new Date(System.currentTimeMillis() - 5000));\r\n    Invocation inv = addInvoke(\"WaitUntil\", new QName(\"http://ode/bpel/unit-test.wsdl\", \"testService\"), \"testOperation\", \"<message><TestPart/><Time>\" + isountil + \"</Time></message>\", null);\r\n    inv.maximumWaitMs = 2 * 1000L;\r\n    inv.expectedStatus = MessageExchange.Status.ASYNC;\r\n    inv.expectedFinalStatus = MessageExchange.Status.RESPONSE;\r\n    go();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\BasicActivities20Test.java",
+  "methodName" : "testOnAlarm",
+  "sourceCode" : "/**\r\n * Tests the wait \"for\" syntax.\r\n * @throws Throwable\r\n */\r\n@Test\r\npublic void testOnAlarm() throws Throwable {\r\n    deploy(\"/bpel/2.0/TestAlarm\");\r\n    Invocation inv = addInvoke(\"Wait1#1\", new QName(\"http://ode.apache.org/example\", \"CanonicServiceForClient\"), \"receive\", \"<message><body><start xmlns=\\\"http://ode.apache.org/example\\\">start</start></body></message>\", null);\r\n    inv.maximumWaitMs = 20 * 1000L;\r\n    inv.expectedStatus = MessageExchange.Status.ASYNC;\r\n    inv.expectedFinalStatus = MessageExchange.Status.RESPONSE;\r\n    go();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\CompensationHandling20Test.java",
+  "methodName" : "testCompensationHandlers",
+  "sourceCode" : "@Test\r\npublic void testCompensationHandlers() throws Throwable {\r\n    go(\"/bpel/2.0/TestCompensationHandlers\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\CompensationHandling20Test.java",
+  "methodName" : "testImplicitFaultHandler",
+  "sourceCode" : "@Ignore(\"fix test bed for handling ASYNC mex\")\r\n@Test\r\npublic void testImplicitFaultHandler() throws Throwable {\r\n    /*\r\n         * Failure report: Invocation#Invoke#1: Exception on future object.; got\r\n         * exception msg: Message exchange\r\n         * org.apache.ode.bpel.engine.MyRoleMessageExchangeImpl$ResponseFuture@ab6dcb\r\n         * timed out when waiting for a response!\r\n         * junit.framework.AssertionFailedError: Failure report:\r\n         * Invocation#Invoke#1: Exception on future object.; got exception msg:\r\n         * Message exchange\r\n         * org.apache.ode.bpel.engine.MyRoleMessageExchangeImpl$ResponseFuture@ab6dcb\r\n         * timed out when waiting for a response!\r\n         *\r\n         * at\r\n         * org.apache.ode.test.BPELTestAbstract.checkFailure(BPELTestAbstract.java:278)\r\n         * at org.apache.ode.test.BPELTestAbstract.go(BPELTestAbstract.java:267)\r\n         * at\r\n         * org.apache.ode.test.CompensationHandling20Test.testImplicitFaultHandler(CompensationHandling20Test.java:45)\r\n         */\r\n    deploy(\"/bpel/2.0/TestImplicitFaultHandler\");\r\n    Invocation inv = addInvoke(\"Invoke#1\", new QName(\"http://ode/bpel/unit-test/testImplicitFaultHandler.wsdl\", \"testImplicitFaultHandlerService\"), \"request\", \"<message><requestID>Start TestImplicitFaultHandler</requestID><requestText>Event TestImplicitFaultHandler</requestText><faultIndicator1>yes</faultIndicator1><faultIndicator2>no</faultIndicator2></message>\", null);\r\n    inv.expectedFinalStatus = MessageExchange.Status.FAULT;\r\n    inv.expectedResponsePattern = Pattern.compile(\".*Event TestFaultWithVariable1 -&gt; caught FaultMessage1 -&gt; Event TestFaultWithVariable1 -&gt; process complete.*\");\r\n    go();\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testComposeUrl",
+  "sourceCode" : "@Test\r\npublic void testComposeUrl() throws Throwable {\r\n    go(\"/bpel/2.0/TestComposeUrl\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testCombineUrl",
+  "sourceCode" : "@Test\r\npublic void testCombineUrl() throws Throwable {\r\n    go(\"/bpel/2.0/TestCombineUrl\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testExpandTemplate",
+  "sourceCode" : "@Test\r\npublic void testExpandTemplate() throws Throwable {\r\n    go(\"/bpel/2.0/TestExpandTemplate\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testXPathNamespace1",
+  "sourceCode" : "@Test\r\npublic void testXPathNamespace1() throws Throwable {\r\n    go(\"/bpel/2.0/TestXPathNamespace1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testXPathNamespace2",
+  "sourceCode" : "@Test\r\npublic void testXPathNamespace2() throws Throwable {\r\n    go(\"/bpel/2.0/TestXPathNamespace2\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testToQuery",
+  "sourceCode" : "@Test\r\npublic void testToQuery() throws Throwable {\r\n    go(\"/bpel/2.0/TestToQuery\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testSubTreeAssign",
+  "sourceCode" : "@Test\r\npublic void testSubTreeAssign() throws Throwable {\r\n    go(\"/bpel/2.0/TestSubTreeAssign\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testAssignActivity1",
+  "sourceCode" : "@Test\r\npublic void testAssignActivity1() throws Throwable {\r\n    go(\"/bpel/2.0/TestAssignActivity1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testAssignActivity2",
+  "sourceCode" : "@Test\r\npublic void testAssignActivity2() throws Throwable {\r\n    go(\"/bpel/2.0/TestAssignActivity2\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testAssignComplex",
+  "sourceCode" : "@Test\r\npublic void testAssignComplex() throws Throwable {\r\n    go(\"/bpel/2.0/TestAssignComplex\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testSimpleTypeParts",
+  "sourceCode" : "@Test\r\npublic void testSimpleTypeParts() throws Throwable {\r\n    go(\"/bpel/2.0/TestSimpleTypeParts\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testSimpleVariableType",
+  "sourceCode" : "@Test\r\npublic void testSimpleVariableType() throws Throwable {\r\n    go(\"/bpel/2.0/TestSimpleVariableType\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testXslTransform",
+  "sourceCode" : "@Test\r\npublic void testXslTransform() throws Throwable {\r\n    go(\"/bpel/2.0/TestXslTransform\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testSplit",
+  "sourceCode" : "@Test\r\npublic void testSplit() throws Throwable {\r\n    go(\"/bpel/2.0/TestSplit\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testCounter",
+  "sourceCode" : "@Test\r\npublic void testCounter() throws Throwable {\r\n    go(\"/bpel/2.0/TestCounter\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testDate",
+  "sourceCode" : "@Test\r\npublic void testDate() throws Throwable {\r\n    go(\"/bpel/2.0/TestAssignDate\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testMsgDate",
+  "sourceCode" : "@Test\r\npublic void testMsgDate() throws Throwable {\r\n    go(\"/bpel/2.0/TestMsgDate\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testDuration",
+  "sourceCode" : "@Test\r\npublic void testDuration() throws Throwable {\r\n    go(\"/bpel/2.0/TestDuration\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testAssignMissingData",
+  "sourceCode" : "@Test\r\npublic void testAssignMissingData() throws Throwable {\r\n    go(\"/bpel/2.0/TestAssignMissingData\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testXQueryExpression",
+  "sourceCode" : "@Test\r\npublic void testXQueryExpression() throws Throwable {\r\n    go(\"/bpel/2.0/TestXQueryExpression\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\DataHandling20Test.java",
+  "methodName" : "testInsertMissingData",
+  "sourceCode" : "@Test\r\npublic void testInsertMissingData() throws Throwable {\r\n    go(\"/bpel/2.0/TestInsertMissingData\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\ExternalVariableTest.java",
+  "methodName" : "testHelloWorld2",
+  "sourceCode" : "@Test\r\npublic void testHelloWorld2() throws Throwable {\r\n    go(\"/bpel/2.0/ExtVar\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\ExternalVariableTest.java",
+  "methodName" : "testExtVar2",
+  "sourceCode" : "@Test\r\npublic void testExtVar2() throws Throwable {\r\n    go(\"/bpel/2.0/ExtVar2\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\ExternalVariableTest.java",
+  "methodName" : "testExtVar3",
+  "sourceCode" : "@Test\r\npublic void testExtVar3() throws Throwable {\r\n    go(\"/bpel/2.0/ExtVar3\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\ExternalVariableTest.java",
+  "methodName" : "testExtVarKeyGen",
+  "sourceCode" : "@Test\r\npublic void testExtVarKeyGen() throws Throwable {\r\n    go(\"/bpel/2.0/ExtVar-GenKey\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\FaultHandling20Test.java",
+  "methodName" : "testFaultHandlers",
+  "sourceCode" : "@Test\r\npublic void testFaultHandlers() throws Throwable {\r\n    go(\"/bpel/2.0/TestFaultHandlers\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\FaultHandling20Test.java",
+  "methodName" : "testFaultWithVariable",
+  "sourceCode" : "@Test\r\npublic void testFaultWithVariable() throws Throwable {\r\n    go(\"/bpel/2.0/TestFaultWithVariable\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\FaultHandling20Test.java",
+  "methodName" : "testCatchFaultInFaultHandler",
+  "sourceCode" : "@Test\r\npublic void testCatchFaultInFaultHandler() throws Throwable {\r\n    go(\"/bpel/2.0/TestCatchFaultInFaultHandler\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\FaultHandling20Test.java",
+  "methodName" : "testOnEventThrow",
+  "sourceCode" : "@Test\r\npublic void testOnEventThrow() throws Throwable {\r\n    go(\"/bpel/2.0/TestOnEventThrow\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testCorrelation",
+  "sourceCode" : "@Test\r\npublic void testCorrelation() throws Throwable {\r\n    go(\"/bpel/2.0/TestCorrelation\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testCorrelation1",
+  "sourceCode" : "@Test\r\npublic void testCorrelation1() throws Throwable {\r\n    go(\"/bpel/2.0/TestCorrelation1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testCorrelationJoin",
+  "sourceCode" : "@Test\r\npublic void testCorrelationJoin() throws Throwable {\r\n    go(\"/bpel/2.0/TestCorrelationJoin\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testCorrelationJoinReceive",
+  "sourceCode" : "@Test\r\npublic void testCorrelationJoinReceive() throws Throwable {\r\n    go(\"/bpel/2.0/TestCorrelationJoinReceive\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testCorrelationJoinInvoke",
+  "sourceCode" : "@Test\r\npublic void testCorrelationJoinInvoke() throws Throwable {\r\n    go(\"/bpel/2.0/TestCorrelationJoinInvoke\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testCorrelationJoinOnMessage",
+  "sourceCode" : "@Test\r\npublic void testCorrelationJoinOnMessage() throws Throwable {\r\n    go(\"/bpel/2.0/TestCorrelationJoinOnMessage\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testCorrelationJoinEvent",
+  "sourceCode" : "@Test\r\npublic void testCorrelationJoinEvent() throws Throwable {\r\n    go(\"/bpel/2.0/TestCorrelationJoinEvent\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testCorrelationJoinReply",
+  "sourceCode" : "@Test\r\npublic void testCorrelationJoinReply() throws Throwable {\r\n    go(\"/bpel/2.0/TestCorrelationJoinReply\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testCorrelationMulti",
+  "sourceCode" : "@Test\r\npublic void testCorrelationMulti() throws Throwable {\r\n    go(\"/bpel/2.0/TestCorrelationMulti\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testCorrelationMultiNegative",
+  "sourceCode" : "@Test\r\npublic void testCorrelationMultiNegative() throws Throwable {\r\n    go(\"/bpel/2.0/TestCorrelationMultiNegative\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testCorrelationMultiJoin",
+  "sourceCode" : "@Test\r\npublic void testCorrelationMultiJoin() throws Throwable {\r\n    go(\"/bpel/2.0/TestCorrelationMultiJoin\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testCorrelationMultiComplex",
+  "sourceCode" : "@Test\r\npublic void testCorrelationMultiComplex() throws Throwable {\r\n    go(\"/bpel/2.0/TestCorrelationMultiComplex\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testCorrelationOpaque",
+  "sourceCode" : "@Ignore(\"fix test bed for handling ASYNC mex\")\r\n@Test\r\npublic void testCorrelationOpaque() throws Throwable {\r\n    //TODO Fix me, we need to capture the session id to send it in the second test message\r\n    go(\"/bpel/2.0/TestCorrelationOpaque\");\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testDynamicPick",
+  "sourceCode" : "@Test\r\npublic void testDynamicPick() throws Throwable {\r\n    go(\"/bpel/2.0/TestDynamicPick\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testInstPick",
+  "sourceCode" : "@Test\r\npublic void testInstPick() throws Throwable {\r\n    go(\"/bpel/2.0/TestInstantiatingPick\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testStaticOnMessage",
+  "sourceCode" : "@Test\r\npublic void testStaticOnMessage() throws Throwable {\r\n    go(\"/bpel/2.0/TestStaticOnMessage\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testStaticPick",
+  "sourceCode" : "@Test\r\npublic void testStaticPick() throws Throwable {\r\n    go(\"/bpel/2.0/TestStaticPick\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testNegativeCorrelation",
+  "sourceCode" : "@Ignore(\"fix test bed for handling ASYNC mex\")\r\n@Test\r\npublic void testNegativeCorrelation() throws Throwable {\r\n    /**\r\n     * This test contains invalid BPEL. There is an instantiating\r\n     * <receive> and a subsequent <pick> that does not define a correlation\r\n     * key. The BPEL compiler should throw an exception indicating\r\n     * the BPEL code error ( verify with spec ).\r\n     *\r\n     * See JIRA ODE-64\r\n     */\r\n    // TODO fix the bug first\r\n    negative(\"target/test-classes/bpel/2.0/NegativeCorrelationTest\");\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testNegativeInitialization",
+  "sourceCode" : "@Test\r\n@Ignore(\"fix test bed for handling ASYNC mex\")\r\npublic void testNegativeInitialization() throws Throwable {\r\n    /**\r\n     * This test contains invalid BPEL. There is an instantiating\r\n     * <receive> within a <scope>. The <scope> contains eventhandlers\r\n     * that reference the correlation set found on the receive. The BPEL\r\n     * compiler should throw an exception indicating\r\n     * the BPEL error ( verify with spec ) or at runtime\r\n     * a clear initialization exception should be thrown.\r\n     *\r\n     * See JIRA ODE-61.\r\n     *\r\n     * The message exchange should return with a Fault/Failure.\r\n     */\r\n    // TODO fix the bug first\r\n    negative(\"target/test-classes/bpel/2.0/NegativeInitializationTest\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testConcurrentSyncMex",
+  "sourceCode" : "@Test\r\npublic void testConcurrentSyncMex() throws Throwable {\r\n    go(\"/bpel/2.0/TestConcurrentSyncMex\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\MessageRouting20Test.java",
+  "methodName" : "testIMA",
+  "sourceCode" : "@Test\r\npublic void testIMA() throws Throwable {\r\n    go(\"/bpel/2.0/TestIMA\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\PubSubTest.java",
+  "methodName" : "testPubSubInProc",
+  "sourceCode" : "@Ignore\r\n@Test\r\npublic void testPubSubInProc() throws Throwable {\r\n    go(\"/bpel/2.0/TestPubSubInProc\");\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\PubSubTest.java",
+  "methodName" : "testPubSubOutOfProc",
+  "sourceCode" : "@Ignore\r\n@Test\r\npublic void testPubSubOutOfProc() throws Throwable {\r\n    go(\"/bpel/2.0/TestPubSubOutOfProc\");\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\StructuredActivities20Test.java",
+  "methodName" : "testFlowActivity1",
+  "sourceCode" : "@Test\r\npublic void testFlowActivity1() throws Throwable {\r\n    // Test Flow with XPath20\r\n    go(\"/bpel/2.0/TestFlowActivity1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\StructuredActivities20Test.java",
+  "methodName" : "testFlowActivity2",
+  "sourceCode" : "@Test\r\npublic void testFlowActivity2() throws Throwable {\r\n    // Test Flow with XPath10\r\n    go(\"/bpel/2.0/TestFlowActivity2\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\StructuredActivities20Test.java",
+  "methodName" : "testFlowLinks",
+  "sourceCode" : "@Test\r\npublic void testFlowLinks() throws Throwable {\r\n    // Test Flow with XPath10\r\n    go(\"/bpel/2.0/TestFlowLinks\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\StructuredActivities20Test.java",
+  "methodName" : "testIsolatedScopes1",
+  "sourceCode" : "@Test\r\npublic void testIsolatedScopes1() throws Throwable {\r\n    // Test Flow with XPath10\r\n    go(\"/bpel/2.0/TestIsolatedScopes1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\StructuredActivities20Test.java",
+  "methodName" : "testAtomicScopeBasic",
+  "sourceCode" : "@Test\r\npublic void testAtomicScopeBasic() throws Throwable {\r\n    go(\"/bpel/2.0/TestAtomicScopeBasic\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\StructuredActivities20Test.java",
+  "methodName" : "testForEach",
+  "sourceCode" : "//    @Test public void testAtomicProcess() throws Throwable {\r\n//        go(\"/bpel/2.0/TestAtomicProcess\");\r\n//    }\r\n//    @Test public void testAtomicScopes() throws Throwable {\r\n//        go(\"/bpel/2.0/TestAtomicScope\");\r\n//    }\r\n@Test\r\npublic void testForEach() throws Throwable {\r\n    // Test Flow with XPath10\r\n    go(\"/bpel/2.0/TestForEach\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\StructuredActivities20Test.java",
+  "methodName" : "testPickOneWay",
+  "sourceCode" : "@Test\r\npublic void testPickOneWay() throws Throwable {\r\n    // Test Flow with XPath10\r\n    go(\"/bpel/2.0/TestPickOneWay\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\VersionedRedeployTest.java",
+  "methodName" : "testRetireOld",
+  "sourceCode" : "@Test\r\npublic void testRetireOld() throws Throwable {\r\n    deploy(\"/bpel/2.0/TestVersionedRedeploy/HelloWorld-1\");\r\n    ProcessConf conf = store.getProcessConfiguration(qName1);\r\n    Assert.assertEquals(ProcessState.ACTIVE, conf.getState());\r\n    deploy(\"/bpel/2.0/TestVersionedRedeploy/HelloWorld-2\");\r\n    // Now 1 should be retired and 2 active\r\n    conf = store.getProcessConfiguration(qName1);\r\n    Assert.assertEquals(ProcessState.RETIRED, conf.getState());\r\n    conf = store.getProcessConfiguration(qName2);\r\n    Assert.assertEquals(ProcessState.ACTIVE, conf.getState());\r\n    deploy(\"/bpel/2.0/TestVersionedRedeploy/HelloWorld-3\");\r\n    // 1 and 2 should be retired and 3 active\r\n    conf = store.getProcessConfiguration(qName1);\r\n    Assert.assertEquals(ProcessState.RETIRED, conf.getState());\r\n    conf = store.getProcessConfiguration(qName2);\r\n    Assert.assertEquals(ProcessState.RETIRED, conf.getState());\r\n    conf = store.getProcessConfiguration(qName3);\r\n    Assert.assertEquals(ProcessState.ACTIVE, conf.getState());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\VersionedRedeployTest.java",
+  "methodName" : "testInstancePersistence",
+  "sourceCode" : "@Test\r\npublic void testInstancePersistence() throws Throwable {\r\n    // Checking for each step that all instances still exist and that each process got one execution\r\n    // so no instance has been created after a process has been retired.\r\n    go(\"/bpel/2.0/TestVersionedRedeploy/HelloWorld-1\");\r\n    Assert.assertEquals(1, _cf.getConnection().getProcess(qName1).getNumInstances());\r\n    // clean up deployment and invocations\r\n    _deployments.clear();\r\n    _invocations.clear();\r\n    go(\"/bpel/2.0/TestVersionedRedeploy/HelloWorld-2\");\r\n    Assert.assertEquals(1, _cf.getConnection().getProcess(qName1).getNumInstances());\r\n    Assert.assertEquals(1, _cf.getConnection().getProcess(qName2).getNumInstances());\r\n    // clean up deployment and invocations\r\n    _deployments.clear();\r\n    _invocations.clear();\r\n    go(\"/bpel/2.0/TestVersionedRedeploy/HelloWorld-3\");\r\n    Assert.assertEquals(1, _cf.getConnection().getProcess(qName1).getNumInstances());\r\n    Assert.assertEquals(1, _cf.getConnection().getProcess(qName2).getNumInstances());\r\n    Assert.assertEquals(1, _cf.getConnection().getProcess(qName3).getNumInstances());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\bpel-test\\src\\test\\java\\org\\apache\\ode\\test\\VersionedRedeployTest.java",
+  "methodName" : "testVersionedUndeployDeploy",
+  "sourceCode" : "@Test\r\npublic void testVersionedUndeployDeploy() throws Throwable {\r\n    go(\"/bpel/2.0/TestVersionedRedeploy/HelloWorld-1\");\r\n    doUndeployments();\r\n    //clean up invocations before next run\r\n    _invocations.clear();\r\n    go(\"/bpel/2.0/TestVersionedRedeploy/HelloWorld-1\");\r\n    // We should have a brand new version 1 with no version 2\r\n    Assert.assertNull(store.getProcessConfiguration(qName1));\r\n    Assert.assertNull(store.getProcessConfiguration(qName3));\r\n    Assert.assertEquals(1, _cf.getConnection().getProcess(qName2).getNumInstances());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\JdbcDelegateTest.java",
+  "methodName" : "testGetNodeIds",
+  "sourceCode" : "@Test\r\npublic void testGetNodeIds() throws Exception {\r\n    // should have no node ids in the db, empty list (not null)\r\n    List<String> nids = _del.getNodeIds();\r\n    assertNotNull(nids);\r\n    assertEquals(0, nids.size());\r\n    // try for one nodeid\r\n    _del.insertJob(new Job(0L, true, new Scheduler.JobDetails()), \"abc\", true);\r\n    nids = _del.getNodeIds();\r\n    assertEquals(1, nids.size());\r\n    assertTrue(nids.contains(\"abc\"));\r\n    // check that dups are ignored.\r\n    _del.insertJob(new Job(0L, true, new Scheduler.JobDetails()), \"abc\", true);\r\n    nids = _del.getNodeIds();\r\n    assertEquals(1, nids.size());\r\n    assertTrue(nids.contains(\"abc\"));\r\n    // add another nodeid,\r\n    _del.insertJob(new Job(0L, true, new Scheduler.JobDetails()), \"123\", true);\r\n    nids = _del.getNodeIds();\r\n    assertEquals(2, nids.size());\r\n    assertTrue(nids.contains(\"abc\"));\r\n    assertTrue(nids.contains(\"123\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\JdbcDelegateTest.java",
+  "methodName" : "testReassign",
+  "sourceCode" : "@Test\r\npublic void testReassign() throws Exception {\r\n    _del.insertJob(new Job(100L, \"j1\", true, new Scheduler.JobDetails()), \"n1\", false);\r\n    _del.insertJob(new Job(200L, \"j2\", true, new Scheduler.JobDetails()), \"n2\", false);\r\n    assertEquals(1, _del.updateReassign(\"n1\", \"n2\"));\r\n    List<Job> jobs = _del.dequeueImmediate(\"n2\", 400L, 1000);\r\n    assertEquals(2, jobs.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\JdbcDelegateTest.java",
+  "methodName" : "testScheduleImmediateTimeFilter",
+  "sourceCode" : "@Test\r\npublic void testScheduleImmediateTimeFilter() throws Exception {\r\n    _del.insertJob(new Job(100L, \"j1\", true, new Scheduler.JobDetails()), \"n1\", false);\r\n    _del.insertJob(new Job(200L, \"j2\", true, new Scheduler.JobDetails()), \"n1\", false);\r\n    List<Job> jobs = _del.dequeueImmediate(\"n1\", 150L, 1000);\r\n    assertNotNull(jobs);\r\n    assertEquals(1, jobs.size());\r\n    assertEquals(\"j1\", jobs.get(0).jobId);\r\n    jobs = _del.dequeueImmediate(\"n1\", 250L, 1000);\r\n    assertNotNull(jobs);\r\n    assertEquals(2, jobs.size());\r\n    assertEquals(\"j1\", jobs.get(0).jobId);\r\n    assertEquals(\"j2\", jobs.get(1).jobId);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\JdbcDelegateTest.java",
+  "methodName" : "testScheduleImmediateMaxRows",
+  "sourceCode" : "@Test\r\npublic void testScheduleImmediateMaxRows() throws Exception {\r\n    _del.insertJob(new Job(100L, \"j1\", true, new Scheduler.JobDetails()), \"n1\", false);\r\n    _del.insertJob(new Job(200L, \"j2\", true, new Scheduler.JobDetails()), \"n1\", false);\r\n    List<Job> jobs = _del.dequeueImmediate(\"n1\", 201L, 1);\r\n    assertNotNull(jobs);\r\n    assertEquals(1, jobs.size());\r\n    assertEquals(\"j1\", jobs.get(0).jobId);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\JdbcDelegateTest.java",
+  "methodName" : "testScheduleImmediateNodeFilter",
+  "sourceCode" : "@Test\r\npublic void testScheduleImmediateNodeFilter() throws Exception {\r\n    _del.insertJob(new Job(100L, \"j1\", true, new Scheduler.JobDetails()), \"n1\", false);\r\n    _del.insertJob(new Job(200L, \"j2\", true, new Scheduler.JobDetails()), \"n2\", false);\r\n    List<Job> jobs = _del.dequeueImmediate(\"n2\", 300L, 1000);\r\n    assertNotNull(jobs);\r\n    assertEquals(1, jobs.size());\r\n    assertEquals(\"j2\", jobs.get(0).jobId);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\JdbcDelegateTest.java",
+  "methodName" : "testDeleteJob",
+  "sourceCode" : "@Test\r\npublic void testDeleteJob() throws Exception {\r\n    _del.insertJob(new Job(100L, \"j1\", true, new Scheduler.JobDetails()), \"n1\", false);\r\n    _del.insertJob(new Job(200L, \"j2\", true, new Scheduler.JobDetails()), \"n2\", false);\r\n    // try deleting, wrong jobid -- del should fail\r\n    assertFalse(_del.deleteJob(\"j1x\", \"n1\"));\r\n    assertEquals(2, _del.getNodeIds().size());\r\n    // wrong nodeid\r\n    assertFalse(_del.deleteJob(\"j1\", \"n1x\"));\r\n    assertEquals(2, _del.getNodeIds().size());\r\n    // now do the correct job\r\n    assertTrue(_del.deleteJob(\"j1\", \"n1\"));\r\n    assertEquals(1, _del.getNodeIds().size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\JdbcDelegateTest.java",
+  "methodName" : "testUpgrade",
+  "sourceCode" : "@Test\r\npublic void testUpgrade() throws Exception {\r\n    for (int i = 0; i < 200; ++i) _del.insertJob(new Job(i, \"j\" + i, true, new Scheduler.JobDetails()), null, false);\r\n    int n1 = _del.updateAssignToNode(\"n1\", 0, 3, 100);\r\n    int n2 = _del.updateAssignToNode(\"n2\", 1, 3, 100);\r\n    int n3 = _del.updateAssignToNode(\"n3\", 2, 3, 100);\r\n    // Make sure we got 100 upgraded nodes\r\n    assertEquals(100, n1 + n2 + n3);\r\n    // now do scheduling.\r\n    assertEquals(n1, _del.dequeueImmediate(\"n1\", 10000L, 1000).size());\r\n    assertEquals(n2, _del.dequeueImmediate(\"n2\", 10000L, 1000).size());\r\n    assertEquals(n3, _del.dequeueImmediate(\"n3\", 10000L, 1000).size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\JdbcDelegateTest.java",
+  "methodName" : "testMigration",
+  "sourceCode" : "@Test\r\npublic void testMigration() throws Exception {\r\n    Scheduler.JobDetails j1 = new Scheduler.JobDetails();\r\n    j1.getDetailsExt().put(\"type\", \"MATCHER\");\r\n    j1.getDetailsExt().put(\"iid\", 1234L);\r\n    j1.getDetailsExt().put(\"pid\", new QName(\"http://test1\", \"test2\").toString());\r\n    j1.getDetailsExt().put(\"inmem\", true);\r\n    j1.getDetailsExt().put(\"ckey\", \"@2[some~001~002]\");\r\n    j1.getDetailsExt().put(\"channel\", \"123\");\r\n    j1.getDetailsExt().put(\"mexid\", \"mexid123\");\r\n    j1.getDetailsExt().put(\"correlatorId\", \"cid123\");\r\n    j1.getDetailsExt().put(\"retryCount\", \"15\");\r\n    _del.insertJob(new Job(0, \"migration\", true, j1), null, false);\r\n    _del.updateAssignToNode(\"m\", 0, 3, 100);\r\n    Scheduler.JobDetails j2 = _del.dequeueImmediate(\"m\", 10000L, 1000).get(0).detail;\r\n    assertEquals(j2.getType(), JobType.MATCHER);\r\n    assertEquals(j2.getInstanceId(), (Object) 1234L);\r\n    assertEquals(j2.getProcessId(), new QName(\"http://test1\", \"test2\"));\r\n    assertEquals(j2.getInMem(), (Object) true);\r\n    assertEquals(j2.getCorrelationKeySet().toCanonicalString(), (Object) \"@2[some~001~002]\");\r\n    assertEquals(j2.getChannel(), (Object) \"123\");\r\n    assertEquals(j2.getMexId(), (Object) \"mexid123\");\r\n    assertEquals(j2.getCorrelatorId(), (Object) \"cid123\");\r\n    assertEquals(j2.getRetryCount(), (Object) 15);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\RetriesTest.java",
+  "methodName" : "testRetries",
+  "sourceCode" : "@Test\r\npublic void testRetries() throws Exception {\r\n    // speed things up a bit to hit the right code paths\r\n    _scheduler.setNearFutureInterval(5000);\r\n    _scheduler.setImmediateInterval(1000);\r\n    _scheduler.start();\r\n    _txm.begin();\r\n    try {\r\n        _scheduler.schedulePersistedJob(newDetail(\"123\"), new Date());\r\n    } finally {\r\n        _txm.commit();\r\n    }\r\n    Thread.sleep(10000);\r\n    assertEquals(6, _tried);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\RetriesTest.java",
+  "methodName" : "testExecTransaction",
+  "sourceCode" : "@Test\r\npublic void testExecTransaction() throws Exception {\r\n    final int[] tryCount = new int[1];\r\n    tryCount[0] = 0;\r\n    Callable<Void> transaction = new Callable<Void>() {\r\n\r\n        public Void call() throws Exception {\r\n            tryCount[0]++;\r\n            if (tryCount[0] < 3) {\r\n                throw new Exception(\"any\");\r\n            } else {\r\n                return null;\r\n            }\r\n        }\r\n    };\r\n    _scheduler.execTransaction(transaction);\r\n    assertEquals(3, tryCount[0]);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\SchedulerThreadTest.java",
+  "methodName" : "testSchedulingResolution",
+  "sourceCode" : "@Test\r\npublic void testSchedulingResolution() throws Exception {\r\n    _st.start();\r\n    long schedtime = System.currentTimeMillis() + 300;\r\n    _st.enqueue(new Task(schedtime));\r\n    Thread.sleep(1000);\r\n    assertEquals(1, _tasks.size());\r\n    assertTrue(_tasks.get(0).time < schedtime + SCHED_TOLERANCE / 2);\r\n    assertTrue(_tasks.get(0).time > schedtime - SCHED_TOLERANCE / 2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\SchedulerThreadTest.java",
+  "methodName" : "testStartStop",
+  "sourceCode" : "@Test\r\npublic void testStartStop() throws Exception {\r\n    _st.start();\r\n    long schedtime = System.currentTimeMillis() + 500;\r\n    _st.enqueue(new Task(schedtime));\r\n    _st.stop();\r\n    Thread.sleep(600);\r\n    assertEquals(0, _tasks.size());\r\n    _st.start();\r\n    Thread.sleep(SCHED_TOLERANCE);\r\n    assertEquals(1, _tasks.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\SchedulerThreadTest.java",
+  "methodName" : "testParallelEnqueue",
+  "sourceCode" : "@Test\r\npublic void testParallelEnqueue() throws Exception {\r\n    _st.start();\r\n    final long startTime = System.currentTimeMillis() + 100;\r\n    final AtomicInteger ai = new AtomicInteger(300);\r\n    // enque in reverse order\r\n    Runnable run = new Runnable() {\r\n\r\n        public void run() {\r\n            Task tsk = new Task(startTime + ai.getAndDecrement() * 5);\r\n            _st.enqueue(tsk);\r\n        }\r\n    };\r\n    ExecutorService es = Executors.newFixedThreadPool(50);\r\n    for (int i = 0; i < 300; ++i) es.execute(run);\r\n    Thread.sleep(300 + 300 * 5);\r\n    assertEquals(300, _tasks.size());\r\n    // Make sure they got scheduled in the right order\r\n    for (int i = 0; i < 299; ++i) assertTrue(_tasks.get(i).task.schedDate < _tasks.get(i + 1).task.schedDate);\r\n    // Check scheduling tolerance\r\n    for (TR tr : _tasks) {\r\n        assertTrue(tr.time < tr.task.schedDate + SCHED_TOLERANCE / 2);\r\n        assertTrue(tr.time > tr.task.schedDate - SCHED_TOLERANCE / 2);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\SimpleSchedulerTest.java",
+  "methodName" : "testConcurrentExec",
+  "sourceCode" : "@Test\r\npublic void testConcurrentExec() throws Exception {\r\n    _scheduler.start();\r\n    for (int i = 0; i < 10; i++) {\r\n        _txm.begin();\r\n        String jobId;\r\n        try {\r\n            int jobs = _jobs.size();\r\n            jobId = _scheduler.schedulePersistedJob(newDetail(\"123\"), new Date(System.currentTimeMillis() + 200));\r\n            Thread.sleep(100);\r\n            // we're using transacted jobs which means it will commit at the end\r\n            // if the job is scheduled, the following assert is not valid @seanahn\r\n            // assertEquals(jobs, _jobs.size());\r\n        } finally {\r\n            _txm.commit();\r\n        }\r\n        // Delete from DB\r\n        assertEquals(true, _ds.delegate().deleteJob(jobId, \"n1\"));\r\n        // Wait for the job to be execed.\r\n        Thread.sleep(250);\r\n        // We should always have same number of jobs/commits\r\n        assertEquals(_jobs.size(), _commit.size());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\SimpleSchedulerTest.java",
+  "methodName" : "testImmediateScheduling",
+  "sourceCode" : "@Test\r\npublic void testImmediateScheduling() throws Exception {\r\n    _scheduler.start();\r\n    _txm.begin();\r\n    try {\r\n        _scheduler.schedulePersistedJob(newDetail(\"123\"), new Date());\r\n        Thread.sleep(100);\r\n        // we're using transacted jobs which means it will commit at the end\r\n        // if the job is scheduled, the following assert is not valid @seanahn\r\n        // assertEquals(jobs, _jobs.size());\r\n    } finally {\r\n        _txm.commit();\r\n    }\r\n    Thread.sleep(100);\r\n    assertEquals(1, _jobs.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\SimpleSchedulerTest.java",
+  "methodName" : "testStartStop",
+  "sourceCode" : "@Test\r\npublic void testStartStop() throws Exception {\r\n    _scheduler.start();\r\n    _txm.begin();\r\n    try {\r\n        for (int i = 0; i < 10; ++i) _scheduler.schedulePersistedJob(newDetail(\"123\"), new Date(System.currentTimeMillis() + (i * 100)));\r\n    } finally {\r\n        _txm.commit();\r\n    }\r\n    Thread.sleep(100);\r\n    _scheduler.stop();\r\n    int jobs = _jobs.size();\r\n    assertTrue(jobs > 0);\r\n    assertTrue(jobs < 10);\r\n    Thread.sleep(200);\r\n    assertEquals(jobs, _jobs.size());\r\n    _scheduler.start();\r\n    Thread.sleep(1000);\r\n    assertEquals(10, _jobs.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\SimpleSchedulerTest.java",
+  "methodName" : "testNearFutureScheduling",
+  "sourceCode" : "@Test\r\npublic void testNearFutureScheduling() throws Exception {\r\n    // speed things up a bit to hit the right code paths\r\n    _scheduler.setNearFutureInterval(10000);\r\n    _scheduler.setImmediateInterval(5000);\r\n    _scheduler.start();\r\n    _txm.begin();\r\n    try {\r\n        _scheduler.schedulePersistedJob(newDetail(\"123\"), new Date(System.currentTimeMillis() + 7500));\r\n    } finally {\r\n        _txm.commit();\r\n    }\r\n    Thread.sleep(8500);\r\n    assertEquals(1, _jobs.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\SimpleSchedulerTest.java",
+  "methodName" : "testFarFutureScheduling",
+  "sourceCode" : "@Test\r\npublic void testFarFutureScheduling() throws Exception {\r\n    // speed things up a bit to hit the right code paths\r\n    _scheduler.setNearFutureInterval(7000);\r\n    _scheduler.setImmediateInterval(3000);\r\n    _scheduler.start();\r\n    _txm.begin();\r\n    try {\r\n        _scheduler.schedulePersistedJob(newDetail(\"123\"), new Date(System.currentTimeMillis() + 7500));\r\n    } finally {\r\n        _txm.commit();\r\n    }\r\n    Thread.sleep(8500);\r\n    assertEquals(1, _jobs.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\SimpleSchedulerTest.java",
+  "methodName" : "testRecovery",
+  "sourceCode" : "@Test\r\npublic void testRecovery() throws Exception {\r\n    // speed things up a bit to hit the right code paths\r\n    _scheduler.setNearFutureInterval(2000);\r\n    _scheduler.setImmediateInterval(1000);\r\n    _scheduler.setStaleInterval(500);\r\n    _txm.begin();\r\n    try {\r\n        _scheduler.schedulePersistedJob(newDetail(\"immediate\"), new Date(System.currentTimeMillis()));\r\n        _scheduler.schedulePersistedJob(newDetail(\"near\"), new Date(System.currentTimeMillis() + 1100));\r\n        _scheduler.schedulePersistedJob(newDetail(\"far\"), new Date(System.currentTimeMillis() + 2500));\r\n    } finally {\r\n        _txm.commit();\r\n    }\r\n    _scheduler = newScheduler(\"n3\");\r\n    _scheduler.setNearFutureInterval(2000);\r\n    _scheduler.setImmediateInterval(1000);\r\n    _scheduler.setStaleInterval(1000);\r\n    _scheduler.start();\r\n    Thread.sleep(4000);\r\n    assertEquals(3, _jobs.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\ODE\\scheduler-simple\\src\\test\\java\\org\\apache\\ode\\scheduler\\simple\\SimpleSchedulerTest.java",
+  "methodName" : "testRecoverySuppressed",
+  "sourceCode" : "@Test\r\npublic void testRecoverySuppressed() throws Exception {\r\n    // speed things up a bit to hit the right code paths\r\n    _scheduler.setNearFutureInterval(2000);\r\n    _scheduler.setImmediateInterval(1000);\r\n    _scheduler.setStaleInterval(500);\r\n    _txm.begin();\r\n    try {\r\n        _scheduler.schedulePersistedJob(newDetail(\"immediate\"), new Date(System.currentTimeMillis()));\r\n        _scheduler.schedulePersistedJob(newDetail(\"near\"), new Date(System.currentTimeMillis() + 1100));\r\n        _scheduler.schedulePersistedJob(newDetail(\"far\"), new Date(System.currentTimeMillis() + 15000));\r\n    } finally {\r\n        _txm.commit();\r\n    }\r\n    _scheduler.stop();\r\n    _scheduler = newScheduler(\"n3\");\r\n    _scheduler.setNearFutureInterval(2000);\r\n    _scheduler.setImmediateInterval(1000);\r\n    _scheduler.setStaleInterval(1000);\r\n    _scheduler.start();\r\n    for (int i = 0; i < 40; ++i) {\r\n        _scheduler.updateHeartBeat(\"n1\");\r\n        Thread.sleep(100);\r\n    }\r\n    _scheduler.stop();\r\n    Thread.sleep(1000);\r\n    assertEquals(0, _jobs.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

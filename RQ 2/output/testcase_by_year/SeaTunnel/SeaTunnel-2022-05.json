@@ -1,0 +1,223 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-common\\src\\test\\java\\org\\apache\\seatunnel\\common\\config\\CheckConfigUtilTest.java",
+  "methodName" : "testCheckAllExists",
+  "sourceCode" : "@Test\r\npublic void testCheckAllExists() {\r\n    Config config = getConfig();\r\n    CheckResult checkResult = checkAllExists(config, \"k0\", \"k1\");\r\n    Assert.assertTrue(checkResult.isSuccess());\r\n    String errorMsg = \"please specify [%s] as non-empty\";\r\n    checkResult = checkAllExists(config, \"k0\", \"k1\", \"k2\");\r\n    Assert.assertEquals(String.format(errorMsg, \"k2\"), checkResult.getMsg());\r\n    checkResult = checkAllExists(config, \"k0\", \"k1\", \"k2\", \"k3\", \"k4\");\r\n    Assert.assertEquals(String.format(errorMsg, \"k2,k3,k4\"), checkResult.getMsg());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-common\\src\\test\\java\\org\\apache\\seatunnel\\common\\config\\CheckConfigUtilTest.java",
+  "methodName" : "testCheckAtLeastOneExists",
+  "sourceCode" : "@Test\r\npublic void testCheckAtLeastOneExists() {\r\n    Config config = getConfig();\r\n    CheckResult checkResult = checkAtLeastOneExists(config, \"k0\", \"k3\", \"k4\");\r\n    Assert.assertTrue(checkResult.isSuccess());\r\n    String errorMsg = \"please specify at least one config of [%s] as non-empty\";\r\n    checkResult = checkAtLeastOneExists(config, \"k3\", \"k2\");\r\n    Assert.assertEquals(String.format(errorMsg, \"k3,k2\"), checkResult.getMsg());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-common\\src\\test\\java\\org\\apache\\seatunnel\\common\\config\\CheckConfigUtilTest.java",
+  "methodName" : "testMergeCheckResults",
+  "sourceCode" : "@Test\r\npublic void testMergeCheckResults() {\r\n    Config config = getConfig();\r\n    CheckResult checkResult1 = checkAllExists(config, \"k0\", \"k1\");\r\n    CheckResult checkResult2 = checkAtLeastOneExists(config, \"k1\", \"k3\");\r\n    CheckResult checkResult3 = checkAllExists(config, \"k0\", \"k3\");\r\n    CheckResult checkResult4 = checkAtLeastOneExists(config, \"k2\", \"k3\");\r\n    CheckResult finalResult = mergeCheckResults(checkResult1, checkResult2);\r\n    Assert.assertTrue(finalResult.isSuccess());\r\n    String errorMsg1 = \"please specify [%s] as non-empty\";\r\n    String errorMsg2 = \"please specify at least one config of [%s] as non-empty\";\r\n    finalResult = mergeCheckResults(checkResult3, checkResult2);\r\n    Assert.assertEquals(String.format(errorMsg1, \"k3\"), finalResult.getMsg());\r\n    finalResult = mergeCheckResults(checkResult3, checkResult4);\r\n    Assert.assertEquals(String.format(errorMsg1 + \",\" + errorMsg2, \"k3\", \"k2,k3\"), finalResult.getMsg());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-common\\src\\test\\java\\org\\apache\\seatunnel\\common\\config\\CommonTest.java",
+  "methodName" : "appLibDir",
+  "sourceCode" : "@Test\r\npublic void appLibDir() {\r\n    assertEquals(Common.appRootDir().toString() + File.separator + \"lib\", Common.appLibDir().toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-common\\src\\test\\java\\org\\apache\\seatunnel\\common\\config\\CommonTest.java",
+  "methodName" : "pluginTarFile",
+  "sourceCode" : "@Test\r\npublic void pluginTarFile() {\r\n    assertEquals(Common.appRootDir().toString() + File.separator + \"plugins.tar.gz\", Common.pluginTarball().toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-common\\src\\test\\java\\org\\apache\\seatunnel\\common\\config\\TypesafeConfigUtilsTest.java",
+  "methodName" : "testExtractSubConfig",
+  "sourceCode" : "@Test\r\npublic void testExtractSubConfig() {\r\n    Config config = getConfig();\r\n    Config subConfig = extractSubConfig(config, \"test.\", true);\r\n    Map<String, String> configMap = new HashMap<>();\r\n    configMap.put(\"test.t0\", \"v0\");\r\n    configMap.put(\"test.t1\", \"v1\");\r\n    Assert.assertEquals(ConfigFactory.parseMap(configMap), subConfig);\r\n    subConfig = extractSubConfig(config, \"test.\", false);\r\n    configMap = new HashMap<>();\r\n    configMap.put(\"t0\", \"v0\");\r\n    configMap.put(\"t1\", \"v1\");\r\n    Assert.assertEquals(ConfigFactory.parseMap(configMap), subConfig);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-common\\src\\test\\java\\org\\apache\\seatunnel\\common\\config\\TypesafeConfigUtilsTest.java",
+  "methodName" : "testHasSubConfig",
+  "sourceCode" : "@Test\r\npublic void testHasSubConfig() {\r\n    Config config = getConfig();\r\n    boolean hasSubConfig = hasSubConfig(config, \"test.\");\r\n    Assert.assertTrue(hasSubConfig);\r\n    hasSubConfig = hasSubConfig(config, \"test1.\");\r\n    Assert.assertFalse(hasSubConfig);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-common\\src\\test\\java\\org\\apache\\seatunnel\\common\\config\\TypesafeConfigUtilsTest.java",
+  "methodName" : "testExtractSubConfigThrowable",
+  "sourceCode" : "@Test\r\npublic void testExtractSubConfigThrowable() {\r\n    Config config = getConfig();\r\n    Throwable exception = assertThrows(ConfigRuntimeException.class, () -> {\r\n        extractSubConfigThrowable(config, \"test1.\", false);\r\n    });\r\n    assertEquals(\"config is empty\", exception.getMessage());\r\n    Config subConfig = extractSubConfigThrowable(config, \"test.\", false);\r\n    Map<String, String> configMap = new HashMap<>();\r\n    configMap.put(\"t0\", \"v0\");\r\n    configMap.put(\"t1\", \"v1\");\r\n    Assert.assertEquals(ConfigFactory.parseMap(configMap), subConfig);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-common\\src\\test\\java\\org\\apache\\seatunnel\\common\\config\\TypesafeConfigUtilsTest.java",
+  "methodName" : "testGetConfig",
+  "sourceCode" : "@Test\r\npublic void testGetConfig() {\r\n    Config config = getConfig();\r\n    Assert.assertEquals(Long.parseLong(\"100\"), (long) TypesafeConfigUtils.getConfig(config, \"l1\", Long.parseLong(\"101\")));\r\n    Assert.assertEquals(Long.parseLong(\"100\"), (long) TypesafeConfigUtils.getConfig(config, \"l2\", Long.parseLong(\"100\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-common\\src\\test\\java\\org\\apache\\seatunnel\\common\\utils\\VariablesSubstituteTest.java",
+  "methodName" : "testSubstitute",
+  "sourceCode" : "@Test\r\npublic void testSubstitute() {\r\n    String timeFormat = \"yyyyMMddHHmmss\";\r\n    DateTimeFormatter df = DateTimeFormatter.ofPattern(timeFormat);\r\n    String formattedDate = df.format(ZonedDateTime.now());\r\n    String path = \"data_${now}_${uuid}.parquet\";\r\n    String newPath = VariablesSubstitute.substitute(path, timeFormat);\r\n    Assert.assertTrue(newPath.contains(formattedDate));\r\n    String text = \"${var1} is a distributed, high-performance data integration platform for \" + \"the synchronization and ${var2} of massive data (offline & real-time).\";\r\n    HashMap<String, String> valuesMap = new HashMap<>();\r\n    valuesMap.put(\"var1\", \"SeaTunnel\");\r\n    valuesMap.put(\"var2\", \"transformation\");\r\n    String newText = VariablesSubstitute.substitute(text, valuesMap);\r\n    Assert.assertTrue(newText.contains(\"SeaTunnel\") && newText.contains(\"transformation\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-config\\seatunnel-config-shade\\src\\test\\java\\org\\apache\\seatunnel\\config\\CompleteTest.java",
+  "methodName" : "testVariables",
+  "sourceCode" : "@Test\r\npublic void testVariables() throws URISyntaxException {\r\n    // We use a map to mock the system property, since the system property will be only loaded once\r\n    // after the test is run. see Issue #1670\r\n    Map<String, String> systemProperties = new HashMap<>();\r\n    systemProperties.put(\"dt\", \"20190318\");\r\n    systemProperties.put(\"city2\", \"shanghai\");\r\n    Config config = ConfigFactory.parseFile(FileUtils.getFileFromResources(\"/seatunnel/variables.conf\")).resolveWith(ConfigFactory.parseMap(systemProperties), ConfigResolveOptions.defaults().setAllowUnresolved(true));\r\n    String sql1 = config.getConfigList(\"transform\").get(1).getString(\"sql\");\r\n    String sql2 = config.getConfigList(\"transform\").get(2).getString(\"sql\");\r\n    Assert.assertTrue(sql1.contains(\"shanghai\"));\r\n    Assert.assertTrue(sql2.contains(\"20190318\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-config\\seatunnel-config-shade\\src\\test\\java\\org\\apache\\seatunnel\\config\\ConfigFactoryTest.java",
+  "methodName" : "testBasicParseAppConf",
+  "sourceCode" : "@Test\r\npublic void testBasicParseAppConf() throws URISyntaxException {\r\n    Config config = ConfigFactory.parseFile(FileUtils.getFileFromResources(\"/factory/config.conf\"));\r\n    Assert.assertTrue(config.hasPath(\"env\"));\r\n    Assert.assertTrue(config.hasPath(\"source\"));\r\n    Assert.assertTrue(config.hasPath(\"transform\"));\r\n    Assert.assertTrue(config.hasPath(\"sink\"));\r\n    // check evn config\r\n    Config env = config.getConfig(\"env\");\r\n    Assert.assertEquals(\"SeaTunnel\", env.getString(\"spark.app.name\"));\r\n    Assert.assertEquals(\"2\", env.getString(\"spark.executor.instances\"));\r\n    Assert.assertEquals(\"1\", env.getString(\"spark.executor.cores\"));\r\n    Assert.assertEquals(\"1g\", env.getString(\"spark.executor.memory\"));\r\n    Assert.assertEquals(\"5\", env.getString(\"spark.streaming.batchDuration\"));\r\n    // check custom plugin\r\n    Assert.assertEquals(\"c.Console\", config.getConfigList(\"sink\").get(1).getString(\"plugin_name\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-config\\seatunnel-config-shade\\src\\test\\java\\org\\apache\\seatunnel\\config\\ConfigFactoryTest.java",
+  "methodName" : "testTransformOrder",
+  "sourceCode" : "@Test\r\npublic void testTransformOrder() throws URISyntaxException {\r\n    Config config = ConfigFactory.parseFile(FileUtils.getFileFromResources(\"/factory/config.conf\"));\r\n    String[] pluginNames = { \"split\", \"sql1\", \"sql2\", \"sql3\", \"json\" };\r\n    List<? extends Config> transforms = config.getConfigList(\"transform\");\r\n    Assert.assertEquals(pluginNames.length, transforms.size());\r\n    for (int i = 0; i < transforms.size(); i++) {\r\n        String parsedPluginName = String.valueOf(transforms.get(i).root().get(\"plugin_name\").unwrapped());\r\n        Assert.assertEquals(pluginNames[i], parsedPluginName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-config\\seatunnel-config-shade\\src\\test\\java\\org\\apache\\seatunnel\\config\\ConfigFactoryTest.java",
+  "methodName" : "testQuotedString",
+  "sourceCode" : "@Test\r\npublic void testQuotedString() throws URISyntaxException {\r\n    List<String> keys = Arrays.asList(\"spark.app.name\", \"spark.executor.instances\", \"spark.executor.cores\", \"spark.executor.memory\", \"spark.streaming.batchDuration\");\r\n    Config config = ConfigFactory.parseFile(FileUtils.getFileFromResources(\"/factory/config.conf\"));\r\n    Config evnConfig = config.getConfig(\"env\");\r\n    evnConfig.entrySet().forEach(entry -> Assert.assertTrue(keys.contains(entry.getKey())));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-config\\seatunnel-config-shade\\src\\test\\java\\org\\apache\\seatunnel\\config\\JsonFormatTest.java",
+  "methodName" : "testJsonFormat",
+  "sourceCode" : "@Test\r\npublic void testJsonFormat() throws URISyntaxException {\r\n    Config json = ConfigFactory.parseFile(FileUtils.getFileFromResources(\"/json/spark.batch.json\")).resolveWith(ConfigFactory.systemProperties(), ConfigResolveOptions.defaults().setAllowUnresolved(true));\r\n    Config config = ConfigFactory.parseFile(FileUtils.getFileFromResources(\"/json/spark.batch.conf\")).resolveWith(ConfigFactory.systemProperties(), ConfigResolveOptions.defaults().setAllowUnresolved(true));\r\n    Assert.assertEquals(config.atPath(\"transform\"), json.atPath(\"transform\"));\r\n    Assert.assertEquals(config.atPath(\"sink\"), json.atPath(\"sink\"));\r\n    Assert.assertEquals(config.atPath(\"source\"), json.atPath(\"source\"));\r\n    Assert.assertEquals(config.atPath(\"env\"), json.atPath(\"env\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-connectors\\seatunnel-connectors-flink\\seatunnel-connector-flink-file\\src\\test\\java\\org\\apache\\seatunnel\\fink\\file\\source\\FileSourceTest.java",
+  "methodName" : "getJsonDate",
+  "sourceCode" : "// *****************************************************************************\r\n// Just assert not null here, since we don't have the flink-clint in this module\r\n// So we cannot execute the job, maybe we can add the flink-client into the test\r\n// scope\r\n// *****************************************************************************\r\n@Test\r\npublic void getJsonDate() {\r\n    String configFile = \"flink.streaming.json.conf\";\r\n    FlinkEnvironment flinkEnvironment = createFlinkStreamEnvironment(configFile);\r\n    FileSource fileSource = createFileSource(configFile, flinkEnvironment);\r\n    DataSet<Row> data = fileSource.getData(flinkEnvironment);\r\n    Assert.assertNotNull(data);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-connectors\\seatunnel-connectors-flink\\seatunnel-connector-flink-file\\src\\test\\java\\org\\apache\\seatunnel\\fink\\file\\source\\FileSourceTest.java",
+  "methodName" : "getTextData",
+  "sourceCode" : "@Test\r\npublic void getTextData() {\r\n    String configFile = \"flink.streaming.text.conf\";\r\n    FlinkEnvironment flinkEnvironment = createFlinkStreamEnvironment(configFile);\r\n    FileSource fileSource = createFileSource(configFile, flinkEnvironment);\r\n    DataSet<Row> data = fileSource.getData(flinkEnvironment);\r\n    Assert.assertNotNull(data);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-core\\seatunnel-core-base\\src\\test\\java\\org\\apache\\seatunnel\\core\\base\\command\\BaseTaskExecuteCommandTest.java",
+  "methodName" : "testClose",
+  "sourceCode" : "@Test\r\npublic void testClose() {\r\n    List<MockPlugin> pluginListA = new ArrayList<>();\r\n    pluginListA.add(new MockPlugin());\r\n    pluginListA.add(new MockPlugin());\r\n    List<MockPlugin> pluginListB = new ArrayList<>();\r\n    pluginListB.add(new MockPlugin());\r\n    pluginListB.add(new MockPlugin());\r\n    MockTaskExecutorCommand mockTaskExecutorCommand = new MockTaskExecutorCommand();\r\n    mockTaskExecutorCommand.close(pluginListA, pluginListB);\r\n    assertEquals(Integer.parseInt(\"0\"), CLOSE_TIMES);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-core\\seatunnel-core-base\\src\\test\\java\\org\\apache\\seatunnel\\core\\base\\command\\BaseTaskExecuteCommandTest.java",
+  "methodName" : "testExceptionClose",
+  "sourceCode" : "@Test\r\npublic void testExceptionClose() {\r\n    List<MockExceptionPlugin> pluginListA = new ArrayList<>();\r\n    pluginListA.add(new MockExceptionPlugin());\r\n    pluginListA.add(new MockExceptionPlugin());\r\n    List<MockExceptionPlugin> pluginListB = new ArrayList<>();\r\n    pluginListB.add(new MockExceptionPlugin());\r\n    pluginListB.add(new MockExceptionPlugin());\r\n    MockTaskExecutorCommand mockTaskExecutorCommand = new MockTaskExecutorCommand();\r\n    try {\r\n        mockTaskExecutorCommand.close(pluginListA, pluginListB);\r\n    } catch (Exception ex) {\r\n        // just print into console\r\n        ex.printStackTrace();\r\n    }\r\n    assertEquals(Integer.parseInt(\"4\"), CLOSE_TIMES);\r\n    assertThrows(PluginClosedException.class, () -> mockTaskExecutorCommand.close(pluginListA));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-core\\seatunnel-core-base\\src\\test\\java\\org\\apache\\seatunnel\\core\\base\\utils\\CompressionUtilsTest.java",
+  "methodName" : "tar",
+  "sourceCode" : "@Test\r\npublic void tar() throws IOException {\r\n    Path pluginRootDir = Files.createTempDirectory(\"plugins_\");\r\n    Path outputFile = Files.createTempFile(\"plugins_\", \".tar.gz\");\r\n    Path pluginDir = Files.createDirectory(pluginRootDir.resolve(\"plugin1\"));\r\n    Path pluginLibDir = Files.createDirectory(pluginDir.resolve(\"lib\"));\r\n    Files.createFile(pluginLibDir.resolve(\"a.jar\"));\r\n    Files.createFile(pluginLibDir.resolve(\"b.jar\"));\r\n    CompressionUtils.tarGzip(pluginRootDir, outputFile);\r\n    assertTrue(Files.exists(outputFile));\r\n    Files.walk(pluginRootDir).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);\r\n    Files.delete(outputFile);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-core\\seatunnel-core-base\\src\\test\\java\\org\\apache\\seatunnel\\core\\base\\utils\\FileUtilsTest.java",
+  "methodName" : "getConfigPath",
+  "sourceCode" : "@Test\r\npublic void getConfigPath() throws URISyntaxException {\r\n    // test client mode.\r\n    SparkCommandArgs sparkCommandArgs = new SparkCommandArgs();\r\n    sparkCommandArgs.setDeployMode(DeployMode.CLIENT);\r\n    Path expectConfPath = Paths.get(FileUtilsTest.class.getResource(\"/flink.batch.conf\").toURI());\r\n    sparkCommandArgs.setConfigFile(expectConfPath.toString());\r\n    Assert.assertEquals(expectConfPath, FileUtils.getConfigPath(sparkCommandArgs));\r\n    // test cluster mode\r\n    sparkCommandArgs.setDeployMode(DeployMode.CLUSTER);\r\n    Assert.assertEquals(\"flink.batch.conf\", FileUtils.getConfigPath(sparkCommandArgs).toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-core\\seatunnel-core-flink\\src\\test\\java\\org\\apache\\seatunnel\\core\\flink\\args\\FlinkCommandArgsTest.java",
+  "methodName" : "testParseFlinkArgs",
+  "sourceCode" : "@Test\r\npublic void testParseFlinkArgs() {\r\n    String[] args = { \"-c\", \"app.conf\", \"-t\", \"-i\", \"city=shenyang\", \"-i\", \"date=20200202\" };\r\n    FlinkCommandArgs flinkArgs = new FlinkCommandArgs();\r\n    JCommander.newBuilder().addObject(flinkArgs).build().parse(args);\r\n    Assert.assertEquals(\"app.conf\", flinkArgs.getConfigFile());\r\n    Assert.assertTrue(flinkArgs.isCheckConfig());\r\n    Assert.assertEquals(Arrays.asList(\"city=shenyang\", \"date=20200202\"), flinkArgs.getVariables());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-core\\seatunnel-core-flink\\src\\test\\java\\org\\apache\\seatunnel\\core\\flink\\FlinkStarterTest.java",
+  "methodName" : "buildCommands",
+  "sourceCode" : "@Test\r\npublic void buildCommands() {\r\n    String[] args = { \"--config\", \"test.conf\", \"-m\", \"yarn-cluster\", \"-i\", \"key1=value1\", \"-i\", \"key2=value2\" };\r\n    FlinkStarter flinkStarter = new FlinkStarter(args);\r\n    String flinkExecuteCommand = String.join(\" \", flinkStarter.buildCommands());\r\n    // since we cannot get the actual jar path, so we just check the command contains the command\r\n    Assert.assertTrue(flinkExecuteCommand.contains(\"--config test.conf\"));\r\n    Assert.assertTrue(flinkExecuteCommand.contains(\"-m yarn-cluster\"));\r\n    Assert.assertTrue(flinkExecuteCommand.contains(\"-Dkey1=value1\"));\r\n    Assert.assertTrue(flinkExecuteCommand.contains(\"${FLINK_HOME}/bin/flink run\"));\r\n    String[] args1 = { \"--config\", \"test.conf\", \"-m\", \"yarn-cluster\", \"-i\", \"key1=value1\", \"-i\", \"key2=value2\", \"--run-mode\", \"run-application\" };\r\n    flinkExecuteCommand = String.join(\" \", new FlinkStarter(args1).buildCommands());\r\n    Assert.assertTrue(flinkExecuteCommand.contains(\"${FLINK_HOME}/bin/flink run-application\"));\r\n    String[] args2 = { \"--config\", \"test.conf\", \"-m\", \"yarn-cluster\", \"-i\", \"key1=value1\", \"-i\", \"key2=value2\", \"--run-mode\", \"run\" };\r\n    flinkExecuteCommand = String.join(\" \", new FlinkStarter(args2).buildCommands());\r\n    Assert.assertTrue(flinkExecuteCommand.contains(\"${FLINK_HOME}/bin/flink run\"));\r\n    try {\r\n        String[] args3 = { \"--config\", \"test.conf\", \"-m\", \"yarn-cluster\", \"-i\", \"key1=value1\", \"-i\", \"key2=value2\", \"--run-mode\", \"run123\" };\r\n        new FlinkStarter(args3);\r\n    } catch (Exception e) {\r\n        Assert.assertTrue(e instanceof IllegalArgumentException);\r\n        Assert.assertEquals(\"Run mode run123 not supported\", e.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-core\\seatunnel-core-flink\\src\\test\\java\\org\\apache\\seatunnel\\core\\flink\\FlinkStarterTest.java",
+  "methodName" : "buildCommandsMissingConfig",
+  "sourceCode" : "@Test\r\npublic void buildCommandsMissingConfig() {\r\n    try {\r\n        String[] args = { \"-m\", \"yarn-cluster\", \"-i\", \"key1=value1\", \"-i\", \"key2=value2\" };\r\n        FlinkStarter flinkStarter = new FlinkStarter(args);\r\n        String flinkExecuteCommand = String.join(\" \", flinkStarter.buildCommands());\r\n        // since we cannot get the actual jar path, so we just check the command contains the command\r\n        Assert.assertTrue(flinkExecuteCommand.contains(\"--config flink.yarn.conf\"));\r\n    } catch (Exception e) {\r\n        Assert.assertEquals(\"The following option is required: [-c | --config]\", e.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-core\\seatunnel-core-flink-sql\\src\\test\\java\\org\\apache\\seatunnel\\core\\sql\\splitter\\SqlStatementSplitterTest.java",
+  "methodName" : "normalizeStatementsWithMultiSqls",
+  "sourceCode" : "@Test\r\npublic void normalizeStatementsWithMultiSqls() {\r\n    // this is bad case, multi sql should split by line \\n\r\n    String sqlContent = \"--test is a comment \\n select * from dual; select now(); select * from logs where log_content like ';'\";\r\n    List<String> sqls = SqlStatementSplitter.normalizeStatements(sqlContent);\r\n    assertEquals(1, sqls.size());\r\n    assertEquals(\"select * from dual; select now(); select * from logs where log_content like ';'\", sqls.get(0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-core\\seatunnel-core-flink-sql\\src\\test\\java\\org\\apache\\seatunnel\\core\\sql\\splitter\\SqlStatementSplitterTest.java",
+  "methodName" : "normalizeStatementsWithMultiLines",
+  "sourceCode" : "@Test\r\npublic void normalizeStatementsWithMultiLines() {\r\n    String sqlContent = \"--test is a comment \\n select * from dual;\\n select now();\";\r\n    List<String> sqls = SqlStatementSplitter.normalizeStatements(sqlContent);\r\n    assertEquals(2, sqls.size());\r\n    assertEquals(\"select * from dual\", sqls.get(0));\r\n    assertEquals(\"select now()\", sqls.get(1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-core\\seatunnel-core-flink-sql\\src\\test\\java\\org\\apache\\seatunnel\\core\\sql\\SqlVariableSubstitutionTest.java",
+  "methodName" : "normalizeStatementsWithMultiSqls",
+  "sourceCode" : "@Test\r\npublic void normalizeStatementsWithMultiSqls() throws Exception {\r\n    String[] args = { \"-c\", System.getProperty(\"user.dir\") + TEST_RESOURCE_DIR + \"flink.sql.conf.template\", \"-t\", \"-i\", \"table_name=events\", \"-i\", \"table_name2=print_table\" };\r\n    FlinkCommandArgs flinkArgs = CommandLineUtils.parseFlinkArgs(args);\r\n    String configFilePath = flinkArgs.getConfigFile();\r\n    String jobContent = FileUtils.readFileToString(new File(configFilePath), StandardCharsets.UTF_8);\r\n    JobInfo jobInfo = new JobInfo(jobContent);\r\n    Assert.assertFalse(jobInfo.getJobContent().contains(\"events\"));\r\n    Assert.assertFalse(jobInfo.getJobContent().contains(\"print_table\"));\r\n    jobInfo.substitute(flinkArgs.getVariables());\r\n    Assert.assertTrue(jobInfo.getJobContent().contains(\"events\"));\r\n    Assert.assertTrue(jobInfo.getJobContent().contains(\"print_table\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-core\\seatunnel-core-spark\\src\\test\\java\\org\\apache\\seatunnel\\core\\spark\\args\\SparkCommandArgsTest.java",
+  "methodName" : "testParseSparkArgs",
+  "sourceCode" : "@Test\r\npublic void testParseSparkArgs() {\r\n    String[] args = { \"-c\", \"app.conf\", \"-e\", \"client\", \"-m\", \"yarn\", \"-i\", \"city=shijiazhuang\", \"-i\", \"name=Tom\" };\r\n    SparkCommandArgs sparkArgs = new SparkCommandArgs();\r\n    JCommander.newBuilder().addObject(sparkArgs).build().parse(args);\r\n    Assert.assertEquals(\"app.conf\", sparkArgs.getConfigFile());\r\n    Assert.assertEquals(DeployMode.CLIENT, sparkArgs.getDeployMode());\r\n    Assert.assertEquals(\"yarn\", sparkArgs.getMaster());\r\n    Assert.assertEquals(Arrays.asList(\"city=shijiazhuang\", \"name=Tom\"), sparkArgs.getVariables());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-core\\seatunnel-core-spark\\src\\test\\java\\org\\apache\\seatunnel\\core\\spark\\args\\SparkCommandArgsTest.java",
+  "methodName" : "testHelp",
+  "sourceCode" : "@Test\r\npublic void testHelp() {\r\n    String[] args = { \"-h\" };\r\n    SparkCommandArgs sparkArgs = new SparkCommandArgs();\r\n    JCommander commander = JCommander.newBuilder().addObject(sparkArgs).build();\r\n    commander.parse(args);\r\n    if (sparkArgs.isHelp()) {\r\n        commander.usage();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-core\\seatunnel-core-spark\\src\\test\\java\\org\\apache\\seatunnel\\core\\spark\\args\\SparkCommandArgsTest.java",
+  "methodName" : "testDashDash",
+  "sourceCode" : "@Test\r\npublic void testDashDash() {\r\n    String[] args = { \"-c\", \"app.conf\", \"-e\", \"client\", \"-m\", \"yarn\", \"-i\", \"city=guojizhuang\", \"--\" };\r\n    SparkCommandArgs sparkArgs = new SparkCommandArgs();\r\n    JCommander.newBuilder().addObject(sparkArgs).build().parse(args);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-core\\seatunnel-core-spark\\src\\test\\java\\org\\apache\\seatunnel\\core\\spark\\SparkStarterTest.java",
+  "methodName" : "testGetSparkConf",
+  "sourceCode" : "@Test\r\npublic void testGetSparkConf() throws URISyntaxException, FileNotFoundException {\r\n    URI uri = ClassLoader.getSystemResource(\"spark_application.conf\").toURI();\r\n    String file = new File(uri).toString();\r\n    Map<String, String> sparkConf = SparkStarter.getSparkConf(file);\r\n    assertEquals(\"SeaTunnel\", sparkConf.get(\"spark.app.name\"));\r\n    assertEquals(\"1\", sparkConf.get(\"spark.executor.cores\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-core\\seatunnel-core-spark\\src\\test\\java\\org\\apache\\seatunnel\\core\\spark\\utils\\CommandLineUtilsTest.java",
+  "methodName" : "testParseSparkArgs",
+  "sourceCode" : "@Test\r\npublic void testParseSparkArgs() {\r\n    String[] args = { \"-c\", \"app.conf\", \"-e\", \"cluster\", \"-m\", \"local[*]\" };\r\n    SparkCommandArgs commandLineArgs = CommandLineUtils.parseSparkArgs(args);\r\n    Assert.assertEquals(\"app.conf\", commandLineArgs.getConfigFile());\r\n    Assert.assertEquals(\"cluster\", commandLineArgs.getDeployMode().getName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-core\\seatunnel-core-spark\\src\\test\\java\\org\\apache\\seatunnel\\core\\spark\\utils\\CommandLineUtilsTest.java",
+  "methodName" : "testParseSparkArgsException",
+  "sourceCode" : "@Test\r\npublic void testParseSparkArgsException() {\r\n    String[] args = { \"-c\", \"app.conf\", \"-e\", \"cluster2xxx\", \"-m\", \"local[*]\" };\r\n    Assert.assertThrows(ParameterException.class, () -> CommandLineUtils.parseSparkArgs(args));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-e2e\\seatunnel-flink-e2e\\src\\test\\java\\org\\apache\\seatunnel\\e2e\\flink\\clickhouse\\FakeSourceToClickhouseIT.java",
+  "methodName" : "testFakeSourceToClickhouseSink",
+  "sourceCode" : "/**\r\n * Test insert into clickhouse table from fake source by flink batch mode.\r\n *\r\n * @throws IOException          read from conf file error.\r\n * @throws InterruptedException execute flink job error.\r\n * @throws SQLException         execute clickhouse sql error.\r\n */\r\n@Test\r\npublic void testFakeSourceToClickhouseSink() throws IOException, InterruptedException, SQLException {\r\n    Container.ExecResult execResult = executeSeaTunnelFlinkJob(\"/clickhouse/fakesource_to_clickhouse.conf\");\r\n    Assert.assertEquals(0, execResult.getExitCode());\r\n    // query result\r\n    try (ClickHouseConnection connection = dataSource.getConnection()) {\r\n        ClickHouseStatement statement = connection.createStatement();\r\n        ResultSet resultSet = statement.executeQuery(\"select * from default.seatunnel_console\");\r\n        List<String> result = Lists.newArrayList();\r\n        while (resultSet.next()) {\r\n            result.add(resultSet.getString(\"name\"));\r\n        }\r\n        Assert.assertFalse(result.isEmpty());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-e2e\\seatunnel-flink-e2e\\src\\test\\java\\org\\apache\\seatunnel\\e2e\\flink\\fake\\FakeSourceToConsoleIT.java",
+  "methodName" : "testFakeSourceToConsoleSink",
+  "sourceCode" : "@Test\r\npublic void testFakeSourceToConsoleSink() throws IOException, InterruptedException {\r\n    Container.ExecResult execResult = executeSeaTunnelFlinkJob(\"/fake/fakesource_to_console.conf\");\r\n    Assert.assertEquals(0, execResult.getExitCode());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-e2e\\seatunnel-flink-e2e\\src\\test\\java\\org\\apache\\seatunnel\\e2e\\flink\\file\\FakeSourceToFileIT.java",
+  "methodName" : "testFakeSource2FileSink",
+  "sourceCode" : "@Test\r\npublic void testFakeSource2FileSink() throws Exception {\r\n    Container.ExecResult execResult = executeSeaTunnelFlinkJob(\"/file/fakesource_to_file.conf\");\r\n    Assert.assertEquals(0, execResult.getExitCode());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SeaTunnel\\seatunnel-e2e\\seatunnel-spark-e2e\\src\\test\\java\\org\\apache\\seatunnel\\e2e\\spark\\fake\\FakeSourceToConsoleIT.java",
+  "methodName" : "testFakeSourceToConsoleSine",
+  "sourceCode" : "@Test\r\npublic void testFakeSourceToConsoleSine() throws IOException, InterruptedException {\r\n    Container.ExecResult execResult = executeSeaTunnelSparkJob(\"/fake/fakesource_to_console.conf\");\r\n    Assert.assertEquals(0, execResult.getExitCode());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

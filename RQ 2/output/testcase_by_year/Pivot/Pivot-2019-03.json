@@ -1,0 +1,823 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\beans\\test\\BeanAdapterTest.java",
+  "methodName" : "testSerializeBigDecimal",
+  "sourceCode" : "@Test\r\npublic void testSerializeBigDecimal() {\r\n    System.out.println(\"testSerializeBigDecimal\");\r\n    double randomDouble = rnd.nextDouble();\r\n    System.out.println(\"randomDouble = \" + randomDouble + \" (value will be truncated to 4 digits in this test)\");\r\n    srcTest.setBd(new BigDecimal(randomDouble, new MathContext(4)));\r\n    try {\r\n        jsonSerializer.writeObject(srcTest, writer);\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail();\r\n        return;\r\n    }\r\n    System.out.println(\"json string from srcTest = \" + writer.toString());\r\n    System.out.println(\"srcTest.getBd()    = \" + srcTest.getBd());\r\n    reader = new StringReader(writer.toString());\r\n    try {\r\n        targetTest = (BeanAdapterSampleObject) jsonSerializer.readObject(reader);\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail();\r\n        return;\r\n    }\r\n    System.out.println(\"targetTest.getBd() = \" + targetTest.getBd());\r\n    assertEquals(srcTest.getBd().doubleValue(), targetTest.getBd().doubleValue(), 0.0001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\beans\\test\\BeanAdapterTest.java",
+  "methodName" : "testSerializeBigInteger",
+  "sourceCode" : "@Test\r\npublic void testSerializeBigInteger() {\r\n    System.out.println(\"testSerializeBigInteger\");\r\n    int randomInt = rnd.nextInt();\r\n    System.out.println(\"randomInt = \" + randomInt);\r\n    srcTest.setBi(new BigInteger(String.valueOf(randomInt)));\r\n    try {\r\n        jsonSerializer.writeObject(srcTest, writer);\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail();\r\n        return;\r\n    }\r\n    System.out.println(\"json string from srcTest = \" + writer.toString());\r\n    System.out.println(\"srcTest.getBi()    = \" + srcTest.getBi());\r\n    reader = new StringReader(writer.toString());\r\n    try {\r\n        targetTest = (BeanAdapterSampleObject) jsonSerializer.readObject(reader);\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail();\r\n        return;\r\n    }\r\n    System.out.println(\"targetTest.getBi() = \" + targetTest.getBi());\r\n    assertEquals(srcTest.getBi(), targetTest.getBi());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\beans\\test\\BeanAdapterTest.java",
+  "methodName" : "testSerializeString",
+  "sourceCode" : "@Test\r\npublic void testSerializeString() {\r\n    System.out.println(\"testSerializeString\");\r\n    String value = \"A test String\";\r\n    System.out.println(\"String value = \\\"\" + value + \"\\\"\");\r\n    srcTest.setString(value);\r\n    try {\r\n        jsonSerializer.writeObject(srcTest, writer);\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail();\r\n        return;\r\n    }\r\n    System.out.println(\"json string from srcTest = \" + writer.toString());\r\n    System.out.println(\"srcTest.getString()    = \\\"\" + srcTest.getString() + \"\\\"\");\r\n    reader = new StringReader(writer.toString());\r\n    try {\r\n        targetTest = (BeanAdapterSampleObject) jsonSerializer.readObject(reader);\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail();\r\n        return;\r\n    }\r\n    System.out.println(\"targetTest.getString() = \\\"\" + targetTest.getString() + \"\\\"\");\r\n    assertEquals(srcTest.getString(), targetTest.getString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\ArrayListTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() {\r\n    ArrayList<String> list = new ArrayList<>();\r\n    list.insert(\"B\", 0);\r\n    list.insert(\"C\", 1);\r\n    list.insert(\"D\", 2);\r\n    list.insert(\"A\", 0);\r\n    Object[] array = list.toArray();\r\n    assertEquals(array[0], \"A\");\r\n    assertEquals(ArrayList.binarySearch(list, \"A\"), 0);\r\n    list.remove(0, 1);\r\n    assertEquals(list.get(0), \"B\");\r\n    assertEquals(list.getLength(), 3);\r\n    assertEquals(list.indexOf(\"C\"), 1);\r\n    Sequence<String> removed = list.remove(1, 1);\r\n    assertNotNull(removed.get(0));\r\n    assertTrue(removed.get(0).equals(\"C\"));\r\n    list.trimToSize();\r\n    list.ensureCapacity(10);\r\n    assertEquals(list.getCapacity(), 10);\r\n    list.insert(\"E\", 1);\r\n    assertEquals(list.getLength(), 3);\r\n    assertNotNull(list.get(1));\r\n    assertTrue(list.get(1).equals(\"E\"));\r\n    assertTrue(list.equals(new ArrayList<>(\"B\", \"E\", \"D\")));\r\n    assertFalse(list.equals(new ArrayList<>(\"B\", \"E\", \"D\", \"C\")));\r\n    assertFalse(list.equals(new ArrayList<>(\"E\", \"C\", \"D\")));\r\n    ArrayList<String> copy = new ArrayList<>(\"B\", \"E\", \"D\");\r\n    int i = 0;\r\n    for (String item : list) {\r\n        assertEquals(item, copy.get(i++));\r\n    }\r\n    int j = 0;\r\n    List.ItemIterator<String> iterator = list.iterator();\r\n    while (j < list.getLength()) {\r\n        iterator.next();\r\n        j++;\r\n    }\r\n    while (iterator.hasPrevious()) {\r\n        String s = iterator.previous();\r\n        assertEquals(s, copy.get(--j));\r\n    }\r\n    iterator = list.iterator();\r\n    assertEquals(iterator.next(), \"B\");\r\n    assertEquals(iterator.next(), \"E\");\r\n    assertEquals(iterator.previous(), \"E\");\r\n    assertEquals(iterator.previous(), \"B\");\r\n    assertEquals(iterator.next(), \"B\");\r\n    iterator = list.iterator();\r\n    iterator.insert(\"M\");\r\n    assertEquals(list, new ArrayList<>(\"M\", \"B\", \"E\", \"D\"));\r\n    assertEquals(iterator.next(), \"M\");\r\n    iterator.insert(\"N\");\r\n    assertEquals(list, new ArrayList<>(\"M\", \"N\", \"B\", \"E\", \"D\"));\r\n    iterator = list.iterator();\r\n    iterator.toEnd();\r\n    assertEquals(iterator.previous(), \"D\");\r\n    iterator.toStart();\r\n    assertEquals(iterator.next(), \"M\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\ArrayListTest.java",
+  "methodName" : "copyConstructorTest",
+  "sourceCode" : "@Test\r\n@SuppressWarnings(\"unchecked\")\r\npublic void copyConstructorTest() {\r\n    ArrayList<Object> list = new ArrayList<Object>(\"a\", \"b\", \"c\");\r\n    Sequence<?> sequence = list;\r\n    list = new ArrayList<>((Sequence<Object>) sequence);\r\n    assertEquals(list.getLength(), 3);\r\n    assertEquals(list.get(0), \"a\");\r\n    assertEquals(list.get(1), \"b\");\r\n    assertEquals(list.get(2), \"c\");\r\n}",
+  "annotations" : [ "Test", "SuppressWarnings" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\ArrayListTest.java",
+  "methodName" : "comparatorTest",
+  "sourceCode" : "@Test\r\npublic void comparatorTest() {\r\n    // Note: this is a reverse-order comparator\r\n    ArrayList<Integer> list = new ArrayList<>((i1, i2) -> i2.compareTo(i1));\r\n    list.add(12);\r\n    list.add(5);\r\n    list.add(-3);\r\n    list.add(45);\r\n    assertEquals(list.toString(), \"ArrayList [45, 12, 5, -3]\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\DictionaryTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() {\r\n    HashMap<String, Integer> map = new HashMap<>();\r\n    map.put(\"one\", 1);\r\n    map.put(\"two\", 2);\r\n    map.put(\"three\", 300);\r\n    assertEquals(map.getInt(\"one\"), 1);\r\n    assertEquals(map.getInt(\"two\"), 2);\r\n    assertEquals(map.getInt(\"three\"), 300);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\DictionaryTest.java",
+  "methodName" : "boolTest",
+  "sourceCode" : "@Test\r\npublic void boolTest() {\r\n    HashMap<String, Boolean> map = new HashMap<>();\r\n    map.put(\"true\", false);\r\n    map.put(\"false\", true);\r\n    map.put(\"other\", true);\r\n    assertEquals(map.getBoolean(\"true\"), false);\r\n    assertEquals(map.getBoolean(\"false\"), true);\r\n    assertEquals(map.getBoolean(\"other\"), true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\DictionaryTest.java",
+  "methodName" : "colorTest",
+  "sourceCode" : "@Test\r\npublic void colorTest() {\r\n    HashMap<String, Color> map = new HashMap<>();\r\n    map.put(\"black\", Color.BLACK);\r\n    assertEquals(map.getColor(\"black\"), Color.BLACK);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\DictionaryTest.java",
+  "methodName" : "anyTest",
+  "sourceCode" : "@Test\r\npublic void anyTest() {\r\n    HashMap<String, Integer> map = new HashMap<>();\r\n    map.put(\"one\", 1);\r\n    map.put(\"two\", 2);\r\n    map.put(\"three\", 300);\r\n    assertEquals(map.containsAny(\"a\", \"b\", \"one\"), true);\r\n    Integer first = map.getFirst(\"c\", \"d\", \"two\");\r\n    assertEquals(first.intValue(), 2);\r\n    assertEquals(map.containsAny(\"a\", \"b\", \"c\", \"d\"), false);\r\n    assertEquals(map.getFirst(\"e\", \"f\"), null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\EnumListTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() {\r\n    EnumList<TestEnum> enumList = new EnumList<>(TestEnum.class);\r\n    assertEquals(enumList.get(0), TestEnum.A);\r\n    assertEquals(enumList.get(1), TestEnum.B);\r\n    assertEquals(enumList.getLength(), 3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\EnumMapTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() {\r\n    EnumMap<TestEnum, String> enumMap = new EnumMap<>(TestEnum.class);\r\n    enumMap.put(TestEnum.A, \"a\");\r\n    assertTrue(enumMap.containsKey(TestEnum.A));\r\n    assertEquals(enumMap.get(TestEnum.A), \"a\");\r\n    enumMap.put(TestEnum.C, \"c\");\r\n    assertTrue(enumMap.containsKey(TestEnum.C));\r\n    assertEquals(enumMap.get(TestEnum.C), \"c\");\r\n    for (TestEnum key : enumMap) {\r\n        assertEquals(key.toString().toLowerCase(), enumMap.get(key));\r\n    }\r\n    enumMap.remove(TestEnum.A);\r\n    assertTrue(!enumMap.containsKey(TestEnum.A));\r\n    enumMap.remove(TestEnum.C);\r\n    assertTrue(enumMap.isEmpty());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashMapTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() {\r\n    HashMap<String, Integer> map = new HashMap<>();\r\n    assertTrue(map.isEmpty());\r\n    assertEquals(0, map.getCount());\r\n    assertNull(map.getComparator());\r\n    assertFalse(map.containsKey(\"a\"));\r\n    assertNotNull(map.getMapListeners());\r\n    assertNotNull(map.toString());\r\n    assertNull(map.put(\"a\", Integer.valueOf(1)));\r\n    assertEquals(1, (int) map.put(\"a\", 2));\r\n    assertEquals(2, (int) map.get(\"a\"));\r\n    assertEquals(1, map.getCount());\r\n    assertEquals(2, (int) map.remove(\"a\"));\r\n    assertEquals(0, map.getCount());\r\n    map.put(\"a\", 1);\r\n    assertEquals(1, map.getCount());\r\n    map.put(\"b\", 2);\r\n    assertEquals(2, map.getCount());\r\n    map.put(\"c\", 3);\r\n    assertEquals(3, map.getCount());\r\n    assertEquals(1, (int) map.get(\"a\"));\r\n    assertEquals(2, (int) map.get(\"b\"));\r\n    assertEquals(3, (int) map.get(\"c\"));\r\n    Iterator<String> iter = map.iterator();\r\n    int count = 0;\r\n    while (iter.hasNext()) {\r\n        String s = iter.next();\r\n        if (!map.containsKey(s)) {\r\n            fail(\"Unknown element in map \" + s);\r\n        }\r\n        count++;\r\n    }\r\n    assertEquals(3, count);\r\n    iter = map.iterator();\r\n    while (iter.hasNext()) {\r\n        iter.next();\r\n        iter.remove();\r\n    }\r\n    assertEquals(0, map.getCount());\r\n    map.put(\"a\", 1);\r\n    map.put(\"b\", 2);\r\n    map.put(\"c\", 3);\r\n    map.clear();\r\n    assertEquals(0, map.getCount());\r\n    assertEquals(null, map.get(\"a\"));\r\n    assertEquals(null, map.get(\"b\"));\r\n    assertEquals(null, map.get(\"c\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashMapTest.java",
+  "methodName" : "constructorTests",
+  "sourceCode" : "@Test\r\npublic void constructorTests() {\r\n    @SuppressWarnings(\"unchecked\")\r\n    HashMap<String, Integer> // or it will generate a warning during build with Java 7\r\n    map = new HashMap<>(new Map.Pair<>(\"a\", 1), new Map.Pair<>(\"b\", 2));\r\n    assertEquals(2, map.getCount());\r\n    map = new HashMap<>(map);\r\n    assertEquals(2, map.getCount());\r\n    map = new HashMap<>(map);\r\n    assertEquals(2, map.getCount());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashMapTest.java",
+  "methodName" : "iteratorConcurrentModificationTest",
+  "sourceCode" : "/*\r\n     * // TODO: re-enable this, to make it work even inside latest eclipse ...\r\n     *\r\n     * @Test public void comparatorTest() { Comparator<Character> comparator =\r\n     * new Comparator<Character>() {\r\n     *\r\n     * @Override public int compare(Character c1, Character c2) { return\r\n     * c1.compareTo(c2); } };\r\n     *\r\n     * HashMap<Character, Integer> map = new HashMap<Character,\r\n     * Integer>(comparator); ArrayList<Character> keys = new\r\n     * ArrayList<Character>('c', 'a', 'x', 'r', 'd', 'n', 'f');\r\n     *\r\n     * int n = keys.getLength();\r\n     *\r\n     * int i = 0; while (i < n) { map.put(keys.get(i), i++); }\r\n     *\r\n     * keys.setComparator(comparator);\r\n     *\r\n     * int j = 0; for (Character c : keys) { assertEquals(keys.get(j++), c); } }\r\n     */\r\n@Test\r\npublic void iteratorConcurrentModificationTest() {\r\n    HashMap<Integer, Integer> map = new HashMap<>();\r\n    map.put(1, 1);\r\n    map.put(2, 2);\r\n    Iterator<Integer> iter = map.iterator();\r\n    iter.next();\r\n    map.put(3, 3);\r\n    try {\r\n        iter.next();\r\n        fail(\"Expecting \" + ConcurrentModificationException.class);\r\n    } catch (ConcurrentModificationException ex) {\r\n        // expecting this\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashMapTest.java",
+  "methodName" : "pivotHashMapSpeedTest",
+  "sourceCode" : "@Test\r\npublic void pivotHashMapSpeedTest() {\r\n    long t0 = System.currentTimeMillis();\r\n    HashMap<Integer, Integer> map = new HashMap<>();\r\n    for (int i = 0; i < LOAD_COUNT; i++) {\r\n        map.put(Integer.valueOf(i), Integer.valueOf(i));\r\n    }\r\n    long t1 = System.currentTimeMillis();\r\n    System.out.println(\"org.apache.pivot.HashMap \" + (t1 - t0) + \"ms\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashMapTest.java",
+  "methodName" : "javaHashMapSpeedTest",
+  "sourceCode" : "@Test\r\npublic void javaHashMapSpeedTest() {\r\n    long t0 = System.currentTimeMillis();\r\n    java.util.HashMap<Integer, Integer> map = new java.util.HashMap<>();\r\n    for (int i = 0; i < LOAD_COUNT; i++) {\r\n        map.put(Integer.valueOf(i), Integer.valueOf(i));\r\n    }\r\n    long t1 = System.currentTimeMillis();\r\n    System.out.println(\"java.util.HashMap \" + (t1 - t0) + \"ms\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashMapTest.java",
+  "methodName" : "iteratorTest",
+  "sourceCode" : "@Test\r\npublic void iteratorTest() {\r\n    HashMap<String, Object> map = new HashMap<>();\r\n    map.put(\"font\", \"Verdana 11\");\r\n    map.put(\"colors\", \"#ff0000\");\r\n    Iterator<String> iterator = map.iterator();\r\n    while (iterator.hasNext()) {\r\n        String key = iterator.next();\r\n        System.out.println(key);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashMapTest.java",
+  "methodName" : "equalsTest",
+  "sourceCode" : "@Test\r\npublic void equalsTest() {\r\n    HashMap<String, String> map1 = new HashMap<>();\r\n    map1.put(\"a\", \"one\");\r\n    map1.put(\"b\", \"two\");\r\n    map1.put(\"c\", \"three\");\r\n    HashMap<String, String> map2 = new HashMap<>();\r\n    map2.put(\"a\", \"one\");\r\n    map2.put(\"b\", \"two\");\r\n    map2.put(\"c\", \"three\");\r\n    // Same\r\n    assertTrue(map1.equals(map2));\r\n    // Different values\r\n    map2.put(\"c\", \"four\");\r\n    assertFalse(map1.equals(map2));\r\n    map1.put(\"c\", null);\r\n    assertFalse(map1.equals(map2));\r\n    // Null comparison\r\n    map2.put(\"c\", null);\r\n    assertTrue(map1.equals(map2));\r\n    // Different lengths\r\n    map2.put(\"d\", \"four\");\r\n    assertFalse(map1.equals(map2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashSetTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() {\r\n    HashSet<String> set = new HashSet<>();\r\n    set.add(\"A\");\r\n    assertTrue(set.contains(\"A\"));\r\n    set.add(\"B\");\r\n    assertTrue(set.contains(\"A\"));\r\n    assertTrue(set.contains(\"B\"));\r\n    assertEquals(set.getCount(), 2);\r\n    int i = 0;\r\n    for (String element : set) {\r\n        assertTrue(element.equals(\"A\") || element.equals(\"B\"));\r\n        i++;\r\n    }\r\n    assertEquals(i, 2);\r\n    set.remove(\"B\");\r\n    assertFalse(set.contains(\"B\"));\r\n    set.remove(\"A\");\r\n    assertFalse(set.contains(\"A\"));\r\n    assertTrue(set.isEmpty());\r\n    set.add(\"A\");\r\n    set.add(\"B\");\r\n    set.add(\"C\");\r\n    Iterator<String> iter = set.iterator();\r\n    int count = 0;\r\n    while (iter.hasNext()) {\r\n        String s = iter.next();\r\n        if (!set.contains(s)) {\r\n            fail(\"Unknown element in set \" + s);\r\n        }\r\n        count++;\r\n    }\r\n    assertEquals(3, count);\r\n    iter = set.iterator();\r\n    while (iter.hasNext()) {\r\n        iter.next();\r\n        iter.remove();\r\n    }\r\n    assertEquals(0, set.getCount());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashSetTest.java",
+  "methodName" : "equalsTest",
+  "sourceCode" : "@Test\r\npublic void equalsTest() {\r\n    HashSet<String> set1 = new HashSet<>();\r\n    set1.add(\"one\");\r\n    set1.add(\"two\");\r\n    set1.add(\"three\");\r\n    HashSet<String> set2 = new HashSet<>();\r\n    set2.add(\"one\");\r\n    set2.add(\"two\");\r\n    set2.add(\"three\");\r\n    // Same\r\n    assertTrue(set1.equals(set2));\r\n    // Different values\r\n    set2.remove(\"three\");\r\n    set2.add(\"four\");\r\n    assertFalse(set1.equals(set2));\r\n    // Different lengths\r\n    set2.add(\"three\");\r\n    assertFalse(set1.equals(set2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\LinkedListTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() {\r\n    LinkedList<String> list = new LinkedList<>();\r\n    list.insert(\"B\", 0);\r\n    list.insert(\"C\", 1);\r\n    list.insert(\"D\", 2);\r\n    list.insert(\"A\", 0);\r\n    assertEquals(list.indexOf(\"A\"), 0);\r\n    list.remove(0, 1);\r\n    assertEquals(list.get(0), \"B\");\r\n    assertEquals(list.getLength(), 3);\r\n    assertEquals(list.indexOf(\"C\"), 1);\r\n    Sequence<String> removed = list.remove(1, 1);\r\n    assertNotNull(removed.get(0));\r\n    assertTrue(removed.get(0).equals(\"C\"));\r\n    list.insert(\"E\", 1);\r\n    assertEquals(list.getLength(), 3);\r\n    assertNotNull(list.get(1));\r\n    assertTrue(list.get(1).equals(\"E\"));\r\n    list.update(1, \"F\");\r\n    assertNotNull(list.get(1));\r\n    assertTrue(list.get(1).equals(\"F\"));\r\n    list.insert(\"G\", 0);\r\n    assertTrue(list.equals(new LinkedList<>(\"G\", \"B\", \"F\", \"D\")));\r\n    assertFalse(list.equals(new LinkedList<>(\"G\", \"B\", \"F\", \"D\", \"E\")));\r\n    assertFalse(list.equals(new LinkedList<>(\"B\", \"F\", \"E\")));\r\n    assertEquals(4, list.getLength());\r\n    ArrayList<String> copy = new ArrayList<>(\"G\", \"B\", \"F\", \"D\");\r\n    int i = 0;\r\n    for (String item : list) {\r\n        assertEquals(item, copy.get(i++));\r\n    }\r\n    int j = 0;\r\n    List.ItemIterator<String> iterator = list.iterator();\r\n    while (j < list.getLength()) {\r\n        iterator.next();\r\n        j++;\r\n    }\r\n    while (iterator.hasPrevious()) {\r\n        String s = iterator.previous();\r\n        assertEquals(s, copy.get(--j));\r\n    }\r\n    iterator = list.iterator();\r\n    assertEquals(iterator.next(), \"G\");\r\n    assertEquals(iterator.next(), \"B\");\r\n    assertEquals(iterator.previous(), \"B\");\r\n    assertEquals(iterator.previous(), \"G\");\r\n    assertEquals(iterator.next(), \"G\");\r\n    iterator = list.iterator();\r\n    iterator.insert(\"M\");\r\n    assertEquals(list, new LinkedList<>(\"M\", \"G\", \"B\", \"F\", \"D\"));\r\n    assertEquals(iterator.next(), \"M\");\r\n    iterator.insert(\"N\");\r\n    assertEquals(list, new LinkedList<>(\"M\", \"N\", \"G\", \"B\", \"F\", \"D\"));\r\n    iterator = list.iterator();\r\n    iterator.toEnd();\r\n    assertEquals(iterator.previous(), \"D\");\r\n    iterator.toStart();\r\n    assertEquals(iterator.next(), \"M\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\LinkedListTest.java",
+  "methodName" : "sortTest1",
+  "sourceCode" : "@Test\r\npublic void sortTest1() {\r\n    LinkedList<String> linkedList = new LinkedList<>();\r\n    linkedList.setComparator(new Comparator<String>() {\r\n\r\n        @Override\r\n        public int compare(String s1, String s2) {\r\n            return s1.toLowerCase().compareTo(s2.toLowerCase());\r\n        }\r\n    });\r\n    linkedList.add(\"N\");\r\n    linkedList.add(\"P\");\r\n    linkedList.add(\"d\");\r\n    linkedList.add(\"A\");\r\n    linkedList.add(\"z\");\r\n    assertEquals(linkedList, new LinkedList<>(\"A\", \"d\", \"N\", \"P\", \"z\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\LinkedListTest.java",
+  "methodName" : "sortTest2",
+  "sourceCode" : "@Test\r\npublic void sortTest2() {\r\n    LinkedList<String> linkedList = new LinkedList<>();\r\n    linkedList.add(\"N\");\r\n    linkedList.add(\"P\");\r\n    linkedList.add(\"d\");\r\n    linkedList.add(\"A\");\r\n    linkedList.add(\"z\");\r\n    linkedList.setComparator(new Comparator<String>() {\r\n\r\n        @Override\r\n        public int compare(String s1, String s2) {\r\n            return s1.toLowerCase().compareTo(s2.toLowerCase());\r\n        }\r\n    });\r\n    assertEquals(linkedList, new LinkedList<>(\"A\", \"d\", \"N\", \"P\", \"z\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\LinkedListTest.java",
+  "methodName" : "simpleConcurrentModificationTest",
+  "sourceCode" : "@Test(expected = ConcurrentModificationException.class)\r\npublic void simpleConcurrentModificationTest() {\r\n    LinkedList<String> linkedList = new LinkedList<>(\"a\", \"b\", \"c\", \"d\", \"e\");\r\n    List.ItemIterator<String> iterator = linkedList.iterator();\r\n    linkedList.remove(0, 1);\r\n    iterator.next();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\LinkedListTest.java",
+  "methodName" : "advancedConcurrentModificationTest",
+  "sourceCode" : "@Test(expected = ConcurrentModificationException.class)\r\npublic void advancedConcurrentModificationTest() {\r\n    LinkedList<String> linkedList = new LinkedList<>(\"a\", \"b\", \"c\", \"d\", \"e\");\r\n    List.ItemIterator<String> iterator1 = linkedList.iterator();\r\n    List.ItemIterator<String> iterator2 = linkedList.iterator();\r\n    iterator1.next();\r\n    iterator2.next();\r\n    iterator1.insert(\"a1\");\r\n    iterator2.next();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\QueueTest.java",
+  "methodName" : "queueTest",
+  "sourceCode" : "@Test\r\npublic void queueTest() {\r\n    testQueue(new ArrayQueue<String>(5));\r\n    testQueue(new LinkedQueue<String>());\r\n    testSortedQueue(new ArrayQueue<String>(5));\r\n    testSortedQueue(new LinkedQueue<String>());\r\n    testMaxLengthQueue(new ArrayQueue<String>(5, 5));\r\n    testMaxLengthQueue(new LinkedQueue<String>(5));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\StackTest.java",
+  "methodName" : "stackTest",
+  "sourceCode" : "@Test\r\npublic void stackTest() {\r\n    testStack(new ArrayStack<String>(MAX_STACK_DEPTH, MAX_STACK_DEPTH));\r\n    testStack(new LinkedStack<String>(MAX_STACK_DEPTH));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\SynchronizedQueueTest.java",
+  "methodName" : "synchronizedQueueTest",
+  "sourceCode" : "@Test\r\npublic void synchronizedQueueTest() {\r\n    testSynchronizedQueue(new ArrayQueue<String>());\r\n    testSynchronizedQueue(new LinkedQueue<String>());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\SynchronizedStackTest.java",
+  "methodName" : "synchronizedStackTest",
+  "sourceCode" : "@Test\r\npublic void synchronizedStackTest() {\r\n    testSynchronizedStack(new ArrayStack<String>());\r\n    testSynchronizedStack(new LinkedStack<String>());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\OptionTest.java",
+  "methodName" : "companionTest",
+  "sourceCode" : "@Test\r\npublic void companionTest() {\r\n    OptionCompanion<Object> o = OptionCompanion.getInstance();\r\n    assertNotNull(o);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\OptionTest.java",
+  "methodName" : "companionNoneTest",
+  "sourceCode" : "@Test(expected = NoSuchElementException.class)\r\npublic void companionNoneTest() {\r\n    OptionCompanion<Object> o = OptionCompanion.getInstance();\r\n    assertNotNull(o);\r\n    Option<Object> on = o.fromValue(null);\r\n    assertNotNull(on);\r\n    assertTrue(on instanceof None);\r\n    assertFalse(on.hasValue());\r\n    System.out.println(\"companionNoneTest(), has value is \" + on.hasValue());\r\n    // throw Exception here\r\n    Object onValue = on.getValue();\r\n    // never called\r\n    assertTrue(onValue instanceof None);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\OptionTest.java",
+  "methodName" : "companionObjectTest",
+  "sourceCode" : "@Test\r\npublic void companionObjectTest() {\r\n    OptionCompanion<Object> o = OptionCompanion.getInstance();\r\n    assertNotNull(o);\r\n    Option<Object> oo = o.fromValue(new StringBuilder(\"Hello\"));\r\n    assertNotNull(oo);\r\n    assertTrue(oo instanceof Some);\r\n    assertTrue(oo.hasValue());\r\n    Object ooValue = oo.getValue();\r\n    assertTrue(ooValue instanceof StringBuilder);\r\n    System.out.println(\"companionObjectTest(), value stored is \" + ooValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\OptionTest.java",
+  "methodName" : "companionStringTest",
+  "sourceCode" : "@Test\r\npublic void companionStringTest() {\r\n    OptionCompanion<String> o = OptionCompanion.getInstance();\r\n    assertNotNull(o);\r\n    Option<String> os = o.fromValue(\"Hello\");\r\n    assertNotNull(os);\r\n    assertTrue(os instanceof Some);\r\n    assertTrue(os.hasValue());\r\n    Object osValue = os.getValue();\r\n    assertTrue(osValue instanceof String);\r\n    System.out.println(\"companionStringTest(), value stored is \" + osValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\OptionTest.java",
+  "methodName" : "companionNumberTest",
+  "sourceCode" : "@Test\r\npublic void companionNumberTest() {\r\n    OptionCompanion<Number> o = OptionCompanion.getInstance();\r\n    assertNotNull(o);\r\n    Option<Number> on = o.fromValue(Double.valueOf(Math.PI));\r\n    assertNotNull(on);\r\n    assertTrue(on instanceof Some);\r\n    assertTrue(on.hasValue());\r\n    Object onValue = on.getValue();\r\n    assertTrue(onValue instanceof Number);\r\n    assertTrue(onValue instanceof Double);\r\n    System.out.println(\"companionNumberTest(), value stored is \" + onValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\OptionTest.java",
+  "methodName" : "companionRealUsageRandomTest",
+  "sourceCode" : "@Test\r\npublic void companionRealUsageRandomTest() {\r\n    OptionCompanion<String> o = OptionCompanion.getInstance();\r\n    assertNotNull(o);\r\n    Option<String> os = null;\r\n    String value;\r\n    // randomizing this test\r\n    Random randomGenerator = new Random();\r\n    int randomInt = randomGenerator.nextInt(100);\r\n    // store the value in the Option instance (Some if not null, otherwise None)\r\n    // note that try/catch block here are unnecessary, but probably near to a real-world usage\r\n    try {\r\n        // randomizing this test:\r\n        // for even numbers a value will be generated,\r\n        // but for odd numbers the value will be null so a call on it will throw a RuntimeException\r\n        if (randomInt % 2 == 0) {\r\n            value = String.valueOf(randomInt);\r\n        } else {\r\n            value = null;\r\n        }\r\n        os = o.fromValue(value);\r\n    } catch (RuntimeException e) {\r\n        System.err.println(\"companionRealUsageRandomTest(), got RuntimeException \" + e);\r\n        os = o.fromValue(null);\r\n    }\r\n    // verify the value stored\r\n    System.out.println(\"companionRealUsageRandomTest(), stored element has a value \" + os.hasValue());\r\n    try {\r\n        // = os.getValue();  // this will throw a RuntimeException if os is a None\r\n        String tsValue;\r\n        // System.out.println(\"companionRealUsageRandomTest(), value stored is \" + tsValue);\r\n        if (randomInt % 2 == 0) {\r\n            assertTrue(os instanceof Some);\r\n            assertTrue(os.hasValue());\r\n            tsValue = os.getValue();\r\n            System.out.println(\"companionRealUsageRandomTest(), value stored is \" + tsValue);\r\n            assertTrue(tsValue != null);\r\n        } else {\r\n            assertTrue(os instanceof None);\r\n            assertFalse(os.hasValue());\r\n            // will throw a RuntimeException when called in the case\r\n            tsValue = os.getValue();\r\n            // never called\r\n            assertTrue(tsValue == null);\r\n        }\r\n    } catch (RuntimeException e) {\r\n        System.err.println(\"companionRealUsageRandomTest(), got RuntimeException \" + e);\r\n        assertFalse(os.hasValue());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\OptionTest.java",
+  "methodName" : "optionSomeTest",
+  "sourceCode" : "@Test\r\npublic void optionSomeTest() {\r\n    // sample by direct instancing of Some/None classes, but discouraged\r\n    Option<String> os = null;\r\n    String osValue = null;\r\n    // store the value in the Option instance (Some if not null, otherwise None)\r\n    os = new Some<>(\"Optional value\");\r\n    System.out.println(\"optionSomeTest(), instance variable is \" + os);\r\n    assertTrue(os != null);\r\n    // verify the value stored\r\n    System.out.println(\"optionSomeTest(), stored element has a value \" + os.hasValue());\r\n    assertTrue(os instanceof Some);\r\n    assertTrue(os.hasValue());\r\n    osValue = os.getValue();\r\n    System.out.println(\"optionSomeTest(), value stored is \" + osValue);\r\n    assertTrue(osValue != null);\r\n    // test with alternative value\r\n    osValue = os.getValueOrElse(\"Alternative value\");\r\n    assertEquals(\"Optional value\", osValue);\r\n    osValue = os.getValueOrNull();\r\n    assertEquals(\"Optional value\", osValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\OptionTest.java",
+  "methodName" : "optionNoneTest",
+  "sourceCode" : "@Test\r\npublic void optionNoneTest() {\r\n    // sample by direct instancing of Some/None classes, but discouraged\r\n    Option<String> os = null;\r\n    String tsValue = null;\r\n    // store the value in the Option instance (Some if not null, otherwise None)\r\n    // os = new None<>();  // discouraged\r\n    // better\r\n    os = None.getInstance();\r\n    System.out.println(\"optionNoneTest(), instance variable is \" + os);\r\n    assertTrue(os != null);\r\n    // verify the value stored\r\n    System.out.println(\"optionNoneTest(), stored element has a value \" + os.hasValue());\r\n    assertTrue(os instanceof None);\r\n    assertFalse(os.hasValue());\r\n    try {\r\n        // will throw a RuntimeException when called in the case\r\n        tsValue = os.getValue();\r\n        // never called\r\n        assertTrue(tsValue == null);\r\n    } catch (RuntimeException e) {\r\n        System.err.println(\"optionNoneTest(), got RuntimeException \" + e);\r\n        assertFalse(os.hasValue());\r\n    }\r\n    // test with alternative value\r\n    tsValue = os.getValueOrElse(\"Alternative value\");\r\n    assertEquals(\"Alternative value\", tsValue);\r\n    tsValue = os.getValueOrNull();\r\n    assertEquals(null, tsValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\OptionTest.java",
+  "methodName" : "optionSomeEqualsTest",
+  "sourceCode" : "@Test\r\npublic void optionSomeEqualsTest() {\r\n    // sample by direct instancing of Some/None classes, but discouraged\r\n    Option<String> os1 = new Some<>(\"Optional value 1\");\r\n    System.out.println(\"optionSomeEqualsTest(), instance variable 1 is \" + os1);\r\n    Option<String> os2 = new Some<>(\"Optional value 2\");\r\n    System.out.println(\"optionSomeEqualsTest(), instance variable 2 is \" + os2);\r\n    // verify the value stored\r\n    System.out.println(\"optionSomeEqualsTest(), two instances are not the same object \" + (os1 != os2));\r\n    assertTrue(os1 != os2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\OptionTest.java",
+  "methodName" : "optionNoneEqualsTest",
+  "sourceCode" : "@Test\r\npublic void optionNoneEqualsTest() {\r\n    // sample by direct instancing of Some/None classes, but discouraged\r\n    None<String> on1 = None.getInstance();\r\n    System.out.println(\"optionNoneEqualsTest(), instance variable 1 is \" + on1);\r\n    None<String> on2 = None.getInstance();\r\n    System.out.println(\"optionNoneEqualsTest(), instance variable 2 is \" + on2);\r\n    // verify the value stored\r\n    System.out.println(\"optionNoneEqualsTest(), two instances are the same object \" + (on1 == on2));\r\n    assertTrue(on1 == on2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\OptionTest.java",
+  "methodName" : "optionSomeIteratorTest",
+  "sourceCode" : "@Test\r\npublic void optionSomeIteratorTest() {\r\n    // sample by direct instancing of Some/None classes, but discouraged\r\n    Option<String> os = new Some<>(\"Optional value\");\r\n    System.out.println(\"optionSomeIteratorTest(), instance variable is \" + os);\r\n    // iterate and verify on the value stored\r\n    Iterator<String> it = os.iterator();\r\n    assertNotNull(it);\r\n    int i = 0;\r\n    while (it.hasNext()) {\r\n        String value = it.next();\r\n        System.out.println(\"optionSomeIteratorTest(), value \" + i + \" from iterator is \" + value);\r\n        assertNotNull(value);\r\n        assertEquals(\"Optional value\", value);\r\n        i++;\r\n    }\r\n    assertEquals(i, 1);\r\n    // another test\r\n    i = 0;\r\n    System.out.println(\"optionSomeIteratorTest(), another test\");\r\n    for (String value : os) {\r\n        System.out.println(\"optionSomeIteratorTest(), value \" + i + \" from iterator is \" + value);\r\n        assertNotNull(value);\r\n        assertEquals(\"Optional value\", value);\r\n        i++;\r\n    }\r\n    assertEquals(i, 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\OptionTest.java",
+  "methodName" : "optionNoneIteratorTest",
+  "sourceCode" : "@Test\r\npublic void optionNoneIteratorTest() {\r\n    // sample by direct instancing of Some/None classes, but discouraged\r\n    None<String> on = None.getInstance();\r\n    System.out.println(\"optionNoneIteratorTest(), instance variable is \" + on);\r\n    // iterate and verify on the value stored\r\n    Iterator<String> it = on.iterator();\r\n    assertNotNull(it);\r\n    int i = 0;\r\n    while (it.hasNext()) {\r\n        // never executed in this case\r\n        String value = it.next();\r\n        System.out.println(\"optionNoneIteratorTest(), value \" + i + \" from iterator is \" + value);\r\n        assertEquals(null, value);\r\n        i++;\r\n    }\r\n    assertEquals(i, 0);\r\n    // another test\r\n    i = 0;\r\n    System.out.println(\"optionNoneIteratorTest(), another test\");\r\n    for (String value : on) {\r\n        // never executed in this case\r\n        System.out.println(\"optionNoneIteratorTest(), value \" + i + \" from iterator is \" + value);\r\n        assertEquals(null, value);\r\n        i++;\r\n    }\r\n    assertEquals(i, 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\TryTest.java",
+  "methodName" : "companionTest",
+  "sourceCode" : "@Test\r\npublic void companionTest() {\r\n    TryCompanion<Object> t = TryCompanion.getInstance();\r\n    assertNotNull(t);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\TryTest.java",
+  "methodName" : "companionNullTest",
+  "sourceCode" : "@Test\r\npublic void companionNullTest() {\r\n    TryCompanion<Object> t = TryCompanion.getInstance();\r\n    assertNotNull(t);\r\n    Try<Object> tn = t.fromValue(null);\r\n    assertNotNull(tn);\r\n    assertTrue(tn instanceof Success);\r\n    assertTrue(tn.isSuccess());\r\n    Object tnValue = tn.getValue();\r\n    assertNull(tnValue);\r\n    System.out.println(\"companionNullTest(), value stored is \" + tnValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\TryTest.java",
+  "methodName" : "companionObjectTest",
+  "sourceCode" : "@Test\r\npublic void companionObjectTest() {\r\n    TryCompanion<Object> t = TryCompanion.getInstance();\r\n    assertNotNull(t);\r\n    Try<Object> to = t.fromValue(new String(\"Hello\"));\r\n    assertNotNull(to);\r\n    assertTrue(to instanceof Success);\r\n    assertTrue(to.isSuccess());\r\n    Object toValue = to.getValue();\r\n    assertNotNull(toValue);\r\n    assertTrue(toValue instanceof String);\r\n    assertEquals(toValue, \"Hello\");\r\n    System.out.println(\"companionObjectTest(), value stored is \" + toValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\TryTest.java",
+  "methodName" : "companionStringTest",
+  "sourceCode" : "@Test\r\npublic void companionStringTest() {\r\n    TryCompanion<String> t = TryCompanion.getInstance();\r\n    assertNotNull(t);\r\n    Try<String> ts = t.fromValue(\"Hello\");\r\n    assertNotNull(ts);\r\n    assertTrue(ts instanceof Success);\r\n    assertTrue(ts.isSuccess());\r\n    String tsValue = ts.getValue();\r\n    assertNotNull(tsValue);\r\n    // assertTrue(tsValue instanceof String);  // unnecessary\r\n    assertEquals(tsValue, \"Hello\");\r\n    System.out.println(\"companionStringTest(), value stored is \" + tsValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\TryTest.java",
+  "methodName" : "companionFailureTest",
+  "sourceCode" : "@Test\r\npublic void companionFailureTest() {\r\n    TryCompanion<String> t = TryCompanion.getInstance();\r\n    assertNotNull(t);\r\n    RuntimeException re = new IllegalArgumentException(\"Sample RuntimeException\");\r\n    Try<String> tf = t.fromValue(re);\r\n    assertNotNull(tf);\r\n    assertTrue(tf instanceof Failure);\r\n    assertFalse(tf.isSuccess());\r\n    try {\r\n        // this will throw the RuntimeException stored inside the Failure\r\n        String tfValue = tf.getValue();\r\n        // never called\r\n        assertNotNull(tfValue);\r\n    } catch (RuntimeException e) {\r\n        System.err.println(\"companionFailureTest(), value stored is \" + e);\r\n        // unnecessary\r\n        assertNotNull(e);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\TryTest.java",
+  "methodName" : "companionRealUsageRandomTest",
+  "sourceCode" : "@Test\r\npublic void companionRealUsageRandomTest() {\r\n    TryCompanion<String> t = TryCompanion.getInstance();\r\n    assertNotNull(t);\r\n    Try<String> ts = null;\r\n    String value;\r\n    // randomizing this test\r\n    Random randomGenerator = new Random();\r\n    int randomInt = randomGenerator.nextInt(100);\r\n    // store the value (or the RuntimeException) in the Try instance\r\n    try {\r\n        // randomizing this test:\r\n        // for even numbers a value will be generated,\r\n        // but for odd numbers the value will be null so a call on it will throw a RuntimeException\r\n        if (randomInt % 2 == 0) {\r\n            value = String.valueOf(randomInt);\r\n        } else {\r\n            value = null;\r\n            // simulate an exception here\r\n            throw new NullPointerException(\"Sample RuntimeException\");\r\n        }\r\n        ts = t.fromValue(value);\r\n    } catch (RuntimeException e) {\r\n        ts = t.fromValue(e);\r\n    }\r\n    // verify the value stored\r\n    System.out.println(\"companionRealUsageRandomTest(), value stored is a success \" + ts.isSuccess());\r\n    try {\r\n        // this will throw the RuntimeException stored inside the Failure\r\n        String tsValue = ts.getValue();\r\n        // called only when a real value is stored (and not a RuntimeException)\r\n        assertNotNull(tsValue);\r\n        System.out.println(\"companionRealUsageRandomTest(), value stored is \" + tsValue);\r\n        assertTrue(ts.isSuccess());\r\n    } catch (RuntimeException e) {\r\n        System.err.println(\"companionRealUsageRandomTest(), exception stored is \" + e);\r\n        assertFalse(ts.isSuccess());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\TryTest.java",
+  "methodName" : "trySuccessTest",
+  "sourceCode" : "@Test\r\npublic void trySuccessTest() {\r\n    // sample by direct instancing of Success/Failure classes, but discouraged\r\n    Try<String> ts = null;\r\n    // store the value (or the RuntimeException) in the Try instance\r\n    try {\r\n        ts = new Success<>(\"Hello with Success\");\r\n    } catch (RuntimeException e) {\r\n        // ts = new Success<>(e);  // compile error, ok\r\n        ts = new Failure<>(e);\r\n        // unnecessary\r\n        assertNotNull(e);\r\n    }\r\n    // verify the value stored\r\n    System.out.println(\"trySuccessTest(), value stored is a success \" + ts.isSuccess());\r\n    String tsValue;\r\n    try {\r\n        // this will throw the RuntimeException stored inside the Failure\r\n        tsValue = ts.getValue();\r\n        // called only when a real value is stored (and not a RuntimeException)\r\n        assertNotNull(tsValue);\r\n        System.out.println(\"trySuccessTest(), value stored is \" + tsValue);\r\n        assertTrue(ts.isSuccess());\r\n    } catch (RuntimeException e) {\r\n        System.err.println(\"trySuccessTest(), exception stored is \" + e);\r\n        assertFalse(ts.isSuccess());\r\n    }\r\n    // test with alternative value\r\n    tsValue = ts.getValueOrElse(\"Alternative value\");\r\n    assertEquals(\"Hello with Success\", tsValue);\r\n    tsValue = ts.getValueOrNull();\r\n    assertEquals(\"Hello with Success\", tsValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\TryTest.java",
+  "methodName" : "tryFailureTest",
+  "sourceCode" : "@Test\r\npublic void tryFailureTest() {\r\n    // sample by direct instancing of Success/Failure classes, but discouraged\r\n    Try<String> tf = null;\r\n    // store the value (or the RuntimeException) in the Try instance\r\n    try {\r\n        // simulate an exception here\r\n        throw new NullPointerException(\"Sample RuntimeException\");\r\n    } catch (RuntimeException e) {\r\n        // ts = new Success<>(e);  // compile error, ok\r\n        tf = new Failure<>(e);\r\n        // unnecessary\r\n        assertNotNull(e);\r\n    }\r\n    // verify the value stored\r\n    System.out.println(\"tryFailureTest(), value stored is a success \" + tf.isSuccess());\r\n    String tsValue;\r\n    try {\r\n        // this will throw the RuntimeException stored inside the Failure\r\n        tsValue = tf.getValue();\r\n        // called only when a real value is stored (and not a RuntimeException)\r\n        assertNotNull(tsValue);\r\n        System.out.println(\"tryFailureTest(), value stored is \" + tsValue);\r\n        assertTrue(tf.isSuccess());\r\n    } catch (RuntimeException e) {\r\n        System.err.println(\"tryFailureTest(), exception stored is \" + e);\r\n        assertFalse(tf.isSuccess());\r\n    }\r\n    // test with alternative value\r\n    tsValue = tf.getValueOrElse(\"Alternative value\");\r\n    assertEquals(\"Alternative value\", tsValue);\r\n    tsValue = tf.getValueOrNull();\r\n    assertEquals(null, tsValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\TryTest.java",
+  "methodName" : "trySuccessIteratorTest",
+  "sourceCode" : "@Test\r\npublic void trySuccessIteratorTest() {\r\n    // sample by direct instancing of Success/Failure classes, but discouraged\r\n    Try<String> ts = new Success<>(\"Hello with Success\");\r\n    System.out.println(\"trySuccessIteratorTest(), instance variable is \" + ts);\r\n    // iterate and verify on the value stored\r\n    Iterator<String> it = ts.iterator();\r\n    assertNotNull(it);\r\n    int i = 0;\r\n    while (it.hasNext()) {\r\n        String value = it.next();\r\n        System.out.println(\"trySuccessIteratorTest(), value \" + i + \" from iterator is \" + value);\r\n        assertNotNull(value);\r\n        assertEquals(\"Hello with Success\", value);\r\n        i++;\r\n    }\r\n    assertEquals(i, 1);\r\n    // another test\r\n    i = 0;\r\n    System.out.println(\"trySuccessIteratorTest(), another test\");\r\n    for (String value : ts) {\r\n        System.out.println(\"trySuccessIteratorTest(), value \" + i + \" from iterator is \" + value);\r\n        assertNotNull(value);\r\n        assertEquals(\"Hello with Success\", value);\r\n        i++;\r\n    }\r\n    assertEquals(i, 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\TryTest.java",
+  "methodName" : "tryFailureIteratorTest",
+  "sourceCode" : "@Test\r\npublic void tryFailureIteratorTest() {\r\n    // sample by direct instancing of Success/Failure classes, but discouraged\r\n    Try<String> tf = null;\r\n    // store the value (or the RuntimeException) in the Try instance\r\n    try {\r\n        // simulate an exception here\r\n        throw new NullPointerException(\"Sample RuntimeException\");\r\n    } catch (RuntimeException e) {\r\n        tf = new Failure<>(e);\r\n    }\r\n    System.out.println(\"tryFailureIteratorTest(), instance variable is \" + tf);\r\n    // iterate and verify on the value stored\r\n    Iterator<String> it = tf.iterator();\r\n    assertNotNull(it);\r\n    int i = 0;\r\n    while (it.hasNext()) {\r\n        // never executed in this case\r\n        String value = it.next();\r\n        System.out.println(\"tryFailureIteratorTest(), value \" + i + \" from iterator is \" + value);\r\n        assertNull(value);\r\n        i++;\r\n    }\r\n    assertEquals(i, 0);\r\n    // another test\r\n    i = 0;\r\n    System.out.println(\"tryFailureIteratorTest(), another test\");\r\n    for (String value : tf) {\r\n        // never executed in this case\r\n        System.out.println(\"tryFailureIteratorTest(), value \" + i + \" from iterator is \" + value);\r\n        assertNull(value);\r\n        i++;\r\n    }\r\n    assertEquals(i, 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\TryTest.java",
+  "methodName" : "companionSuccessToOptionTest",
+  "sourceCode" : "@Test\r\npublic void companionSuccessToOptionTest() {\r\n    TryCompanion<String> t = TryCompanion.getInstance();\r\n    assertNotNull(t);\r\n    Try<String> ts = t.fromValue(\"Hello\");\r\n    Option<String> os = t.toOption(ts);\r\n    // verify the value stored\r\n    System.out.println(\"companionSuccessToOptionTest(), Try instance is \" + ts);\r\n    System.out.println(\"companionSuccessToOptionTest(), Option instance is \" + os);\r\n    assertNotNull(ts);\r\n    assertTrue(ts instanceof Success);\r\n    assertTrue(ts.isSuccess());\r\n    assertNotNull(os);\r\n    assertTrue(os instanceof Some);\r\n    assertTrue(os.hasValue());\r\n    String osValue = os.getValue();\r\n    assertNotNull(osValue);\r\n    assertEquals(osValue, \"Hello\");\r\n    System.out.println(\"companionSuccessToOptionTest(), value stored is \" + osValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\functional\\monad\\test\\TryTest.java",
+  "methodName" : "companionFailureToOptionTest",
+  "sourceCode" : "@Test\r\npublic void companionFailureToOptionTest() {\r\n    TryCompanion<String> t = TryCompanion.getInstance();\r\n    assertNotNull(t);\r\n    RuntimeException re = new IllegalArgumentException(\"Sample RuntimeException\");\r\n    Try<String> tf = t.fromValue(re);\r\n    Option<String> on = t.toOption(tf);\r\n    // verify the value stored\r\n    System.out.println(\"companionFailureToOptionTest(), Try instance is \" + tf);\r\n    System.out.println(\"companionFailureToOptionTest(), Option instance is \" + on);\r\n    assertNotNull(tf);\r\n    assertTrue(tf instanceof Failure);\r\n    assertFalse(tf.isSuccess());\r\n    assertNotNull(on);\r\n    assertTrue(on instanceof None);\r\n    assertFalse(on.hasValue());\r\n    try {\r\n        // this will throw a RuntimeException for the non-value of None\r\n        String onValue = on.getValue();\r\n        // never called\r\n        assertNotNull(onValue);\r\n    } catch (RuntimeException e) {\r\n        System.err.println(\"companionFailureToOptionTest(), got RuntimeException \" + e);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\BindTest.java",
+  "methodName" : "testUntypedList",
+  "sourceCode" : "/**\r\n * Tests returning an untyped list.\r\n *\r\n * @throws IOException from reading the resource.\r\n * @throws SerializationException if there was a syntax error.\r\n */\r\n@Test\r\npublic void testUntypedList() throws IOException, SerializationException {\r\n    JSONSerializer listSerializer = new JSONSerializer(ArrayList.class);\r\n    List<?> list = (List<?>) listSerializer.readObject(new StringReader(\"[1, 2, 3, 4, 5]\"));\r\n    assertEquals(list.get(0), 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\BindTest.java",
+  "methodName" : "testTypedList",
+  "sourceCode" : "/**\r\n * Tests returning a typed list using\r\n * {@code org.apache.pivot.util.TypeLiteral}.\r\n *\r\n * @throws IOException from reading the resource.\r\n * @throws SerializationException if there was a syntax error.\r\n */\r\n@Test\r\npublic void testTypedList() throws IOException, SerializationException {\r\n    JSONSerializer listSerializer = new JSONSerializer();\r\n    @SuppressWarnings(\"unchecked\")\r\n    List<Object> list = (List<Object>) readListResource(listSerializer);\r\n    JSONSerializer typedListSerializer = new JSONSerializer((new TypeLiteral<ArrayList<SampleBean2>>() {\r\n    }).getType());\r\n    @SuppressWarnings(\"unchecked\")\r\n    ArrayList<SampleBean2> typedList = (ArrayList<SampleBean2>) readListResource(typedListSerializer);\r\n    Object item0 = typedList.get(0);\r\n    assertTrue(item0 instanceof SampleBean2);\r\n    assertEquals((Integer) typedList.get(0).getA(), (Integer) JSON.get(list, \"[0].a\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\BindTest.java",
+  "methodName" : "testListSubclass",
+  "sourceCode" : "/**\r\n * Tests returning a subclass of a generic\r\n * {@code org.apache.pivot.collections.List}.\r\n *\r\n * @throws IOException from reading the resource.\r\n * @throws SerializationException if there was a syntax error.\r\n */\r\n@Test\r\npublic void testListSubclass() throws IOException, SerializationException {\r\n    JSONSerializer listSerializer = new JSONSerializer();\r\n    @SuppressWarnings(\"unchecked\")\r\n    List<Object> list = (List<Object>) readListResource(listSerializer);\r\n    JSONSerializer typedListSerializer = new JSONSerializer(SampleBean2ListSubclass.class);\r\n    SampleBean2List typedList = (SampleBean2List) readListResource(typedListSerializer);\r\n    Object item0 = typedList.get(0);\r\n    assertTrue(item0 instanceof SampleBean2);\r\n    assertEquals((Integer) typedList.get(0).getA(), (Integer) JSON.get(list, \"[0].a\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\BindTest.java",
+  "methodName" : "testSequence",
+  "sourceCode" : "/**\r\n * Tests returning a class that implements\r\n * {@code org.apache.pivot.collections.Sequence}.\r\n *\r\n * @throws IOException from reading the resource.\r\n * @throws SerializationException if there was a syntax error.\r\n */\r\n@Test\r\npublic void testSequence() throws IOException, SerializationException {\r\n    JSONSerializer listSerializer = new JSONSerializer();\r\n    @SuppressWarnings(\"unchecked\")\r\n    List<Object> list = (List<Object>) readListResource(listSerializer);\r\n    JSONSerializer sequenceSerializer = new JSONSerializer(SampleBean2SequenceSubclass.class);\r\n    SampleBean2Sequence sequence = (SampleBean2Sequence) readListResource(sequenceSerializer);\r\n    Object item0 = sequence.get(0);\r\n    assertNotNull(item0);\r\n    // assertTrue(item0 instanceof SampleBean2); // true but superfluous\r\n    assertEquals((Integer) sequence.get(0).getA(), (Integer) JSON.get(list, \"[0].a\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\BindTest.java",
+  "methodName" : "testUntypedMap",
+  "sourceCode" : "/**\r\n * Tests returning an untyped map.\r\n *\r\n * @throws IOException from reading the resource.\r\n * @throws SerializationException if there was a syntax error.\r\n */\r\n@Test\r\npublic void testUntypedMap() throws IOException, SerializationException {\r\n    JSONSerializer mapSerializer = new JSONSerializer(HashMap.class);\r\n    @SuppressWarnings(\"unchecked\")\r\n    HashMap<String, ?> map = (HashMap<String, ?>) mapSerializer.readObject(new StringReader(A_B_C));\r\n    assertEquals(map.get(\"a\"), 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\BindTest.java",
+  "methodName" : "testTypedMap",
+  "sourceCode" : "/**\r\n * Tests returning a typed map using\r\n * {@code org.apache.pivot.util.TypeLiteral}.\r\n *\r\n * @throws IOException from reading the resource.\r\n * @throws SerializationException if there was a syntax error.\r\n */\r\n@Test\r\npublic void testTypedMap() throws IOException, SerializationException {\r\n    JSONSerializer typedMapSerializer = new JSONSerializer((new TypeLiteral<HashMap<String, SampleBean2>>() {\r\n    }).getType());\r\n    @SuppressWarnings(\"unchecked\")\r\n    HashMap<String, SampleBean2> map = (HashMap<String, SampleBean2>) typedMapSerializer.readObject(new StringReader(FOO_A_B_C));\r\n    assertTrue(JSON.get(map, \"foo\") instanceof SampleBean2);\r\n    assertEquals(JSON.get(map, \"foo.c\"), \"3\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\BindTest.java",
+  "methodName" : "testMapSubclass",
+  "sourceCode" : "/**\r\n * Tests returning a subclass of a generic\r\n * {@code org.apache.pivot.collections.Map}.\r\n *\r\n * @throws IOException from reading the resource.\r\n * @throws SerializationException if there was a syntax error.\r\n */\r\n@Test\r\npublic void testMapSubclass() throws IOException, SerializationException {\r\n    JSONSerializer typedMapSerializer = new JSONSerializer(SampleBean2MapSubclass.class);\r\n    SampleBean2Map map = (SampleBean2Map) typedMapSerializer.readObject(new StringReader(FOO_A_B_C));\r\n    assertTrue(JSON.get(map, \"foo\") instanceof SampleBean2);\r\n    assertEquals(JSON.get(map, \"foo.c\"), \"3\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\BindTest.java",
+  "methodName" : "testDictionary",
+  "sourceCode" : "/**\r\n * Tests returning a class that implements\r\n * {@code org.apache.pivot.collections.Dictionary}.\r\n *\r\n * @throws IOException from reading the resource.\r\n * @throws SerializationException if there was a syntax error.\r\n */\r\n@Test\r\npublic void testDictionary() throws IOException, SerializationException {\r\n    JSONSerializer dictionarySerializer = new JSONSerializer(SampleBean2DictionarySubclass.class);\r\n    SampleBean2Dictionary dictionary = (SampleBean2Dictionary) dictionarySerializer.readObject(new StringReader(FOO_A_B_C));\r\n    assertTrue(JSON.get(dictionary, \"foo\") instanceof SampleBean2);\r\n    assertEquals(JSON.get(dictionary, \"foo.c\"), \"3\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\BindTest.java",
+  "methodName" : "testBean",
+  "sourceCode" : "/**\r\n * Tests returning a Java bean value.\r\n *\r\n * @throws IOException from reading the resource.\r\n * @throws SerializationException if there was a syntax error.\r\n */\r\n@Test\r\npublic void testBean() throws IOException, SerializationException {\r\n    JSONSerializer mapSerializer = new JSONSerializer();\r\n    mapSerializer.setAllowMacros(true);\r\n    @SuppressWarnings(\"unchecked\")\r\n    Map<String, Object> map = (Map<String, Object>) readListResource(mapSerializer, \"map.json\");\r\n    JSONSerializer beanSerializer = new JSONSerializer(SampleBean1.class);\r\n    beanSerializer.setAllowMacros(true);\r\n    SampleBean1 typedMap = (SampleBean1) readListResource(beanSerializer, \"map.json\");\r\n    assertEquals((Integer) typedMap.getA(), (Integer) JSON.get(map, \"a\"));\r\n    assertEquals(typedMap.getB(), JSON.get(map, \"b\"));\r\n    assertEquals(typedMap.getC(), JSON.get(map, \"c\"));\r\n    assertEquals(typedMap.getD(), JSON.get(map, \"d\"));\r\n    assertEquals(typedMap.getE(), JSON.get(map, \"e\"));\r\n    assertEquals((Integer) typedMap.getI().getA(), (Integer) JSON.get(map, \"i.a\"));\r\n    Object k0 = typedMap.getK().get(0);\r\n    assertTrue(k0 instanceof SampleBean2);\r\n    assertEquals((Integer) typedMap.getK().get(0).getA(), (Integer) JSON.get(map, \"k[0].a\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\BindTest.java",
+  "methodName" : "testSpeed",
+  "sourceCode" : "/**\r\n * Tests the speed reading a large file, with and without the macro reader involved.\r\n *\r\n * @throws IOException from reading the resource.\r\n * @throws SerializationException if there was a syntax error.\r\n */\r\n@Test\r\npublic void testSpeed() throws IOException, SerializationException {\r\n    JSONSerializer listSerializer = new JSONSerializer();\r\n    listSerializer.setAllowMacros(true);\r\n    long start1 = System.nanoTime();\r\n    @SuppressWarnings(\"unchecked\")\r\n    List<Object> list = (List<Object>) readListResource(listSerializer);\r\n    long end1 = System.nanoTime();\r\n    // Read the same resource again (which should be cached), but this time\r\n    // without the overhead of checking for macros\r\n    JSONSerializer listSerializer2 = new JSONSerializer();\r\n    listSerializer2.setAllowMacros(false);\r\n    long start2 = System.nanoTime();\r\n    @SuppressWarnings(\"unchecked\")\r\n    List<Object> list2 = (List<Object>) readListResource(listSerializer2);\r\n    long end2 = System.nanoTime();\r\n    long withMacrosTime = (end1 - start1);\r\n    long withoutMacrosTime = (end2 - start2);\r\n    double withMacrosSecs = (double) withMacrosTime / NANOS_PER_SEC;\r\n    double withoutMacrosSecs = (double) withoutMacrosTime / NANOS_PER_SEC;\r\n    // Just report the times, there is no right answer here\r\n    System.out.format(\"Time with macro overhead = %1$.6f secs; time without macros = %2$.6f secs%n\", withMacrosSecs, withoutMacrosSecs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\JSONSerializerTest.java",
+  "methodName" : "testCarriageReturns",
+  "sourceCode" : "@Test\r\npublic void testCarriageReturns() {\r\n    List<?> emptyList;\r\n    try {\r\n        emptyList = JSONSerializer.parseList(\"[\\n]\");\r\n    } catch (SerializationException exception) {\r\n        throw new RuntimeException(exception);\r\n    }\r\n    assertEquals(0, emptyList.getLength());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\JSONSerializerTest.java",
+  "methodName" : "testE",
+  "sourceCode" : "@Test\r\npublic void testE() throws SerializationException {\r\n    assertEquals(5000000, JSONSerializer.parseDouble(\"5.0E6\"), 0);\r\n    assertEquals(0.000005, JSONSerializer.parseDouble(\"5.0E-6\"), 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\JSONSerializerTest.java",
+  "methodName" : "testFloatNaN",
+  "sourceCode" : "@Test(expected = SerializationException.class)\r\npublic void testFloatNaN() throws SerializationException {\r\n    JSONSerializer.toString(Float.NaN);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\JSONSerializerTest.java",
+  "methodName" : "testFloatNegativeInfinity",
+  "sourceCode" : "@Test(expected = SerializationException.class)\r\npublic void testFloatNegativeInfinity() throws SerializationException {\r\n    JSONSerializer.toString(Float.NEGATIVE_INFINITY);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\JSONSerializerTest.java",
+  "methodName" : "testFloatPositiveInfinity",
+  "sourceCode" : "@Test(expected = SerializationException.class)\r\npublic void testFloatPositiveInfinity() throws SerializationException {\r\n    JSONSerializer.toString(Float.POSITIVE_INFINITY);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\JSONSerializerTest.java",
+  "methodName" : "testDoubleNaN",
+  "sourceCode" : "@Test(expected = SerializationException.class)\r\npublic void testDoubleNaN() throws SerializationException {\r\n    JSONSerializer.toString(Double.NaN);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\JSONSerializerTest.java",
+  "methodName" : "testDoubleNegativeInfinity",
+  "sourceCode" : "@Test(expected = SerializationException.class)\r\npublic void testDoubleNegativeInfinity() throws SerializationException {\r\n    JSONSerializer.toString(Double.NEGATIVE_INFINITY);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\JSONSerializerTest.java",
+  "methodName" : "testDoublePositiveInfinityN",
+  "sourceCode" : "@Test(expected = SerializationException.class)\r\npublic void testDoublePositiveInfinityN() throws SerializationException {\r\n    JSONSerializer.toString(Double.POSITIVE_INFINITY);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\JSONSerializerTest.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "@Test\r\npublic void testEquals() throws IOException, SerializationException {\r\n    JSONSerializer jsonSerializer = new JSONSerializer();\r\n    jsonSerializer.setAllowMacros(true);\r\n    JSONSerializerListener jsonSerializerListener = new JSONSerializerListener() {\r\n\r\n        @Override\r\n        public void beginDictionary(final JSONSerializer jsonSerializerArgument, final Dictionary<String, ?> value) {\r\n            System.out.println(\"Begin dictionary: \" + value);\r\n        }\r\n\r\n        @Override\r\n        public void endDictionary(final JSONSerializer jsonSerializerArgument) {\r\n            System.out.println(\"End dictionary\");\r\n        }\r\n\r\n        @Override\r\n        public void readKey(final JSONSerializer jsonSerializerArgument, final String key) {\r\n            System.out.println(\"Read key: \" + key);\r\n        }\r\n\r\n        @Override\r\n        public void beginSequence(final JSONSerializer jsonSerializerArgument, final Sequence<?> value) {\r\n            System.out.println(\"Begin sequence: \" + value);\r\n        }\r\n\r\n        @Override\r\n        public void endSequence(final JSONSerializer jsonSerializerArgument) {\r\n            System.out.println(\"End sequence\");\r\n        }\r\n\r\n        @Override\r\n        public void readString(final JSONSerializer jsonSerializerArgument, final String value) {\r\n            System.out.println(\"Read string: \" + value);\r\n        }\r\n\r\n        @Override\r\n        public void readNumber(final JSONSerializer jsonSerializerArgument, final Number value) {\r\n            System.out.println(\"Read number: \" + value);\r\n        }\r\n\r\n        @Override\r\n        public void readBoolean(final JSONSerializer jsonSerializerArgument, final Boolean value) {\r\n            System.out.println(\"Read boolean: \" + value);\r\n        }\r\n\r\n        @Override\r\n        public void readNull(final JSONSerializer jsonSerializerArgument) {\r\n            System.out.println(\"Read null\");\r\n        }\r\n    };\r\n    jsonSerializer.getJSONSerializerListeners().add(jsonSerializerListener);\r\n    Object o1 = jsonSerializer.readObject(getClass().getResourceAsStream(\"map.json\"));\r\n    assertEquals((Integer) JSON.get(o1, \"a\"), (Integer) 100);\r\n    assertEquals(JSON.get(o1, \"b\"), \"Hello\");\r\n    assertEquals(JSON.get(o1, \"c\"), false);\r\n    assertEquals((Integer) JSON.get(o1, \"e.g\"), (Integer) 5);\r\n    assertEquals((Integer) JSON.get(o1, \"i.a\"), (Integer) 200);\r\n    assertEquals(JSON.get(o1, \"i.c\"), true);\r\n    assertEquals(JSON.get(o1, \"m\"), \"Hello\\r\\n\\tWorld!\");\r\n    jsonSerializer.getJSONSerializerListeners().remove(jsonSerializerListener);\r\n    Object o2 = jsonSerializer.readObject(getClass().getResourceAsStream(\"map.json\"));\r\n    assertEquals((Integer) JSON.get(o2, \"k[1].a\"), (Integer) 10);\r\n    assertEquals((Integer) JSON.get(o2, \"k[2].a\"), (Integer) 100);\r\n    assertEquals((Integer) JSON.get(o2, \"k[2].b\"), (Integer) 200);\r\n    assertEquals(JSON.get(o2, \"k[2].c\"), \"300\");\r\n    assertEquals((Integer) JSON.get(o2, \"j\"), (Integer) 200);\r\n    assertEquals(JSON.get(o2, \"n\"), \"This is a \\\"test\\\" of the 'quoting' in \\\\JSON\\\\\");\r\n    assertTrue(o1.equals(o2));\r\n    List<?> d = JSON.get(o1, \"d\");\r\n    d.remove(0, 1);\r\n    assertFalse(o1.equals(o2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\JSONSerializerTest.java",
+  "methodName" : "testJavaMap",
+  "sourceCode" : "@Test\r\npublic void testJavaMap() throws SerializationException {\r\n    System.out.println(\"Test interaction with Standard java.util.Map\");\r\n    java.util.HashMap<String, java.util.Map<String, String>> root = new java.util.HashMap<>();\r\n    java.util.HashMap<String, String> child = new java.util.HashMap<>();\r\n    child.put(\"name\", \"John Doe\");\r\n    child.put(\"address\", \"123 Main St.\\r\\nAnytown USA\");\r\n    root.put(\"child\", child);\r\n    String childName = JSON.get(root, \"child.name\");\r\n    String childAddr = JSON.get(root, \"child.address\");\r\n    System.out.println(\"JSON child.name = \\\"\" + childName + \"\\\", child.address = \\\"\" + childAddr + \"\\\"\");\r\n    assertEquals(childName, \"John Doe\");\r\n    assertEquals(childAddr, \"123 Main St.\\r\\nAnytown USA\");\r\n    String serializedForm = JSONSerializer.toString(root);\r\n    System.out.println(\"Serialized form: \\\"\" + serializedForm + \"\\\"\");\r\n    assertEquals(serializedForm, \"{child: {address: \\\"123 Main St.\\\\r\\\\nAnytown USA\\\", name: \\\"John Doe\\\"}}\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\BinarySerializerTest.java",
+  "methodName" : "testBinarySerializer",
+  "sourceCode" : "@Test\r\npublic void testBinarySerializer() {\r\n    Serializer<Object> serializer = new BinarySerializer();\r\n    Object[] outputData = { \"Hello World\", 123.456, true };\r\n    Object[] inputData;\r\n    try {\r\n        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();\r\n        try {\r\n            serializer.writeObject(outputData, outputStream);\r\n        } finally {\r\n            outputStream.close();\r\n        }\r\n        ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());\r\n        try {\r\n            inputData = (Object[]) serializer.readObject(inputStream);\r\n        } finally {\r\n            inputStream.close();\r\n        }\r\n        assertArrayEquals(outputData, inputData);\r\n    } catch (Exception exception) {\r\n        fail(exception.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\ByteArraySerializerTest.java",
+  "methodName" : "readValues",
+  "sourceCode" : "@Test\r\npublic void readValues() throws IOException, SerializationException {\r\n    log(\"readValues()\");\r\n    Serializer<byte[]> serializer = new ByteArraySerializer();\r\n    ByteArrayInputStream inputStream = new ByteArrayInputStream(TEST_BYTES);\r\n    byte[] result = serializer.readObject(inputStream);\r\n    assertNotNull(result);\r\n    // dump content, but useful only for text resources ...\r\n    String dump = new String(result);\r\n    int dumpLength = dump.getBytes().length;\r\n    log(\"Result: \" + dumpLength + \" bytes \\n\" + dump);\r\n    assertTrue(dumpLength > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\ByteArraySerializerTest.java",
+  "methodName" : "writeValues",
+  "sourceCode" : "@Test\r\npublic void writeValues() throws IOException, SerializationException {\r\n    log(\"writeValues()\");\r\n    Serializer<byte[]> serializer = new ByteArraySerializer();\r\n    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();\r\n    serializer.writeObject(TEST_BYTES, outputStream);\r\n    outputStream.flush();\r\n    outputStream.close();\r\n    byte[] result = outputStream.toByteArray();\r\n    assertNotNull(result);\r\n    // dump content, but useful only for text resources ...\r\n    String dump = new String(result);\r\n    int dumpLength = dump.getBytes().length;\r\n    log(\"Result: \" + dumpLength + \" bytes \\n\" + dump);\r\n    assertTrue(dumpLength > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testBasicReadObject",
+  "sourceCode" : "@SuppressWarnings(\"unchecked\")\r\n@Test\r\npublic void testBasicReadObject() throws IOException, SerializationException {\r\n    // Test multiple line break formats\r\n    StringBuilder buf = new StringBuilder();\r\n    buf.append(\"a1,b1,c1\\r\\n\");\r\n    buf.append(\"a2,b2,c2\\n\");\r\n    buf.append(\"a3,b3,c3\\r\");\r\n    buf.append(\"a4,b4,c4\");\r\n    StringReader reader = new StringReader(buf.toString());\r\n    CSVSerializer serializer = new CSVSerializer();\r\n    serializer.setKeys(\"A\", \"B\", \"C\");\r\n    serializer.getCSVSerializerListeners().add(new CSVSerializerListener() {\r\n\r\n        @Override\r\n        public void beginList(CSVSerializer csvSerializer, List<?> list) {\r\n            System.out.println(\"Begin list: \" + list);\r\n        }\r\n\r\n        @Override\r\n        public void endList(CSVSerializer csvSerializer) {\r\n            System.out.println(\"End list\");\r\n        }\r\n\r\n        @Override\r\n        public void readItem(CSVSerializer csvSerializer, Object item) {\r\n            System.out.println(\"Read item: \" + item);\r\n        }\r\n    });\r\n    List<?> result = serializer.readObject(reader);\r\n    Dictionary<String, Object> row;\r\n    // Test the first row\r\n    row = (Dictionary<String, Object>) result.get(0);\r\n    assertEquals(row.get(\"A\"), \"a1\");\r\n    assertEquals(row.get(\"B\"), \"b1\");\r\n    assertEquals(row.get(\"C\"), \"c1\");\r\n    // Test the second row\r\n    row = (Dictionary<String, Object>) result.get(1);\r\n    assertEquals(row.get(\"A\"), \"a2\");\r\n    assertEquals(row.get(\"B\"), \"b2\");\r\n    assertEquals(row.get(\"C\"), \"c2\");\r\n    // Test the third row\r\n    row = (Dictionary<String, Object>) result.get(2);\r\n    assertEquals(row.get(\"A\"), \"a3\");\r\n    assertEquals(row.get(\"B\"), \"b3\");\r\n    assertEquals(row.get(\"C\"), \"c3\");\r\n    // Test the fourth row\r\n    row = (Dictionary<String, Object>) result.get(3);\r\n    assertEquals(row.get(\"A\"), \"a4\");\r\n    assertEquals(row.get(\"B\"), \"b4\");\r\n    assertEquals(row.get(\"C\"), \"c4\");\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testQuotedCommaReadObject",
+  "sourceCode" : "@Test\r\npublic void testQuotedCommaReadObject() throws IOException, SerializationException {\r\n    StringBuilder buf = new StringBuilder();\r\n    buf.append(\"a,\\\",b,\\\",c\\r\\n\");\r\n    StringReader reader = new StringReader(buf.toString());\r\n    CSVSerializer serializer = new CSVSerializer();\r\n    serializer.setKeys(\"A\", \"B\", \"C\");\r\n    List<?> result = serializer.readObject(reader);\r\n    @SuppressWarnings(\"unchecked\")\r\n    Dictionary<String, Object> row = (Dictionary<String, Object>) result.get(0);\r\n    assertEquals(\"a\", row.get(\"A\"));\r\n    assertEquals(\",b,\", row.get(\"B\"));\r\n    assertEquals(\"c\", row.get(\"C\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testQuotedQuoteReadObject",
+  "sourceCode" : "@Test\r\npublic void testQuotedQuoteReadObject() throws IOException, SerializationException {\r\n    StringBuilder buf = new StringBuilder();\r\n    buf.append(\"a,\\\"\\\"\\\"b\\\"\\\"\\\",c\\r\\n\");\r\n    StringReader reader = new StringReader(buf.toString());\r\n    CSVSerializer serializer = new CSVSerializer();\r\n    serializer.setKeys(\"A\", \"B\", \"C\");\r\n    List<?> result = serializer.readObject(reader);\r\n    @SuppressWarnings(\"unchecked\")\r\n    Dictionary<String, Object> row = (Dictionary<String, Object>) result.get(0);\r\n    assertEquals(\"a\", row.get(\"A\"));\r\n    assertEquals(\"\\\"b\\\"\", row.get(\"B\"));\r\n    assertEquals(\"c\", row.get(\"C\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testQuotedNewlineReadObject",
+  "sourceCode" : "@Test\r\npublic void testQuotedNewlineReadObject() throws IOException, SerializationException {\r\n    StringBuilder buf = new StringBuilder();\r\n    buf.append(\"a,\\\"b\\nb  \\\",c\\r\\n\");\r\n    StringReader reader = new StringReader(buf.toString());\r\n    CSVSerializer serializer = new CSVSerializer();\r\n    serializer.setKeys(\"A\", \"B\", \"C\");\r\n    List<?> result = serializer.readObject(reader);\r\n    @SuppressWarnings(\"unchecked\")\r\n    Dictionary<String, Object> row = (Dictionary<String, Object>) result.get(0);\r\n    assertEquals(\"a\", row.get(\"A\"));\r\n    assertEquals(\"b\\nb\", row.get(\"B\"));\r\n    assertEquals(\"c\", row.get(\"C\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testBasicWriteObject",
+  "sourceCode" : "@SuppressWarnings(\"unchecked\")\r\n// or it will generate a warning during build with Java 7\r\n@Test\r\npublic void testBasicWriteObject() throws IOException {\r\n    List<Object> items = new ArrayList<>();\r\n    items.add(new HashMap<>(new Dictionary.Pair<String, Object>(\"A\", \"a1\"), new Dictionary.Pair<String, Object>(\"B\", \"b1\"), new Dictionary.Pair<String, Object>(\"C\", \"c1\")));\r\n    items.add(new HashMap<>(new Dictionary.Pair<String, Object>(\"A\", \"a2\"), new Dictionary.Pair<String, Object>(\"B\", \"b2\"), new Dictionary.Pair<String, Object>(\"C\", \"c2\")));\r\n    StringWriter writer = new StringWriter();\r\n    CSVSerializer serializer = new CSVSerializer();\r\n    serializer.setKeys(\"A\", \"B\", \"C\");\r\n    serializer.writeObject(items, writer);\r\n    assertEquals(\"a1,b1,c1\\r\\na2,b2,c2\\r\\n\", writer.toString());\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testQuotedCommaWriteObject",
+  "sourceCode" : "@SuppressWarnings(\"unchecked\")\r\n// or it will generate a warning during build with Java 7\r\n@Test\r\npublic void testQuotedCommaWriteObject() throws IOException {\r\n    List<Object> items = new ArrayList<>();\r\n    items.add(new HashMap<>(new Dictionary.Pair<String, Object>(\"A\", \"a\"), new Dictionary.Pair<String, Object>(\"B\", \",b,\"), new Dictionary.Pair<String, Object>(\"C\", \"c\")));\r\n    StringWriter writer = new StringWriter();\r\n    CSVSerializer serializer = new CSVSerializer();\r\n    serializer.setKeys(\"A\", \"B\", \"C\");\r\n    serializer.writeObject(items, writer);\r\n    assertEquals(\"a,\\\",b,\\\",c\\r\\n\", writer.toString());\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testQuotedQuoteWriteObject",
+  "sourceCode" : "@SuppressWarnings(\"unchecked\")\r\n// or it will generate a warning during build with Java 7\r\n@Test\r\npublic void testQuotedQuoteWriteObject() throws IOException {\r\n    List<Object> items = new ArrayList<>();\r\n    items.add(new HashMap<>(new Dictionary.Pair<String, Object>(\"A\", \"a\"), new Dictionary.Pair<String, Object>(\"B\", \"\\\"b\\\"\"), new Dictionary.Pair<String, Object>(\"C\", \"c\")));\r\n    StringWriter writer = new StringWriter();\r\n    CSVSerializer serializer = new CSVSerializer();\r\n    serializer.setKeys(\"A\", \"B\", \"C\");\r\n    serializer.writeObject(items, writer);\r\n    assertEquals(\"a,\\\"\\\"\\\"b\\\"\\\"\\\",c\\r\\n\", writer.toString());\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testQuotedNewlineWriteObject",
+  "sourceCode" : "@SuppressWarnings(\"unchecked\")\r\n// or it will generate a warning during build with Java 7\r\n@Test\r\npublic void testQuotedNewlineWriteObject() throws IOException {\r\n    List<Object> items = new ArrayList<>();\r\n    items.add(new HashMap<>(new Dictionary.Pair<String, Object>(\"A\", \"a\"), new Dictionary.Pair<String, Object>(\"B\", \"\\nb\\n\"), new Dictionary.Pair<String, Object>(\"C\", \"c\")));\r\n    StringWriter writer = new StringWriter();\r\n    CSVSerializer serializer = new CSVSerializer();\r\n    serializer.setKeys(\"A\", \"B\", \"C\");\r\n    serializer.writeObject(items, writer);\r\n    assertEquals(\"a,\\\"\\nb\\n\\\",c\\r\\n\", writer.toString());\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testStreamReader",
+  "sourceCode" : "@Test\r\npublic void testStreamReader() {\r\n    // TODO\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testInlineKeys",
+  "sourceCode" : "@Test\r\npublic void testInlineKeys() throws IOException, SerializationException {\r\n    StringBuilder buf = new StringBuilder();\r\n    buf.append(\"A \\t, B ,C \\n\");\r\n    buf.append(\"a1,b1,c1\\n\");\r\n    StringReader reader = new StringReader(buf.toString());\r\n    CSVSerializer serializer = new CSVSerializer();\r\n    List<?> result = serializer.readObject(reader);\r\n    @SuppressWarnings(\"unchecked\")\r\n    Dictionary<String, Object> row = (Dictionary<String, Object>) result.get(0);\r\n    assertEquals(row.get(\"A\"), \"a1\");\r\n    assertEquals(row.get(\"B\"), \"b1\");\r\n    assertEquals(row.get(\"C\"), \"c1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\PropertiesSerializerTest.java",
+  "methodName" : "writeValues",
+  "sourceCode" : "@Test\r\npublic void writeValues() throws IOException, SerializationException {\r\n    log(\"writeValues()\");\r\n    assertNotNull(testMap);\r\n    Serializer<Map<?, ?>> serializer = new PropertiesSerializer();\r\n    log(\"serializer instance created: \" + serializer);\r\n    byte[] testBytes = mapToPropertiesToBytes(testMap);\r\n    assertNotNull(testBytes);\r\n    // dump content, but useful only for text resources ...\r\n    int dumpLength = testBytes.length;\r\n    log(\"Result: \" + dumpLength + \" bytes\" + \", dump written content now (could have different ordering of rows, and without comment lines):\\n\" + new String(testBytes));\r\n    assertTrue(dumpLength > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\PropertiesSerializerTest.java",
+  "methodName" : "readValues",
+  "sourceCode" : "@Test\r\npublic // run writeValues before readValues, important\r\nvoid readValues() throws IOException, SerializationException {\r\n    log(\"readValues()\");\r\n    assertNotNull(testMap);\r\n    // prepare test data, but without using a static variable\r\n    byte[] testBytes = mapToPropertiesToBytes(testMap);\r\n    assertNotNull(testBytes);\r\n    Serializer<Map<?, ?>> serializer = new PropertiesSerializer();\r\n    log(\"serializer instance created: \" + serializer);\r\n    ByteArrayInputStream inputStream = new ByteArrayInputStream(testBytes);\r\n    @SuppressWarnings(\"unchecked\")\r\n    Map<String, Object> readData = (Map<String, Object>) serializer.readObject(inputStream);\r\n    assertNotNull(readData);\r\n    log(\"Succesfully Read\");\r\n    for (String key : readData) {\r\n        log(key + \"=\" + readData.get(key));\r\n    }\r\n    inputStream.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\StringSerializerTest.java",
+  "methodName" : "readValues",
+  "sourceCode" : "/**\r\n * Test reading of values using the serializer.\r\n * @throws IOException because we use streams.\r\n * @throws SerializationException because it is a serializer.\r\n */\r\n@Test\r\npublic void readValues() throws IOException, SerializationException {\r\n    log(\"readValues()\");\r\n    Serializer<String> serializer = new StringSerializer(UTF_8);\r\n    ByteArrayInputStream inputStream = new ByteArrayInputStream(TEST_BYTES);\r\n    String result = serializer.readObject(inputStream);\r\n    assertNotNull(result);\r\n    assertEquals(result, TEST_STRING);\r\n    // dump content, but useful only for text resources ...\r\n    String dump = result;\r\n    byte[] dumpBytes = dump.getBytes();\r\n    int dumpLength = dumpBytes.length;\r\n    log(\"Result: \" + dumpLength + \" bytes \\n\" + dump);\r\n    logBytes(\"Result bytes\", dumpBytes);\r\n    assertTrue(dumpLength > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\StringSerializerTest.java",
+  "methodName" : "writeValues",
+  "sourceCode" : "/**\r\n * Test writing of values using the serializer.\r\n * @throws IOException because we use streams.\r\n * @throws SerializationException because it is a serializer.\r\n */\r\n@Test\r\npublic void writeValues() throws IOException, SerializationException {\r\n    log(\"writeValues()\");\r\n    log(\"test string = \\\"\" + TEST_STRING + \"\\\"\");\r\n    // Note: assume the default Charset for StringSerializer is UTF-8, which we are using here\r\n    Serializer<String> serializer = new StringSerializer();\r\n    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();\r\n    serializer.writeObject(TEST_STRING, outputStream);\r\n    outputStream.flush();\r\n    outputStream.close();\r\n    String result = outputStream.toString(UTF_8.name());\r\n    assertNotNull(result);\r\n    assertEquals(result, TEST_STRING);\r\n    byte[] resultBytes = outputStream.toByteArray();\r\n    assertArrayEquals(resultBytes, TEST_BYTES);\r\n    // dump content, but useful only for text resources ...\r\n    log(\"Result: \" + resultBytes.length + \" bytes \\n\" + result);\r\n    logBytes(\"Result bytes\", resultBytes);\r\n    logBytes(\"  Test bytes\", TEST_BYTES);\r\n    assertTrue(resultBytes.length > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\concurrent\\test\\TaskTest.java",
+  "methodName" : "testTaskSequence",
+  "sourceCode" : "@Test\r\npublic void testTaskSequence() {\r\n    TaskListener<Void> taskListener = new TaskListener<Void>() {\r\n\r\n        @Override\r\n        public synchronized void taskExecuted(Task<Void> task) {\r\n            System.out.println(\"EXECUTED\");\r\n            notify();\r\n        }\r\n\r\n        @Override\r\n        public synchronized void executeFailed(Task<Void> task) {\r\n            System.out.println(\"FAILED: \" + task.getFault());\r\n            notify();\r\n        }\r\n    };\r\n    TaskSequence taskSequence = new TaskSequence();\r\n    SleepTask task1 = new SleepTask(500);\r\n    taskSequence.add(task1);\r\n    SleepTask task2 = new SleepTask(1000);\r\n    taskSequence.add(task2);\r\n    SleepTask task3 = new SleepTask(2000);\r\n    taskSequence.add(task3);\r\n    synchronized (taskListener) {\r\n        taskSequence.execute(taskListener);\r\n        try {\r\n            taskListener.wait();\r\n        } catch (InterruptedException exception) {\r\n            // empty block\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\concurrent\\test\\TaskTest.java",
+  "methodName" : "testTaskGroup",
+  "sourceCode" : "@Test\r\npublic void testTaskGroup() {\r\n    TaskListener<Void> taskListener = new TaskListener<Void>() {\r\n\r\n        @Override\r\n        public synchronized void taskExecuted(Task<Void> task) {\r\n            System.out.println(\"EXECUTED\");\r\n            notify();\r\n        }\r\n\r\n        @Override\r\n        public synchronized void executeFailed(Task<Void> task) {\r\n            System.out.println(\"FAILED: \" + task.getFault());\r\n            notify();\r\n        }\r\n    };\r\n    TaskGroup taskGroup = new TaskGroup();\r\n    SleepTask task1 = new SleepTask(500);\r\n    taskGroup.add(task1);\r\n    SleepTask task2 = new SleepTask(1000);\r\n    taskGroup.add(task2);\r\n    SleepTask task3 = new SleepTask(2000);\r\n    taskGroup.add(task3);\r\n    synchronized (taskListener) {\r\n        taskGroup.execute(taskListener);\r\n        try {\r\n            taskListener.wait();\r\n        } catch (InterruptedException exception) {\r\n            // empty block\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\BooleanResultTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() {\r\n    BooleanResult result = new BooleanResult();\r\n    operateAndTest(result, false, Operation.OR, false);\r\n    operateAndTest(result, true, Operation.OR, true);\r\n    operateAndTest(result, true, Operation.XOR, false);\r\n    operateAndTest(result, false, /* ignored */\r\n    Operation.NOT, true);\r\n    operateAndTest(result, true, Operation.AND, true);\r\n    operateAndTest(result, false, Operation.SET, false);\r\n    operateAndTest(result, true, Operation.SET, true);\r\n    operateAndTest(result, true, /* ignored */\r\n    Operation.CLEAR, false);\r\n    BooleanResult result2 = new BooleanResult(true);\r\n    assertEquals(result2.get(), true);\r\n    result2.clear();\r\n    assertEquals(result2.get(), false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\CalendarDateTest.java",
+  "methodName" : "test1",
+  "sourceCode" : "@Test\r\npublic void test1() {\r\n    CalendarDate.Range r1 = new CalendarDate.Range(D1);\r\n    CalendarDate.Range r1a = new CalendarDate.Range(D1, D1);\r\n    CalendarDate.Range r2 = new CalendarDate.Range(D2, D3);\r\n    CalendarDate.Range r3 = CalendarDate.Range.decode(\"{ \\\"start\\\" : \\\"1929-10-29\\\", \\\"end\\\" : \\\"2008-09-29\\\"}\");\r\n    CalendarDate.Range r3a = CalendarDate.Range.decode(\"[ \\\"1929-10-29\\\", \\\"2008-09-29\\\" ]\");\r\n    CalendarDate.Range r3b = CalendarDate.Range.decode(\"1929-10-29, 2008-09-29\");\r\n    CalendarDate cd1 = CalendarDate.decode(D1);\r\n    CalendarDate cd2 = CalendarDate.decode(D2);\r\n    CalendarDate cd3 = CalendarDate.decode(D3);\r\n    assertTrue(r2.contains(r1));\r\n    assertEquals(r1, r1a);\r\n    assertEquals(r1.getLength(), 1);\r\n    assertTrue(r2.normalize().equals(r2));\r\n    // TODO: more tests of range methods: intersects, etc.\r\n    assertEquals(r3, r3a);\r\n    assertEquals(r3, r3b);\r\n    assertEquals(r3a, r3b);\r\n    assertEquals(cd1.year, 1941);\r\n    assertEquals(cd1.month, 11);\r\n    assertEquals(cd1.day, 6);\r\n    assertEquals(cd1.toString(), D1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\CalendarDateTest.java",
+  "methodName" : "test2",
+  "sourceCode" : "@Test\r\npublic void test2() {\r\n    // PIVOT-1010: test interaction with LocalDate, etc. (new Java 8 classes)\r\n    LocalDate ld1 = LocalDate.of(1941, 12, 7);\r\n    CalendarDate cd1 = new CalendarDate(ld1);\r\n    CalendarDate cd1a = CalendarDate.decode(D1);\r\n    LocalDate ld1a = cd1a.toLocalDate();\r\n    assertEquals(cd1, cd1a);\r\n    assertEquals(ld1, ld1a);\r\n    Time t1 = Time.decode(\"07:48:00\");\r\n    LocalDateTime dt1 = LocalDateTime.of(1941, 12, 7, 7, 48, 0);\r\n    LocalDateTime dt1a = cd1.toLocalDateTime(t1);\r\n    assertEquals(dt1, dt1a);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\CharUtilsTest.java",
+  "methodName" : "testSelectWord",
+  "sourceCode" : "@Test\r\npublic void testSelectWord() {\r\n    CharSpan nullSpan = CharUtils.selectWord(TEST_STRING, -1);\r\n    assertNull(\"null span from negative start\", nullSpan);\r\n    CharSpan firstWordSpan = new CharSpan(0, 1);\r\n    CharSpan firstBlankSpan = new CharSpan(1, 1);\r\n    CharSpan span0 = CharUtils.selectWord(TEST_STRING, 0);\r\n    CharSpan span1 = CharUtils.selectWord(TEST_STRING, 1);\r\n    assertEquals(\"one letter word\", firstWordSpan, span0);\r\n    assertEquals(\"first blank\", firstBlankSpan, span1);\r\n    CharSpan longWordSpan = new CharSpan(2, 10);\r\n    CharSpan spanLong1 = CharUtils.selectWord(TEST_STRING, 5);\r\n    CharSpan spanLong2 = CharUtils.selectWord(TEST_STRING, 11);\r\n    assertEquals(\"long word\", longWordSpan, spanLong1);\r\n    assertEquals(\"same long word\", spanLong1, spanLong2);\r\n    CharSpan lastWordSpan = new CharSpan(TEST_STRING.length() - 9, 8);\r\n    CharSpan spanLast = CharUtils.selectWord(TEST_STRING, TEST_STRING.length());\r\n    assertEquals(\"last word\", lastWordSpan, spanLast);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\CharUtilsTest.java",
+  "methodName" : "testFindNextWord",
+  "sourceCode" : "@Test\r\npublic void testFindNextWord() {\r\n    int length = TEST_STRING.length();\r\n    int end = CharUtils.findNextWord(TEST_STRING, length - 4);\r\n    assertEquals(\"next word at end\", length, end);\r\n    int midWord = CharUtils.findNextWord(TEST_STRING, 45);\r\n    assertEquals(\"next word\", 54, midWord);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\CharUtilsTest.java",
+  "methodName" : "testFindPriorWord",
+  "sourceCode" : "@Test\r\npublic void testFindPriorWord() {\r\n    int first = CharUtils.findPriorWord(TEST_STRING, 2);\r\n    assertEquals(\"first prior word\", 0, first);\r\n    int third = CharUtils.findPriorWord(TEST_STRING, 14);\r\n    assertEquals(\"third prior word\", 13, third);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\EmptyIteratorTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() {\r\n    Iterator<String> iter = new EmptyIterator<String>();\r\n    assertTrue(!iter.hasNext());\r\n    try {\r\n        iter.next();\r\n        assertTrue(false);\r\n    } catch (NoSuchElementException nsee) {\r\n        assertTrue(true);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\EmptyIteratorTest.java",
+  "methodName" : "removeTest",
+  "sourceCode" : "@Test\r\npublic void removeTest() {\r\n    Iterator<String> iter = new EmptyIterator<String>();\r\n    try {\r\n        iter.remove();\r\n        assertTrue(false);\r\n    } catch (UnsupportedOperationException uoe) {\r\n        assertTrue(true);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ImmutableIteratorTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() {\r\n    ArrayList<String> strings = new ArrayList<>();\r\n    strings.add(\"Tom\");\r\n    strings.add(\"Dick\");\r\n    strings.add(\"Harry\");\r\n    strings.forEach(value -> System.out.println(value));\r\n    Iterator<String> iter = strings.iterator();\r\n    assertEquals(iter.hasNext(), true);\r\n    assertEquals(iter.next(), \"Tom\");\r\n    assertEquals(iter.hasNext(), true);\r\n    assertEquals(iter.next(), \"Dick\");\r\n    assertEquals(iter.hasNext(), true);\r\n    assertEquals(iter.next(), \"Harry\");\r\n    assertEquals(iter.hasNext(), false);\r\n    iter = strings.iterator();\r\n    ImmutableIterator<String> iiter = new ImmutableIterator<>(iter);\r\n    try {\r\n        iiter.remove();\r\n        assertTrue(false);\r\n    } catch (UnsupportedOperationException uoe) {\r\n        assertTrue(true);\r\n    }\r\n    assertEquals(iiter.hasNext(), true);\r\n    assertEquals(iiter.next(), \"Tom\");\r\n    assertEquals(iiter.hasNext(), true);\r\n    assertEquals(iiter.next(), \"Dick\");\r\n    assertEquals(iiter.hasNext(), true);\r\n    assertEquals(iiter.next(), \"Harry\");\r\n    assertEquals(iiter.hasNext(), false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\MIMETypeTest.java",
+  "methodName" : "testMIMEType",
+  "sourceCode" : "@Test\r\npublic void testMIMEType() {\r\n    MIMEType mimeType = MIMEType.decode(\"foo; a=123; b=456; c=789\");\r\n    assertEquals(mimeType.getBaseType(), \"foo\");\r\n    assertEquals(mimeType.get(\"a\"), \"123\");\r\n    assertEquals(mimeType.get(\"b\"), \"456\");\r\n    assertEquals(mimeType.get(\"c\"), \"789\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testString",
+  "sourceCode" : "@Test\r\npublic void testString() {\r\n    assertNotNull(\"In main only\", main.get(\"mainKeyString\"));\r\n    assertEquals(\"In parent\", \"From Parent\", main.getParent().get(\"someMagicString\"));\r\n    assertEquals(\"In both\", \"From Main\", main.get(\"someMagicString\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testNumber",
+  "sourceCode" : "@Test\r\npublic void testNumber() {\r\n    assertNotNull(\"In main only\", main.get(\"mainKeyNumber\"));\r\n    assertEquals(\"In parent\", Integer.valueOf(100), main.getParent().get(\"someMagicNumber\"));\r\n    assertEquals(\"In both\", Integer.valueOf(200), main.get(\"someMagicNumber\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testBoolean",
+  "sourceCode" : "@Test\r\npublic void testBoolean() {\r\n    assertNotNull(\"In main only\", main.get(\"mainKeyBoolean\"));\r\n    assertEquals(\"In parent\", false, main.getParent().get(\"someMagicBoolean\"));\r\n    assertEquals(\"In both\", true, main.get(\"someMagicBoolean\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testMyMap",
+  "sourceCode" : "@Test\r\npublic void testMyMap() {\r\n    assertFalse(\"not contains noMap\", main.containsKey(\"noMap\"));\r\n    assertTrue(\"contains myMap\", main.containsKey(\"myMap\"));\r\n    assertNotNull(\"myMap as object not null\", main.get(\"myMap\"));\r\n    assertNull(\"noMap as map is null\", main.get(\"noMap\"));\r\n    assertNotNull(\"myMap as map not null\", main.get(\"myMap\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testList",
+  "sourceCode" : "@Test\r\npublic void testList() {\r\n    List<?> list = (List<?>) main.get(\"aList\");\r\n    assertNotNull(\"aList not null\", list);\r\n    assertEquals(\"6 items\", 6, list.getLength());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testLanguage",
+  "sourceCode" : "@Test\r\npublic void testLanguage() {\r\n    assertEquals(\"Language\", \"This is specifically English\", main.get(\"languageKey\"));\r\n    assertEquals(\"Language in parent\", \"This is not a specific language and is in the parent.\", parent.get(\"languageKey\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testConstructors",
+  "sourceCode" : "@Test\r\npublic void testConstructors() throws Exception {\r\n    main = new Resources(parent, getClass().getName(), Charset.defaultCharset());\r\n    testString();\r\n    main = new Resources(parent, getClass().getName(), Charset.defaultCharset());\r\n    testString();\r\n    main = new Resources(parent, getClass().getName(), Locale.ENGLISH);\r\n    testString();\r\n    main = new Resources(parent, getClass().getName(), Locale.ENGLISH, Charset.defaultCharset());\r\n    testString();\r\n    main = new Resources(parent, getClass().getName(), Locale.ENGLISH, Charset.defaultCharset());\r\n    testString();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\TimeTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() {\r\n    Time time = new Time();\r\n    System.out.println(time);\r\n    time = new Time(time.toMilliseconds());\r\n    System.out.println(time);\r\n    time = Time.decode(time.toString());\r\n    System.out.println(time);\r\n    time = new Time(0, 0, 0);\r\n    int i1 = time.subtract(new Time(0, 0, 1));\r\n    System.out.println(i1);\r\n    assertEquals(i1, -1000);\r\n    int i2 = time.subtract(new Time(23, 59, 59, 999));\r\n    System.out.println(i2);\r\n    assertEquals(i2, -(Time.MILLISECONDS_PER_DAY - 1));\r\n    Time time0 = new Time(0, 0, 0);\r\n    time = time0;\r\n    Time time1 = time.add(1);\r\n    System.out.println(time1);\r\n    assertEquals(time1.toString(), \"00:00:00.001\");\r\n    Time time2 = time.add(Time.MILLISECONDS_PER_DAY + 1);\r\n    System.out.println(time2);\r\n    assertEquals(time1, time2);\r\n    assertEquals(time2.toString(), \"00:00:00.001\");\r\n    Time time3 = time.add(-1);\r\n    System.out.println(time3);\r\n    assertEquals(time3.toString(), \"23:59:59.999\");\r\n    Time time4 = time.add(-Time.MILLISECONDS_PER_DAY - 1);\r\n    System.out.println(time4);\r\n    assertEquals(time4.toString(), \"23:59:59.999\");\r\n    Time time5 = time.add(1000);\r\n    Time time5a = new Time(0, 0, 1);\r\n    System.out.println(time5);\r\n    assertEquals(time5, time5a);\r\n    assertEquals(time5.toString(), \"00:00:01\");\r\n    Time time6 = time.add(-1000);\r\n    Time time6a = new Time(23, 59, 59);\r\n    System.out.println(time6);\r\n    assertEquals(time6, time6a);\r\n    assertEquals(time6.toString(), \"23:59:59\");\r\n    time = Time.decode(\"00:00:00\");\r\n    System.out.println(time);\r\n    assertEquals(time, time0);\r\n    time = Time.decode(\"00:00:00.000\");\r\n    System.out.println(time);\r\n    assertEquals(time, time0);\r\n    try {\r\n        time = Time.decode(\"00:00\");\r\n    } catch (IllegalArgumentException exception) {\r\n        System.out.println(exception);\r\n        assertEquals(exception.toString(), \"java.lang.IllegalArgumentException: Invalid time format: 00:00\");\r\n    }\r\n    try {\r\n        time = Time.decode(\"00:00:00.00\");\r\n    } catch (IllegalArgumentException exception) {\r\n        System.out.println(exception);\r\n        assertEquals(exception.toString(), \"java.lang.IllegalArgumentException: Invalid time format: 00:00:00.00\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\TimeTest.java",
+  "methodName" : "localTimeTest",
+  "sourceCode" : "@Test\r\npublic void localTimeTest() {\r\n    LocalTime localTime = LocalTime.of(7, 48);\r\n    Time t1 = new Time(localTime);\r\n    Time t1a = Time.decode(\"07:48:00.000\");\r\n    assertEquals(t1, t1a);\r\n    assertEquals(t1.toString(), \"07:48:00\");\r\n    // Test rounding of nanoseconds to milliseconds\r\n    LocalTime lt1 = LocalTime.of(7, 48, 10, 499999);\r\n    LocalTime lt2 = LocalTime.of(7, 48, 10, 500000);\r\n    Time t2 = new Time(lt1);\r\n    Time t2a = new Time(7, 48, 10, 0);\r\n    Time t3 = new Time(lt2);\r\n    Time t3a = new Time(7, 48, 10, 1);\r\n    assertEquals(t2, t2a);\r\n    assertEquals(t3, t3a);\r\n    assertEquals(t2.toString(), \"07:48:10\");\r\n    assertEquals(t3.toString(), \"07:48:10.001\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\VersionTest.java",
+  "methodName" : "testApplicationStartup",
+  "sourceCode" : "@Test\r\npublic void testApplicationStartup() {\r\n    // These are the things that happen right away for ApplicationContext\r\n    // and therefore would break immediately if Version was broken (as did\r\n    // happen for Java 8u131).\r\n    // Get the JVM version\r\n    Version jvmVersion = Version.decode(System.getProperty(\"java.vm.version\"));\r\n    System.out.format(\"JVM Version: %1$s%n\", jvmVersion.toString());\r\n    Version pivotVersion = null;\r\n    Package corePackage = Version.class.getPackage();\r\n    // Get the Java runtime version\r\n    Version javaVersion = Version.decode(System.getProperty(\"java.version\"));\r\n    System.out.format(\"Java version: %1$s%n\", javaVersion);\r\n    // Get the Pivot version\r\n    String version = corePackage.getImplementationVersion();\r\n    if (version == null) {\r\n        pivotVersion = new Version(0, 0, 0, 0);\r\n        assertEquals(\"default Pivot version\", \"0.0.0_00\", pivotVersion.toString());\r\n    } else {\r\n        pivotVersion = Version.decode(version);\r\n        System.out.format(\"Pivot Version: %1$s%n\", pivotVersion);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\VersionTest.java",
+  "methodName" : "testVersionParsing",
+  "sourceCode" : "@Test\r\npublic void testVersionParsing() {\r\n    assertEquals(\"version decode\", V1, V8_131);\r\n    assertEquals(\"version to string\", S1_8_131, V8_131.toString());\r\n    assertEquals(\"version 0 decode\", V0, V1_0);\r\n    assertEquals(\"version 0 to string\", V1_0.toString(), S1_0_0);\r\n    // New Java 9 version number scheme\r\n    String j9 = \"9.0.1+11\";\r\n    Version vj9 = Version.decode(j9);\r\n    Version vj90 = new Version(9, 0, 1, 0);\r\n    assertEquals(\"Java version 9 decode\", vj9, vj90);\r\n    assertEquals(\"Java version 9 to string\", vj9.toString(), \"9.0.1_00-11\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\VersionTest.java",
+  "methodName" : "testLimits",
+  "sourceCode" : "@Test\r\npublic void testLimits() {\r\n    Version vMax = new Version(32767, 32767, 32767, 32767);\r\n    String sMax = \"32767.32767.32767_32767\";\r\n    assertEquals(\"max versions\", vMax.toString(), sMax);\r\n    IllegalArgumentException argFailure = null;\r\n    try {\r\n        Version vOverflow = new Version(32768, 0, 1, 0);\r\n    } catch (IllegalArgumentException iae) {\r\n        argFailure = iae;\r\n    }\r\n    assertNotNull(\"illegal argument exception\", argFailure);\r\n    assertEquals(\"exception message\", argFailure.getMessage(), \"majorRevision must be less than or equal 32767.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\VersionTest.java",
+  "methodName" : "testNumber",
+  "sourceCode" : "@Test\r\npublic void testNumber() {\r\n    Version vNum = new Version(2, 1, 1, 100);\r\n    long num = vNum.getNumber();\r\n    System.out.format(\"test getNumber(): %1$s -> %2$d%n\", vNum, num);\r\n    assertEquals(\"long number\", num, 562954248454244L);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\VersionTest.java",
+  "methodName" : "testOtherVersions",
+  "sourceCode" : "@Test\r\npublic void testOtherVersions() {\r\n    Version jvmVersionParsed = Version.decode(PIVOT_996_INPUT);\r\n    Version jvmVersionExplicit = new Version(8, 1, 28, 0, PIVOT_996_SUFFIX);\r\n    String parsedToString = jvmVersionParsed.toString();\r\n    assertEquals(\"PIVOT-996 test case\", jvmVersionParsed, jvmVersionExplicit);\r\n    System.out.format(\"PIVOT-996 parsed/toString: %1$s, expected: %2$s%n\", parsedToString, PIVOT_996_OUTPUT);\r\n    assertEquals(\"PIVOT-996 toString\", parsedToString, PIVOT_996_OUTPUT);\r\n    Pattern versionPattern = Pattern.compile(\"(\\\\d+\\\\.\\\\d+\\\\.\\\\d+).*\");\r\n    String sysJavaVersion = System.getProperty(\"java.runtime.version\");\r\n    Version javaVersion = Version.decode(sysJavaVersion);\r\n    String formattedJavaVersion = javaVersion.toString();\r\n    System.out.format(\"Java Runtime version (parsed and formatted): %1$s, raw: %2$s%n\", formattedJavaVersion, sysJavaVersion);\r\n    Matcher sysMatcher = versionPattern.matcher(sysJavaVersion);\r\n    boolean matches = sysMatcher.matches() && sysMatcher.group(1).equals(javaVersion.simpleToString());\r\n    assertTrue(\"Java Runtime version match\", matches);\r\n    String newJava9Version = \"9-ea+19\";\r\n    Version newJava9 = Version.decode(newJava9Version);\r\n    String newJava9Formatted = newJava9.toString();\r\n    System.out.format(\"Potential new Java version: %1$s, parsed and formatted: %2$s%n\", newJava9Version, newJava9Formatted);\r\n    assertEquals(newJava9Formatted, \"9.0.0_00-ea+19\");\r\n    String newJava10Version = \"10+-ea\";\r\n    Version newJava10 = Version.decode(newJava10Version);\r\n    String newJava10Formatted = newJava10.toString();\r\n    System.out.format(\"Potential new Java 10 version: %1$s, parsed and formatted: %2$s%n\", newJava10Version, newJava10Formatted);\r\n    assertEquals(newJava10Formatted, \"10.0.0_00--ea\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\VersionTest.java",
+  "methodName" : "testJava9Versions",
+  "sourceCode" : "@Test\r\npublic void testJava9Versions() {\r\n    // All the other suggested versions from \"http://openjdk.java.net/jeps/223\"\r\n    String[] versions = { \"9-ea+19\", \"9+100\", \"9.0.1+20\", \"9.0.2+12\", \"9.1.2+62\", \"9.1.3+15\", \"9.1.4+8\", \"9.2.4+45\", \"7.4.10+11\", \"7.4.11+15\", \"7.5.11+43\", \"7.5.12+18\", \"7.5.13+13\", \"7.5.14+13\", \"7.6.14+19\", \"7.6.15+20\", \"9-ea\", \"9-ea+73\", \"9+100\", \"9\", \"9.1.2\", \"9.1.2+62\", \"9.0.1\", \"9.0.1+20\" };\r\n    // Just make sure we don't throw or get other errors decoding all these\r\n    for (String version : versions) {\r\n        Version v = Version.decode(version);\r\n        System.out.format(\"Raw %1$s -> %2$s%n\", version, v.toString());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\VoteResultTest.java",
+  "methodName" : "test1",
+  "sourceCode" : "@Test\r\npublic void test1() {\r\n    ArrayList<Vote> votes = new ArrayList<>();\r\n    votes.add(Vote.APPROVE);\r\n    votes.add(Vote.DEFER);\r\n    votes.add(Vote.DENY);\r\n    // These are the expected results as each vote is tallied\r\n    ArrayList<Vote> results = new ArrayList<>();\r\n    results.add(Vote.APPROVE);\r\n    results.add(Vote.DEFER);\r\n    results.add(Vote.DENY);\r\n    VoteResult result = new VoteResult();\r\n    Iterator<Vote> resultIter = results.iterator();\r\n    for (Vote vote : votes) {\r\n        result.tally(vote);\r\n        assertEquals(result.get(), resultIter.next());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\xml\\test\\XMLSerializerTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() throws IOException, SerializationException {\r\n    XMLSerializer xmlSerializer = new XMLSerializer();\r\n    Element root = xmlSerializer.readObject(getClass().getResourceAsStream(\"sample.xml\"));\r\n    assertEquals(root.getName(), \"root\");\r\n    Element a = XML.getElement(root, \"a\");\r\n    assertEquals(a.getName(), \"a\");\r\n    assertEquals(a.getElementDictionary().get(\"id\"), \"x\");\r\n    Element b = XML.getElement(root, \"a/b\");\r\n    assertEquals(b.getName(), \"b\");\r\n    assertEquals(b.getElementDictionary().get(\"id\"), \"y\");\r\n    b = XML.getElement(a, \"b\");\r\n    assertEquals(b.getName(), \"b\");\r\n    assertEquals(b.getElementDictionary().get(\"id\"), \"y\");\r\n    List<Element> cs = XML.getElements(root, \"a/b\", \"c\");\r\n    assertEquals(cs.getLength(), 1);\r\n    List<Element> fs = XML.getElements(root, \"d/e\", \"f\");\r\n    assertEquals(fs.getLength(), 4);\r\n    Element e = XML.getElement(root, \"d/e\");\r\n    Element f = XML.getElement(e, \"f\");\r\n    assertEquals(f.getName(), \"f\");\r\n    Element g = XML.getElement(e, \"g\");\r\n    assertEquals(g.getName(), \"g\");\r\n    String ft = XML.getText(root, \"d/e/f\");\r\n    assertEquals(ft, \"1\");\r\n    String gt = XML.getText(root, \"d/e/g\");\r\n    assertEquals(gt, \"4\");\r\n    assertNull(XML.getElement(root, \"a/b/n\"));\r\n    assertNull(XML.getText(root, \"a/b/n\"));\r\n    assertEquals(XML.getElements(root, \"a/b\", \"n\").getLength(), 0);\r\n    assertEquals(XML.getText(root, \"d/foo:h\"), \"Hello\");\r\n    List<Element> is = XML.getElements(e, \"is\", \"i\");\r\n    assertEquals(is.getLength(), 3);\r\n    assertEquals(XML.getText(root, \"d[0]/e[0]/f[2]\"), \"3\");\r\n    assertEquals(XML.getText(root, \"d[0]/e[1]\"), null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\xml\\test\\XMLSerializerTest.java",
+  "methodName" : "equalsTest",
+  "sourceCode" : "@Test\r\npublic void equalsTest() throws IOException, SerializationException {\r\n    XMLSerializer xmlSerializer = new XMLSerializer();\r\n    XMLSerializerListener xmlSerializerListener = new XMLSerializerListener() {\r\n\r\n        @Override\r\n        public void beginElement(XMLSerializer xmlSerializerArgument, Element element) {\r\n            System.out.println(\"Begin element: \" + element);\r\n        }\r\n\r\n        @Override\r\n        public void endElement(XMLSerializer xmlSerializerArgument) {\r\n            System.out.println(\"End element\");\r\n        }\r\n\r\n        @Override\r\n        public void readTextNode(XMLSerializer xmlSerializerArgument, TextNode textNode) {\r\n            System.out.println(\"Read text node: \" + textNode);\r\n        }\r\n    };\r\n    xmlSerializer.getXMLSerializerListeners().add(xmlSerializerListener);\r\n    Element root1 = xmlSerializer.readObject(getClass().getResourceAsStream(\"sample.xml\"));\r\n    assertNotNull(root1);\r\n    xmlSerializer.getXMLSerializerListeners().remove(xmlSerializerListener);\r\n    Element root2 = xmlSerializer.readObject(getClass().getResourceAsStream(\"sample.xml\"));\r\n    assertNotNull(root2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\demos\\src\\org\\apache\\pivot\\demos\\rest\\RESTDemoTest.java",
+  "methodName" : "testCRUD",
+  "sourceCode" : "@Test\r\npublic void testCRUD() throws IOException, SerializationException, QueryException {\r\n    JSONSerializer jsonSerializer = new JSONSerializer();\r\n    Object contact = jsonSerializer.readObject(getClass().getResourceAsStream(\"contact.json\"));\r\n    // Create\r\n    PostQuery postQuery = new PostQuery(hostname, port, \"/pivot-demos/rest_demo\", secure);\r\n    postQuery.setValue(contact);\r\n    URL location = postQuery.execute();\r\n    assertNotNull(location);\r\n    String path = location.getPath();\r\n    // Read\r\n    GetQuery getQuery = new GetQuery(hostname, port, path, secure);\r\n    Object result = getQuery.execute();\r\n    assertArrayEquals((Object[]) JSON.get(contact, \"address.street\"), (Object[]) JSON.get(result, \"address.street\"));\r\n    assertEquals(contact, result);\r\n    // Update\r\n    JSON.put(contact, \"name\", \"Joseph User\");\r\n    PutQuery putQuery = new PutQuery(hostname, port, path, secure);\r\n    putQuery.setValue(contact);\r\n    boolean created = putQuery.execute();\r\n    assertFalse(created);\r\n    assertEquals(contact, getQuery.execute());\r\n    // Delete\r\n    DeleteQuery deleteQuery = new DeleteQuery(hostname, port, path, secure);\r\n    deleteQuery.execute();\r\n    assertEquals(deleteQuery.getStatus(), Query.Status.NO_CONTENT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\demos\\src\\org\\apache\\pivot\\demos\\rest\\RESTDemoTest.java",
+  "methodName" : "testException",
+  "sourceCode" : "@Test(expected = QueryException.class)\r\npublic void testException() throws QueryException {\r\n    GetQuery getQuery = new GetQuery(hostname, port, \"/pivot-demos/rest_demo/foo\", secure);\r\n    getQuery.execute();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\tests\\src\\org\\apache\\pivot\\tests\\issues\\pivot929\\Pivot929.java",
+  "methodName" : "testClipboard",
+  "sourceCode" : "@Test\r\npublic void testClipboard() throws Exception {\r\n    setClipboardContent();\r\n    waitForEvents();\r\n    assertNotNull(Clipboard.getContent().getValue(\"A\"));\r\n    setClipboardContent();\r\n    waitForEvents();\r\n    assertNotNull(Clipboard.getContent().getValue(\"A\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\web\\test\\org\\apache\\pivot\\web\\test\\QueryDictionaryTest.java",
+  "methodName" : "testQueryDictionary",
+  "sourceCode" : "@Test(expected = IndexOutOfBoundsException.class)\r\npublic void testQueryDictionary() {\r\n    QueryDictionary dict = new QueryDictionary(true);\r\n    assertNull(dict.get(\"key\"));\r\n    dict.put(\"key\", \"value\");\r\n    assertNotNull(dict.get(\"key\"));\r\n    assertEquals(\"value\", dict.get(\"key\", 0));\r\n    assertEquals(1, dict.getLength(\"key\"));\r\n    dict.get(\"key\", 1);\r\n    assertEquals(\"value\", dict.put(\"key\", \"value2\"));\r\n    assertEquals(\"value2\", dict.get(\"key\"));\r\n    dict.add(\"key\", \"another value\");\r\n    assertEquals(\"another value\", dict.get(\"key\", 1));\r\n    assertEquals(0, dict.getLength(\"nokey\"));\r\n    assertEquals(0, dict.add(\"key2\", \"new value\"));\r\n    dict.insert(\"key\", \"yet another value\", 0);\r\n    assertEquals(3, dict.getLength(\"key\"));\r\n    dict.insert(\"key\", \"bad value\", 10);\r\n    assertEquals(\"yet another value\", dict.remove(\"key\"));\r\n    assertNull(dict.remove(\"key\"));\r\n    dict.add(\"key2\", \"2nd value\");\r\n    assertEquals(\"new value\", dict.remove(\"key2\", 0));\r\n    dict.remove(\"key2\", 10);\r\n    dict.add(\"key3\", \"something\");\r\n    Set<String> validKeys = new HashSet<>();\r\n    validKeys.add(\"key2\");\r\n    validKeys.add(\"key3\");\r\n    for (String s : dict) {\r\n        assertTrue(s, validKeys.remove(s));\r\n    }\r\n    assertEquals(0, validKeys.size());\r\n    assertTrue(dict.containsKey(\"key2\"));\r\n    dict.clear();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\wtk\\test\\org\\apache\\pivot\\wtk\\test\\BoundsTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() {\r\n    Bounds bndMinus1 = new Bounds(-1, -1, 0, 0);\r\n    Bounds bnd0 = new Bounds(0, 0, 0, 0);\r\n    Bounds bnd1 = new Bounds(1, 1, 1, 1);\r\n    Dimensions dim0 = new Dimensions(0, 0);\r\n    Dimensions dim1 = new Dimensions(1, 1);\r\n    Point p10 = new Point(10, 10);\r\n    Bounds bnd10 = new Bounds(p10, dim1);\r\n    Bounds bnd10a = new Bounds(dim1);\r\n    Bounds bnd10b = new Bounds(0, 0, 1, 1);\r\n    Bounds bnd2 = Bounds.decode(\"[2, 3, 4, 5]\");\r\n    Bounds bnd3 = Bounds.decode(\"{x:2, y:3, width:4, height:5}\");\r\n    Bounds bnd3a = new Bounds(2, 3, 4, 5);\r\n    Bounds bnd4 = new Bounds(4, 4, 4, 5);\r\n    // -> {3, 4, 4, 5}\r\n    Bounds bnd5 = bnd3a.translate(1, 1);\r\n    bnd5 = bnd5.expand(-2, -4);\r\n    Bounds bnd5a = new Bounds(3, 4, 2, 1);\r\n    Bounds bnd5b = new Bounds(4, 3, 1, 2);\r\n    Bounds bndN = new Bounds(0, 0, 8, 9);\r\n    Bounds bndAll = bnd1.union(bnd0).union(bnd2).union(bnd3).union(bnd4);\r\n    Bounds bnd6 = Bounds.decode(\"2, 3;  4,  5\");\r\n    Bounds bnd6a = new Bounds(2, 3, 4, 5);\r\n    assertEquals(Bounds.EMPTY, bnd0);\r\n    assertNotEquals(bndMinus1, bnd0);\r\n    assertNotEquals(bnd0, bnd1);\r\n    assertEquals(bnd10a, bnd10b);\r\n    assertEquals(bnd10.getLocation(), p10);\r\n    assertEquals(bnd10.getSize(), dim1);\r\n    assertEquals(bnd2, bnd3);\r\n    assertEquals(bnd3, bnd3a);\r\n    assertEquals(bndMinus1.getSize(), dim0);\r\n    assertEquals(bnd0.getSize(), dim0);\r\n    assertEquals(bnd1.getSize(), dim1);\r\n    assertFalse(bnd1.contains(bnd0));\r\n    assertFalse(bndMinus1.intersects(bnd0));\r\n    assertFalse(bnd0.intersects(bnd1));\r\n    assertEquals(bnd0.intersect(bnd1), new Bounds(1, 1, -1, -1));\r\n    assertTrue(bnd5a.intersects(bnd5b));\r\n    assertTrue(bnd0.union(bnd1).equals(new Bounds(0, 0, 2, 2)));\r\n    assertFalse(bnd0.equals(bnd1));\r\n    assertTrue(bnd5.equals(bnd5a));\r\n    assertEquals(bndN, bndAll);\r\n    assertEquals(bnd6, bnd6a);\r\n    assertEquals(bnd6a.toString(), \"Bounds [2,3;4x5]\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\wtk\\test\\org\\apache\\pivot\\wtk\\test\\ColorUtilitiesTest.java",
+  "methodName" : "test1",
+  "sourceCode" : "@Test\r\npublic void test1() {\r\n    Color black = CSSColor.Black.getColor();\r\n    String sBlack = ColorUtilities.toStringValue(black);\r\n    assertEquals(sBlack, \"#000000\");\r\n    Color red = Color.RED;\r\n    String sRed = ColorUtilities.toStringValue(red);\r\n    assertEquals(sRed, \"#FF0000\");\r\n    Color almostBlack = new Color(1, 1, 1);\r\n    try {\r\n        CSSColor almostBlackColor = CSSColor.fromColor(almostBlack);\r\n        fail(\"almostBlack should not be a CSS color!\");\r\n    } catch (IllegalArgumentException iae) {\r\n        System.out.println(\"Valid exception: \" + iae.getMessage());\r\n        assertEquals(iae.getMessage(), \"Incorrect Color value.  \" + almostBlack.toString() + \" does not match any CSS color.\");\r\n    }\r\n    Color translucentOrange = ColorUtilities.setTransparencyInColor(CSSColor.Orange, 128);\r\n    assertEquals(ColorUtilities.toStringValue(translucentOrange), \"0xFFC80080\");\r\n    try {\r\n        CSSColor resultOrange = CSSColor.fromColor(translucentOrange);\r\n        assertEquals(resultOrange.getColor(), Color.ORANGE);\r\n    } catch (IllegalArgumentException iae) {\r\n        fail(\"Didn't expect ORANGE not to match!\");\r\n    }\r\n    Color lightGray = Color.LIGHT_GRAY;\r\n    Color darkGray = Color.DARK_GRAY;\r\n    assertEquals(lightGray, CSSColor.LightGray.getColor());\r\n    assertEquals(lightGray, CSSColor.LightGrey.getColor());\r\n    assertEquals(darkGray, CSSColor.DarkGray.getColor());\r\n    assertEquals(darkGray, CSSColor.DarkGrey.getColor());\r\n    CSSColor lightGrey = CSSColor.fromString(\"lightgrey\");\r\n    assertEquals(lightGrey.getColor(), lightGray);\r\n    try {\r\n        Color lg2 = GraphicsUtilities.decodeColor(\"lightGray\");\r\n        assertEquals(lg2, lightGray);\r\n    } catch (IllegalArgumentException iae) {\r\n        fail(\"Decode of \\\"lightGray\\\" should succeed!\");\r\n    }\r\n    assertEquals((Color) null, GraphicsUtilities.decodeColor(\"null\"));\r\n    int transparency = -1;\r\n    for (CSSColor color : CSSColor.values()) {\r\n        transparency = (transparency + 1) % 256;\r\n        Color originalColor = color.getColor();\r\n        Color translucentColor = ColorUtilities.setTransparencyInColor(color, transparency);\r\n        String value = (transparency == 255) ? String.format(\"#%02X%02X%02X\", originalColor.getRed(), originalColor.getGreen(), originalColor.getBlue()) : String.format(\"0x%02X%02X%02X%02X\", originalColor.getRed(), originalColor.getGreen(), originalColor.getBlue(), transparency);\r\n        String testValue = ColorUtilities.toStringValue(translucentColor);\r\n        assertEquals(value, testValue);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\wtk\\test\\org\\apache\\pivot\\wtk\\test\\CornerRadiiTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() {\r\n    CornerRadii r0 = CornerRadii.NONE;\r\n    CornerRadii r0a = new CornerRadii(0);\r\n    CornerRadii r1 = new CornerRadii(1);\r\n    CornerRadii r1a = CornerRadii.decode(\"[1, 1, 1, 1]\");\r\n    CornerRadii r2 = new CornerRadii(2, 2, 2, 2);\r\n    CornerRadii r2a = new CornerRadii(2);\r\n    CornerRadii r2b = CornerRadii.decode(\"{topLeft:2, bottomLeft:2, topRight:2, bottomRight:2}\");\r\n    CornerRadii r3 = new CornerRadii(2, 3, 4, 5);\r\n    CornerRadii r3a = CornerRadii.decode(\"2, 3; 4, 5\");\r\n    assertEquals(r0, r0a);\r\n    assertEquals(r1, r1a);\r\n    assertNotEquals(r0, r1);\r\n    assertEquals(r2, r2a);\r\n    assertEquals(r2a, r2b);\r\n    assertEquals(r3, r3a);\r\n    assertEquals(r3a.toString(), \"CornerRadii [2,3; 4,5]\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\wtk\\test\\org\\apache\\pivot\\wtk\\test\\DimensionsTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() {\r\n    Dimensions zero = Dimensions.ZERO;\r\n    Dimensions zeroA = new Dimensions(0, 0);\r\n    Dimensions zeroB = new Dimensions(0);\r\n    Dimensions one = new Dimensions(1, 1);\r\n    Dimensions oneA = zero.expand(1);\r\n    Dimensions zeroC = oneA.expand(-1, -1);\r\n    Dimensions seven = new Dimensions(7);\r\n    Dimensions sevenA = new Dimensions(7, 7);\r\n    Dimensions sevenB = zero.expand(7);\r\n    Dimensions sevenC = zeroA.expand(7, 7);\r\n    Dimensions a = Dimensions.decode(\"2 x 3\");\r\n    Dimensions a1 = new Dimensions(2, 3);\r\n    Dimensions b = Dimensions.decode(\"{width:4, height:5}\");\r\n    Dimensions b1 = new Dimensions(4, 5);\r\n    Dimensions c = Dimensions.decode(\"1  ,  2\");\r\n    Dimensions c1 = new Dimensions(1, 2);\r\n    Dimensions d = Dimensions.decode(\"[  17,   23]\");\r\n    Dimensions d1 = new Dimensions(17, 23);\r\n    Dimensions e = Dimensions.decode(\"23 ; 45\");\r\n    Dimensions e1 = new Dimensions(23, 45);\r\n    Insets i1 = new Insets(1, 2, 1, 2);\r\n    Dimensions f = e1.expand(i1);\r\n    Dimensions f1 = new Dimensions(27, 47);\r\n    assertEquals(zero, zeroA);\r\n    assertEquals(one, oneA);\r\n    assertEquals(zeroA, zeroB);\r\n    assertEquals(zero, zeroC);\r\n    assertEquals(seven, sevenA);\r\n    assertEquals(seven, sevenB);\r\n    assertEquals(sevenB, sevenC);\r\n    assertEquals(a, a1);\r\n    assertEquals(b, b1);\r\n    assertEquals(c, c1);\r\n    assertEquals(d, d1);\r\n    assertEquals(e, e1);\r\n    assertEquals(f, f1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\wtk\\test\\org\\apache\\pivot\\wtk\\test\\DimensionsTest.java",
+  "methodName" : "test1",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void test1() {\r\n    Dimensions ugly = Dimensions.decode(\"a x 3\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\wtk\\test\\org\\apache\\pivot\\wtk\\test\\DimensionsTest.java",
+  "methodName" : "test2",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void test2() {\r\n    Dimensions ugly = Dimensions.decode(\"1 : 3\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\wtk\\test\\org\\apache\\pivot\\wtk\\test\\GaugeTest.java",
+  "methodName" : "testListeners",
+  "sourceCode" : "@Test\r\npublic void testListeners() {\r\n    Gauge<Integer> gauge = new Gauge<>();\r\n    gauge.getGaugeListeners().add(this);\r\n    // Test all the listeners getting fired as they should\r\n    // no change here\r\n    gauge.setOrigin(Origin.NORTH);\r\n    gauge.setOrigin(Origin.SOUTH);\r\n    // again, no change\r\n    gauge.setOrigin(Origin.SOUTH);\r\n    gauge.setOrigin(Origin.EAST);\r\n    gauge.setOrigin(Origin.WEST);\r\n    gauge.setOrigin(Origin.NORTH);\r\n    gauge.setMinValue(0);\r\n    gauge.setMaxValue(100);\r\n    gauge.setMinValue(0);\r\n    gauge.setMaxValue(100);\r\n    gauge.setWarningLevel(10);\r\n    gauge.setWarningLevel(80);\r\n    gauge.setWarningLevel(80);\r\n    gauge.setCriticalLevel(10);\r\n    gauge.setCriticalLevel(10);\r\n    gauge.setCriticalLevel(90);\r\n    gauge.setText(null);\r\n    gauge.setText(\"\");\r\n    gauge.setText(\"\");\r\n    gauge.setText(\"20%\");\r\n    gauge.setText(\"20%\");\r\n    gauge.setText(\"100%\");\r\n    gauge.setText(null);\r\n    gauge.setText(\"100%\");\r\n    gauge.setValue(0);\r\n    gauge.setValue(2);\r\n    gauge.setValue(10);\r\n    gauge.setValue(0);\r\n    // Now check for proper listener event counts\r\n    assertEquals(originChangeCount, 4);\r\n    assertEquals(minMaxChangeCount, 2);\r\n    assertEquals(warningCriticalChangeCount, 4);\r\n    assertEquals(textChangeCount, 5);\r\n    assertEquals(valueChangeCount, 4);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\wtk\\test\\org\\apache\\pivot\\wtk\\test\\InsetsTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() {\r\n    Insets i0 = Insets.NONE;\r\n    Insets i0a = new Insets(0);\r\n    Insets i1 = new Insets(1);\r\n    Insets i1a = new Insets(1, 1, 1, 1);\r\n    Insets i2 = new Insets(2);\r\n    Insets i2a = new Insets(2.0f);\r\n    Insets i2b = Insets.decode(\"[ 2, 2, 2, 2 ]\");\r\n    Insets i3 = new Insets(1, 2, 3, 4);\r\n    Insets i3a = Insets.decode(\"{top:1, left:2, bottom:3, right:4}\");\r\n    Insets i4 = new Insets(5, 6, 7, 8);\r\n    Insets i4a = Insets.decode(\"5, 6; 7, 8\");\r\n    Dimensions dim5 = new Dimensions(5);\r\n    Insets i5 = new Insets(dim5);\r\n    Insets i5a = new Insets(2, 2, 3, 3);\r\n    Dimensions dim5a = i5.getSize();\r\n    Dimensions dim5b = i5a.getSize();\r\n    assertEquals(i0, i0a);\r\n    assertEquals(i1, i1a);\r\n    assertEquals(i2, i2a);\r\n    assertEquals(i2, i2b);\r\n    assertEquals(i3, i3a);\r\n    assertEquals(i3.toString(), \"Insets [1, 2, 3, 4]\");\r\n    assertEquals(i0.getWidth(), 0);\r\n    assertEquals(i0.getHeight(), 0);\r\n    assertEquals(i3.getWidth(), 6);\r\n    assertEquals(i3.getHeight(), 4);\r\n    assertEquals(i4, i4a);\r\n    assertEquals(i4a.getWidth(), 14);\r\n    assertEquals(i4a.getHeight(), 12);\r\n    assertEquals(i4a.toString(), \"Insets [5, 6, 7, 8]\");\r\n    assertEquals(i5, i5a);\r\n    assertEquals(dim5, dim5a);\r\n    assertEquals(dim5a, dim5b);\r\n    assertEquals(i5.toString(), \"Insets [2, 2, 3, 3]\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\wtk\\test\\org\\apache\\pivot\\wtk\\test\\InsetsTest.java",
+  "methodName" : "testNullEmpty",
+  "sourceCode" : "@Test\r\npublic void testNullEmpty() {\r\n    try {\r\n        Insets.decode(null);\r\n        fail(\"Insets.decode of null string should fail!\");\r\n    } catch (IllegalArgumentException iae) {\r\n        System.out.println(\"Valid exception: \" + iae.getMessage());\r\n        assertEquals(iae.getMessage(), \"padding/margin must not be null or empty.\");\r\n    }\r\n    try {\r\n        Insets.decode(\"\");\r\n        fail(\"Insets.decode of empty string should fail!\");\r\n    } catch (IllegalArgumentException iae) {\r\n        System.out.println(\"Valid exception: \" + iae.getMessage());\r\n        assertEquals(iae.getMessage(), \"padding/margin must not be null or empty.\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\wtk\\test\\org\\apache\\pivot\\wtk\\test\\LimitsTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() {\r\n    Limits lmMinus1 = new Limits(-1, 0);\r\n    Limits lm0 = new Limits(0);\r\n    Limits lm1 = new Limits(0, 1);\r\n    Limits lm2 = Limits.decode(\"[0, 1]\");\r\n    Limits lm3 = Limits.decode(\"{minimum:2, maximum:3}\");\r\n    Limits lm3a = new Limits(2, 3);\r\n    Limits lm4 = new Limits(4);\r\n    Limits lm5 = new Limits(3, 4);\r\n    Limits lm5a = new Limits(3, 4);\r\n    Limits lm5b = Limits.decode(\"[3, 4]\");\r\n    Limits lmN = new Limits(0, 4);\r\n    Limits lm6 = Limits.decode(\"5; 6\");\r\n    Limits lm6a = new Limits(5, 6);\r\n    Limits lm7 = Limits.decode(\"9 - 10\");\r\n    Limits lm7a = new Limits(9, 10);\r\n    assertEquals(lmMinus1.range(), 2);\r\n    assertEquals(lm0.range(), 1);\r\n    assertTrue(lm1.contains(0));\r\n    assertTrue(lm1.contains(1));\r\n    assertFalse(lm1.contains(2));\r\n    assertFalse(lm0.equals(lm1));\r\n    assertTrue(lm1.equals(lm2));\r\n    assertEquals(lm3, lm3a);\r\n    assertTrue(lm5.equals(lm5a));\r\n    assertEquals(lm2.minimum, 0);\r\n    assertEquals(lm2.maximum, 1);\r\n    assertTrue(lm5a.equals(lm5b));\r\n    assertEquals(lmN.constrain(5), 4);\r\n    assertEquals(lmN.constrain(-2), 0);\r\n    assertEquals(lm6, lm6a);\r\n    assertEquals(lm6.toString(), \"Limits [5-6]\");\r\n    assertEquals(lm7, lm7a);\r\n    assertEquals(lm7.toString(), \"Limits [9-10]\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\wtk\\test\\org\\apache\\pivot\\wtk\\test\\MeterTest.java",
+  "methodName" : "testListeners",
+  "sourceCode" : "@Test\r\npublic void testListeners() {\r\n    Meter meter = new Meter();\r\n    meter.getMeterListeners().add(this);\r\n    // Test all the listeners getting fired as they should\r\n    meter.setText(\"abc\");\r\n    meter.setText(null);\r\n    meter.setText(null);\r\n    meter.setText(\"123\");\r\n    meter.setText(\"123\");\r\n    meter.setOrientation(Orientation.HORIZONTAL);\r\n    meter.setOrientation(Orientation.VERTICAL);\r\n    meter.setOrientation(Orientation.HORIZONTAL);\r\n    meter.setPercentage(0.25);\r\n    meter.setPercentage(0.25);\r\n    meter.setPercentage(0.5);\r\n    meter.setPercentage(0.75);\r\n    meter.setPercentage(1.0);\r\n    // Now check for proper listener event counts\r\n    assertEquals(percentChangeCount, 4);\r\n    assertEquals(textChangeCount, 3);\r\n    assertEquals(orientationChangeCount, 2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\wtk\\test\\org\\apache\\pivot\\wtk\\test\\SpanTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() {\r\n    Span spMinus1 = new Span(-1, 0);\r\n    Span sp0 = new Span(0);\r\n    Span sp1 = new Span(0, 1);\r\n    Span sp2 = Span.decode(\"[1, 0]\");\r\n    Span sp3 = Span.decode(\"{start:2, end:3}\");\r\n    Span sp3a = new Span(2, 3);\r\n    Span sp4 = new Span(4);\r\n    Span sp5 = sp3a.offset(1);\r\n    Span sp5a = new Span(3, 4);\r\n    Span sp5b = new Span(4, 3);\r\n    Span spN = new Span(0, 4);\r\n    Span spAll = sp1.union(sp0).union(sp2).union(sp3).union(sp4);\r\n    Span sp6 = Span.decode(\"4, 6\");\r\n    Span sp6a = new Span(4, 6);\r\n    Span sp6b = sp6.lengthen(-3);\r\n    Span sp6d = sp6b.move(-2);\r\n    assertEquals(spMinus1.getLength(), 2);\r\n    assertEquals(sp0.getLength(), 1);\r\n    assertTrue(sp1.contains(sp0));\r\n    assertTrue(spMinus1.intersects(sp0));\r\n    assertTrue(sp0.intersects(sp1));\r\n    assertEquals(sp0.intersect(sp1), sp0);\r\n    assertTrue(sp5b.intersects(sp3a));\r\n    assertTrue(sp0.union(sp1).equals(sp1));\r\n    assertFalse(sp0.equals(sp1));\r\n    assertTrue(sp1.equals(sp2.normalize()));\r\n    assertEquals(sp3, sp3a);\r\n    assertFalse(sp0.adjacentTo(sp2));\r\n    assertTrue(sp1.adjacentTo(sp3));\r\n    assertTrue(sp3.adjacentTo(sp1));\r\n    assertTrue(sp4.adjacentTo(sp3a));\r\n    assertTrue(sp3.adjacentTo(sp4));\r\n    assertTrue(sp5.equals(sp5a));\r\n    assertEquals(spN, spAll);\r\n    assertEquals(sp2.normalStart(), 0);\r\n    assertEquals(sp2.normalEnd(), 1);\r\n    assertTrue(sp5a.normalEquals(sp5b));\r\n    assertTrue(sp4.after(sp1));\r\n    assertTrue(sp3a.before(sp4));\r\n    assertEquals(sp6, sp6a);\r\n    assertEquals(sp6.getLength(), 3);\r\n    assertEquals(sp6.toString(), \"Span {start:4, end:6}\");\r\n    assertEquals(sp6b, sp5b);\r\n    assertEquals(sp6d, sp3a);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

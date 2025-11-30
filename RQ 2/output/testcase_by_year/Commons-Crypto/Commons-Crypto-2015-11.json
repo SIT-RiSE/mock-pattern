@@ -1,0 +1,115 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\CryptoCodecTest.java",
+  "methodName" : "testJceAesCtrCryptoCodec",
+  "sourceCode" : "@Test\r\npublic void testJceAesCtrCryptoCodec() throws Exception {\r\n    Assert.assertEquals(null, OpensslCipher.getLoadingFailureReason());\r\n    cryptoCodecTest(0, jceCodecClass, jceCodecClass, iv);\r\n    cryptoCodecTest(count, jceCodecClass, jceCodecClass, iv);\r\n    cryptoCodecTest(count, jceCodecClass, opensslCodecClass, iv);\r\n    // Overflow test, IV: xx xx xx xx xx xx xx xx ff ff ff ff ff ff ff ff\r\n    for (int i = 0; i < 8; i++) {\r\n        iv[8 + i] = (byte) 0xff;\r\n    }\r\n    cryptoCodecTest(count, jceCodecClass, jceCodecClass, iv);\r\n    cryptoCodecTest(count, jceCodecClass, opensslCodecClass, iv);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\CryptoCodecTest.java",
+  "methodName" : "testOpensslAesCtrCryptoCodec",
+  "sourceCode" : "@Test\r\npublic void testOpensslAesCtrCryptoCodec() throws Exception {\r\n    Assert.assertEquals(null, OpensslCipher.getLoadingFailureReason());\r\n    cryptoCodecTest(0, opensslCodecClass, opensslCodecClass, iv);\r\n    cryptoCodecTest(count, opensslCodecClass, opensslCodecClass, iv);\r\n    cryptoCodecTest(count, opensslCodecClass, jceCodecClass, iv);\r\n    // Overflow test, IV: xx xx xx xx xx xx xx xx ff ff ff ff ff ff ff ff\r\n    for (int i = 0; i < 8; i++) {\r\n        iv[8 + i] = (byte) 0xff;\r\n    }\r\n    cryptoCodecTest(count, opensslCodecClass, opensslCodecClass, iv);\r\n    cryptoCodecTest(count, opensslCodecClass, jceCodecClass, iv);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\CryptoStreamTest.java",
+  "methodName" : "testSkip",
+  "sourceCode" : "/**\r\n * Test skip.\r\n */\r\n@Test(timeout = 120000)\r\npublic void testSkip() throws Exception {\r\n    prepareData();\r\n    doSkipTest(jceCodecClass, false);\r\n    doSkipTest(opensslCodecClass, false);\r\n    doSkipTest(jceCodecClass, true);\r\n    doSkipTest(opensslCodecClass, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\CryptoStreamTest.java",
+  "methodName" : "testByteBufferRead",
+  "sourceCode" : "/**\r\n * Test byte buffer read with different buffer size.\r\n */\r\n@Test(timeout = 120000)\r\npublic void testByteBufferRead() throws Exception {\r\n    prepareData();\r\n    doByteBufferRead(jceCodecClass, false);\r\n    doByteBufferRead(opensslCodecClass, false);\r\n    doByteBufferRead(jceCodecClass, true);\r\n    doByteBufferRead(opensslCodecClass, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\CryptoStreamTest.java",
+  "methodName" : "testByteBufferWrite",
+  "sourceCode" : "/**\r\n * Test byte buffer write.\r\n */\r\n@Test(timeout = 120000)\r\npublic void testByteBufferWrite() throws Exception {\r\n    doByteBufferWrite(jceCodecClass, false);\r\n    doByteBufferWrite(opensslCodecClass, false);\r\n    doByteBufferWrite(jceCodecClass, true);\r\n    doByteBufferWrite(opensslCodecClass, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\OpensslCipherTest.java",
+  "methodName" : "testGetInstance",
+  "sourceCode" : "@Test(timeout = 120000)\r\npublic void testGetInstance() throws Exception {\r\n    Assume.assumeTrue(OpensslCipher.getLoadingFailureReason() == null);\r\n    OpensslCipher cipher = OpensslCipher.getInstance(\"AES/CTR/NoPadding\");\r\n    Assert.assertTrue(cipher != null);\r\n    try {\r\n        cipher = OpensslCipher.getInstance(\"AES2/CTR/NoPadding\");\r\n        Assert.fail(\"Should specify correct algorithm.\");\r\n    } catch (NoSuchAlgorithmException e) {\r\n        // Expect NoSuchAlgorithmException\r\n    }\r\n    try {\r\n        cipher = OpensslCipher.getInstance(\"AES/CTR/NoPadding2\");\r\n        Assert.fail(\"Should specify correct padding.\");\r\n    } catch (NoSuchPaddingException e) {\r\n        // Expect NoSuchPaddingException\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\OpensslCipherTest.java",
+  "methodName" : "testUpdateArguments",
+  "sourceCode" : "@Test(timeout = 120000)\r\npublic void testUpdateArguments() throws Exception {\r\n    Assume.assumeTrue(OpensslCipher.getLoadingFailureReason() == null);\r\n    OpensslCipher cipher = OpensslCipher.getInstance(\"AES/CTR/NoPadding\");\r\n    Assert.assertTrue(cipher != null);\r\n    cipher.init(OpensslCipher.ENCRYPT_MODE, key, iv);\r\n    // Require direct buffers\r\n    ByteBuffer input = ByteBuffer.allocate(1024);\r\n    ByteBuffer output = ByteBuffer.allocate(1024);\r\n    try {\r\n        cipher.update(input, output);\r\n        Assert.fail(\"Input and output buffer should be direct buffer.\");\r\n    } catch (IllegalArgumentException e) {\r\n        Assert.assertTrue(e.getMessage().contains(\"Direct buffers are required\"));\r\n    }\r\n    // Output buffer length should be sufficient to store output data\r\n    input = ByteBuffer.allocateDirect(1024);\r\n    output = ByteBuffer.allocateDirect(1000);\r\n    try {\r\n        cipher.update(input, output);\r\n        Assert.fail(\"Output buffer length should be sufficient \" + \"to store output data\");\r\n    } catch (ShortBufferException e) {\r\n        Assert.assertTrue(e.getMessage().contains(\"Output buffer is not sufficient\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\OpensslCipherTest.java",
+  "methodName" : "testDoFinalArguments",
+  "sourceCode" : "@Test(timeout = 120000)\r\npublic void testDoFinalArguments() throws Exception {\r\n    Assume.assumeTrue(OpensslCipher.getLoadingFailureReason() == null);\r\n    OpensslCipher cipher = OpensslCipher.getInstance(\"AES/CTR/NoPadding\");\r\n    Assert.assertTrue(cipher != null);\r\n    cipher.init(OpensslCipher.ENCRYPT_MODE, key, iv);\r\n    // Require direct buffer\r\n    ByteBuffer output = ByteBuffer.allocate(1024);\r\n    try {\r\n        cipher.doFinal(output);\r\n        Assert.fail(\"Output buffer should be direct buffer.\");\r\n    } catch (IllegalArgumentException e) {\r\n        Assert.assertTrue(e.getMessage().contains(\"Direct buffer is required\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\random\\TestOpensslSecureRandom.java",
+  "methodName" : "testRandomBytes",
+  "sourceCode" : "@Test(timeout = 120000)\r\npublic void testRandomBytes() throws Exception {\r\n    OpensslSecureRandom random = new OpensslSecureRandom(new Properties());\r\n    // len = 16\r\n    checkRandomBytes(random, 16);\r\n    // len = 32\r\n    checkRandomBytes(random, 32);\r\n    // len = 128\r\n    checkRandomBytes(random, 128);\r\n    // len = 256\r\n    checkRandomBytes(random, 256);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\random\\TestOpensslSecureRandom.java",
+  "methodName" : "testRandomInt",
+  "sourceCode" : "/**\r\n * Test will timeout if secure random implementation always returns a\r\n * constant value.\r\n */\r\n@Test(timeout = 120000)\r\npublic void testRandomInt() throws Exception {\r\n    OpensslSecureRandom random = new OpensslSecureRandom(new Properties());\r\n    int rand1 = random.nextInt();\r\n    int rand2 = random.nextInt();\r\n    while (rand1 == rand2) {\r\n        rand2 = random.nextInt();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\random\\TestOpensslSecureRandom.java",
+  "methodName" : "testRandomLong",
+  "sourceCode" : "/**\r\n * Test will timeout if secure random implementation always returns a\r\n * constant value.\r\n */\r\n@Test(timeout = 120000)\r\npublic void testRandomLong() throws Exception {\r\n    OpensslSecureRandom random = new OpensslSecureRandom(new Properties());\r\n    long rand1 = random.nextLong();\r\n    long rand2 = random.nextLong();\r\n    while (rand1 == rand2) {\r\n        rand2 = random.nextLong();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\random\\TestOpensslSecureRandom.java",
+  "methodName" : "testRandomFloat",
+  "sourceCode" : "/**\r\n * Test will timeout if secure random implementation always returns a\r\n * constant value.\r\n */\r\n@Test(timeout = 120000)\r\npublic void testRandomFloat() throws Exception {\r\n    OpensslSecureRandom random = new OpensslSecureRandom(new Properties());\r\n    float rand1 = random.nextFloat();\r\n    float rand2 = random.nextFloat();\r\n    while (rand1 == rand2) {\r\n        rand2 = random.nextFloat();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\random\\TestOpensslSecureRandom.java",
+  "methodName" : "testRandomDouble",
+  "sourceCode" : "/**\r\n * Test will timeout if secure random implementation always returns a\r\n * constant value.\r\n */\r\n@Test(timeout = 120000)\r\npublic void testRandomDouble() throws Exception {\r\n    OpensslSecureRandom random = new OpensslSecureRandom(new Properties());\r\n    double rand1 = random.nextDouble();\r\n    double rand2 = random.nextDouble();\r\n    while (rand1 == rand2) {\r\n        rand2 = random.nextDouble();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\random\\TestOsSecureRandom.java",
+  "methodName" : "testRandomBytes",
+  "sourceCode" : "@Test(timeout = 120000)\r\npublic void testRandomBytes() throws Exception {\r\n    OsSecureRandom random = getOsSecureRandom();\r\n    // len = 16\r\n    checkRandomBytes(random, 16);\r\n    // len = 32\r\n    checkRandomBytes(random, 32);\r\n    // len = 128\r\n    checkRandomBytes(random, 128);\r\n    // len = 256\r\n    checkRandomBytes(random, 256);\r\n    random.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\random\\TestOsSecureRandom.java",
+  "methodName" : "testRandomInt",
+  "sourceCode" : "/**\r\n * Test will timeout if secure random implementation always returns a\r\n * constant value.\r\n */\r\n@Test(timeout = 120000)\r\npublic void testRandomInt() throws Exception {\r\n    OsSecureRandom random = getOsSecureRandom();\r\n    int rand1 = random.nextInt();\r\n    int rand2 = random.nextInt();\r\n    while (rand1 == rand2) {\r\n        rand2 = random.nextInt();\r\n    }\r\n    random.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\random\\TestOsSecureRandom.java",
+  "methodName" : "testRandomLong",
+  "sourceCode" : "/**\r\n * Test will timeout if secure random implementation always returns a\r\n * constant value.\r\n */\r\n@Test(timeout = 120000)\r\npublic void testRandomLong() throws Exception {\r\n    OsSecureRandom random = getOsSecureRandom();\r\n    long rand1 = random.nextLong();\r\n    long rand2 = random.nextLong();\r\n    while (rand1 == rand2) {\r\n        rand2 = random.nextLong();\r\n    }\r\n    random.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\random\\TestOsSecureRandom.java",
+  "methodName" : "testRandomFloat",
+  "sourceCode" : "/**\r\n * Test will timeout if secure random implementation always returns a\r\n * constant value.\r\n */\r\n@Test(timeout = 120000)\r\npublic void testRandomFloat() throws Exception {\r\n    OsSecureRandom random = getOsSecureRandom();\r\n    float rand1 = random.nextFloat();\r\n    float rand2 = random.nextFloat();\r\n    while (rand1 == rand2) {\r\n        rand2 = random.nextFloat();\r\n    }\r\n    random.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\random\\TestOsSecureRandom.java",
+  "methodName" : "testRandomDouble",
+  "sourceCode" : "/**\r\n * Test will timeout if secure random implementation always returns a\r\n * constant value.\r\n */\r\n@Test(timeout = 120000)\r\npublic void testRandomDouble() throws Exception {\r\n    OsSecureRandom random = getOsSecureRandom();\r\n    double rand1 = random.nextDouble();\r\n    double rand2 = random.nextDouble();\r\n    while (rand1 == rand2) {\r\n        rand2 = random.nextDouble();\r\n    }\r\n    random.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\com\\intel\\chimera\\random\\TestOsSecureRandom.java",
+  "methodName" : "testRefillReservoir",
+  "sourceCode" : "@Test(timeout = 120000)\r\npublic void testRefillReservoir() throws Exception {\r\n    OsSecureRandom random = getOsSecureRandom();\r\n    for (int i = 0; i < 8196; i++) {\r\n        random.nextLong();\r\n    }\r\n    random.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

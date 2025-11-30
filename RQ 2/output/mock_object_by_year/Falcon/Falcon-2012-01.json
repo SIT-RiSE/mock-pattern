@@ -1,0 +1,75 @@
+[
+  {
+    "rawMockObjectId": 1,
+    "variableName": "mockHttpServletRequest",
+    "variableType": "HttpServletRequest",
+    "isGlobal": true,
+    "mockPatternLevel": 2,
+    "classContext": {
+      "packageName": "org.apache.ivory.resource",
+      "filePath": "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerTest.java",
+      "className": "EntityManagerTest"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate HttpServletRequest mockHttpServletRequest;",
+        "line": 41,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      },
+      {
+        "code": "when(mockHttpServletRequest.getInputStream()).thenReturn(stream);",
+        "line": 80,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testValidateForValidEntityXML",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Run this testcase for different types of VALID entity xmls like process,\r\n * feed, dataEndPoint\r\n *\r\n * @param testType\r\n * @param stream\r\n * @throws IOException\r\n */\r\n@Test(dataProvider = \"validXMLServletStreamProvider\")\r\npublic void testValidateForValidEntityXML(EntityType entityType, ServletInputStream stream) throws IOException {\r\n    when(mockHttpServletRequest.getInputStream()).thenReturn(stream);\r\n    APIResult apiResult = entityManager.validate(mockHttpServletRequest, entityType.name());\r\n    Assert.assertNotNull(apiResult);\r\n    Assert.assertEquals(apiResult.getStatus(), APIResult.Status.SUCCEEDED);\r\n    // verify(mockHttpServletRequest, times(1)).getInputStream();\r\n}"
+        }
+      },
+      {
+        "code": "when(mockHttpServletRequest.getInputStream()).thenReturn(invalidProcessXML);",
+        "line": 95,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testValidateForInvalidEntityXML",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testValidateForInvalidEntityXML() throws IOException {\r\n    ServletInputStream invalidProcessXML = getServletInputStream(SAMPLE_INVALID_PROCESS_XML);\r\n    when(mockHttpServletRequest.getInputStream()).thenReturn(invalidProcessXML);\r\n    APIResult apiResult = entityManager.validate(mockHttpServletRequest, EntityType.PROCESS.name());\r\n    Assert.assertNotNull(apiResult);\r\n    Assert.assertEquals(APIResult.Status.FAILED, apiResult.getStatus());\r\n    // Assert.assertEquals(\"[org.xml.sax.SAXParseException: cvc-complex-type.2.4.a: Invalid content was found starting with element 'somenode'. One of '{input}' is expected.]\",apiResult.getMessage());\r\n}"
+        }
+      },
+      {
+        "code": "when(mockHttpServletRequest.getInputStream()).thenReturn(invalidProcessXML);",
+        "line": 112,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testValidateForInvalidEntityType",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testValidateForInvalidEntityType() throws IOException {\r\n    ServletInputStream invalidProcessXML = getServletInputStream(SAMPLE_PROCESS_XML);\r\n    when(mockHttpServletRequest.getInputStream()).thenReturn(invalidProcessXML);\r\n    APIResult apiResult = entityManager.validate(mockHttpServletRequest, \"InvalidEntityType\");\r\n    Assert.assertNotNull(apiResult);\r\n    Assert.assertEquals(APIResult.Status.FAILED, apiResult.getStatus());\r\n    Assert.assertEquals(\"No enum const class org.apache.ivory.entity.v0.EntityType.INVALIDENTITYTYPE\", apiResult.getMessage());\r\n}"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,49 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\PLC4X\\plc4j\\core\\src\\test\\java\\org\\apache\\plc4x\\java\\PlcDriverManagerTest.java",
+  "methodName" : "getExistingDriverTest",
+  "sourceCode" : "/**\r\n * Tries to get the mock plc driver which is part of this testsuite.\r\n */\r\n@Test(groups = { \"fast\" })\r\npublic void getExistingDriverTest() throws PlcException {\r\n    MockConnection mockConnection = (MockConnection) new PlcDriverManager().getConnection(\"mock://some-cool-url\");\r\n    Assert.assertNull(mockConnection.getAuthentication());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\PLC4X\\plc4j\\core\\src\\test\\java\\org\\apache\\plc4x\\java\\PlcDriverManagerTest.java",
+  "methodName" : "getExistingDriverWithAuthenticationTest",
+  "sourceCode" : "/**\r\n * Tries to get the mock plc driver with authentication which is part of this testsuite.\r\n */\r\n@Test(groups = { \"fast\" })\r\npublic void getExistingDriverWithAuthenticationTest() throws PlcException {\r\n    PlcUsernamePasswordAuthentication authentication = new PlcUsernamePasswordAuthentication(\"user\", \"pass\");\r\n    MockConnection mockConnection = (MockConnection) new PlcDriverManager().getConnection(\"mock://some-cool-url\", authentication);\r\n    Assert.assertNotNull(mockConnection.getAuthentication());\r\n    Assert.assertTrue(mockConnection.getAuthentication() instanceof PlcUsernamePasswordAuthentication);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\PLC4X\\plc4j\\core\\src\\test\\java\\org\\apache\\plc4x\\java\\PlcDriverManagerTest.java",
+  "methodName" : "getNotExistingDriverTest",
+  "sourceCode" : "/**\r\n * In this test case a driver is requested which is not registered with the {@link PlcDriverManager}.\r\n */\r\n@Test(groups = { \"fast\" }, expectedExceptions = { PlcConnectionException.class })\r\npublic void getNotExistingDriverTest() throws PlcException {\r\n    new PlcDriverManager().getConnection(\"non-existing-protocol://some-cool-url\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\PLC4X\\plc4j\\core\\src\\test\\java\\org\\apache\\plc4x\\java\\PlcDriverManagerTest.java",
+  "methodName" : "getInvalidUriTest",
+  "sourceCode" : "/**\r\n * In this test case a driver is requested which is not registered with the {@link PlcDriverManager}.\r\n */\r\n@Test(groups = { \"fast\" }, expectedExceptions = { PlcConnectionException.class })\r\npublic void getInvalidUriTest() throws PlcException {\r\n    new PlcDriverManager().getConnection(\"The quick brown fox jumps over the lazy dog\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\PLC4X\\plc4j\\core\\src\\test\\java\\org\\apache\\plc4x\\java\\PlcDriverManagerTest.java",
+  "methodName" : "getDuplicateDriver",
+  "sourceCode" : "/**\r\n * In this test the {@link PlcDriverManager} will be configured with a service list that\r\n * contains multiple implementation instances of the same protocol. This should result in\r\n * an error.\r\n */\r\n@Test(groups = { \"fast\" }, expectedExceptions = { IllegalStateException.class })\r\npublic void getDuplicateDriver() throws PlcException, MalformedURLException {\r\n    // Save and replace the context classloader as we need to force the ServiceLoader to\r\n    // use a different service file.\r\n    ClassLoader originalClassloader = Thread.currentThread().getContextClassLoader();\r\n    URL[] urls = new URL[1];\r\n    urls[0] = new File(\"src/test/resources/test\").toURI().toURL();\r\n    ClassLoader fakeClassLoader = new URLClassLoader(urls, originalClassloader);\r\n    new PlcDriverManager(fakeClassLoader).getConnection(\"mock://some-cool-url\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\PLC4X\\plc4j\\protocols\\s7\\src\\test\\java\\org\\apache\\plc4x\\java\\s7\\S7PlcDriverTest.java",
+  "methodName" : "getConnectionTest",
+  "sourceCode" : "@Test(groups = { \"fast\" })\r\npublic void getConnectionTest() throws PlcException {\r\n    S7PlcConnection s7Connection = (S7PlcConnection) new PlcDriverManager().getConnection(\"s7://localhost/1/2\");\r\n    Assert.assertEquals(s7Connection.getHostName(), \"localhost\");\r\n    Assert.assertEquals(s7Connection.getRack(), 1);\r\n    Assert.assertEquals(s7Connection.getSlot(), 2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\PLC4X\\plc4j\\protocols\\s7\\src\\test\\java\\org\\apache\\plc4x\\java\\s7\\S7PlcDriverTest.java",
+  "methodName" : "getConnectionInvalidUrlTest",
+  "sourceCode" : "/**\r\n * In this test case the 's7' driver should report an invalid url format.\r\n * @throws PlcException\r\n */\r\n@Test(groups = { \"fast\" }, expectedExceptions = { PlcConnectionException.class })\r\npublic void getConnectionInvalidUrlTest() throws PlcException {\r\n    new PlcDriverManager().getConnection(\"s7://localhost/hurz/2\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\PLC4X\\plc4j\\protocols\\s7\\src\\test\\java\\org\\apache\\plc4x\\java\\s7\\S7PlcDriverTest.java",
+  "methodName" : "getConnectionWithAuthenticationTest",
+  "sourceCode" : "/**\r\n * In this test case the 's7' driver should report an error as this protocol\r\n * doesn't support authentication.\r\n * @throws PlcException\r\n */\r\n@Test(groups = { \"fast\" }, expectedExceptions = { PlcConnectionException.class })\r\npublic void getConnectionWithAuthenticationTest() throws PlcException {\r\n    new PlcDriverManager().getConnection(\"s7://localhost/1/2\", new PlcUsernamePasswordAuthentication(\"user\", \"pass\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+} ]

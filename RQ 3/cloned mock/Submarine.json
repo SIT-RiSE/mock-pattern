@@ -1,0 +1,206 @@
+[
+  {
+    "instanceId": 0,
+    "variableType": "HttpServletResponse",
+    "convertedLevel": 1,
+    "numberOfConverted": 2,
+    "coreStubbedMethods": [
+      "getWriter"
+    ],
+    "sharedLogic": "HttpServletResponse mockHttpServletResponse() {\n    // 4. http response\r\nHttpServletResponse mockResponse = Mockito.mock(HttpServletResponse.class);\n    when(mockResponse.getWriter()).thenReturn(printOut);\n    return mockResponse;\n}\n",
+    "involvedMocks": [
+      {
+        "rawMockObjectId": 12,
+        "variableName": "mockResponse",
+        "variableType": "HttpServletResponse",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.submarine.server.security.oidc",
+          "filePath": "C:\\Java_projects\\temp_projects\\Submarine\\submarine-server\\server-core\\src\\test\\java\\org\\apache\\submarine\\server\\security\\oidc\\SubmarineAuthOidcTest.java"
+        },
+        "statements": [
+          {
+            "code": "// 4. http response\r\nHttpServletResponse mockResponse = Mockito.mock(HttpServletResponse.class);",
+            "line": 171,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "testOidcType",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testOidcType() throws ServletException, IOException {\r\n    // test auth type config\r\n    String authType = conf.getString(SubmarineConfVars.ConfVars.SUBMARINE_AUTH_TYPE);\r\n    assertEquals(authType, \"oidc\");\r\n    // test provider\r\n    Optional<SecurityProvider> providerOptional = SecurityFactory.getSecurityProvider();\r\n    SecurityProvider provider = providerOptional.get();\r\n    assertNotNull(provider);\r\n    assertEquals(provider.getFilterClass(), OidcFilter.class);\r\n    Config config = provider.getConfig();\r\n    assertTrue(config.getClients().findClient(\"headerClient\").isPresent());\r\n    assertTrue(config.getClients().findClient(\"oidcClient\").isPresent());\r\n    // create filter involved objects\r\n    // 1. test filter\r\n    OidcFilter filterTest = new OidcFilter();\r\n    filterTest.init(null);\r\n    // 2. filter chain\r\n    FilterChain mockFilterChain = Mockito.mock(FilterChain.class);\r\n    // 3. http request\r\n    MockOidcHttpServletRequest mockRequest = new MockOidcHttpServletRequest();\r\n    mockRequest.setRequestURL(new StringBuffer(\"/api/sys/user/info\"));\r\n    // 4. http response\r\n    HttpServletResponse mockResponse = Mockito.mock(HttpServletResponse.class);\r\n    StringWriter out = new StringWriter();\r\n    PrintWriter printOut = new PrintWriter(out);\r\n    when(mockResponse.getWriter()).thenReturn(printOut);\r\n    // test no header\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED, \"The token/session is not valid.\");\r\n    // test header, here we use a fake Token to simulate login\r\n    mockRequest.setHeader(\"Authorization\", \"Bearer XXX\");\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockFilterChain).doFilter(mockRequest, mockResponse);\r\n    assertNotNull(mockRequest.getAttribute(Pac4jConstants.USER_PROFILES));\r\n    // Since we are not callback user, we can simulate creating oidc user\r\n    Map<String, UserProfile> profiles = (Map<String, UserProfile>) mockRequest.getAttribute(Pac4jConstants.USER_PROFILES);\r\n    UserProfile profile = profiles.get(\"HeaderClient\");\r\n    userActionAdapter.createUndefinedUser(profile);\r\n    // test get user info\r\n    Response response = sysUserRestApi.info(mockRequest, mockResponse);\r\n    assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());\r\n    String entity = (String) response.getEntity();\r\n    Type type = new TypeToken<JsonResponse<UserInfo>>() {\r\n    }.getType();\r\n    JsonResponse<UserInfo> jsonResponse = gson.fromJson(entity, type);\r\n    assertEquals(jsonResponse.getResult().getName(), \"oidc_test\");\r\n}"
+            }
+          },
+          {
+            "code": "when(mockResponse.getWriter()).thenReturn(printOut);",
+            "line": 174,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getWriter",
+            "locationContext": {
+              "methodName": "testOidcType",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testOidcType() throws ServletException, IOException {\r\n    // test auth type config\r\n    String authType = conf.getString(SubmarineConfVars.ConfVars.SUBMARINE_AUTH_TYPE);\r\n    assertEquals(authType, \"oidc\");\r\n    // test provider\r\n    Optional<SecurityProvider> providerOptional = SecurityFactory.getSecurityProvider();\r\n    SecurityProvider provider = providerOptional.get();\r\n    assertNotNull(provider);\r\n    assertEquals(provider.getFilterClass(), OidcFilter.class);\r\n    Config config = provider.getConfig();\r\n    assertTrue(config.getClients().findClient(\"headerClient\").isPresent());\r\n    assertTrue(config.getClients().findClient(\"oidcClient\").isPresent());\r\n    // create filter involved objects\r\n    // 1. test filter\r\n    OidcFilter filterTest = new OidcFilter();\r\n    filterTest.init(null);\r\n    // 2. filter chain\r\n    FilterChain mockFilterChain = Mockito.mock(FilterChain.class);\r\n    // 3. http request\r\n    MockOidcHttpServletRequest mockRequest = new MockOidcHttpServletRequest();\r\n    mockRequest.setRequestURL(new StringBuffer(\"/api/sys/user/info\"));\r\n    // 4. http response\r\n    HttpServletResponse mockResponse = Mockito.mock(HttpServletResponse.class);\r\n    StringWriter out = new StringWriter();\r\n    PrintWriter printOut = new PrintWriter(out);\r\n    when(mockResponse.getWriter()).thenReturn(printOut);\r\n    // test no header\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED, \"The token/session is not valid.\");\r\n    // test header, here we use a fake Token to simulate login\r\n    mockRequest.setHeader(\"Authorization\", \"Bearer XXX\");\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockFilterChain).doFilter(mockRequest, mockResponse);\r\n    assertNotNull(mockRequest.getAttribute(Pac4jConstants.USER_PROFILES));\r\n    // Since we are not callback user, we can simulate creating oidc user\r\n    Map<String, UserProfile> profiles = (Map<String, UserProfile>) mockRequest.getAttribute(Pac4jConstants.USER_PROFILES);\r\n    UserProfile profile = profiles.get(\"HeaderClient\");\r\n    userActionAdapter.createUndefinedUser(profile);\r\n    // test get user info\r\n    Response response = sysUserRestApi.info(mockRequest, mockResponse);\r\n    assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());\r\n    String entity = (String) response.getEntity();\r\n    Type type = new TypeToken<JsonResponse<UserInfo>>() {\r\n    }.getType();\r\n    JsonResponse<UserInfo> jsonResponse = gson.fromJson(entity, type);\r\n    assertEquals(jsonResponse.getResult().getName(), \"oidc_test\");\r\n}"
+            }
+          },
+          {
+            "code": "// test no header\r\nfilterTest.doFilter(mockRequest, mockResponse, mockFilterChain);",
+            "line": 177,
+            "type": "REFERENCE",
+            "locate": "",
+            "isMockRelated": false,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "testOidcType",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testOidcType() throws ServletException, IOException {\r\n    // test auth type config\r\n    String authType = conf.getString(SubmarineConfVars.ConfVars.SUBMARINE_AUTH_TYPE);\r\n    assertEquals(authType, \"oidc\");\r\n    // test provider\r\n    Optional<SecurityProvider> providerOptional = SecurityFactory.getSecurityProvider();\r\n    SecurityProvider provider = providerOptional.get();\r\n    assertNotNull(provider);\r\n    assertEquals(provider.getFilterClass(), OidcFilter.class);\r\n    Config config = provider.getConfig();\r\n    assertTrue(config.getClients().findClient(\"headerClient\").isPresent());\r\n    assertTrue(config.getClients().findClient(\"oidcClient\").isPresent());\r\n    // create filter involved objects\r\n    // 1. test filter\r\n    OidcFilter filterTest = new OidcFilter();\r\n    filterTest.init(null);\r\n    // 2. filter chain\r\n    FilterChain mockFilterChain = Mockito.mock(FilterChain.class);\r\n    // 3. http request\r\n    MockOidcHttpServletRequest mockRequest = new MockOidcHttpServletRequest();\r\n    mockRequest.setRequestURL(new StringBuffer(\"/api/sys/user/info\"));\r\n    // 4. http response\r\n    HttpServletResponse mockResponse = Mockito.mock(HttpServletResponse.class);\r\n    StringWriter out = new StringWriter();\r\n    PrintWriter printOut = new PrintWriter(out);\r\n    when(mockResponse.getWriter()).thenReturn(printOut);\r\n    // test no header\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED, \"The token/session is not valid.\");\r\n    // test header, here we use a fake Token to simulate login\r\n    mockRequest.setHeader(\"Authorization\", \"Bearer XXX\");\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockFilterChain).doFilter(mockRequest, mockResponse);\r\n    assertNotNull(mockRequest.getAttribute(Pac4jConstants.USER_PROFILES));\r\n    // Since we are not callback user, we can simulate creating oidc user\r\n    Map<String, UserProfile> profiles = (Map<String, UserProfile>) mockRequest.getAttribute(Pac4jConstants.USER_PROFILES);\r\n    UserProfile profile = profiles.get(\"HeaderClient\");\r\n    userActionAdapter.createUndefinedUser(profile);\r\n    // test get user info\r\n    Response response = sysUserRestApi.info(mockRequest, mockResponse);\r\n    assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());\r\n    String entity = (String) response.getEntity();\r\n    Type type = new TypeToken<JsonResponse<UserInfo>>() {\r\n    }.getType();\r\n    JsonResponse<UserInfo> jsonResponse = gson.fromJson(entity, type);\r\n    assertEquals(jsonResponse.getResult().getName(), \"oidc_test\");\r\n}"
+            }
+          },
+          {
+            "code": "verify(mockResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED, \"The token/session is not valid.\");",
+            "line": 178,
+            "type": "VERIFICATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "testOidcType",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testOidcType() throws ServletException, IOException {\r\n    // test auth type config\r\n    String authType = conf.getString(SubmarineConfVars.ConfVars.SUBMARINE_AUTH_TYPE);\r\n    assertEquals(authType, \"oidc\");\r\n    // test provider\r\n    Optional<SecurityProvider> providerOptional = SecurityFactory.getSecurityProvider();\r\n    SecurityProvider provider = providerOptional.get();\r\n    assertNotNull(provider);\r\n    assertEquals(provider.getFilterClass(), OidcFilter.class);\r\n    Config config = provider.getConfig();\r\n    assertTrue(config.getClients().findClient(\"headerClient\").isPresent());\r\n    assertTrue(config.getClients().findClient(\"oidcClient\").isPresent());\r\n    // create filter involved objects\r\n    // 1. test filter\r\n    OidcFilter filterTest = new OidcFilter();\r\n    filterTest.init(null);\r\n    // 2. filter chain\r\n    FilterChain mockFilterChain = Mockito.mock(FilterChain.class);\r\n    // 3. http request\r\n    MockOidcHttpServletRequest mockRequest = new MockOidcHttpServletRequest();\r\n    mockRequest.setRequestURL(new StringBuffer(\"/api/sys/user/info\"));\r\n    // 4. http response\r\n    HttpServletResponse mockResponse = Mockito.mock(HttpServletResponse.class);\r\n    StringWriter out = new StringWriter();\r\n    PrintWriter printOut = new PrintWriter(out);\r\n    when(mockResponse.getWriter()).thenReturn(printOut);\r\n    // test no header\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED, \"The token/session is not valid.\");\r\n    // test header, here we use a fake Token to simulate login\r\n    mockRequest.setHeader(\"Authorization\", \"Bearer XXX\");\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockFilterChain).doFilter(mockRequest, mockResponse);\r\n    assertNotNull(mockRequest.getAttribute(Pac4jConstants.USER_PROFILES));\r\n    // Since we are not callback user, we can simulate creating oidc user\r\n    Map<String, UserProfile> profiles = (Map<String, UserProfile>) mockRequest.getAttribute(Pac4jConstants.USER_PROFILES);\r\n    UserProfile profile = profiles.get(\"HeaderClient\");\r\n    userActionAdapter.createUndefinedUser(profile);\r\n    // test get user info\r\n    Response response = sysUserRestApi.info(mockRequest, mockResponse);\r\n    assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());\r\n    String entity = (String) response.getEntity();\r\n    Type type = new TypeToken<JsonResponse<UserInfo>>() {\r\n    }.getType();\r\n    JsonResponse<UserInfo> jsonResponse = gson.fromJson(entity, type);\r\n    assertEquals(jsonResponse.getResult().getName(), \"oidc_test\");\r\n}"
+            }
+          },
+          {
+            "code": "filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);",
+            "line": 183,
+            "type": "REFERENCE",
+            "locate": "",
+            "isMockRelated": false,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "testOidcType",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testOidcType() throws ServletException, IOException {\r\n    // test auth type config\r\n    String authType = conf.getString(SubmarineConfVars.ConfVars.SUBMARINE_AUTH_TYPE);\r\n    assertEquals(authType, \"oidc\");\r\n    // test provider\r\n    Optional<SecurityProvider> providerOptional = SecurityFactory.getSecurityProvider();\r\n    SecurityProvider provider = providerOptional.get();\r\n    assertNotNull(provider);\r\n    assertEquals(provider.getFilterClass(), OidcFilter.class);\r\n    Config config = provider.getConfig();\r\n    assertTrue(config.getClients().findClient(\"headerClient\").isPresent());\r\n    assertTrue(config.getClients().findClient(\"oidcClient\").isPresent());\r\n    // create filter involved objects\r\n    // 1. test filter\r\n    OidcFilter filterTest = new OidcFilter();\r\n    filterTest.init(null);\r\n    // 2. filter chain\r\n    FilterChain mockFilterChain = Mockito.mock(FilterChain.class);\r\n    // 3. http request\r\n    MockOidcHttpServletRequest mockRequest = new MockOidcHttpServletRequest();\r\n    mockRequest.setRequestURL(new StringBuffer(\"/api/sys/user/info\"));\r\n    // 4. http response\r\n    HttpServletResponse mockResponse = Mockito.mock(HttpServletResponse.class);\r\n    StringWriter out = new StringWriter();\r\n    PrintWriter printOut = new PrintWriter(out);\r\n    when(mockResponse.getWriter()).thenReturn(printOut);\r\n    // test no header\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED, \"The token/session is not valid.\");\r\n    // test header, here we use a fake Token to simulate login\r\n    mockRequest.setHeader(\"Authorization\", \"Bearer XXX\");\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockFilterChain).doFilter(mockRequest, mockResponse);\r\n    assertNotNull(mockRequest.getAttribute(Pac4jConstants.USER_PROFILES));\r\n    // Since we are not callback user, we can simulate creating oidc user\r\n    Map<String, UserProfile> profiles = (Map<String, UserProfile>) mockRequest.getAttribute(Pac4jConstants.USER_PROFILES);\r\n    UserProfile profile = profiles.get(\"HeaderClient\");\r\n    userActionAdapter.createUndefinedUser(profile);\r\n    // test get user info\r\n    Response response = sysUserRestApi.info(mockRequest, mockResponse);\r\n    assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());\r\n    String entity = (String) response.getEntity();\r\n    Type type = new TypeToken<JsonResponse<UserInfo>>() {\r\n    }.getType();\r\n    JsonResponse<UserInfo> jsonResponse = gson.fromJson(entity, type);\r\n    assertEquals(jsonResponse.getResult().getName(), \"oidc_test\");\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "getWriter"
+        ]
+      },
+      {
+        "rawMockObjectId": 14,
+        "variableName": "mockResponse",
+        "variableType": "HttpServletResponse",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.submarine.server.security.simple",
+          "filePath": "C:\\Java_projects\\temp_projects\\Submarine\\submarine-server\\server-core\\src\\test\\java\\org\\apache\\submarine\\server\\security\\simple\\SubmarineAuthSimpleTest.java"
+        },
+        "statements": [
+          {
+            "code": "// 4. http response\r\nHttpServletResponse mockResponse = Mockito.mock(HttpServletResponse.class);",
+            "line": 133,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "testSimpleType",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testSimpleType() throws ServletException, IOException {\r\n    // test auth type config\r\n    String authType = conf.getString(SubmarineConfVars.ConfVars.SUBMARINE_AUTH_TYPE);\r\n    assertEquals(authType, \"simple\");\r\n    // test provider\r\n    Optional<SecurityProvider> providerOptional = SecurityFactory.getSecurityProvider();\r\n    SecurityProvider provider = providerOptional.get();\r\n    assertNotNull(provider);\r\n    assertEquals(provider.getFilterClass(), SimpleFilter.class);\r\n    Config config = provider.getConfig();\r\n    assertTrue(config.getClients().findClient(\"headerClient\").isPresent());\r\n    // test login api\r\n    String testUsrJson = \"{\\\"username\\\":\\\"test\\\",\\\"password\\\":\\\"test\\\"}\";\r\n    Response loginResp = loginRestApi.login(testUsrJson);\r\n    assertEquals(loginResp.getStatus(), Response.Status.OK.getStatusCode());\r\n    String entity = (String) loginResp.getEntity();\r\n    Type type = new TypeToken<JsonResponse<SysUserEntity>>() {\r\n    }.getType();\r\n    JsonResponse<SysUserEntity> jsonResponse = gson.fromJson(entity, type);\r\n    String token = jsonResponse.getResult().getToken();\r\n    LOG.info(\"Get user token: \" + token);\r\n    // create filter involved objects\r\n    // 1. test filter\r\n    SimpleFilter filterTest = new SimpleFilter();\r\n    filterTest.init(null);\r\n    // 2. filter chain\r\n    FilterChain mockFilterChain = Mockito.mock(FilterChain.class);\r\n    // 3. http request\r\n    MockHttpServletRequest mockRequest = new MockHttpServletRequest();\r\n    mockRequest.setRequestURL(new StringBuffer(\"/api/sys/user/info\"));\r\n    // 4. http response\r\n    HttpServletResponse mockResponse = Mockito.mock(HttpServletResponse.class);\r\n    StringWriter out = new StringWriter();\r\n    PrintWriter printOut = new PrintWriter(out);\r\n    when(mockResponse.getWriter()).thenReturn(printOut);\r\n    // test no header\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED, \"The token is not valid.\");\r\n    // test header\r\n    mockRequest.setHeader(\"Authorization\", \"Bearer \" + token);\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockFilterChain).doFilter(mockRequest, mockResponse);\r\n    assertNotNull(mockRequest.getAttribute(Pac4jConstants.USER_PROFILES));\r\n}"
+            }
+          },
+          {
+            "code": "when(mockResponse.getWriter()).thenReturn(printOut);",
+            "line": 136,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getWriter",
+            "locationContext": {
+              "methodName": "testSimpleType",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testSimpleType() throws ServletException, IOException {\r\n    // test auth type config\r\n    String authType = conf.getString(SubmarineConfVars.ConfVars.SUBMARINE_AUTH_TYPE);\r\n    assertEquals(authType, \"simple\");\r\n    // test provider\r\n    Optional<SecurityProvider> providerOptional = SecurityFactory.getSecurityProvider();\r\n    SecurityProvider provider = providerOptional.get();\r\n    assertNotNull(provider);\r\n    assertEquals(provider.getFilterClass(), SimpleFilter.class);\r\n    Config config = provider.getConfig();\r\n    assertTrue(config.getClients().findClient(\"headerClient\").isPresent());\r\n    // test login api\r\n    String testUsrJson = \"{\\\"username\\\":\\\"test\\\",\\\"password\\\":\\\"test\\\"}\";\r\n    Response loginResp = loginRestApi.login(testUsrJson);\r\n    assertEquals(loginResp.getStatus(), Response.Status.OK.getStatusCode());\r\n    String entity = (String) loginResp.getEntity();\r\n    Type type = new TypeToken<JsonResponse<SysUserEntity>>() {\r\n    }.getType();\r\n    JsonResponse<SysUserEntity> jsonResponse = gson.fromJson(entity, type);\r\n    String token = jsonResponse.getResult().getToken();\r\n    LOG.info(\"Get user token: \" + token);\r\n    // create filter involved objects\r\n    // 1. test filter\r\n    SimpleFilter filterTest = new SimpleFilter();\r\n    filterTest.init(null);\r\n    // 2. filter chain\r\n    FilterChain mockFilterChain = Mockito.mock(FilterChain.class);\r\n    // 3. http request\r\n    MockHttpServletRequest mockRequest = new MockHttpServletRequest();\r\n    mockRequest.setRequestURL(new StringBuffer(\"/api/sys/user/info\"));\r\n    // 4. http response\r\n    HttpServletResponse mockResponse = Mockito.mock(HttpServletResponse.class);\r\n    StringWriter out = new StringWriter();\r\n    PrintWriter printOut = new PrintWriter(out);\r\n    when(mockResponse.getWriter()).thenReturn(printOut);\r\n    // test no header\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED, \"The token is not valid.\");\r\n    // test header\r\n    mockRequest.setHeader(\"Authorization\", \"Bearer \" + token);\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockFilterChain).doFilter(mockRequest, mockResponse);\r\n    assertNotNull(mockRequest.getAttribute(Pac4jConstants.USER_PROFILES));\r\n}"
+            }
+          },
+          {
+            "code": "// test no header\r\nfilterTest.doFilter(mockRequest, mockResponse, mockFilterChain);",
+            "line": 139,
+            "type": "REFERENCE",
+            "locate": "",
+            "isMockRelated": false,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "testSimpleType",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testSimpleType() throws ServletException, IOException {\r\n    // test auth type config\r\n    String authType = conf.getString(SubmarineConfVars.ConfVars.SUBMARINE_AUTH_TYPE);\r\n    assertEquals(authType, \"simple\");\r\n    // test provider\r\n    Optional<SecurityProvider> providerOptional = SecurityFactory.getSecurityProvider();\r\n    SecurityProvider provider = providerOptional.get();\r\n    assertNotNull(provider);\r\n    assertEquals(provider.getFilterClass(), SimpleFilter.class);\r\n    Config config = provider.getConfig();\r\n    assertTrue(config.getClients().findClient(\"headerClient\").isPresent());\r\n    // test login api\r\n    String testUsrJson = \"{\\\"username\\\":\\\"test\\\",\\\"password\\\":\\\"test\\\"}\";\r\n    Response loginResp = loginRestApi.login(testUsrJson);\r\n    assertEquals(loginResp.getStatus(), Response.Status.OK.getStatusCode());\r\n    String entity = (String) loginResp.getEntity();\r\n    Type type = new TypeToken<JsonResponse<SysUserEntity>>() {\r\n    }.getType();\r\n    JsonResponse<SysUserEntity> jsonResponse = gson.fromJson(entity, type);\r\n    String token = jsonResponse.getResult().getToken();\r\n    LOG.info(\"Get user token: \" + token);\r\n    // create filter involved objects\r\n    // 1. test filter\r\n    SimpleFilter filterTest = new SimpleFilter();\r\n    filterTest.init(null);\r\n    // 2. filter chain\r\n    FilterChain mockFilterChain = Mockito.mock(FilterChain.class);\r\n    // 3. http request\r\n    MockHttpServletRequest mockRequest = new MockHttpServletRequest();\r\n    mockRequest.setRequestURL(new StringBuffer(\"/api/sys/user/info\"));\r\n    // 4. http response\r\n    HttpServletResponse mockResponse = Mockito.mock(HttpServletResponse.class);\r\n    StringWriter out = new StringWriter();\r\n    PrintWriter printOut = new PrintWriter(out);\r\n    when(mockResponse.getWriter()).thenReturn(printOut);\r\n    // test no header\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED, \"The token is not valid.\");\r\n    // test header\r\n    mockRequest.setHeader(\"Authorization\", \"Bearer \" + token);\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockFilterChain).doFilter(mockRequest, mockResponse);\r\n    assertNotNull(mockRequest.getAttribute(Pac4jConstants.USER_PROFILES));\r\n}"
+            }
+          },
+          {
+            "code": "verify(mockResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED, \"The token is not valid.\");",
+            "line": 140,
+            "type": "VERIFICATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "testSimpleType",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testSimpleType() throws ServletException, IOException {\r\n    // test auth type config\r\n    String authType = conf.getString(SubmarineConfVars.ConfVars.SUBMARINE_AUTH_TYPE);\r\n    assertEquals(authType, \"simple\");\r\n    // test provider\r\n    Optional<SecurityProvider> providerOptional = SecurityFactory.getSecurityProvider();\r\n    SecurityProvider provider = providerOptional.get();\r\n    assertNotNull(provider);\r\n    assertEquals(provider.getFilterClass(), SimpleFilter.class);\r\n    Config config = provider.getConfig();\r\n    assertTrue(config.getClients().findClient(\"headerClient\").isPresent());\r\n    // test login api\r\n    String testUsrJson = \"{\\\"username\\\":\\\"test\\\",\\\"password\\\":\\\"test\\\"}\";\r\n    Response loginResp = loginRestApi.login(testUsrJson);\r\n    assertEquals(loginResp.getStatus(), Response.Status.OK.getStatusCode());\r\n    String entity = (String) loginResp.getEntity();\r\n    Type type = new TypeToken<JsonResponse<SysUserEntity>>() {\r\n    }.getType();\r\n    JsonResponse<SysUserEntity> jsonResponse = gson.fromJson(entity, type);\r\n    String token = jsonResponse.getResult().getToken();\r\n    LOG.info(\"Get user token: \" + token);\r\n    // create filter involved objects\r\n    // 1. test filter\r\n    SimpleFilter filterTest = new SimpleFilter();\r\n    filterTest.init(null);\r\n    // 2. filter chain\r\n    FilterChain mockFilterChain = Mockito.mock(FilterChain.class);\r\n    // 3. http request\r\n    MockHttpServletRequest mockRequest = new MockHttpServletRequest();\r\n    mockRequest.setRequestURL(new StringBuffer(\"/api/sys/user/info\"));\r\n    // 4. http response\r\n    HttpServletResponse mockResponse = Mockito.mock(HttpServletResponse.class);\r\n    StringWriter out = new StringWriter();\r\n    PrintWriter printOut = new PrintWriter(out);\r\n    when(mockResponse.getWriter()).thenReturn(printOut);\r\n    // test no header\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED, \"The token is not valid.\");\r\n    // test header\r\n    mockRequest.setHeader(\"Authorization\", \"Bearer \" + token);\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockFilterChain).doFilter(mockRequest, mockResponse);\r\n    assertNotNull(mockRequest.getAttribute(Pac4jConstants.USER_PROFILES));\r\n}"
+            }
+          },
+          {
+            "code": "filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);",
+            "line": 144,
+            "type": "REFERENCE",
+            "locate": "",
+            "isMockRelated": false,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "testSimpleType",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testSimpleType() throws ServletException, IOException {\r\n    // test auth type config\r\n    String authType = conf.getString(SubmarineConfVars.ConfVars.SUBMARINE_AUTH_TYPE);\r\n    assertEquals(authType, \"simple\");\r\n    // test provider\r\n    Optional<SecurityProvider> providerOptional = SecurityFactory.getSecurityProvider();\r\n    SecurityProvider provider = providerOptional.get();\r\n    assertNotNull(provider);\r\n    assertEquals(provider.getFilterClass(), SimpleFilter.class);\r\n    Config config = provider.getConfig();\r\n    assertTrue(config.getClients().findClient(\"headerClient\").isPresent());\r\n    // test login api\r\n    String testUsrJson = \"{\\\"username\\\":\\\"test\\\",\\\"password\\\":\\\"test\\\"}\";\r\n    Response loginResp = loginRestApi.login(testUsrJson);\r\n    assertEquals(loginResp.getStatus(), Response.Status.OK.getStatusCode());\r\n    String entity = (String) loginResp.getEntity();\r\n    Type type = new TypeToken<JsonResponse<SysUserEntity>>() {\r\n    }.getType();\r\n    JsonResponse<SysUserEntity> jsonResponse = gson.fromJson(entity, type);\r\n    String token = jsonResponse.getResult().getToken();\r\n    LOG.info(\"Get user token: \" + token);\r\n    // create filter involved objects\r\n    // 1. test filter\r\n    SimpleFilter filterTest = new SimpleFilter();\r\n    filterTest.init(null);\r\n    // 2. filter chain\r\n    FilterChain mockFilterChain = Mockito.mock(FilterChain.class);\r\n    // 3. http request\r\n    MockHttpServletRequest mockRequest = new MockHttpServletRequest();\r\n    mockRequest.setRequestURL(new StringBuffer(\"/api/sys/user/info\"));\r\n    // 4. http response\r\n    HttpServletResponse mockResponse = Mockito.mock(HttpServletResponse.class);\r\n    StringWriter out = new StringWriter();\r\n    PrintWriter printOut = new PrintWriter(out);\r\n    when(mockResponse.getWriter()).thenReturn(printOut);\r\n    // test no header\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED, \"The token is not valid.\");\r\n    // test header\r\n    mockRequest.setHeader(\"Authorization\", \"Bearer \" + token);\r\n    filterTest.doFilter(mockRequest, mockResponse, mockFilterChain);\r\n    verify(mockFilterChain).doFilter(mockRequest, mockResponse);\r\n    assertNotNull(mockRequest.getAttribute(Pac4jConstants.USER_PROFILES));\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "getWriter"
+        ]
+      }
+    ]
+  }
+]

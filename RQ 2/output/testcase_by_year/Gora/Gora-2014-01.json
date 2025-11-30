@@ -1,0 +1,733 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\store\\PartitionTest.java",
+  "methodName" : "test1",
+  "sourceCode" : "@Test\r\npublic void test1() {\r\n    assertEquals(encl(0x006f000000000000l), (long) AccumuloStore.followingKey(encoder, Long.class, new byte[] { 0x00, 0x6f }));\r\n    assertEquals(encl(1l), (long) AccumuloStore.followingKey(encoder, Long.class, new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 }));\r\n    assertEquals(encl(0x106f000000000001l), (long) AccumuloStore.followingKey(encoder, Long.class, new byte[] { 0x10, 0x6f, 0, 0, 0, 0, 0, 0 }));\r\n    assertEquals(encl(-1l), (long) AccumuloStore.followingKey(encoder, Long.class, new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xfe }));\r\n    assertEquals(encl(0x8000000000000001l), (long) AccumuloStore.followingKey(encoder, Long.class, new byte[] { (byte) 0x80, 0, 0, 0, 0, 0, 0, 0 }));\r\n    assertEquals(encl(0x8000000000000000l), (long) AccumuloStore.followingKey(encoder, Long.class, new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff }));\r\n    try {\r\n        AccumuloStore.followingKey(encoder, Long.class, new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff });\r\n        assertTrue(false);\r\n    } catch (IllegalArgumentException iea) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\store\\PartitionTest.java",
+  "methodName" : "test2",
+  "sourceCode" : "@Test\r\npublic void test2() {\r\n    assertEquals(encl(0x00ffffffffffffffl), (long) AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { 0x01 }));\r\n    assertEquals(encl(0x006effffffffffffl), (long) AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { 0x00, 0x6f }));\r\n    assertEquals(encl(0xff6effffffffffffl), (long) AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { (byte) 0xff, 0x6f }));\r\n    assertEquals(encl(0xfffeffffffffffffl), (long) AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { (byte) 0xff, (byte) 0xff }));\r\n    assertEquals(encl(0l), (long) AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { (byte) 0, 0, 0, 0, 0, 0, 0, 0 }));\r\n    assertEquals(encl(0x7effffffffffffffl), (long) AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { (byte) 0x7f }));\r\n    assertEquals(encl(0x7fffffffffffffffl), (long) AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { (byte) 0x80 }));\r\n    assertEquals(encl(0x80ffffffffffffffl), (long) AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { (byte) 0x81 }));\r\n    try {\r\n        AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { (byte) 0, 0, 0, 0, 0, 0, 0 });\r\n        assertTrue(false);\r\n    } catch (IllegalArgumentException iea) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\util\\HexEncoderTest.java",
+  "methodName" : "testByte",
+  "sourceCode" : "@Test\r\npublic void testByte() {\r\n    HexEncoder encoder = new HexEncoder();\r\n    assertEquals(\"12\", new String(encoder.encodeByte((byte) 0x12)));\r\n    assertEquals(\"f2\", new String(encoder.encodeByte((byte) 0xf2)));\r\n    byte b = Byte.MIN_VALUE;\r\n    while (b != Byte.MAX_VALUE) {\r\n        assertEquals(b, encoder.decodeByte(encoder.encodeByte(b)));\r\n        b++;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\util\\HexEncoderTest.java",
+  "methodName" : "testShort",
+  "sourceCode" : "@Test\r\npublic void testShort() {\r\n    HexEncoder encoder = new HexEncoder();\r\n    assertEquals(\"1234\", new String(encoder.encodeShort((short) 0x1234)));\r\n    assertEquals(\"f234\", new String(encoder.encodeShort((short) 0xf234)));\r\n    short s = Short.MIN_VALUE;\r\n    while (s != Short.MAX_VALUE) {\r\n        assertEquals(s, encoder.decodeShort(encoder.encodeShort(s)));\r\n        s++;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\util\\SignedBinaryEncoderTest.java",
+  "methodName" : "testShort",
+  "sourceCode" : "@Test\r\npublic void testShort() {\r\n    short s = Short.MIN_VALUE;\r\n    Text prev = null;\r\n    SignedBinaryEncoder encoder = new SignedBinaryEncoder();\r\n    while (true) {\r\n        byte[] enc = encoder.encodeShort(s);\r\n        assertEquals(s, encoder.decodeShort(enc));\r\n        Text current = new Text(enc);\r\n        if (prev != null)\r\n            assertTrue(prev.compareTo(current) < 0);\r\n        prev = current;\r\n        s++;\r\n        if (s == Short.MAX_VALUE)\r\n            break;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\util\\SignedBinaryEncoderTest.java",
+  "methodName" : "testInt",
+  "sourceCode" : "@Test\r\npublic void testInt() {\r\n    testInt(Integer.MIN_VALUE, Integer.MIN_VALUE + (1 << 16));\r\n    testInt(-(1 << 15), (1 << 15));\r\n    testInt(Integer.MAX_VALUE - (1 << 16), Integer.MAX_VALUE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\util\\SignedBinaryEncoderTest.java",
+  "methodName" : "testLong",
+  "sourceCode" : "@Test\r\npublic void testLong() {\r\n    testLong(Long.MIN_VALUE, Long.MIN_VALUE + (1 << 16));\r\n    testLong(-(1 << 15), (1 << 15));\r\n    testLong(Long.MAX_VALUE - (1 << 16), Long.MAX_VALUE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\util\\SignedBinaryEncoderTest.java",
+  "methodName" : "testDouble",
+  "sourceCode" : "@Test\r\npublic void testDouble() {\r\n    ArrayList<Double> testData = new ArrayList<Double>();\r\n    testData.add(Double.NEGATIVE_INFINITY);\r\n    testData.add(Double.MIN_VALUE);\r\n    testData.add(Math.nextUp(Double.NEGATIVE_INFINITY));\r\n    testData.add(Math.pow(10.0, 30.0) * -1.0);\r\n    testData.add(Math.pow(10.0, 30.0));\r\n    testData.add(Math.pow(10.0, -30.0) * -1.0);\r\n    testData.add(Math.pow(10.0, -30.0));\r\n    testData.add(Math.nextAfter(0.0, Double.NEGATIVE_INFINITY));\r\n    testData.add(0.0);\r\n    testData.add(Math.nextAfter(Double.MAX_VALUE, Double.NEGATIVE_INFINITY));\r\n    testData.add(Double.MAX_VALUE);\r\n    testData.add(Double.POSITIVE_INFINITY);\r\n    Collections.sort(testData);\r\n    SignedBinaryEncoder encoder = new SignedBinaryEncoder();\r\n    for (int i = 0; i < testData.size(); i++) {\r\n        byte[] enc = encoder.encodeDouble(testData.get(i));\r\n        assertEquals(testData.get(i), (Double) encoder.decodeDouble(enc));\r\n        if (i > 1) {\r\n            assertTrue(\"Checking \" + testData.get(i) + \" > \" + testData.get(i - 1), new Text(enc).compareTo(new Text(encoder.encodeDouble(testData.get(i - 1)))) > 0);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\util\\SignedBinaryEncoderTest.java",
+  "methodName" : "testFloat",
+  "sourceCode" : "@Test\r\npublic void testFloat() {\r\n    ArrayList<Float> testData = new ArrayList<Float>();\r\n    testData.add(Float.NEGATIVE_INFINITY);\r\n    testData.add(Float.MIN_VALUE);\r\n    testData.add(Math.nextUp(Float.NEGATIVE_INFINITY));\r\n    testData.add((float) Math.pow(10.0f, 30.0f) * -1.0f);\r\n    testData.add((float) Math.pow(10.0f, 30.0f));\r\n    testData.add((float) Math.pow(10.0f, -30.0f) * -1.0f);\r\n    testData.add((float) Math.pow(10.0f, -30.0f));\r\n    testData.add(Math.nextAfter(0.0f, Float.NEGATIVE_INFINITY));\r\n    testData.add(0.0f);\r\n    testData.add(Math.nextAfter(Float.MAX_VALUE, Float.NEGATIVE_INFINITY));\r\n    testData.add(Float.MAX_VALUE);\r\n    testData.add(Float.POSITIVE_INFINITY);\r\n    Collections.sort(testData);\r\n    SignedBinaryEncoder encoder = new SignedBinaryEncoder();\r\n    for (int i = 0; i < testData.size(); i++) {\r\n        byte[] enc = encoder.encodeFloat(testData.get(i));\r\n        assertEquals(testData.get(i), (Float) encoder.decodeFloat(enc));\r\n        if (i > 1) {\r\n            assertTrue(\"Checking \" + testData.get(i) + \" > \" + testData.get(i - 1), new Text(enc).compareTo(new Text(encoder.encodeFloat(testData.get(i - 1)))) > 0);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\avro\\store\\TestAvroStore.java",
+  "methodName" : "testNewInstance",
+  "sourceCode" : "@Test\r\npublic void testNewInstance() throws IOException, Exception {\r\n    DataStoreTestUtil.testNewPersistent(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\avro\\store\\TestAvroStore.java",
+  "methodName" : "testCreateSchema",
+  "sourceCode" : "@Test\r\npublic void testCreateSchema() throws IOException, Exception {\r\n    DataStoreTestUtil.testCreateEmployeeSchema(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\avro\\store\\TestAvroStore.java",
+  "methodName" : "testAutoCreateSchema",
+  "sourceCode" : "@Test\r\npublic void testAutoCreateSchema() throws IOException, Exception {\r\n    DataStoreTestUtil.testAutoCreateSchema(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\avro\\store\\TestAvroStore.java",
+  "methodName" : "testPut",
+  "sourceCode" : "@Test\r\npublic void testPut() throws IOException, Exception {\r\n    DataStoreTestUtil.testPutEmployee(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\avro\\store\\TestAvroStore.java",
+  "methodName" : "testQuery",
+  "sourceCode" : "@Test\r\npublic void testQuery() throws IOException, Exception {\r\n    createWebPageData(webPageStore);\r\n    webPageStore.close();\r\n    webPageStore.setInputPath(webPageStore.getOutputPath());\r\n    testQueryWebPages(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\avro\\store\\TestAvroStore.java",
+  "methodName" : "testQueryBinaryEncoder",
+  "sourceCode" : "@Test\r\npublic void testQueryBinaryEncoder() throws IOException, Exception {\r\n    webPageStore.setCodecType(CodecType.BINARY);\r\n    webPageStore.setInputPath(webPageStore.getOutputPath());\r\n    createWebPageData(webPageStore);\r\n    webPageStore.close();\r\n    testQueryWebPages(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\avro\\TestPersistentDatumReader.java",
+  "methodName" : "testCloneEmployee",
+  "sourceCode" : "@Test\r\npublic void testCloneEmployee() throws Exception {\r\n    @SuppressWarnings(\"unchecked\")\r\n    MemStore<String, Employee> store = DataStoreFactory.getDataStore(MemStore.class, String.class, Employee.class, conf);\r\n    Employee employee = DataStoreTestUtil.createEmployee(store);\r\n    testClone(employee);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\avro\\TestPersistentDatumReader.java",
+  "methodName" : "testCloneEmployeeOneField",
+  "sourceCode" : "@Test\r\npublic void testCloneEmployeeOneField() throws Exception {\r\n    Employee employee = new Employee();\r\n    employee.setSsn(new Utf8(\"11111\"));\r\n    testClone(employee);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\avro\\TestPersistentDatumReader.java",
+  "methodName" : "testCloneEmployeeTwoFields",
+  "sourceCode" : "@Test\r\npublic void testCloneEmployeeTwoFields() throws Exception {\r\n    Employee employee = new Employee();\r\n    employee.setSsn(new Utf8(\"11111\"));\r\n    employee.setSalary(100);\r\n    testClone(employee);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\avro\\TestPersistentDatumReader.java",
+  "methodName" : "testCloneWebPage",
+  "sourceCode" : "@Test\r\npublic void testCloneWebPage() throws Exception {\r\n    @SuppressWarnings(\"unchecked\")\r\n    DataStore<String, WebPage> store = DataStoreFactory.createDataStore(MemStore.class, String.class, WebPage.class, conf);\r\n    WebPageDataCreator.createWebPageData(store);\r\n    Query<String, WebPage> query = store.newQuery();\r\n    Result<String, WebPage> result = query.execute();\r\n    int tested = 0;\r\n    while (result.next()) {\r\n        WebPage page = result.get();\r\n        testClone(page);\r\n        tested++;\r\n    }\r\n    assertEquals(WebPageDataCreator.URLS.length, tested);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\DataStoreMapReduceTestBase.java",
+  "methodName" : "testCountQuery",
+  "sourceCode" : "@Test\r\npublic void testCountQuery() throws Exception {\r\n    MapReduceTestUtils.testCountQuery(webPageStore, job);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\TestGoraInputFormat.java",
+  "methodName" : "testGetSplits",
+  "sourceCode" : "@Test\r\n@SuppressWarnings(\"rawtypes\")\r\npublic void testGetSplits() throws IOException, InterruptedException {\r\n    List<InputSplit> splits = getInputSplits();\r\n    assertTrue(splits.size() > 0);\r\n    InputSplit split = splits.get(0);\r\n    PartitionQuery query = ((GoraInputSplit) split).getQuery();\r\n    assertTrue(Arrays.equals(Employee._ALL_FIELDS, query.getFields()));\r\n}",
+  "annotations" : [ "Test", "SuppressWarnings" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\TestGoraInputSplit.java",
+  "methodName" : "testGetLocations",
+  "sourceCode" : "@Test\r\npublic void testGetLocations() throws IOException {\r\n    List<PartitionQuery<String, MockPersistent>> partitions = getPartitions();\r\n    int i = 0;\r\n    for (PartitionQuery<String, MockPersistent> partition : partitions) {\r\n        GoraInputSplit split = new GoraInputSplit(conf, partition);\r\n        assertEquals(split.getLocations().length, 1);\r\n        assertEquals(split.getLocations()[0], MockDataStore.LOCATIONS[i++]);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\TestGoraInputSplit.java",
+  "methodName" : "testReadWrite",
+  "sourceCode" : "@Test\r\npublic void testReadWrite() throws Exception {\r\n    List<PartitionQuery<String, MockPersistent>> partitions = getPartitions();\r\n    for (PartitionQuery<String, MockPersistent> partition : partitions) {\r\n        GoraInputSplit split = new GoraInputSplit(conf, partition);\r\n        TestWritable.testWritable(split);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\TestPersistentSerialization.java",
+  "methodName" : "testSerdeEmployee",
+  "sourceCode" : "@SuppressWarnings(\"unchecked\")\r\n@Test\r\npublic void testSerdeEmployee() throws Exception {\r\n    MemStore<String, Employee> store = DataStoreFactory.getDataStore(MemStore.class, String.class, Employee.class, new Configuration());\r\n    Employee employee = DataStoreTestUtil.createEmployee(store);\r\n    TestIOUtils.testSerializeDeserialize(employee);\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\TestPersistentSerialization.java",
+  "methodName" : "testSerdeEmployeeOneField",
+  "sourceCode" : "@Test\r\npublic void testSerdeEmployeeOneField() throws Exception {\r\n    Employee employee = new Employee();\r\n    employee.setSsn(new Utf8(\"11111\"));\r\n    TestIOUtils.testSerializeDeserialize(employee);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\TestPersistentSerialization.java",
+  "methodName" : "testSerdeEmployeeTwoFields",
+  "sourceCode" : "@Test\r\npublic void testSerdeEmployeeTwoFields() throws Exception {\r\n    Employee employee = new Employee();\r\n    employee.setSsn(new Utf8(\"11111\"));\r\n    employee.setSalary(100);\r\n    TestIOUtils.testSerializeDeserialize(employee);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\TestPersistentSerialization.java",
+  "methodName" : "testSerdeWebPage",
+  "sourceCode" : "@SuppressWarnings(\"unchecked\")\r\n@Test\r\npublic void testSerdeWebPage() throws Exception {\r\n    MemStore<String, WebPage> store = DataStoreFactory.getDataStore(MemStore.class, String.class, WebPage.class, new Configuration());\r\n    WebPageDataCreator.createWebPageData(store);\r\n    Result<String, WebPage> result = store.newQuery().execute();\r\n    int i = 0;\r\n    while (result.next()) {\r\n        WebPage page = result.get();\r\n        TestIOUtils.testSerializeDeserialize(page);\r\n        i++;\r\n    }\r\n    assertEquals(WebPageDataCreator.URLS.length, i);\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\TestPersistentSerialization.java",
+  "methodName" : "testSerdeMultipleWebPages",
+  "sourceCode" : "@Test\r\npublic void testSerdeMultipleWebPages() throws Exception {\r\n    WebPage page1 = new WebPage();\r\n    WebPage page2 = new WebPage();\r\n    WebPage page3 = new WebPage();\r\n    page1.setUrl(new Utf8(\"foo\"));\r\n    page2.setUrl(new Utf8(\"baz\"));\r\n    page3.setUrl(new Utf8(\"bar\"));\r\n    page1.addToParsedContent(new Utf8(\"coo\"));\r\n    page2.putToOutlinks(new Utf8(\"a\"), new Utf8(\"b\"));\r\n    TestIOUtils.testSerializeDeserialize(page1, page2, page3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestPersistentBase.java",
+  "methodName" : "testGetFields",
+  "sourceCode" : "@Test\r\npublic void testGetFields() {\r\n    WebPage page = new WebPage();\r\n    String[] fields = page.getFields();\r\n    assertArrayEquals(WebPage._ALL_FIELDS, fields);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestPersistentBase.java",
+  "methodName" : "testGetField",
+  "sourceCode" : "@Test\r\npublic void testGetField() {\r\n    WebPage page = new WebPage();\r\n    for (int i = 0; i < WebPage._ALL_FIELDS.length; i++) {\r\n        String field = page.getField(i);\r\n        assertEquals(WebPage._ALL_FIELDS[i], field);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestPersistentBase.java",
+  "methodName" : "testGetFieldIndex",
+  "sourceCode" : "@Test\r\npublic void testGetFieldIndex() {\r\n    WebPage page = new WebPage();\r\n    for (int i = 0; i < WebPage._ALL_FIELDS.length; i++) {\r\n        int index = page.getFieldIndex(WebPage._ALL_FIELDS[i]);\r\n        assertEquals(i, index);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestPersistentBase.java",
+  "methodName" : "testFieldsWithTwoClasses",
+  "sourceCode" : "@Test\r\npublic void testFieldsWithTwoClasses() {\r\n    WebPage page = new WebPage();\r\n    for (int i = 0; i < WebPage._ALL_FIELDS.length; i++) {\r\n        int index = page.getFieldIndex(WebPage._ALL_FIELDS[i]);\r\n        assertEquals(i, index);\r\n    }\r\n    Employee employee = new Employee();\r\n    for (int i = 0; i < Employee._ALL_FIELDS.length; i++) {\r\n        int index = employee.getFieldIndex(Employee._ALL_FIELDS[i]);\r\n        assertEquals(i, index);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestPersistentBase.java",
+  "methodName" : "testClear",
+  "sourceCode" : "@Test\r\npublic void testClear() {\r\n    //test clear all fields\r\n    WebPage page = new WebPage();\r\n    page.setUrl(new Utf8(\"http://foo.com\"));\r\n    page.addToParsedContent(new Utf8(\"foo\"));\r\n    page.putToOutlinks(new Utf8(\"foo\"), new Utf8(\"bar\"));\r\n    page.setContent(ByteBuffer.wrap(\"foo baz bar\".getBytes()));\r\n    page.clear();\r\n    assertNull(page.getUrl());\r\n    assertEquals(0, page.getParsedContent().size());\r\n    assertEquals(0, page.getOutlinks().size());\r\n    assertNull(page.getContent());\r\n    //set fields again\r\n    page.setUrl(new Utf8(\"http://bar.com\"));\r\n    page.addToParsedContent(new Utf8(\"bar\"));\r\n    page.putToOutlinks(new Utf8(\"bar\"), new Utf8(\"baz\"));\r\n    page.setContent(ByteBuffer.wrap(\"foo baz bar barbaz\".getBytes()));\r\n    //test clear new object\r\n    page = new WebPage();\r\n    page.clear();\r\n    //test primitive fields\r\n    Employee employee = new Employee();\r\n    employee.clear();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestPersistentBase.java",
+  "methodName" : "testClone",
+  "sourceCode" : "@Test\r\npublic void testClone() throws IOException, Exception {\r\n    //more tests for clone are in TestPersistentDatumReader\r\n    @SuppressWarnings(\"unchecked\")\r\n    MemStore<String, Employee> store = DataStoreFactory.getDataStore(MemStore.class, String.class, Employee.class, new Configuration());\r\n    Employee employee = DataStoreTestUtil.createEmployee(store);\r\n    assertEquals(employee, employee.clone());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestStateManagerImpl.java",
+  "methodName" : "testDirty",
+  "sourceCode" : "@Test\r\npublic void testDirty() {\r\n    assertFalse(stateManager.isDirty(persistent));\r\n    stateManager.setDirty(persistent);\r\n    assertTrue(stateManager.isDirty(persistent));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestStateManagerImpl.java",
+  "methodName" : "testDirty2",
+  "sourceCode" : "@Test\r\npublic void testDirty2() {\r\n    assertFalse(stateManager.isDirty(persistent, 0));\r\n    assertFalse(stateManager.isDirty(persistent, 1));\r\n    stateManager.setDirty(persistent, 0);\r\n    assertTrue(stateManager.isDirty(persistent, 0));\r\n    assertFalse(stateManager.isDirty(persistent, 1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestStateManagerImpl.java",
+  "methodName" : "testClearDirty",
+  "sourceCode" : "@Test\r\npublic void testClearDirty() {\r\n    assertFalse(stateManager.isDirty(persistent));\r\n    stateManager.setDirty(persistent, 0);\r\n    stateManager.clearDirty(persistent);\r\n    assertFalse(this.stateManager.isDirty(persistent));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestStateManagerImpl.java",
+  "methodName" : "testReadable",
+  "sourceCode" : "@Test\r\npublic void testReadable() throws IOException {\r\n    assertFalse(stateManager.isReadable(persistent, 0));\r\n    assertFalse(stateManager.isReadable(persistent, 1));\r\n    stateManager.setReadable(persistent, 0);\r\n    assertTrue(stateManager.isReadable(persistent, 0));\r\n    assertFalse(stateManager.isReadable(persistent, 1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestStateManagerImpl.java",
+  "methodName" : "testReadable2",
+  "sourceCode" : "@Test\r\npublic void testReadable2() {\r\n    stateManager = new StateManagerImpl();\r\n    Employee employee = new Employee(stateManager);\r\n    assertFalse(stateManager.isReadable(employee, 0));\r\n    assertFalse(stateManager.isReadable(employee, 1));\r\n    employee.setName(new Utf8(\"foo\"));\r\n    assertTrue(stateManager.isReadable(employee, 0));\r\n    assertFalse(stateManager.isReadable(employee, 1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestStateManagerImpl.java",
+  "methodName" : "testClearReadable",
+  "sourceCode" : "@Test\r\npublic void testClearReadable() {\r\n    stateManager.setReadable(persistent, 0);\r\n    stateManager.clearReadable(persistent);\r\n    assertFalse(stateManager.isReadable(persistent, 0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestStateManagerImpl.java",
+  "methodName" : "testIsNew",
+  "sourceCode" : "@Test\r\npublic void testIsNew() {\r\n    //newly created objects should be new\r\n    assertTrue(persistent.isNew());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestStateManagerImpl.java",
+  "methodName" : "testNew",
+  "sourceCode" : "@Test\r\npublic void testNew() {\r\n    stateManager.setNew(persistent);\r\n    assertTrue(persistent.isNew());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestStateManagerImpl.java",
+  "methodName" : "testClearNew",
+  "sourceCode" : "@Test\r\npublic void testClearNew() {\r\n    stateManager.clearNew(persistent);\r\n    assertFalse(persistent.isNew());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\TestListGenericArray.java",
+  "methodName" : "testHashCode",
+  "sourceCode" : "@Test\r\npublic void testHashCode() {\r\n    ListGenericArray array = new ListGenericArray(Schema.create(Schema.Type.STRING));\r\n    boolean stackOverflowError = false;\r\n    array.add(new Utf8(\"array test\"));\r\n    try {\r\n        int hashCode = array.hashCode();\r\n    } catch (StackOverflowError e) {\r\n        stackOverflowError = true;\r\n    }\r\n    assertFalse(stackOverflowError);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\TestListGenericArray.java",
+  "methodName" : "testCompareTo",
+  "sourceCode" : "@Test\r\npublic void testCompareTo() {\r\n    ListGenericArray array = new ListGenericArray(Schema.create(Schema.Type.STRING));\r\n    boolean stackOverflowError = false;\r\n    array.add(new Utf8(\"array comparison test\"));\r\n    try {\r\n        int compareTo = array.compareTo(array);\r\n    } catch (StackOverflowError e) {\r\n        stackOverflowError = true;\r\n    }\r\n    assertFalse(stackOverflowError);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\query\\impl\\TestPartitionQueryImpl.java",
+  "methodName" : "testReadWrite",
+  "sourceCode" : "@Test\r\npublic void testReadWrite() throws Exception {\r\n    MockQuery baseQuery = dataStore.newQuery();\r\n    baseQuery.setStartKey(\"start\");\r\n    baseQuery.setLimit(42);\r\n    PartitionQueryImpl<String, MockPersistent> query = new PartitionQueryImpl<String, MockPersistent>(baseQuery);\r\n    TestWritable.testWritable(query);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\query\\impl\\TestQueryBase.java",
+  "methodName" : "testReadWrite",
+  "sourceCode" : "@Test\r\npublic void testReadWrite() throws Exception {\r\n    query.setFields(FIELDS);\r\n    query.setKeyRange(START_KEY, END_KEY);\r\n    TestIOUtils.testSerializeDeserialize(query);\r\n    assertNotNull(query.getDataStore());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\query\\impl\\TestQueryBase.java",
+  "methodName" : "testReadWrite2",
+  "sourceCode" : "@Test\r\npublic void testReadWrite2() throws Exception {\r\n    query.setLimit(1000);\r\n    query.setTimeRange(0, System.currentTimeMillis());\r\n    TestIOUtils.testSerializeDeserialize(query);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testNewInstance",
+  "sourceCode" : "@Test\r\npublic void testNewInstance() throws IOException, Exception {\r\n    log.info(\"test method: testNewInstance\");\r\n    DataStoreTestUtil.testNewPersistent(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testCreateSchema",
+  "sourceCode" : "@Test\r\npublic void testCreateSchema() throws Exception {\r\n    log.info(\"test method: testCreateSchema\");\r\n    DataStoreTestUtil.testCreateEmployeeSchema(employeeStore);\r\n    assertSchemaExists(\"Employee\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testAutoCreateSchema",
+  "sourceCode" : "@Test\r\npublic void testAutoCreateSchema() throws Exception {\r\n    log.info(\"test method: testAutoCreateSchema\");\r\n    DataStoreTestUtil.testAutoCreateSchema(employeeStore);\r\n    assertAutoCreateSchema();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testTruncateSchema",
+  "sourceCode" : "@Test\r\npublic void testTruncateSchema() throws Exception {\r\n    log.info(\"test method: testTruncateSchema\");\r\n    DataStoreTestUtil.testTruncateSchema(webPageStore);\r\n    assertSchemaExists(\"WebPage\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testDeleteSchema",
+  "sourceCode" : "@Test\r\npublic void testDeleteSchema() throws IOException, Exception {\r\n    log.info(\"test method: testDeleteSchema\");\r\n    DataStoreTestUtil.testDeleteSchema(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testSchemaExists",
+  "sourceCode" : "@Test\r\npublic void testSchemaExists() throws Exception {\r\n    log.info(\"test method: testSchemaExists\");\r\n    DataStoreTestUtil.testSchemaExists(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testPut",
+  "sourceCode" : "@Test\r\npublic void testPut() throws IOException, Exception {\r\n    log.info(\"test method: testPut\");\r\n    Employee employee = DataStoreTestUtil.testPutEmployee(employeeStore);\r\n    assertPut(employee);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testPutNested",
+  "sourceCode" : "@Test\r\npublic void testPutNested() throws IOException, Exception {\r\n    log.info(\"test method: testPutNested\");\r\n    DataStoreTestUtil.testPutNested(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testPutArray",
+  "sourceCode" : "@Test\r\npublic void testPutArray() throws IOException, Exception {\r\n    log.info(\"test method: testPutArray\");\r\n    DataStoreTestUtil.testPutArray(webPageStore);\r\n    assertPutArray();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testPutBytes",
+  "sourceCode" : "@Test\r\npublic void testPutBytes() throws IOException, Exception {\r\n    log.info(\"test method: testPutBytes\");\r\n    byte[] contentBytes = DataStoreTestUtil.testPutBytes(webPageStore);\r\n    assertPutBytes(contentBytes);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testPutMap",
+  "sourceCode" : "@Test\r\npublic void testPutMap() throws IOException, Exception {\r\n    log.info(\"test method: testPutMap\");\r\n    DataStoreTestUtil.testPutMap(webPageStore);\r\n    assertPutMap();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testUpdate",
+  "sourceCode" : "@Test\r\npublic void testUpdate() throws IOException, Exception {\r\n    log.info(\"test method: testUpdate\");\r\n    DataStoreTestUtil.testUpdateEmployee(employeeStore);\r\n    DataStoreTestUtil.testUpdateWebPage(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGet",
+  "sourceCode" : "@Test\r\npublic void testGet() throws IOException, Exception {\r\n    log.info(\"test method: testGet\");\r\n    DataStoreTestUtil.testGetEmployee(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGetRecursive",
+  "sourceCode" : "@Test\r\npublic /**\r\n * Tests put and get a record with a nested recursive record\r\n * Employee with a boss (nested).\r\n * @throws IOException\r\n * @throws Exception\r\n */\r\nvoid testGetRecursive() throws IOException, Exception {\r\n    log.info(\"test method: testGetRecursive\");\r\n    DataStoreTestUtil.testGetEmployeeRecursive(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGetDoubleRecursive",
+  "sourceCode" : "@Test\r\npublic /**\r\n * Tests put and get a record with a double  nested recursive record\r\n * Employee with a boss (nested).\r\n * @throws IOException\r\n * @throws Exception\r\n */\r\nvoid testGetDoubleRecursive() throws IOException, Exception {\r\n    log.info(\"test method: testGetDoubleRecursive\");\r\n    DataStoreTestUtil.testGetEmployeeDoubleRecursive(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGetNested",
+  "sourceCode" : "@Test\r\npublic /**\r\n * Tests put and get a record with a nested record (not recursive)\r\n * The webpage of an Employee\r\n * @throws IOException\r\n * @throws Exception\r\n */\r\nvoid testGetNested() throws IOException, Exception {\r\n    log.info(\"test method: testGetNested\");\r\n    DataStoreTestUtil.testGetEmployeeNested(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGet3UnionField",
+  "sourceCode" : "@Test\r\npublic /**\r\n * Tests put and get a record with a 3 types union, and\r\n * having the value of the 3rd type.\r\n * @throws IOException\r\n * @throws Exception\r\n */\r\nvoid testGet3UnionField() throws IOException, Exception {\r\n    log.info(\"test method: testGet3UnionField\");\r\n    DataStoreTestUtil.testGetEmployee3UnionField(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGetWithFields",
+  "sourceCode" : "@Test\r\npublic void testGetWithFields() throws IOException, Exception {\r\n    log.info(\"test method: testGetWithFields\");\r\n    DataStoreTestUtil.testGetEmployeeWithFields(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGetWebPage",
+  "sourceCode" : "@Test\r\npublic void testGetWebPage() throws IOException, Exception {\r\n    log.info(\"test method: testGetWebPage\");\r\n    DataStoreTestUtil.testGetWebPage(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGetWebPageDefaultFields",
+  "sourceCode" : "@Test\r\npublic void testGetWebPageDefaultFields() throws IOException, Exception {\r\n    log.info(\"test method: testGetWebPageDefaultFields\");\r\n    DataStoreTestUtil.testGetWebPageDefaultFields(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGetNonExisting",
+  "sourceCode" : "@Test\r\npublic void testGetNonExisting() throws Exception, Exception {\r\n    log.info(\"test method: testGetNonExisting\");\r\n    DataStoreTestUtil.testGetEmployeeNonExisting(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testQuery",
+  "sourceCode" : "@Test\r\npublic void testQuery() throws IOException, Exception {\r\n    log.info(\"test method: testQuery\");\r\n    DataStoreTestUtil.testQueryWebPages(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testQueryStartKey",
+  "sourceCode" : "@Test\r\npublic void testQueryStartKey() throws IOException, Exception {\r\n    log.info(\"test method: testQueryStartKey\");\r\n    DataStoreTestUtil.testQueryWebPageStartKey(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testQueryEndKey",
+  "sourceCode" : "@Test\r\npublic void testQueryEndKey() throws IOException, Exception {\r\n    log.info(\"test method: testQueryEndKey\");\r\n    DataStoreTestUtil.testQueryWebPageEndKey(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testQueryKeyRange",
+  "sourceCode" : "@Test\r\npublic void testQueryKeyRange() throws IOException, Exception {\r\n    log.info(\"test method: testQueryKetRange\");\r\n    DataStoreTestUtil.testQueryWebPageKeyRange(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testQueryWebPageSingleKey",
+  "sourceCode" : "@Test\r\npublic void testQueryWebPageSingleKey() throws IOException, Exception {\r\n    log.info(\"test method: testQueryWebPageSingleKey\");\r\n    DataStoreTestUtil.testQueryWebPageSingleKey(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testQueryWebPageSingleKeyDefaultFields",
+  "sourceCode" : "@Test\r\npublic void testQueryWebPageSingleKeyDefaultFields() throws IOException, Exception {\r\n    log.info(\"test method: testQuerySingleKeyDefaultFields\");\r\n    DataStoreTestUtil.testQueryWebPageSingleKeyDefaultFields(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testQueryWebPageQueryEmptyResults",
+  "sourceCode" : "@Test\r\npublic void testQueryWebPageQueryEmptyResults() throws IOException, Exception {\r\n    log.info(\"test method: testQueryEmptyResults\");\r\n    DataStoreTestUtil.testQueryWebPageEmptyResults(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testDelete",
+  "sourceCode" : "@Test\r\npublic void testDelete() throws IOException, Exception {\r\n    log.info(\"test method: testDelete\");\r\n    DataStoreTestUtil.testDelete(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testDeleteByQuery",
+  "sourceCode" : "@Test\r\npublic void testDeleteByQuery() throws IOException, Exception {\r\n    log.info(\"test method: testDeleteByQuery\");\r\n    DataStoreTestUtil.testDeleteByQuery(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testDeleteByQueryFields",
+  "sourceCode" : "@Test\r\npublic void testDeleteByQueryFields() throws IOException, Exception {\r\n    log.info(\"test method: testQueryByQueryFields\");\r\n    DataStoreTestUtil.testDeleteByQueryFields(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGetPartitions",
+  "sourceCode" : "@Test\r\npublic void testGetPartitions() throws IOException, Exception {\r\n    log.info(\"test method: testGetPartitions\");\r\n    DataStoreTestUtil.testGetPartitions(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\TestDataStoreFactory.java",
+  "methodName" : "testGetDataStore",
+  "sourceCode" : "@Test\r\npublic void testGetDataStore() throws GoraException {\r\n    DataStore<?, ?> dataStore = DataStoreFactory.getDataStore(\"org.apache.gora.mock.store.MockDataStore\", String.class, MockPersistent.class, conf);\r\n    assertNotNull(dataStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\TestDataStoreFactory.java",
+  "methodName" : "testGetClasses",
+  "sourceCode" : "@Test\r\npublic void testGetClasses() throws GoraException {\r\n    DataStore<?, ?> dataStore = DataStoreFactory.getDataStore(\"org.apache.gora.mock.store.MockDataStore\", String.class, MockPersistent.class, conf);\r\n    assertNotNull(dataStore);\r\n    assertEquals(String.class, dataStore.getKeyClass());\r\n    assertEquals(MockPersistent.class, dataStore.getPersistentClass());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\TestDataStoreFactory.java",
+  "methodName" : "testGetDataStore2",
+  "sourceCode" : "@Test\r\npublic void testGetDataStore2() throws GoraException {\r\n    DataStore<?, ?> dataStore = DataStoreFactory.getDataStore(MockDataStore.class, String.class, MockPersistent.class, conf);\r\n    assertNotNull(dataStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\TestDataStoreFactory.java",
+  "methodName" : "testGetDataStore3",
+  "sourceCode" : "@Test\r\npublic void testGetDataStore3() throws GoraException {\r\n    DataStore<?, ?> dataStore1 = DataStoreFactory.getDataStore(\"org.apache.gora.mock.store.MockDataStore\", Object.class, MockPersistent.class, conf);\r\n    DataStore<?, ?> dataStore2 = DataStoreFactory.getDataStore(\"org.apache.gora.mock.store.MockDataStore\", Object.class, MockPersistent.class, conf);\r\n    DataStore<?, ?> dataStore3 = DataStoreFactory.getDataStore(\"org.apache.gora.mock.store.MockDataStore\", String.class, MockPersistent.class, conf);\r\n    assertNotSame(dataStore1, dataStore2);\r\n    assertNotSame(dataStore1, dataStore3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\TestDataStoreFactory.java",
+  "methodName" : "testReadProperties",
+  "sourceCode" : "@Test\r\npublic void testReadProperties() throws GoraException {\r\n    //indirect testing\r\n    DataStore<?, ?> dataStore = DataStoreFactory.getDataStore(String.class, MockPersistent.class, conf);\r\n    assertNotNull(dataStore);\r\n    assertEquals(MockDataStore.class, dataStore.getClass());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\TestDataStoreFactory.java",
+  "methodName" : "testFindProperty",
+  "sourceCode" : "@Test\r\npublic void testFindProperty() {\r\n    Properties properties = DataStoreFactory.createProps();\r\n    DataStore<String, MockPersistent> store = new DataFileAvroStore<String, MockPersistent>();\r\n    String fooValue = DataStoreFactory.findProperty(properties, store, \"foo_property\", \"foo_default\");\r\n    assertEquals(\"foo_value\", fooValue);\r\n    String bazValue = DataStoreFactory.findProperty(properties, store, \"baz_property\", \"baz_default\");\r\n    assertEquals(\"baz_value\", bazValue);\r\n    String barValue = DataStoreFactory.findProperty(properties, store, \"bar_property\", \"bar_default\");\r\n    assertEquals(\"bar_value\", barValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testNewInstance",
+  "sourceCode" : "@Test\r\npublic void testNewInstance() throws IOException, Exception {\r\n    log.info(\"test method: testNewInstance\");\r\n    DataStoreTestUtil.testNewPersistent(dataStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testCreateSchema",
+  "sourceCode" : "@Test\r\npublic void testCreateSchema() throws Exception {\r\n    log.info(\"test method: testCreateSchema\");\r\n    assertSchemaExists(\"person\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testAutoCreateSchema",
+  "sourceCode" : "@Test\r\npublic void testAutoCreateSchema() throws Exception {\r\n    log.info(\"test method: testAutoCreateSchema\");\r\n    assertAutoCreateSchema();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testTruncateSchema",
+  "sourceCode" : "@Test\r\npublic void testTruncateSchema() throws Exception {\r\n    log.info(\"test method: testTruncateSchema\");\r\n    assertSchemaExists(\"person\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testDeleteSchema",
+  "sourceCode" : "@Test\r\npublic void testDeleteSchema() throws IOException, Exception {\r\n    log.info(\"test method: testDeleteSchema\");\r\n    assertDeleteSchema();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testSchemaExists",
+  "sourceCode" : "@Test\r\npublic void testSchemaExists() throws Exception {\r\n    log.info(\"test method: testSchemaExists\");\r\n    assertTrue(dataStore.schemaExists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testPut",
+  "sourceCode" : "@Test\r\npublic void testPut() throws IOException, Exception {\r\n    log.info(\"test method: testPut\");\r\n    assertPut();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testPutNested",
+  "sourceCode" : "@Test\r\npublic void testPutNested() throws IOException, Exception {\r\n    log.info(\"test method: testPutNested\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testPutArray",
+  "sourceCode" : "@Test\r\npublic void testPutArray() throws IOException, Exception {\r\n    log.info(\"test method: testPutArray\");\r\n    assertPutArray();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testPutBytes",
+  "sourceCode" : "@Test\r\npublic void testPutBytes() throws IOException, Exception {\r\n    log.info(\"test method: testPutBytes\");\r\n    byte[] contentBytes = \"example content in example.com\".getBytes();\r\n    assertPutBytes(contentBytes);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testPutMap",
+  "sourceCode" : "@Test\r\npublic void testPutMap() throws IOException, Exception {\r\n    log.info(\"test method: testPutMap\");\r\n    assertPutMap();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testUpdate",
+  "sourceCode" : "@Test\r\npublic void testUpdate() throws IOException, Exception {\r\n    log.info(\"test method: testUpdate\");\r\n    assertTestUpdateDataStore();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testEmptyUpdate",
+  "sourceCode" : "@Ignore\r\n@Test\r\npublic void testEmptyUpdate() throws IOException, Exception {\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testGet",
+  "sourceCode" : "@Test\r\npublic void testGet() throws IOException, Exception {\r\n    log.info(\"test method: testGet\");\r\n    assertTestGetDataStore();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testGetWithFields",
+  "sourceCode" : "@Test\r\npublic void testGetWithFields() throws IOException, Exception {\r\n    log.info(\"test method: testGetWithFields\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testQuery",
+  "sourceCode" : "@Test\r\npublic void testQuery() throws IOException, Exception {\r\n    log.info(\"test method: testQuery\");\r\n    assertTestQueryDataStore();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testQueryStartKey",
+  "sourceCode" : "@Test\r\npublic void testQueryStartKey() throws IOException, Exception {\r\n    log.info(\"test method: testQueryStartKey\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testQueryEndKey",
+  "sourceCode" : "@Test\r\npublic void testQueryEndKey() throws IOException, Exception {\r\n    log.info(\"test method: testQueryEndKey\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testQueryKeyRange",
+  "sourceCode" : "@Test\r\npublic void testQueryKeyRange() throws IOException, Exception {\r\n    log.info(\"test method: testQueryKetRange\");\r\n    assertTestQueryKeyRange();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testDelete",
+  "sourceCode" : "@Test\r\npublic void testDelete() throws IOException, Exception {\r\n    log.info(\"test method: testDelete\");\r\n    assertTestDeleteDataStore();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testDeleteByQuery",
+  "sourceCode" : "@Test\r\npublic void testDeleteByQuery() throws IOException, Exception {\r\n    log.info(\"test method: testDeleteByQuery\");\r\n    assertTestDeleteByQueryDataStore();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testDeleteByQueryFields",
+  "sourceCode" : "@Test\r\npublic void testDeleteByQueryFields() throws IOException, Exception {\r\n    log.info(\"test method: testQueryByQueryFields\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\util\\TestIOUtils.java",
+  "methodName" : "testWritableSerde",
+  "sourceCode" : "@Test\r\npublic void testWritableSerde() throws Exception {\r\n    Text text = new Text(\"foo goes to a bar to get some buzz\");\r\n    testSerializeDeserialize(text);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\util\\TestIOUtils.java",
+  "methodName" : "testJavaSerializableSerde",
+  "sourceCode" : "@Test\r\npublic void testJavaSerializableSerde() throws Exception {\r\n    Integer integer = Integer.valueOf(42);\r\n    testSerializeDeserialize(integer);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\util\\TestIOUtils.java",
+  "methodName" : "testReadWriteBoolArray",
+  "sourceCode" : "@Test\r\npublic void testReadWriteBoolArray() throws Exception {\r\n    boolean[][] patterns = { { true }, { false }, { true, false }, { false, true }, { true, false, true }, { false, true, false }, { false, true, false, false, true, true, true }, { false, true, false, false, true, true, true, true }, { false, true, false, false, true, true, true, true, false } };\r\n    for (int i = 0; i < BOOL_ARRAY_MAX_LENGTH; i++) {\r\n        for (int j = 0; j < patterns.length; j++) {\r\n            boolean[] arr = new boolean[i];\r\n            for (int k = 0; k < i; k++) {\r\n                arr[k] = patterns[j][k % patterns[j].length];\r\n            }\r\n            testSerializeDeserialize(new BoolArrayWrapper(arr));\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\util\\TestIOUtils.java",
+  "methodName" : "testReadWriteNullFieldsInfo",
+  "sourceCode" : "@Test\r\npublic void testReadWriteNullFieldsInfo() throws IOException {\r\n    //null\r\n    Integer n = null;\r\n    //not null\r\n    Integer nn = new Integer(42);\r\n    testNullFieldsWith(nn);\r\n    testNullFieldsWith(n);\r\n    testNullFieldsWith(n, nn);\r\n    testNullFieldsWith(nn, n);\r\n    testNullFieldsWith(nn, n, nn, n);\r\n    testNullFieldsWith(nn, n, nn, n, n, n, nn, nn, nn, n, n);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\util\\TestIOUtils.java",
+  "methodName" : "testReadWriteStringArray",
+  "sourceCode" : "@Test\r\npublic void testReadWriteStringArray() throws Exception {\r\n    for (int i = 0; i < STRING_ARRAY_MAX_LENGTH; i++) {\r\n        String[] arr = new String[i];\r\n        for (int j = 0; j < i; j++) {\r\n            arr[j] = String.valueOf(j);\r\n        }\r\n        testSerializeDeserialize(new StringArrayWrapper(arr));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\util\\TestIOUtils.java",
+  "methodName" : "testReadFullyBufferLimit",
+  "sourceCode" : "@Test\r\npublic void testReadFullyBufferLimit() throws IOException {\r\n    for (int i = -2; i <= 2; i++) {\r\n        byte[] bytes = new byte[IOUtils.BUFFER_SIZE + i];\r\n        for (int j = 0; j < bytes.length; j++) {\r\n            bytes[j] = (byte) j;\r\n        }\r\n        ByteArrayInputStream is = new ByteArrayInputStream(bytes);\r\n        byte[] readBytes = IOUtils.readFully(is);\r\n        assertByteArrayEquals(bytes, readBytes);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\util\\TestWritableUtils.java",
+  "methodName" : "testWritesReads",
+  "sourceCode" : "@Test\r\npublic void testWritesReads() throws Exception {\r\n    Properties props = new Properties();\r\n    props.put(\"keyBlah\", \"valueBlah\");\r\n    props.put(\"keyBlah2\", \"valueBlah2\");\r\n    ByteArrayOutputStream bos = new ByteArrayOutputStream();\r\n    DataOutput out = new DataOutputStream(bos);\r\n    WritableUtils.writeProperties(out, props);\r\n    DataInput in = new DataInputStream(new ByteArrayInputStream(bos.toByteArray()));\r\n    Properties propsRead = WritableUtils.readProperties(in);\r\n    assertEquals(propsRead.get(\"keyBlah\"), props.get(\"keyBlah\"));\r\n    assertEquals(propsRead.get(\"keyBlah2\"), props.get(\"keyBlah2\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-hbase\\src\\test\\java\\org\\apache\\gora\\hbase\\mapreduce\\TestHBaseStoreCountQuery.java",
+  "methodName" : "testCountQuery",
+  "sourceCode" : "@Test\r\npublic void testCountQuery() throws Exception {\r\n    MapReduceTestUtils.testCountQuery(webPageStore, cluster.getConf());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-hbase\\src\\test\\java\\org\\apache\\gora\\hbase\\mapreduce\\TestHBaseStoreWordCount.java",
+  "methodName" : "testWordCount",
+  "sourceCode" : "@Test\r\npublic void testWordCount() throws Exception {\r\n    MapReduceTestUtils.testWordCount(cluster.getConf(), webPageStore, tokenStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-hbase\\src\\test\\java\\org\\apache\\gora\\hbase\\store\\TestHBaseStore.java",
+  "methodName" : "assertTopLevelUnions",
+  "sourceCode" : "/**\r\n * Checks that when writing a top level union <code>['null','type']</code> the value is written in raw format\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void assertTopLevelUnions() throws Exception {\r\n    WebPage page = webPageStore.newPersistent();\r\n    // Write webpage data\r\n    page.setUrl(new Utf8(\"http://example.com\"));\r\n    byte[] contentBytes = \"example content in example.com\".getBytes();\r\n    ByteBuffer buff = ByteBuffer.wrap(contentBytes);\r\n    page.setContent(buff);\r\n    webPageStore.put(\"com.example/http\", page);\r\n    webPageStore.flush();\r\n    // Read directly from HBase\r\n    HTable table = new HTable(\"WebPage\");\r\n    Get get = new Get(Bytes.toBytes(\"com.example/http\"));\r\n    org.apache.hadoop.hbase.client.Result result = table.get(get);\r\n    byte[] bytesRead = result.getValue(Bytes.toBytes(\"content\"), null);\r\n    assertNotNull(bytesRead);\r\n    assertTrue(Arrays.equals(bytesRead, contentBytes));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-hbase\\src\\test\\java\\org\\apache\\gora\\hbase\\store\\TestHBaseStore.java",
+  "methodName" : "assertTopLevelUnionsNull",
+  "sourceCode" : "/**\r\n * Checks that when writing a top level union <code>['null','type']</code> with the option <code>RAW_ROOT_FIELDS_OPTION=true</code>\r\n * the column is not created, and when <code>RAW_ROOT_FIELDS_OPTION=false</code> the <code>null</code> value is serialized\r\n * with Avro.\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void assertTopLevelUnionsNull() throws Exception {\r\n    WebPage page = webPageStore.newPersistent();\r\n    // Write webpage data\r\n    page.setUrl(new Utf8(\"http://example.com\"));\r\n    // This won't change internal field status to dirty, so\r\n    page.setContent(null);\r\n    // need to change it manually\r\n    page.setDirty(\"content\");\r\n    webPageStore.put(\"com.example/http\", page);\r\n    webPageStore.flush();\r\n    // Read directly from HBase\r\n    HTable table = new HTable(\"WebPage\");\r\n    Get get = new Get(Bytes.toBytes(\"com.example/http\"));\r\n    org.apache.hadoop.hbase.client.Result result = table.get(get);\r\n    byte[] contentBytes = result.getValue(Bytes.toBytes(\"content\"), null);\r\n    assertNull(webPageStore.get(\"com.example/http\", new String[] { \"content\" }));\r\n    assertTrue(contentBytes == null || contentBytes.length == 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-hbase\\src\\test\\java\\org\\apache\\gora\\hbase\\store\\TestHBaseStore.java",
+  "methodName" : "assertScannerCachingValue",
+  "sourceCode" : "@Test\r\npublic void assertScannerCachingValue() {\r\n    assertEquals(1000, ((HBaseStore<String, WebPage>) this.webPageStore).getScannerCaching());\r\n    assertEquals(1000, ((HBaseStore<String, Employee>) this.employeeStore).getScannerCaching());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-hbase\\src\\test\\java\\org\\apache\\gora\\hbase\\util\\TestHBaseByteInterface.java",
+  "methodName" : "testEncodingDecoding",
+  "sourceCode" : "@Test\r\npublic void testEncodingDecoding() throws Exception {\r\n    for (int i = 0; i < 1000; i++) {\r\n        //employer\r\n        Utf8 name = new Utf8(\"john\");\r\n        long dateOfBirth = System.currentTimeMillis();\r\n        int salary = 1337;\r\n        Utf8 ssn = new Utf8(String.valueOf(RANDOM.nextLong()));\r\n        Employee e = new Employee();\r\n        e.setName(name);\r\n        e.setDateOfBirth(dateOfBirth);\r\n        e.setSalary(salary);\r\n        e.setSsn(ssn);\r\n        byte[] employerBytes = HBaseByteInterface.toBytes(e, Employee._SCHEMA);\r\n        Employee e2 = (Employee) HBaseByteInterface.fromBytes(Employee._SCHEMA, employerBytes);\r\n        assertEquals(name, e2.getName());\r\n        assertEquals(dateOfBirth, e2.getDateOfBirth());\r\n        assertEquals(salary, e2.getSalary());\r\n        assertEquals(ssn, e2.getSsn());\r\n        //metadata\r\n        Utf8 key = new Utf8(\"theKey\");\r\n        Utf8 value = new Utf8(\"theValue \" + RANDOM.nextLong());\r\n        Metadata m = new Metadata();\r\n        m.putToData(key, value);\r\n        byte[] datumBytes = HBaseByteInterface.toBytes(m, Metadata._SCHEMA);\r\n        Metadata m2 = (Metadata) HBaseByteInterface.fromBytes(Metadata._SCHEMA, datumBytes);\r\n        assertEquals(value, m2.getFromData(key));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-hbase\\src\\test\\java\\org\\apache\\gora\\hbase\\util\\TestHBaseByteInterface.java",
+  "methodName" : "testEncodingDecodingMultithreaded",
+  "sourceCode" : "@Test\r\npublic void testEncodingDecodingMultithreaded() throws Exception {\r\n    // create a fixed thread pool\r\n    int numThreads = 8;\r\n    ExecutorService pool = Executors.newFixedThreadPool(numThreads);\r\n    // define a list of tasks\r\n    Collection<Callable<Integer>> tasks = new ArrayList<Callable<Integer>>();\r\n    for (int i = 0; i < numThreads; i++) {\r\n        tasks.add(new Callable<Integer>() {\r\n\r\n            @Override\r\n            public Integer call() {\r\n                try {\r\n                    // run a sequence\r\n                    testEncodingDecoding();\r\n                    // everything ok, return 0\r\n                    return 0;\r\n                } catch (Exception e) {\r\n                    e.printStackTrace();\r\n                    // this will fail the test\r\n                    return 1;\r\n                }\r\n            }\r\n        });\r\n    }\r\n    // submit them at once\r\n    List<Future<Integer>> results = pool.invokeAll(tasks);\r\n    // check results\r\n    for (Future<Integer> result : results) {\r\n        assertEquals(0, (int) result.get());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

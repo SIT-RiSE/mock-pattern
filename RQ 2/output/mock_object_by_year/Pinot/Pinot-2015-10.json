@@ -1,0 +1,172 @@
+[
+  {
+    "rawMockObjectId": 1,
+    "variableName": "starTreeManager",
+    "variableType": "StarTreeManager",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "com.linkedin.thirdeye.query",
+      "filePath": "C:\\Java_projects\\temp_projects\\Pinot\\thirdeye\\thirdeye-query\\src\\test\\java\\com\\linkedin\\thirdeye\\query\\TestThirdEyeQueryExecutor.java"
+    },
+    "statements": [
+      {
+        "code": "StarTreeManager starTreeManager = mock(StarTreeManager.class);",
+        "line": 67,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "beforeClass",
+          "methodAnnotations": [
+            "BeforeClass"
+          ],
+          "methodRawCode": "@BeforeClass\r\npublic void beforeClass() throws Exception {\r\n    config = StarTreeConfig.decode(ClassLoader.getSystemResourceAsStream(\"test-config.yml\"));\r\n    start = new DateTime(TimeUnit.MILLISECONDS.convert(0, TimeUnit.HOURS));\r\n    end = new DateTime(TimeUnit.MILLISECONDS.convert(4, TimeUnit.HOURS));\r\n    MetricSchema metricSchema = MetricSchema.fromMetricSpecs(config.getMetrics());\r\n    StarTree starTree = new StarTreeImpl(config);\r\n    starTree.open();\r\n    for (int i = 0; i < 1024; i++) {\r\n        MetricTimeSeries timeSeries = new MetricTimeSeries(metricSchema);\r\n        timeSeries.increment(i / 256, \"M\", 1);\r\n        starTree.add(new StarTreeRecordImpl(config, new DimensionKey(new String[] { \"A\" + i % 2, \"B\" + i % 4, \"C\" + i % 8 }), timeSeries));\r\n    }\r\n    PrintWriter printWriter = new PrintWriter(System.out);\r\n    StarTreeUtils.printNode(printWriter, starTree.getRoot(), 0);\r\n    printWriter.flush();\r\n    StarTreeManager starTreeManager = mock(StarTreeManager.class);\r\n    when(starTreeManager.getCollections()).thenReturn(ImmutableSet.of(config.getCollection()));\r\n    when(starTreeManager.getConfig(config.getCollection())).thenReturn(config);\r\n    when(starTreeManager.getStarTrees(config.getCollection())).thenReturn(ImmutableMap.of(new File(\"dummy\"), starTree));\r\n    when(starTreeManager.getIndexMetadata(starTree.getRoot().getId())).thenReturn(new IndexMetadata(0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, \"HOURLY\", TimeUnit.HOURS.toString(), 1, IndexFormat.VARIABLE_SIZE));\r\n    executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());\r\n    queryExecutor = new ThirdEyeQueryExecutor(executorService, starTreeManager);\r\n}"
+        }
+      },
+      {
+        "code": "when(starTreeManager.getCollections()).thenReturn(ImmutableSet.of(config.getCollection()));",
+        "line": 68,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "beforeClass",
+          "methodAnnotations": [
+            "BeforeClass"
+          ],
+          "methodRawCode": "@BeforeClass\r\npublic void beforeClass() throws Exception {\r\n    config = StarTreeConfig.decode(ClassLoader.getSystemResourceAsStream(\"test-config.yml\"));\r\n    start = new DateTime(TimeUnit.MILLISECONDS.convert(0, TimeUnit.HOURS));\r\n    end = new DateTime(TimeUnit.MILLISECONDS.convert(4, TimeUnit.HOURS));\r\n    MetricSchema metricSchema = MetricSchema.fromMetricSpecs(config.getMetrics());\r\n    StarTree starTree = new StarTreeImpl(config);\r\n    starTree.open();\r\n    for (int i = 0; i < 1024; i++) {\r\n        MetricTimeSeries timeSeries = new MetricTimeSeries(metricSchema);\r\n        timeSeries.increment(i / 256, \"M\", 1);\r\n        starTree.add(new StarTreeRecordImpl(config, new DimensionKey(new String[] { \"A\" + i % 2, \"B\" + i % 4, \"C\" + i % 8 }), timeSeries));\r\n    }\r\n    PrintWriter printWriter = new PrintWriter(System.out);\r\n    StarTreeUtils.printNode(printWriter, starTree.getRoot(), 0);\r\n    printWriter.flush();\r\n    StarTreeManager starTreeManager = mock(StarTreeManager.class);\r\n    when(starTreeManager.getCollections()).thenReturn(ImmutableSet.of(config.getCollection()));\r\n    when(starTreeManager.getConfig(config.getCollection())).thenReturn(config);\r\n    when(starTreeManager.getStarTrees(config.getCollection())).thenReturn(ImmutableMap.of(new File(\"dummy\"), starTree));\r\n    when(starTreeManager.getIndexMetadata(starTree.getRoot().getId())).thenReturn(new IndexMetadata(0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, \"HOURLY\", TimeUnit.HOURS.toString(), 1, IndexFormat.VARIABLE_SIZE));\r\n    executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());\r\n    queryExecutor = new ThirdEyeQueryExecutor(executorService, starTreeManager);\r\n}"
+        }
+      },
+      {
+        "code": "when(starTreeManager.getConfig(config.getCollection())).thenReturn(config);",
+        "line": 69,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "beforeClass",
+          "methodAnnotations": [
+            "BeforeClass"
+          ],
+          "methodRawCode": "@BeforeClass\r\npublic void beforeClass() throws Exception {\r\n    config = StarTreeConfig.decode(ClassLoader.getSystemResourceAsStream(\"test-config.yml\"));\r\n    start = new DateTime(TimeUnit.MILLISECONDS.convert(0, TimeUnit.HOURS));\r\n    end = new DateTime(TimeUnit.MILLISECONDS.convert(4, TimeUnit.HOURS));\r\n    MetricSchema metricSchema = MetricSchema.fromMetricSpecs(config.getMetrics());\r\n    StarTree starTree = new StarTreeImpl(config);\r\n    starTree.open();\r\n    for (int i = 0; i < 1024; i++) {\r\n        MetricTimeSeries timeSeries = new MetricTimeSeries(metricSchema);\r\n        timeSeries.increment(i / 256, \"M\", 1);\r\n        starTree.add(new StarTreeRecordImpl(config, new DimensionKey(new String[] { \"A\" + i % 2, \"B\" + i % 4, \"C\" + i % 8 }), timeSeries));\r\n    }\r\n    PrintWriter printWriter = new PrintWriter(System.out);\r\n    StarTreeUtils.printNode(printWriter, starTree.getRoot(), 0);\r\n    printWriter.flush();\r\n    StarTreeManager starTreeManager = mock(StarTreeManager.class);\r\n    when(starTreeManager.getCollections()).thenReturn(ImmutableSet.of(config.getCollection()));\r\n    when(starTreeManager.getConfig(config.getCollection())).thenReturn(config);\r\n    when(starTreeManager.getStarTrees(config.getCollection())).thenReturn(ImmutableMap.of(new File(\"dummy\"), starTree));\r\n    when(starTreeManager.getIndexMetadata(starTree.getRoot().getId())).thenReturn(new IndexMetadata(0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, \"HOURLY\", TimeUnit.HOURS.toString(), 1, IndexFormat.VARIABLE_SIZE));\r\n    executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());\r\n    queryExecutor = new ThirdEyeQueryExecutor(executorService, starTreeManager);\r\n}"
+        }
+      },
+      {
+        "code": "when(starTreeManager.getStarTrees(config.getCollection())).thenReturn(ImmutableMap.of(new File(\"dummy\"), starTree));",
+        "line": 70,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "beforeClass",
+          "methodAnnotations": [
+            "BeforeClass"
+          ],
+          "methodRawCode": "@BeforeClass\r\npublic void beforeClass() throws Exception {\r\n    config = StarTreeConfig.decode(ClassLoader.getSystemResourceAsStream(\"test-config.yml\"));\r\n    start = new DateTime(TimeUnit.MILLISECONDS.convert(0, TimeUnit.HOURS));\r\n    end = new DateTime(TimeUnit.MILLISECONDS.convert(4, TimeUnit.HOURS));\r\n    MetricSchema metricSchema = MetricSchema.fromMetricSpecs(config.getMetrics());\r\n    StarTree starTree = new StarTreeImpl(config);\r\n    starTree.open();\r\n    for (int i = 0; i < 1024; i++) {\r\n        MetricTimeSeries timeSeries = new MetricTimeSeries(metricSchema);\r\n        timeSeries.increment(i / 256, \"M\", 1);\r\n        starTree.add(new StarTreeRecordImpl(config, new DimensionKey(new String[] { \"A\" + i % 2, \"B\" + i % 4, \"C\" + i % 8 }), timeSeries));\r\n    }\r\n    PrintWriter printWriter = new PrintWriter(System.out);\r\n    StarTreeUtils.printNode(printWriter, starTree.getRoot(), 0);\r\n    printWriter.flush();\r\n    StarTreeManager starTreeManager = mock(StarTreeManager.class);\r\n    when(starTreeManager.getCollections()).thenReturn(ImmutableSet.of(config.getCollection()));\r\n    when(starTreeManager.getConfig(config.getCollection())).thenReturn(config);\r\n    when(starTreeManager.getStarTrees(config.getCollection())).thenReturn(ImmutableMap.of(new File(\"dummy\"), starTree));\r\n    when(starTreeManager.getIndexMetadata(starTree.getRoot().getId())).thenReturn(new IndexMetadata(0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, \"HOURLY\", TimeUnit.HOURS.toString(), 1, IndexFormat.VARIABLE_SIZE));\r\n    executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());\r\n    queryExecutor = new ThirdEyeQueryExecutor(executorService, starTreeManager);\r\n}"
+        }
+      },
+      {
+        "code": "when(starTreeManager.getIndexMetadata(starTree.getRoot().getId())).thenReturn(new IndexMetadata(0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, \"HOURLY\", TimeUnit.HOURS.toString(), 1, IndexFormat.VARIABLE_SIZE));",
+        "line": 71,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "beforeClass",
+          "methodAnnotations": [
+            "BeforeClass"
+          ],
+          "methodRawCode": "@BeforeClass\r\npublic void beforeClass() throws Exception {\r\n    config = StarTreeConfig.decode(ClassLoader.getSystemResourceAsStream(\"test-config.yml\"));\r\n    start = new DateTime(TimeUnit.MILLISECONDS.convert(0, TimeUnit.HOURS));\r\n    end = new DateTime(TimeUnit.MILLISECONDS.convert(4, TimeUnit.HOURS));\r\n    MetricSchema metricSchema = MetricSchema.fromMetricSpecs(config.getMetrics());\r\n    StarTree starTree = new StarTreeImpl(config);\r\n    starTree.open();\r\n    for (int i = 0; i < 1024; i++) {\r\n        MetricTimeSeries timeSeries = new MetricTimeSeries(metricSchema);\r\n        timeSeries.increment(i / 256, \"M\", 1);\r\n        starTree.add(new StarTreeRecordImpl(config, new DimensionKey(new String[] { \"A\" + i % 2, \"B\" + i % 4, \"C\" + i % 8 }), timeSeries));\r\n    }\r\n    PrintWriter printWriter = new PrintWriter(System.out);\r\n    StarTreeUtils.printNode(printWriter, starTree.getRoot(), 0);\r\n    printWriter.flush();\r\n    StarTreeManager starTreeManager = mock(StarTreeManager.class);\r\n    when(starTreeManager.getCollections()).thenReturn(ImmutableSet.of(config.getCollection()));\r\n    when(starTreeManager.getConfig(config.getCollection())).thenReturn(config);\r\n    when(starTreeManager.getStarTrees(config.getCollection())).thenReturn(ImmutableMap.of(new File(\"dummy\"), starTree));\r\n    when(starTreeManager.getIndexMetadata(starTree.getRoot().getId())).thenReturn(new IndexMetadata(0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, 0L, Long.MAX_VALUE, \"HOURLY\", TimeUnit.HOURS.toString(), 1, IndexFormat.VARIABLE_SIZE));\r\n    executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());\r\n    queryExecutor = new ThirdEyeQueryExecutor(executorService, starTreeManager);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 2,
+    "variableName": "mockMetricRegistry",
+    "variableType": "MetricRegistry",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "com.linkedin.thirdeye.resource",
+      "filePath": "C:\\Java_projects\\temp_projects\\Pinot\\thirdeye\\thirdeye-server\\src\\test\\java\\com\\linkedin\\thirdeye\\resource\\TestCollectionsResource.java",
+      "className": "TestCollectionsResource"
+    },
+    "statements": [
+      {
+        "code": "private MetricRegistry mockMetricRegistry;",
+        "line": 26,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "mockMetricRegistry = mock(MetricRegistry.class);",
+        "line": 36,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "beforeMethod",
+          "methodAnnotations": [
+            "BeforeMethod"
+          ],
+          "methodRawCode": "@BeforeMethod\r\npublic void beforeMethod() throws Exception {\r\n    mockMetricRegistry = mock(MetricRegistry.class);\r\n    mockStarTreeManager = mock(StarTreeManager.class);\r\n    rootDir = new File(System.getProperty(\"java.io.tmpdir\"), TestCollectionsResource.class.getName());\r\n    try {\r\n        FileUtils.forceDelete(rootDir);\r\n    } catch (Exception e) {\r\n        /* ok */\r\n    }\r\n    try {\r\n        FileUtils.forceMkdir(rootDir);\r\n    } catch (Exception e) {\r\n        /* ok */\r\n    }\r\n    testCollectionsResource = new CollectionsResource(mockStarTreeManager, mockMetricRegistry, new DataUpdateManager(rootDir, false), rootDir);\r\n    collection = \"dummy\";\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 3,
+    "variableName": "mockStarTreeManager",
+    "variableType": "StarTreeManager",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "com.linkedin.thirdeye.resource",
+      "filePath": "C:\\Java_projects\\temp_projects\\Pinot\\thirdeye\\thirdeye-server\\src\\test\\java\\com\\linkedin\\thirdeye\\resource\\TestCollectionsResource.java",
+      "className": "TestCollectionsResource"
+    },
+    "statements": [
+      {
+        "code": "private StarTreeManager mockStarTreeManager;",
+        "line": 27,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "mockStarTreeManager = mock(StarTreeManager.class);",
+        "line": 37,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "beforeMethod",
+          "methodAnnotations": [
+            "BeforeMethod"
+          ],
+          "methodRawCode": "@BeforeMethod\r\npublic void beforeMethod() throws Exception {\r\n    mockMetricRegistry = mock(MetricRegistry.class);\r\n    mockStarTreeManager = mock(StarTreeManager.class);\r\n    rootDir = new File(System.getProperty(\"java.io.tmpdir\"), TestCollectionsResource.class.getName());\r\n    try {\r\n        FileUtils.forceDelete(rootDir);\r\n    } catch (Exception e) {\r\n        /* ok */\r\n    }\r\n    try {\r\n        FileUtils.forceMkdir(rootDir);\r\n    } catch (Exception e) {\r\n        /* ok */\r\n    }\r\n    testCollectionsResource = new CollectionsResource(mockStarTreeManager, mockMetricRegistry, new DataUpdateManager(rootDir, false), rootDir);\r\n    collection = \"dummy\";\r\n}"
+        }
+      }
+    ]
+  }
+]

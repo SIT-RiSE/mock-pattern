@@ -1,0 +1,1027 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\store\\AuthenticationTokenTest.java",
+  "methodName" : "testAuthenticationTokenIsSerializedCorrectly",
+  "sourceCode" : "@Test\r\npublic void testAuthenticationTokenIsSerializedCorrectly() throws Exception {\r\n    List<PartitionQuery<String, Employee>> partitions = employeeStore.getPartitions(employeeStore.newQuery());\r\n    LOG.debug(\"partitions {}\", partitions);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\store\\PartitionTest.java",
+  "methodName" : "test1",
+  "sourceCode" : "@Test\r\npublic void test1() throws IOException {\r\n    assertEquals(encl(0x006f000000000000l), (long) AccumuloStore.followingKey(encoder, Long.class, new byte[] { 0x00, 0x6f }));\r\n    assertEquals(encl(1l), (long) AccumuloStore.followingKey(encoder, Long.class, new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 }));\r\n    assertEquals(encl(0x106f000000000001l), (long) AccumuloStore.followingKey(encoder, Long.class, new byte[] { 0x10, 0x6f, 0, 0, 0, 0, 0, 0 }));\r\n    assertEquals(encl(-1l), (long) AccumuloStore.followingKey(encoder, Long.class, new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xfe }));\r\n    assertEquals(encl(0x8000000000000001l), (long) AccumuloStore.followingKey(encoder, Long.class, new byte[] { (byte) 0x80, 0, 0, 0, 0, 0, 0, 0 }));\r\n    assertEquals(encl(0x8000000000000000l), (long) AccumuloStore.followingKey(encoder, Long.class, new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff }));\r\n    try {\r\n        AccumuloStore.followingKey(encoder, Long.class, new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff });\r\n        assertTrue(false);\r\n    } catch (IllegalArgumentException iea) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\store\\PartitionTest.java",
+  "methodName" : "test2",
+  "sourceCode" : "@Test\r\npublic void test2() throws IOException {\r\n    assertEquals(encl(0x00ffffffffffffffl), (long) AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { 0x01 }));\r\n    assertEquals(encl(0x006effffffffffffl), (long) AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { 0x00, 0x6f }));\r\n    assertEquals(encl(0xff6effffffffffffl), (long) AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { (byte) 0xff, 0x6f }));\r\n    assertEquals(encl(0xfffeffffffffffffl), (long) AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { (byte) 0xff, (byte) 0xff }));\r\n    assertEquals(encl(0l), (long) AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { (byte) 0, 0, 0, 0, 0, 0, 0, 0 }));\r\n    assertEquals(encl(0x7effffffffffffffl), (long) AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { (byte) 0x7f }));\r\n    assertEquals(encl(0x7fffffffffffffffl), (long) AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { (byte) 0x80 }));\r\n    assertEquals(encl(0x80ffffffffffffffl), (long) AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { (byte) 0x81 }));\r\n    try {\r\n        AccumuloStore.lastPossibleKey(encoder, Long.class, new byte[] { (byte) 0, 0, 0, 0, 0, 0, 0 });\r\n        assertTrue(false);\r\n    } catch (IllegalArgumentException iea) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\util\\HexEncoderTest.java",
+  "methodName" : "testByte",
+  "sourceCode" : "@Test\r\npublic void testByte() {\r\n    HexEncoder encoder = new HexEncoder();\r\n    assertEquals(\"12\", new String(encoder.encodeByte((byte) 0x12), Charset.defaultCharset()));\r\n    assertEquals(\"f2\", new String(encoder.encodeByte((byte) 0xf2), Charset.defaultCharset()));\r\n    byte b = Byte.MIN_VALUE;\r\n    while (b != Byte.MAX_VALUE) {\r\n        assertEquals(b, encoder.decodeByte(encoder.encodeByte(b)));\r\n        b++;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\util\\HexEncoderTest.java",
+  "methodName" : "testShort",
+  "sourceCode" : "@Test\r\npublic void testShort() {\r\n    HexEncoder encoder = new HexEncoder();\r\n    assertEquals(\"1234\", new String(encoder.encodeShort((short) 0x1234), Charset.defaultCharset()));\r\n    assertEquals(\"f234\", new String(encoder.encodeShort((short) 0xf234), Charset.defaultCharset()));\r\n    short s = Short.MIN_VALUE;\r\n    while (s != Short.MAX_VALUE) {\r\n        assertEquals(s, encoder.decodeShort(encoder.encodeShort(s)));\r\n        s++;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\util\\SignedBinaryEncoderTest.java",
+  "methodName" : "testShort",
+  "sourceCode" : "@Test\r\npublic void testShort() throws IOException {\r\n    short s = Short.MIN_VALUE;\r\n    Text prev = null;\r\n    SignedBinaryEncoder encoder = new SignedBinaryEncoder();\r\n    while (true) {\r\n        byte[] enc = encoder.encodeShort(s);\r\n        assertEquals(s, encoder.decodeShort(enc));\r\n        Text current = new Text(enc);\r\n        if (prev != null)\r\n            assertTrue(prev.compareTo(current) < 0);\r\n        prev = current;\r\n        s++;\r\n        if (s == Short.MAX_VALUE)\r\n            break;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\util\\SignedBinaryEncoderTest.java",
+  "methodName" : "testInt",
+  "sourceCode" : "@Test\r\npublic void testInt() throws IOException {\r\n    testInt(Integer.MIN_VALUE, Integer.MIN_VALUE + (1 << 16));\r\n    testInt(-(1 << 15), (1 << 15));\r\n    testInt(Integer.MAX_VALUE - (1 << 16), Integer.MAX_VALUE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\util\\SignedBinaryEncoderTest.java",
+  "methodName" : "testLong",
+  "sourceCode" : "@Test\r\npublic void testLong() throws IOException {\r\n    testLong(Long.MIN_VALUE, Long.MIN_VALUE + (1 << 16));\r\n    testLong(-(1 << 15), (1 << 15));\r\n    testLong(Long.MAX_VALUE - (1 << 16), Long.MAX_VALUE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\util\\SignedBinaryEncoderTest.java",
+  "methodName" : "testDouble",
+  "sourceCode" : "@Test\r\npublic void testDouble() throws IOException {\r\n    ArrayList<Double> testData = new ArrayList<>();\r\n    testData.add(Double.NEGATIVE_INFINITY);\r\n    testData.add(Double.MIN_VALUE);\r\n    testData.add(Math.nextUp(Double.NEGATIVE_INFINITY));\r\n    testData.add(Math.pow(10.0, 30.0) * -1.0);\r\n    testData.add(Math.pow(10.0, 30.0));\r\n    testData.add(Math.pow(10.0, -30.0) * -1.0);\r\n    testData.add(Math.pow(10.0, -30.0));\r\n    testData.add(Math.nextAfter(0.0, Double.NEGATIVE_INFINITY));\r\n    testData.add(0.0);\r\n    testData.add(Math.nextAfter(Double.MAX_VALUE, Double.NEGATIVE_INFINITY));\r\n    testData.add(Double.MAX_VALUE);\r\n    testData.add(Double.POSITIVE_INFINITY);\r\n    Collections.sort(testData);\r\n    SignedBinaryEncoder encoder = new SignedBinaryEncoder();\r\n    for (int i = 0; i < testData.size(); i++) {\r\n        byte[] enc = encoder.encodeDouble(testData.get(i));\r\n        assertEquals(testData.get(i), (Double) encoder.decodeDouble(enc));\r\n        if (i > 1) {\r\n            assertTrue(\"Checking \" + testData.get(i) + \" > \" + testData.get(i - 1), new Text(enc).compareTo(new Text(encoder.encodeDouble(testData.get(i - 1)))) > 0);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-accumulo\\src\\test\\java\\org\\apache\\gora\\accumulo\\util\\SignedBinaryEncoderTest.java",
+  "methodName" : "testFloat",
+  "sourceCode" : "@Test\r\npublic void testFloat() throws IOException {\r\n    ArrayList<Float> testData = new ArrayList<>();\r\n    testData.add(Float.NEGATIVE_INFINITY);\r\n    testData.add(Float.MIN_VALUE);\r\n    testData.add(Math.nextUp(Float.NEGATIVE_INFINITY));\r\n    testData.add((float) Math.pow(10.0f, 30.0f) * -1.0f);\r\n    testData.add((float) Math.pow(10.0f, 30.0f));\r\n    testData.add((float) Math.pow(10.0f, -30.0f) * -1.0f);\r\n    testData.add((float) Math.pow(10.0f, -30.0f));\r\n    testData.add(Math.nextAfter(0.0f, Float.NEGATIVE_INFINITY));\r\n    testData.add(0.0f);\r\n    testData.add(Math.nextAfter(Float.MAX_VALUE, Float.NEGATIVE_INFINITY));\r\n    testData.add(Float.MAX_VALUE);\r\n    testData.add(Float.POSITIVE_INFINITY);\r\n    Collections.sort(testData);\r\n    SignedBinaryEncoder encoder = new SignedBinaryEncoder();\r\n    for (int i = 0; i < testData.size(); i++) {\r\n        byte[] enc = encoder.encodeFloat(testData.get(i));\r\n        assertEquals(testData.get(i), (Float) encoder.decodeFloat(enc));\r\n        if (i > 1) {\r\n            assertTrue(\"Checking \" + testData.get(i) + \" > \" + testData.get(i - 1), new Text(enc).compareTo(new Text(encoder.encodeFloat(testData.get(i - 1)))) > 0);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\avro\\store\\TestAvroStore.java",
+  "methodName" : "testNewInstance",
+  "sourceCode" : "@Test\r\npublic void testNewInstance() throws Exception {\r\n    DataStoreTestUtil.testNewPersistent(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\avro\\store\\TestAvroStore.java",
+  "methodName" : "testCreateSchema",
+  "sourceCode" : "@Test\r\npublic void testCreateSchema() throws Exception {\r\n    DataStoreTestUtil.testCreateEmployeeSchema(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\avro\\store\\TestAvroStore.java",
+  "methodName" : "testAutoCreateSchema",
+  "sourceCode" : "@Test\r\npublic void testAutoCreateSchema() throws Exception {\r\n    DataStoreTestUtil.testAutoCreateSchema(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\avro\\store\\TestAvroStore.java",
+  "methodName" : "testPut",
+  "sourceCode" : "@Test\r\npublic void testPut() throws Exception {\r\n    DataStoreTestUtil.testPutEmployee(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\avro\\store\\TestAvroStore.java",
+  "methodName" : "testQuery",
+  "sourceCode" : "@Test\r\npublic void testQuery() throws Exception {\r\n    createWebPageData(webPageStore);\r\n    webPageStore.close();\r\n    webPageStore.setInputPath(webPageStore.getOutputPath());\r\n    testQueryWebPages(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\avro\\store\\TestAvroStore.java",
+  "methodName" : "testQueryBinaryEncoder",
+  "sourceCode" : "@Test\r\npublic void testQueryBinaryEncoder() throws Exception {\r\n    webPageStore.setCodecType(CodecType.BINARY);\r\n    webPageStore.setInputPath(webPageStore.getOutputPath());\r\n    createWebPageData(webPageStore);\r\n    webPageStore.close();\r\n    testQueryWebPages(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\examples\\TestWebPageDataCreator.java",
+  "methodName" : "testCreatesData",
+  "sourceCode" : "@Test\r\npublic void testCreatesData() throws IOException {\r\n    MemStore<String, WebPage> dataStore = new MemStore<>();\r\n    WebPageDataCreator.createWebPageData(dataStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\filter\\TestFilterList.java",
+  "methodName" : "testGetFilters",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.gora.filter.FilterList#getFilters()}.\r\n */\r\n@Test\r\npublic void testGetFilters() {\r\n    filterList = new FilterList<>(Operator.MUST_PASS_ALL, fList);\r\n    List<Filter<String, WebPage>> copyList = filterList.getFilters();\r\n    assertEquals(2, filterList.getFilters().size());\r\n    assertEquals(2, copyList.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\filter\\TestFilterList.java",
+  "methodName" : "testGetOperator",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.gora.filter.FilterList#getOperator()}.\r\n */\r\n@Test\r\npublic void testGetOperator() {\r\n    filterList = new FilterList<>(Operator.MUST_PASS_ALL, fList);\r\n    assertEquals(Operator.MUST_PASS_ALL, filterList.getOperator());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\filter\\TestFilterList.java",
+  "methodName" : "testAddFilter",
+  "sourceCode" : "/**\r\n * Test method for {@link org.apache.gora.filter.FilterList#addFilter(org.apache.gora.filter.Filter)}.\r\n */\r\n@Test\r\npublic void testAddFilter() {\r\n    filterList = new FilterList<>(Operator.MUST_PASS_ALL, fList);\r\n    int a = 3;\r\n    for (int i = 0; i < 10; i++) {\r\n        filterList.addFilter(new SingleFieldValueFilter<String, WebPage>());\r\n        assertEquals(a++, filterList.getFilters().size());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\filter\\TestFilterList.java",
+  "methodName" : "testOperatorMustPassAll",
+  "sourceCode" : "/**\r\n * Test method for verifying\r\n * {@link org.apache.gora.filter.FilterList.Operator#MUST_PASS_ALL}\r\n * functionality.\r\n */\r\n@Test\r\npublic void testOperatorMustPassAll() {\r\n    filter1.setFieldName(WebPage.Field.OUTLINKS.toString());\r\n    filter1.setMapKey(new Utf8(\"example\"));\r\n    filter1.setFilterOp(FilterOp.EQUALS);\r\n    filter1.setFilterIfMissing(true);\r\n    filter1.getOperands().add(new Utf8(\"http://example.org\"));\r\n    filter2.setFieldName(WebPage.Field.OUTLINKS.toString());\r\n    filter2.setFilterOp(FilterOp.EQUALS);\r\n    filter2.setFilterIfMissing(true);\r\n    filter2.getOperands().add(new Utf8(\"http://example.org\"));\r\n    WebPage page = WebPage.newBuilder().build();\r\n    page.getOutlinks().put(new Utf8(\"example\"), new Utf8(\"http://example.org\"));\r\n    filterList = new FilterList<>(Operator.MUST_PASS_ALL, fList);\r\n    assertTrue(filterList.filter(\"irrelevant\", page));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\filter\\TestFilterList.java",
+  "methodName" : "testOperatorMustPassOne",
+  "sourceCode" : "/**\r\n * Test method for verifying\r\n * {@link org.apache.gora.filter.FilterList.Operator#MUST_PASS_ONE}\r\n * functionality.\r\n */\r\n@Test\r\npublic void testOperatorMustPassOne() {\r\n    filter1.setFieldName(WebPage.Field.OUTLINKS.toString());\r\n    filter1.setMapKey(new Utf8(\"example\"));\r\n    filter1.setFilterOp(FilterOp.EQUALS);\r\n    filter1.setFilterIfMissing(true);\r\n    filter1.getOperands().add(new Utf8(\"http://example.org\"));\r\n    filter2.setFieldName(WebPage.Field.OUTLINKS.toString());\r\n    filter2.setFilterOp(FilterOp.EQUALS);\r\n    filter2.setFilterIfMissing(true);\r\n    filter2.getOperands().add(new Utf8(\"http://example2.org\"));\r\n    WebPage page = WebPage.newBuilder().build();\r\n    page.getOutlinks().put(new Utf8(\"example\"), new Utf8(\"http://example.org\"));\r\n    filterList = new FilterList<>(Operator.MUST_PASS_ONE, fList);\r\n    assertTrue(filterList.filter(\"irrelevant\", page));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\filter\\TestMapFieldValueFilter.java",
+  "methodName" : "testSerialization",
+  "sourceCode" : "@Test\r\npublic void testSerialization() throws IOException {\r\n    MapFieldValueFilter<String, WebPage> filter = new MapFieldValueFilter<>();\r\n    //set filter field name as metadata\r\n    filter.setFieldName(WebPage.Field.METADATA.toString());\r\n    filter.setMapKey(new Utf8(\"fetchTime\"));\r\n    filter.setFilterOp(FilterOp.EQUALS);\r\n    filter.setFilterIfMissing(true);\r\n    filter.getOperands().add(new Utf8(\"http://example.org\"));\r\n    byte[] byteArray = WritableUtils.toByteArray(filter);\r\n    MapFieldValueFilter<String, WebPage> filter2 = new MapFieldValueFilter<>();\r\n    filter2.readFields(new DataInputStream(new ByteArrayInputStream(byteArray)));\r\n    assertEquals(filter.getFieldName(), filter2.getFieldName());\r\n    assertEquals(filter.getMapKey(), filter2.getMapKey());\r\n    assertEquals(filter.getFilterOp(), filter2.getFilterOp());\r\n    assertArrayEquals(filter.getOperands().toArray(), filter2.getOperands().toArray());\r\n    assertEquals(filter.isFilterIfMissing(), filter2.isFilterIfMissing());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\filter\\TestMapFieldValueFilter.java",
+  "methodName" : "testFilterBasics",
+  "sourceCode" : "@Test\r\npublic void testFilterBasics() {\r\n    MapFieldValueFilter<String, WebPage> filter = new MapFieldValueFilter<>();\r\n    //set filter field name as outlinks\r\n    filter.setFieldName(WebPage.Field.OUTLINKS.toString());\r\n    filter.setMapKey(new Utf8(\"example\"));\r\n    filter.setFilterOp(FilterOp.EQUALS);\r\n    filter.setFilterIfMissing(true);\r\n    filter.getOperands().add(new Utf8(\"http://example.org\"));\r\n    WebPage page = WebPage.newBuilder().build();\r\n    page.getOutlinks().put(new Utf8(\"example\"), new Utf8(\"http://example.org\"));\r\n    assertFalse(filter.filter(\"irrelevant\", page));\r\n    page.getOutlinks().put(new Utf8(\"example\"), new Utf8(\"http://example2.com\"));\r\n    assertTrue(filter.filter(\"irrelevant\", page));\r\n    page = new WebPage();\r\n    assertTrue(filter.filter(\"irrelevant\", page));\r\n    filter.setFilterIfMissing(false);\r\n    assertFalse(filter.filter(\"irrelevant\", page));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\filter\\TestMapFieldValueFilter.java",
+  "methodName" : "testFilterEntryInMap",
+  "sourceCode" : "@Test\r\npublic void testFilterEntryInMap() {\r\n    MapFieldValueFilter<String, WebPage> filter = new MapFieldValueFilter<>();\r\n    //set filter field name as outlinks\r\n    filter.setFieldName(WebPage.Field.OUTLINKS.toString());\r\n    filter.setMapKey(new Utf8(\"foobar.whatever\"));\r\n    filter.setFilterOp(FilterOp.EQUALS);\r\n    filter.setFilterIfMissing(true);\r\n    filter.getOperands().add(new Utf8(\"Click here for foobar!\"));\r\n    WebPage page = WebPage.newBuilder().build();\r\n    assertTrue(filter.filter(\"irrelevant\", page));\r\n    page.getOutlinks().put(new Utf8(\"foobar.whatever\"), new Utf8(\"Mismatch!\"));\r\n    assertTrue(filter.filter(\"irrelevant\", page));\r\n    page.getOutlinks().put(new Utf8(\"foobar.whatever\"), new Utf8(\"Click here for foobar!\"));\r\n    assertFalse(filter.filter(\"irrelevant\", page));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\filter\\TestSingleFieldValueFilter.java",
+  "methodName" : "testSerialization",
+  "sourceCode" : "@Test\r\npublic void testSerialization() throws IOException {\r\n    SingleFieldValueFilter<String, WebPage> filter = new SingleFieldValueFilter<>();\r\n    //set filter field to url\r\n    filter.setFieldName(WebPage.Field.URL.toString());\r\n    filter.setFilterOp(FilterOp.EQUALS);\r\n    filter.setFilterIfMissing(true);\r\n    filter.getOperands().add(new Utf8(\"http://example.org\"));\r\n    byte[] byteArray = WritableUtils.toByteArray(filter);\r\n    SingleFieldValueFilter<String, WebPage> filter2 = new SingleFieldValueFilter<>();\r\n    filter2.readFields(new DataInputStream(new ByteArrayInputStream(byteArray)));\r\n    assertEquals(filter.getFieldName(), filter2.getFieldName());\r\n    assertEquals(filter.getFilterOp(), filter2.getFilterOp());\r\n    assertArrayEquals(filter.getOperands().toArray(), filter2.getOperands().toArray());\r\n    assertEquals(filter.isFilterIfMissing(), filter2.isFilterIfMissing());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\filter\\TestSingleFieldValueFilter.java",
+  "methodName" : "testFilterBasics",
+  "sourceCode" : "@Test\r\npublic void testFilterBasics() {\r\n    SingleFieldValueFilter<String, WebPage> filter = new SingleFieldValueFilter<>();\r\n    //set filter field to url\r\n    filter.setFieldName(WebPage.Field.URL.toString());\r\n    filter.setFilterOp(FilterOp.EQUALS);\r\n    filter.setFilterIfMissing(true);\r\n    filter.getOperands().add(new Utf8(\"example.org\"));\r\n    WebPage page = WebPage.newBuilder().build();\r\n    page.setUrl(new Utf8(\"example.org\"));\r\n    assertFalse(filter.filter(\"irrelevant\", page));\r\n    page.setUrl(new Utf8(\"mismatch.whatever\"));\r\n    assertTrue(filter.filter(\"irrelevant\", page));\r\n    page = new WebPage();\r\n    assertTrue(filter.filter(\"irrelevant\", page));\r\n    filter.setFilterIfMissing(false);\r\n    assertFalse(filter.filter(\"irrelevant\", page));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\filter\\TestSingleFieldValueFilter.java",
+  "methodName" : "testFilterInequals",
+  "sourceCode" : "@Test\r\npublic void testFilterInequals() {\r\n    SingleFieldValueFilter<String, WebPage> filter = new SingleFieldValueFilter<>();\r\n    //set filter field to url\r\n    filter.setFieldName(WebPage.Field.URL.toString());\r\n    filter.setFilterOp(FilterOp.NOT_EQUALS);\r\n    filter.setFilterIfMissing(true);\r\n    filter.getOperands().add(new Utf8(\"example.org\"));\r\n    WebPage page = WebPage.newBuilder().build();\r\n    page.setUrl(new Utf8(\"example.org\"));\r\n    assertTrue(filter.filter(\"irrelevant\", page));\r\n    page.setUrl(new Utf8(\"something.else\"));\r\n    assertFalse(filter.filter(\"irrelevant\", page));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\DataStoreMapReduceTestBase.java",
+  "methodName" : "testCountQuery",
+  "sourceCode" : "@Test\r\npublic void testCountQuery() throws Exception {\r\n    MapReduceTestUtils.testCountQuery(webPageStore, job);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\TestGoraInputFormat.java",
+  "methodName" : "testGetSplits",
+  "sourceCode" : "/**\r\n * First, asserts that the attempt to obtain splits results in\r\n * greater than 0 splits which can be used for computation.\r\n * We then check that the partition query (obtained by using the\r\n * splits) has the same fields as we would expect by directly\r\n * accessing the fields of an Employee object.\r\n * @throws IOException\r\n * @throws InterruptedException\r\n */\r\n@Test\r\n@SuppressWarnings(\"rawtypes\")\r\npublic void testGetSplits() throws IOException, InterruptedException {\r\n    List<InputSplit> splits = getInputSplits();\r\n    assertTrue(splits.size() > 0);\r\n    InputSplit split = splits.get(0);\r\n    PartitionQuery query = ((GoraInputSplit) split).getQuery();\r\n    assertTrue(Arrays.equals(getEmployeeFieldNames(), query.getFields()));\r\n}",
+  "annotations" : [ "Test", "SuppressWarnings" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\TestGoraInputSplit.java",
+  "methodName" : "testGetLocations",
+  "sourceCode" : "@Test\r\npublic void testGetLocations() throws IOException {\r\n    List<PartitionQuery<String, MockPersistent>> partitions = getPartitions();\r\n    int i = 0;\r\n    for (PartitionQuery<String, MockPersistent> partition : partitions) {\r\n        GoraInputSplit split = new GoraInputSplit(conf, partition);\r\n        assertEquals(split.getLocations().length, 1);\r\n        assertEquals(split.getLocations()[0], MockDataStore.LOCATIONS[i++]);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\TestGoraInputSplit.java",
+  "methodName" : "testReadWrite",
+  "sourceCode" : "@Test\r\npublic void testReadWrite() throws Exception {\r\n    List<PartitionQuery<String, MockPersistent>> partitions = getPartitions();\r\n    for (PartitionQuery<String, MockPersistent> partition : partitions) {\r\n        GoraInputSplit split = new GoraInputSplit(conf, partition);\r\n        TestWritable.testWritable(split);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\TestPersistentSerialization.java",
+  "methodName" : "testSerdeEmployee",
+  "sourceCode" : "/**\r\n * Creates an Employee object in-memory setting several fields to dirty.\r\n * Asserts that it can be serialized and\r\n * deserialzed without loosing data. We do this by asserting\r\n * what we get 'before' and 'after' (de)serialization processes.\r\n * @throws Exception\r\n */\r\n@SuppressWarnings(\"unchecked\")\r\n@Test\r\npublic void testSerdeEmployee() throws Exception {\r\n    MemStore<String, Employee> store = DataStoreFactory.getDataStore(MemStore.class, String.class, Employee.class, new Configuration());\r\n    Employee employee = DataStoreTestUtil.createEmployee();\r\n    TestIOUtils.testSerializeDeserialize(employee);\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\TestPersistentSerialization.java",
+  "methodName" : "testSerdeEmployeeOneField",
+  "sourceCode" : "/**\r\n * Creates an Employee object but only sets one field as dirty.\r\n * We then do (de)serialization and check 'before' and 'after'\r\n * states.\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testSerdeEmployeeOneField() throws Exception {\r\n    Employee employee = Employee.newBuilder().build();\r\n    employee.setSsn(new Utf8(\"11111\"));\r\n    TestIOUtils.testSerializeDeserialize(employee);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\TestPersistentSerialization.java",
+  "methodName" : "testSerdeEmployeeTwoFields",
+  "sourceCode" : "/**\r\n * Creates an Employee object setting only two fields as dirty.\r\n * We then do (de)serialization and check 'before' and 'after'\r\n * states.\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testSerdeEmployeeTwoFields() throws Exception {\r\n    Employee employee = Employee.newBuilder().build();\r\n    employee.setSsn(new Utf8(\"11111\"));\r\n    employee.setSalary(100);\r\n    TestIOUtils.testSerializeDeserialize(employee);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\TestPersistentSerialization.java",
+  "methodName" : "testSerdeWebPage",
+  "sourceCode" : "/**\r\n * Creates an WebPage object in-memory setting several fields to dirty.\r\n * Run a query over the persistent data.\r\n * Asserts that the results can be serialized and\r\n * deserialzed without loosing data. We do this by asserting\r\n * what we get 'before' and 'after' (de)serialization processes.\r\n * Also simple assertion for equal number of URL's in WebPage\r\n * and results.\r\n * @throws Exception\r\n */\r\n@SuppressWarnings(\"unchecked\")\r\n@Test\r\npublic void testSerdeWebPage() throws Exception {\r\n    MemStore<String, WebPage> store = DataStoreFactory.getDataStore(MemStore.class, String.class, WebPage.class, new Configuration());\r\n    WebPageDataCreator.createWebPageData(store);\r\n    Result<String, WebPage> result = store.newQuery().execute();\r\n    int i = 0;\r\n    while (result.next()) {\r\n        WebPage page = result.get();\r\n        TestIOUtils.testSerializeDeserialize(page);\r\n        i++;\r\n    }\r\n    assertEquals(WebPageDataCreator.URLS.length, i);\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\mapreduce\\TestPersistentSerialization.java",
+  "methodName" : "testSerdeMultipleWebPages",
+  "sourceCode" : "/**\r\n * Creates multiple WebPage objects setting several fields to dirty.\r\n * Asserts that the data can be serialized and\r\n * deserialzed without loosing data. We do this by asserting\r\n * what we get 'before' and 'after' (de)serialization processes.\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testSerdeMultipleWebPages() throws Exception {\r\n    WebPage page1 = WebPage.newBuilder().build();\r\n    WebPage page2 = WebPage.newBuilder().build();\r\n    WebPage page3 = WebPage.newBuilder().build();\r\n    page1.setUrl(new Utf8(\"foo\"));\r\n    page2.setUrl(new Utf8(\"baz\"));\r\n    page3.setUrl(new Utf8(\"bar\"));\r\n    page1.setParsedContent(new ArrayList<CharSequence>());\r\n    page1.getParsedContent().add(new Utf8(\"coo\"));\r\n    page2.setOutlinks(new HashMap<CharSequence, CharSequence>());\r\n    page2.getOutlinks().put(new Utf8(\"a\"), new Utf8(\"b\"));\r\n    TestIOUtils.testSerializeDeserialize(page1, page2, page3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\memory\\store\\MemStoreTest.java",
+  "methodName" : "testGetMissingValue",
+  "sourceCode" : "@Test\r\npublic void testGetMissingValue() {\r\n    DataStore<String, WebPage> store = new MemStore<>();\r\n    WebPage nullWebPage = store.get(\"missing\", new String[0]);\r\n    assertNull(nullWebPage);\r\n    store.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\memory\\store\\MemStoreTest.java",
+  "methodName" : "testTruncateSchema",
+  "sourceCode" : "@Test\r\n@Ignore(\"MemStore has no concept of a schema\")\r\npublic void testTruncateSchema() throws Exception {\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\memory\\store\\MemStoreTest.java",
+  "methodName" : "testDeleteSchema",
+  "sourceCode" : "@Test\r\n@Ignore(\"MemStore has no concept of a schema\")\r\npublic void testDeleteSchema() throws Exception {\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\memory\\store\\MemStoreTest.java",
+  "methodName" : "testSchemaExists",
+  "sourceCode" : "@Test\r\n@Ignore(\"MemStore has no concept of a schema\")\r\npublic void testSchemaExists() throws Exception {\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\memory\\store\\MemStoreTest.java",
+  "methodName" : "testPutGet",
+  "sourceCode" : "@Test\r\npublic void testPutGet() throws Exception {\r\n    String key = \"org.apache.gora:http:/\";\r\n    DataStore<String, WebPage> store = new MemStore<>();\r\n    assumeTrue(store.get(key, new String[0]) == null);\r\n    store.put(key, WebPage.newBuilder().build());\r\n    assertNotNull(store.get(key, new String[0]));\r\n    store.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\memory\\store\\MemStoreTest.java",
+  "methodName" : "testDeleteByQueryFields",
+  "sourceCode" : "@Ignore(\"GORA-447\")\r\n@Test\r\npublic void testDeleteByQueryFields() {\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\memory\\store\\MemStoreTest.java",
+  "methodName" : "testGetWithFields",
+  "sourceCode" : "@Test\r\npublic void testGetWithFields() throws Exception {\r\n    DataStore<String, WebPage> store = new MemStore<>();\r\n    BeanFactory<String, WebPage> beanFactory = new BeanFactoryImpl<>(String.class, WebPage.class);\r\n    store.setBeanFactory(beanFactory);\r\n    WebPageDataCreator.createWebPageData(store);\r\n    String[] interestFields = new String[2];\r\n    interestFields[0] = \"url\";\r\n    interestFields[1] = \"content\";\r\n    WebPage page = store.get(URLS[1], interestFields);\r\n    assertNotNull(page);\r\n    assertNotNull(page.getUrl());\r\n    assertEquals(page.getUrl().toString(), URLS[1]);\r\n    assertNotNull(page.getContent());\r\n    assertEquals(\"Map of Outlinks should have a size of '0' as it is omitted at retrieval\", 0, page.getOutlinks().size());\r\n    assertEquals(\"Map of Parsed Content should have a size of '0' as it is omitted at retrieval\", 0, page.getParsedContent().size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\memory\\store\\MemStoreTest.java",
+  "methodName" : "testMemStoreDeleteByQueryFields",
+  "sourceCode" : "@Test\r\npublic void testMemStoreDeleteByQueryFields() throws Exception {\r\n    DataStore<String, WebPage> store = new MemStore<>();\r\n    BeanFactory<String, WebPage> beanFactory = new BeanFactoryImpl<>(String.class, WebPage.class);\r\n    store.setBeanFactory(beanFactory);\r\n    Query<String, WebPage> query;\r\n    //test 5 - delete all with some fields\r\n    WebPageDataCreator.createWebPageData(store);\r\n    query = store.newQuery();\r\n    query.setFields(\"outlinks\", \"parsedContent\", \"content\");\r\n    Query<String, WebPage> newQuery = store.newQuery();\r\n    newQuery.setStartKey(SORTED_URLS[0]);\r\n    newQuery.setEndKey(SORTED_URLS[9]);\r\n    newQuery.setFields(\"outlinks\", \"parsedContent\", \"content\");\r\n    DataStoreTestUtil.assertNumResults(newQuery, URLS.length);\r\n    store.deleteByQuery(query);\r\n    store.deleteByQuery(query);\r\n    //don't you love that HBase sometimes does not delete arbitrarily\r\n    store.deleteByQuery(query);\r\n    store.flush();\r\n    DataStoreTestUtil.assertNumResults(store.newQuery(), URLS.length);\r\n    //assert that data is deleted\r\n    for (String SORTED_URL : SORTED_URLS) {\r\n        WebPage page = store.get(SORTED_URL);\r\n        assertNotNull(page);\r\n        assertNotNull(page.getUrl());\r\n        assertEquals(page.getUrl().toString(), SORTED_URL);\r\n        assertEquals(\"Map of Outlinks should have a size of '0' as the deleteByQuery \" + \"not only removes the data but also the data structure.\", 0, page.getOutlinks().size());\r\n        assertEquals(0, page.getParsedContent().size());\r\n        if (page.getContent() != null) {\r\n            LOG.info(\"url:\" + page.getUrl().toString());\r\n            LOG.info(\"limit:\" + page.getContent().limit());\r\n        } else {\r\n            assertNull(page.getContent());\r\n        }\r\n    }\r\n    //test 6 - delete some with some fields\r\n    WebPageDataCreator.createWebPageData(store);\r\n    query = store.newQuery();\r\n    query.setFields(\"url\");\r\n    String startKey = SORTED_URLS[NUM_KEYS];\r\n    String endKey = SORTED_URLS[SORTED_URLS.length - NUM_KEYS];\r\n    query.setStartKey(startKey);\r\n    query.setEndKey(endKey);\r\n    DataStoreTestUtil.assertNumResults(store.newQuery(), URLS.length);\r\n    store.deleteByQuery(query);\r\n    store.deleteByQuery(query);\r\n    //don't you love that HBase sometimes does not delete arbitrarily\r\n    store.deleteByQuery(query);\r\n    store.flush();\r\n    DataStoreTestUtil.assertNumResults(store.newQuery(), URLS.length);\r\n    //assert that data is deleted\r\n    for (int i = 0; i < URLS.length; i++) {\r\n        WebPage page = store.get(URLS[i]);\r\n        assertNotNull(page);\r\n        if (URLS[i].compareTo(startKey) < 0 || URLS[i].compareTo(endKey) > 0) {\r\n            //not deleted\r\n            DataStoreTestUtil.assertWebPage(page, i);\r\n        } else {\r\n            //deleted\r\n            assertNull(page.getUrl());\r\n            assertNotNull(page.getOutlinks());\r\n            assertNotNull(page.getParsedContent());\r\n            assertNotNull(page.getContent());\r\n            assertTrue(page.getOutlinks().size() > 0);\r\n            assertTrue(page.getParsedContent().size() > 0);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestPersistentBase.java",
+  "methodName" : "testGetFields",
+  "sourceCode" : "/**\r\n * Assert that the list of fields from the WebPage Schema\r\n * are as we expect. This is done by creating and accessing\r\n * a WebPage object, then comparing the results against\r\n * static fields of the WebPage.SCHEMA$.\r\n */\r\n@Test\r\npublic void testGetFields() {\r\n    WebPage page = WebPage.newBuilder().build();\r\n    List<Field> fields = page.getSchema().getFields();\r\n    assertEquals(WebPage.SCHEMA$.getFields(), fields);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestPersistentBase.java",
+  "methodName" : "testGetField",
+  "sourceCode" : "/**\r\n * Assert that individual field values are as we would\r\n * expect from directly accessing WebPage.SCHEMA$ values.\r\n */\r\n@Test\r\npublic void testGetField() {\r\n    WebPage page = WebPage.newBuilder().build();\r\n    for (int i = 0; i < WebPage.SCHEMA$.getFields().toArray().length; i++) {\r\n        Field field = page.getSchema().getFields().get(i);\r\n        assertEquals(WebPage.SCHEMA$.getFields().get(i), field);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestPersistentBase.java",
+  "methodName" : "testGetFieldIndex",
+  "sourceCode" : "/**\r\n * Assert that field positions as found within the SCHEMA array\r\n * are as we would expect by accessing them directly.\r\n */\r\n@Test\r\npublic void testGetFieldIndex() {\r\n    WebPage page = WebPage.newBuilder().build();\r\n    for (int i = 0; i < WebPage.SCHEMA$.getFields().toArray().length; i++) {\r\n        int index = page.getSchema().getFields().get(i).pos();\r\n        assertEquals(i, index);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestPersistentBase.java",
+  "methodName" : "testFieldsWithTwoClasses",
+  "sourceCode" : "/**\r\n * Assert that field positions as found within the SCHEMA array\r\n * are as we would expect by accessing them directly.\r\n * This tests for both WebPage and Employee data beans.\r\n */\r\n@Test\r\npublic void testFieldsWithTwoClasses() {\r\n    WebPage page = WebPage.newBuilder().build();\r\n    for (int i = 0; i < WebPage.SCHEMA$.getFields().toArray().length; i++) {\r\n        int index = page.getSchema().getFields().get(i).pos();\r\n        assertEquals(i, index);\r\n    }\r\n    Employee employee = Employee.newBuilder().build();\r\n    for (int i = 0; i < Employee.SCHEMA$.getFields().toArray().length; i++) {\r\n        int index = employee.getSchema().getFields().get(i).pos();\r\n        assertEquals(i, index);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestPersistentBase.java",
+  "methodName" : "testClear",
+  "sourceCode" : "/**\r\n * First we create a new WebPage object, to which we add some\r\n * field values. This makes the fields dirty as we have not\r\n * flushed them to the datastore. We then clear the dirty\r\n * fields and assert that the values DO NOT exist for the\r\n * field we previously made dirty.\r\n * We then set new values for fields, consequently making them\r\n * dirty, before testing the clearing of an entirely new object\r\n * has all fields as null as they should be clean.\r\n */\r\n@Test\r\npublic void testClear() {\r\n    //test clear all fields\r\n    WebPage page = WebPage.newBuilder().build();\r\n    page.setUrl(new Utf8(\"http://foo.com\"));\r\n    page.getParsedContent().add(new Utf8(\"foo\"));\r\n    page.getOutlinks().put(new Utf8(\"foo\"), new Utf8(\"bar\"));\r\n    page.setContent(ByteBuffer.wrap(\"foo baz bar\".getBytes(Charset.defaultCharset())));\r\n    page.clear();\r\n    assertNull(page.getUrl());\r\n    assertEquals(0, page.getParsedContent().size());\r\n    assertEquals(0, page.getOutlinks().size());\r\n    assertNull(page.getContent());\r\n    //set fields again\r\n    page.setUrl(new Utf8(\"http://bar.com\"));\r\n    page.getParsedContent().add(new Utf8(\"bar\"));\r\n    page.getOutlinks().put(new Utf8(\"bar\"), new Utf8(\"baz\"));\r\n    page.setContent(ByteBuffer.wrap(\"foo baz bar barbaz\".getBytes(Charset.defaultCharset())));\r\n    //test clear new object\r\n    page = WebPage.newBuilder().build();\r\n    page.clear();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\persistency\\impl\\TestPersistentBase.java",
+  "methodName" : "testClone",
+  "sourceCode" : "/**\r\n * Tests and asserts that an in-memory representation of the\r\n * Employee object is Equal to a clone of the same object.\r\n * @throws IOException\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testClone() throws Exception {\r\n    //more tests for clone are in TestPersistentDatumReader\r\n    @SuppressWarnings(\"unchecked\")\r\n    MemStore<String, Employee> store = DataStoreFactory.getDataStore(MemStore.class, String.class, Employee.class, new Configuration());\r\n    Employee employee = DataStoreTestUtil.createEmployee();\r\n    assertEquals(employee, Employee.newBuilder(employee).build());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\query\\impl\\TestPartitionQueryImpl.java",
+  "methodName" : "testReadWrite",
+  "sourceCode" : "@Test\r\npublic void testReadWrite() throws Exception {\r\n    MockQuery baseQuery = dataStore.newQuery();\r\n    baseQuery.setStartKey(\"start\");\r\n    baseQuery.setLimit(42);\r\n    PartitionQueryImpl<String, MockPersistent> query = new PartitionQueryImpl<>(baseQuery);\r\n    TestWritable.testWritable(query);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\query\\impl\\TestQueryBase.java",
+  "methodName" : "testReadWrite",
+  "sourceCode" : "@Test\r\npublic void testReadWrite() throws Exception {\r\n    query.setFields(FIELDS);\r\n    query.setKeyRange(START_KEY, END_KEY);\r\n    TestIOUtils.testSerializeDeserialize(query);\r\n    assertNotNull(query.getDataStore());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\query\\impl\\TestQueryBase.java",
+  "methodName" : "testReadWrite2",
+  "sourceCode" : "@Test\r\npublic void testReadWrite2() throws Exception {\r\n    query.setLimit(1000);\r\n    query.setTimeRange(0, System.currentTimeMillis());\r\n    TestIOUtils.testSerializeDeserialize(query);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testNewInstance",
+  "sourceCode" : "@Test\r\npublic void testNewInstance() throws Exception {\r\n    log.info(\"test method: testNewInstance\");\r\n    DataStoreTestUtil.testNewPersistent(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testCreateSchema",
+  "sourceCode" : "@Test\r\npublic void testCreateSchema() throws Exception {\r\n    log.info(\"test method: testCreateSchema\");\r\n    DataStoreTestUtil.testCreateEmployeeSchema(employeeStore);\r\n    assertSchemaExists(\"Employee\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testAutoCreateSchema",
+  "sourceCode" : "@Test\r\npublic void testAutoCreateSchema() throws Exception {\r\n    log.info(\"test method: testAutoCreateSchema\");\r\n    DataStoreTestUtil.testAutoCreateSchema(employeeStore);\r\n    assertAutoCreateSchema();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testTruncateSchema",
+  "sourceCode" : "@Test\r\npublic void testTruncateSchema() throws Exception {\r\n    log.info(\"test method: testTruncateSchema\");\r\n    DataStoreTestUtil.testTruncateSchema(webPageStore);\r\n    assertSchemaExists(\"WebPage\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testDeleteSchema",
+  "sourceCode" : "@Test\r\npublic void testDeleteSchema() throws Exception {\r\n    log.info(\"test method: testDeleteSchema\");\r\n    DataStoreTestUtil.testDeleteSchema(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testSchemaExists",
+  "sourceCode" : "@Test\r\npublic void testSchemaExists() throws Exception {\r\n    log.info(\"test method: testSchemaExists\");\r\n    DataStoreTestUtil.testSchemaExists(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testPut",
+  "sourceCode" : "@Test\r\npublic void testPut() throws Exception {\r\n    log.info(\"test method: testPut\");\r\n    Employee employee = DataStoreTestUtil.testPutEmployee(employeeStore);\r\n    assertPut(employee);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testPutNested",
+  "sourceCode" : "@Test\r\npublic void testPutNested() throws Exception {\r\n    log.info(\"test method: testPutNested\");\r\n    DataStoreTestUtil.testPutNested(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testPutArray",
+  "sourceCode" : "@Test\r\npublic void testPutArray() throws Exception {\r\n    log.info(\"test method: testPutArray\");\r\n    DataStoreTestUtil.testPutArray(webPageStore);\r\n    assertPutArray();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testPutBytes",
+  "sourceCode" : "@Test\r\npublic void testPutBytes() throws Exception {\r\n    log.info(\"test method: testPutBytes\");\r\n    byte[] contentBytes = DataStoreTestUtil.testPutBytes(webPageStore);\r\n    assertPutBytes(contentBytes);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testPutMap",
+  "sourceCode" : "@Test\r\npublic void testPutMap() throws Exception {\r\n    log.info(\"test method: testPutMap\");\r\n    DataStoreTestUtil.testPutMap(webPageStore);\r\n    assertPutMap();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testPutMixedMaps",
+  "sourceCode" : "@Test\r\npublic void testPutMixedMaps() throws Exception {\r\n    log.info(\"Testing put of map objects with different union data types\");\r\n    DataStoreTestUtil.testPutMixedMapTypes(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testUpdate",
+  "sourceCode" : "@Test\r\npublic void testUpdate() throws Exception {\r\n    log.info(\"test method: testUpdate\");\r\n    DataStoreTestUtil.testUpdateEmployee(employeeStore);\r\n    DataStoreTestUtil.testUpdateWebPagePutToArray(webPageStore);\r\n    DataStoreTestUtil.testUpdateWebPagePutToNotNullableMap(webPageStore);\r\n    DataStoreTestUtil.testUpdateWebPagePutToNullableMap(webPageStore);\r\n    DataStoreTestUtil.testUpdateWebPageRemoveMapEntry(webPageStore);\r\n    DataStoreTestUtil.testUpdateWebPageRemoveField(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGet",
+  "sourceCode" : "@Test\r\npublic void testGet() throws Exception {\r\n    log.info(\"test method: testGet\");\r\n    DataStoreTestUtil.testGetEmployee(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGetRecursive",
+  "sourceCode" : "@Test\r\npublic /**\r\n * Tests put and get a record with a nested recursive record\r\n * Employee with a boss (nested).\r\n * @throws IOException\r\n * @throws Exception\r\n */\r\nvoid testGetRecursive() throws Exception {\r\n    log.info(\"test method: testGetRecursive\");\r\n    DataStoreTestUtil.testGetEmployeeRecursive(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGetDoubleRecursive",
+  "sourceCode" : "@Test\r\npublic /**\r\n * Tests put and get a record with a double nested recursive record\r\n * Employee with a boss (nested).\r\n * @throws IOException\r\n * @throws Exception\r\n */\r\nvoid testGetDoubleRecursive() throws Exception {\r\n    log.info(\"test method: testGetDoubleRecursive\");\r\n    DataStoreTestUtil.testGetEmployeeDoubleRecursive(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGetNested",
+  "sourceCode" : "@Test\r\npublic /**\r\n * Tests put and get of an {@link org.apache.gora.examples.generated.Employee}\r\n * record with a nested {@link org.apache.gora.examples.generated.WegPage} record (not recursive)\r\n * the webpage of an Employee.\r\n * @throws IOException\r\n * @throws Exception\r\n */\r\nvoid testGetNested() throws Exception {\r\n    log.info(\"test method: testGetNested\");\r\n    DataStoreTestUtil.testGetEmployeeNested(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGet3UnionField",
+  "sourceCode" : "@Test\r\npublic /**\r\n * Tests put and get a record with a 3 types union, and\r\n * having the value of the 3rd type.\r\n * @throws IOException\r\n * @throws Exception\r\n */\r\nvoid testGet3UnionField() throws Exception {\r\n    log.info(\"test method: testGet3UnionField\");\r\n    DataStoreTestUtil.testGetEmployee3UnionField(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGetWithFields",
+  "sourceCode" : "@Test\r\npublic void testGetWithFields() throws Exception {\r\n    log.info(\"test method: testGetWithFields\");\r\n    DataStoreTestUtil.testGetEmployeeWithFields(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGetWebPage",
+  "sourceCode" : "@Test\r\npublic void testGetWebPage() throws Exception {\r\n    log.info(\"test method: testGetWebPage\");\r\n    DataStoreTestUtil.testGetWebPage(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGetWebPageDefaultFields",
+  "sourceCode" : "@Test\r\npublic void testGetWebPageDefaultFields() throws Exception {\r\n    log.info(\"test method: testGetWebPageDefaultFields\");\r\n    DataStoreTestUtil.testGetWebPageDefaultFields(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGetNonExisting",
+  "sourceCode" : "@Test\r\npublic void testGetNonExisting() throws Exception {\r\n    log.info(\"test method: testGetNonExisting\");\r\n    DataStoreTestUtil.testGetEmployeeNonExisting(employeeStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testQuery",
+  "sourceCode" : "@Test\r\npublic void testQuery() throws Exception {\r\n    log.info(\"test method: testQuery\");\r\n    DataStoreTestUtil.testQueryWebPages(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testQueryStartKey",
+  "sourceCode" : "@Test\r\npublic void testQueryStartKey() throws Exception {\r\n    log.info(\"test method: testQueryStartKey\");\r\n    DataStoreTestUtil.testQueryWebPageStartKey(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testQueryEndKey",
+  "sourceCode" : "@Test\r\npublic void testQueryEndKey() throws Exception {\r\n    log.info(\"test method: testQueryEndKey\");\r\n    DataStoreTestUtil.testQueryWebPageEndKey(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testQueryKeyRange",
+  "sourceCode" : "@Test\r\npublic void testQueryKeyRange() throws Exception {\r\n    log.info(\"test method: testQueryKetRange\");\r\n    DataStoreTestUtil.testQueryWebPageKeyRange(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testQueryWebPageSingleKey",
+  "sourceCode" : "@Test\r\npublic void testQueryWebPageSingleKey() throws Exception {\r\n    log.info(\"test method: testQueryWebPageSingleKey\");\r\n    DataStoreTestUtil.testQueryWebPageSingleKey(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testQueryWebPageSingleKeyDefaultFields",
+  "sourceCode" : "@Test\r\npublic void testQueryWebPageSingleKeyDefaultFields() throws Exception {\r\n    log.info(\"test method: testQuerySingleKeyDefaultFields\");\r\n    DataStoreTestUtil.testQueryWebPageSingleKeyDefaultFields(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testQueryWebPageQueryEmptyResults",
+  "sourceCode" : "@Test\r\npublic void testQueryWebPageQueryEmptyResults() throws Exception {\r\n    log.info(\"test method: testQueryEmptyResults\");\r\n    DataStoreTestUtil.testQueryWebPageEmptyResults(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testDelete",
+  "sourceCode" : "@Test\r\npublic void testDelete() throws Exception {\r\n    log.info(\"test method: testDelete\");\r\n    DataStoreTestUtil.testDelete(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testDeleteByQuery",
+  "sourceCode" : "@Test\r\npublic void testDeleteByQuery() throws Exception {\r\n    log.info(\"test method: testDeleteByQuery\");\r\n    DataStoreTestUtil.testDeleteByQuery(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testDeleteByQueryFields",
+  "sourceCode" : "@Test\r\npublic void testDeleteByQueryFields() throws Exception {\r\n    log.info(\"test method: testQueryByQueryFields\");\r\n    DataStoreTestUtil.testDeleteByQueryFields(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\DataStoreTestBase.java",
+  "methodName" : "testGetPartitions",
+  "sourceCode" : "@Test\r\npublic void testGetPartitions() throws Exception {\r\n    log.info(\"test method: testGetPartitions\");\r\n    DataStoreTestUtil.testGetPartitions(webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\TestDataStoreFactory.java",
+  "methodName" : "testGetDataStore",
+  "sourceCode" : "@Test\r\npublic void testGetDataStore() throws GoraException {\r\n    DataStore<?, ?> dataStore = DataStoreFactory.getDataStore(\"org.apache.gora.mock.store.MockDataStore\", String.class, MockPersistent.class, conf);\r\n    assertNotNull(dataStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\TestDataStoreFactory.java",
+  "methodName" : "testGetClasses",
+  "sourceCode" : "@Test\r\npublic void testGetClasses() throws GoraException {\r\n    DataStore<?, ?> dataStore = DataStoreFactory.getDataStore(\"org.apache.gora.mock.store.MockDataStore\", String.class, MockPersistent.class, conf);\r\n    assertNotNull(dataStore);\r\n    assertEquals(String.class, dataStore.getKeyClass());\r\n    assertEquals(MockPersistent.class, dataStore.getPersistentClass());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\TestDataStoreFactory.java",
+  "methodName" : "testGetDataStore2",
+  "sourceCode" : "@Test\r\npublic void testGetDataStore2() throws GoraException {\r\n    DataStore<?, ?> dataStore = DataStoreFactory.getDataStore(MockDataStore.class, String.class, MockPersistent.class, conf);\r\n    assertNotNull(dataStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\TestDataStoreFactory.java",
+  "methodName" : "testGetDataStore3",
+  "sourceCode" : "@Test\r\npublic void testGetDataStore3() throws GoraException {\r\n    DataStore<?, ?> dataStore1 = DataStoreFactory.getDataStore(\"org.apache.gora.mock.store.MockDataStore\", Object.class, MockPersistent.class, conf);\r\n    DataStore<?, ?> dataStore2 = DataStoreFactory.getDataStore(\"org.apache.gora.mock.store.MockDataStore\", Object.class, MockPersistent.class, conf);\r\n    DataStore<?, ?> dataStore3 = DataStoreFactory.getDataStore(\"org.apache.gora.mock.store.MockDataStore\", String.class, MockPersistent.class, conf);\r\n    assertNotSame(dataStore1, dataStore2);\r\n    assertNotSame(dataStore1, dataStore3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\TestDataStoreFactory.java",
+  "methodName" : "testReadProperties",
+  "sourceCode" : "@Test\r\npublic void testReadProperties() throws GoraException {\r\n    // indirect testing\r\n    DataStore<?, ?> dataStore = DataStoreFactory.getDataStore(String.class, MockPersistent.class, conf);\r\n    assertNotNull(dataStore);\r\n    assertEquals(MockDataStore.class, dataStore.getClass());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\TestDataStoreFactory.java",
+  "methodName" : "testFindProperty",
+  "sourceCode" : "@Test\r\npublic void testFindProperty() {\r\n    Properties properties = DataStoreFactory.createProps();\r\n    DataStore<String, MockPersistent> store = new DataFileAvroStore<>();\r\n    String fooValue = DataStoreFactory.findProperty(properties, store, \"foo_property\", \"foo_default\");\r\n    assertEquals(\"foo_value\", fooValue);\r\n    String bazValue = DataStoreFactory.findProperty(properties, store, \"baz_property\", \"baz_default\");\r\n    assertEquals(\"baz_value\", bazValue);\r\n    String barValue = DataStoreFactory.findProperty(properties, store, \"bar_property\", \"bar_default\");\r\n    assertEquals(\"bar_value\", barValue);\r\n    String capValue = DataStoreFactory.findProperty(properties, store, \"cap_property\", \"cap_default\");\r\n    assertEquals(\"cap_value\", capValue);\r\n    String secondCapValue = DataStoreFactory.findProperty(properties, store, \"CAP_property\", \"cap_default\");\r\n    assertEquals(\"cap_value\", secondCapValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testNewInstance",
+  "sourceCode" : "@Test\r\npublic void testNewInstance() throws Exception {\r\n    log.info(\"test method: testNewInstance\");\r\n    DataStoreTestUtil.testNewPersistent(dataStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testCreateSchema",
+  "sourceCode" : "@Test\r\npublic void testCreateSchema() throws Exception {\r\n    log.info(\"test method: testCreateSchema\");\r\n    assertSchemaExists(\"person\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testAutoCreateSchema",
+  "sourceCode" : "@Test\r\npublic void testAutoCreateSchema() throws Exception {\r\n    log.info(\"test method: testAutoCreateSchema\");\r\n    assertAutoCreateSchema();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testTruncateSchema",
+  "sourceCode" : "@Test\r\npublic void testTruncateSchema() throws Exception {\r\n    log.info(\"test method: testTruncateSchema\");\r\n    assertSchemaExists(\"person\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testDeleteSchema",
+  "sourceCode" : "@Test\r\npublic void testDeleteSchema() throws Exception {\r\n    log.info(\"test method: testDeleteSchema\");\r\n    assertDeleteSchema();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testSchemaExists",
+  "sourceCode" : "@Test\r\npublic void testSchemaExists() throws Exception {\r\n    log.info(\"test method: testSchemaExists\");\r\n    assertTrue(dataStore.schemaExists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testPut",
+  "sourceCode" : "@Test\r\npublic void testPut() throws Exception {\r\n    log.info(\"test method: testPut\");\r\n    assertPut();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testPutNested",
+  "sourceCode" : "@Test\r\npublic void testPutNested() throws Exception {\r\n    log.info(\"test method: testPutNested\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testPutArray",
+  "sourceCode" : "@Test\r\npublic void testPutArray() throws Exception {\r\n    log.info(\"test method: testPutArray\");\r\n    assertPutArray();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testPutBytes",
+  "sourceCode" : "@Test\r\npublic void testPutBytes() throws Exception {\r\n    log.info(\"test method: testPutBytes\");\r\n    byte[] contentBytes = \"example content in example.com\".getBytes(Charset.defaultCharset());\r\n    assertPutBytes(contentBytes);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testPutMap",
+  "sourceCode" : "@Test\r\npublic void testPutMap() throws Exception {\r\n    log.info(\"test method: testPutMap\");\r\n    assertPutMap();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testUpdate",
+  "sourceCode" : "@Test\r\npublic void testUpdate() throws Exception {\r\n    log.info(\"test method: testUpdate\");\r\n    assertTestUpdateDataStore();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testEmptyUpdate",
+  "sourceCode" : "@Ignore\r\n@Test\r\npublic void testEmptyUpdate() throws Exception {\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testGet",
+  "sourceCode" : "@Test\r\npublic void testGet() throws Exception {\r\n    log.info(\"test method: testGet\");\r\n    assertTestGetDataStore();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testGetWithFields",
+  "sourceCode" : "@Test\r\npublic void testGetWithFields() throws Exception {\r\n    log.info(\"test method: testGetWithFields\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testQuery",
+  "sourceCode" : "@Test\r\npublic void testQuery() throws Exception {\r\n    log.info(\"test method: testQuery\");\r\n    assertTestQueryDataStore();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testQueryStartKey",
+  "sourceCode" : "@Test\r\npublic void testQueryStartKey() throws Exception {\r\n    log.info(\"test method: testQueryStartKey\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testQueryEndKey",
+  "sourceCode" : "@Test\r\npublic void testQueryEndKey() throws Exception {\r\n    log.info(\"test method: testQueryEndKey\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testQueryKeyRange",
+  "sourceCode" : "@Test\r\npublic void testQueryKeyRange() throws Exception {\r\n    log.info(\"test method: testQueryKetRange\");\r\n    assertTestQueryKeyRange();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testDelete",
+  "sourceCode" : "@Test\r\npublic void testDelete() throws Exception {\r\n    log.info(\"test method: testDelete\");\r\n    assertTestDeleteDataStore();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testDeleteByQuery",
+  "sourceCode" : "@Test\r\npublic void testDeleteByQuery() throws Exception {\r\n    log.info(\"test method: testDeleteByQuery\");\r\n    assertTestDeleteByQueryDataStore();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\store\\WSDataStoreTestBase.java",
+  "methodName" : "testDeleteByQueryFields",
+  "sourceCode" : "@Test\r\npublic void testDeleteByQueryFields() throws Exception {\r\n    log.info(\"test method: testQueryByQueryFields\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\util\\TestAvroUtils.java",
+  "methodName" : "testDeepClonePersistent",
+  "sourceCode" : "@Test\r\npublic void testDeepClonePersistent() throws Exception {\r\n    CharSequence url = new Utf8(\"http://gora.apache.org/\");\r\n    WebPage.Builder builder = WebPage.newBuilder().setUrl(url).setContent(ByteBuffer.wrap(\"Gora\".getBytes(\"UTF-8\")));\r\n    WebPage webPage = builder.build();\r\n    WebPage clonedWebPage = AvroUtils.deepClonePersistent(webPage);\r\n    assertThat(clonedWebPage, is(notNullValue()));\r\n    assertThat(clonedWebPage.getUrl(), is(equalTo(url)));\r\n    assertThat(clonedWebPage.getContent(), is(notNullValue()));\r\n    String clonedWebPageContent = new String(clonedWebPage.getContent().array(), \"UTF-8\");\r\n    assertThat(clonedWebPageContent, is(equalTo(\"Gora\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\util\\TestIOUtils.java",
+  "methodName" : "testWritableSerde",
+  "sourceCode" : "@Test\r\npublic void testWritableSerde() throws Exception {\r\n    Text text = new Text(\"foo goes to a bar to get some buzz\");\r\n    testSerializeDeserialize(text);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\util\\TestIOUtils.java",
+  "methodName" : "testJavaSerializableSerde",
+  "sourceCode" : "@Test\r\npublic void testJavaSerializableSerde() throws Exception {\r\n    Integer integer = 42;\r\n    testSerializeDeserialize(integer);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\util\\TestIOUtils.java",
+  "methodName" : "testReadWriteBoolArray",
+  "sourceCode" : "@Test\r\npublic void testReadWriteBoolArray() throws Exception {\r\n    boolean[][] patterns = { { true }, { false }, { true, false }, { false, true }, { true, false, true }, { false, true, false }, { false, true, false, false, true, true, true }, { false, true, false, false, true, true, true, true }, { false, true, false, false, true, true, true, true, false } };\r\n    for (int i = 0; i < BOOL_ARRAY_MAX_LENGTH; i++) {\r\n        for (int j = 0; j < patterns.length; j++) {\r\n            boolean[] arr = new boolean[i];\r\n            for (int k = 0; k < i; k++) {\r\n                arr[k] = patterns[j][k % patterns[j].length];\r\n            }\r\n            testSerializeDeserialize(new BoolArrayWrapper(arr));\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\util\\TestIOUtils.java",
+  "methodName" : "testReadWriteNullFieldsInfo",
+  "sourceCode" : "@Test\r\npublic void testReadWriteNullFieldsInfo() throws IOException {\r\n    //null\r\n    Integer n = null;\r\n    //not null\r\n    Integer nn = 42;\r\n    testNullFieldsWith(nn);\r\n    testNullFieldsWith(n);\r\n    testNullFieldsWith(n, nn);\r\n    testNullFieldsWith(nn, n);\r\n    testNullFieldsWith(nn, n, nn, n);\r\n    testNullFieldsWith(nn, n, nn, n, n, n, nn, nn, nn, n, n);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\util\\TestIOUtils.java",
+  "methodName" : "testReadWriteStringArray",
+  "sourceCode" : "@Test\r\npublic void testReadWriteStringArray() throws Exception {\r\n    for (int i = 0; i < STRING_ARRAY_MAX_LENGTH; i++) {\r\n        String[] arr = new String[i];\r\n        for (int j = 0; j < i; j++) {\r\n            arr[j] = String.valueOf(j);\r\n        }\r\n        testSerializeDeserialize(new StringArrayWrapper(arr));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\util\\TestIOUtils.java",
+  "methodName" : "testReadFullyBufferLimit",
+  "sourceCode" : "@Test\r\npublic void testReadFullyBufferLimit() throws IOException {\r\n    for (int i = -2; i <= 2; i++) {\r\n        byte[] bytes = new byte[IOUtils.BUFFER_SIZE + i];\r\n        for (int j = 0; j < bytes.length; j++) {\r\n            bytes[j] = (byte) j;\r\n        }\r\n        ByteArrayInputStream is = new ByteArrayInputStream(bytes);\r\n        byte[] readBytes = IOUtils.readFully(is);\r\n        assertByteArrayEquals(bytes, readBytes);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-core\\src\\test\\java\\org\\apache\\gora\\util\\TestWritableUtils.java",
+  "methodName" : "testWritesReads",
+  "sourceCode" : "@Test\r\npublic void testWritesReads() throws Exception {\r\n    Properties props = new Properties();\r\n    props.put(\"keyBlah\", \"valueBlah\");\r\n    props.put(\"keyBlah2\", \"valueBlah2\");\r\n    ByteArrayOutputStream bos = new ByteArrayOutputStream();\r\n    DataOutput out = new DataOutputStream(bos);\r\n    WritableUtils.writeProperties(out, props);\r\n    ((DataOutputStream) out).flush();\r\n    DataInput in = new DataInputStream(new ByteArrayInputStream(bos.toByteArray()));\r\n    Properties propsRead = WritableUtils.readProperties(in);\r\n    assertEquals(propsRead.get(\"keyBlah\"), props.get(\"keyBlah\"));\r\n    assertEquals(propsRead.get(\"keyBlah2\"), props.get(\"keyBlah2\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-couchdb\\src\\test\\java\\org\\apache\\gora\\couchdb\\store\\TestCouchDBStore.java",
+  "methodName" : "testPutAndGet",
+  "sourceCode" : "@Test\r\npublic void testPutAndGet() {\r\n    WebPage page = webPageStore.newPersistent();\r\n    // Write webpage data\r\n    page.setUrl(new Utf8(\"http://example.com\"));\r\n    byte[] contentBytes = \"example content in example.com\".getBytes(Charset.defaultCharset());\r\n    ByteBuffer buff = ByteBuffer.wrap(contentBytes);\r\n    page.setContent(buff);\r\n    webPageStore.put(\"com.example/http\", page);\r\n    webPageStore.flush();\r\n    WebPage storedPage = webPageStore.get(\"com.example/http\");\r\n    assertNotNull(storedPage);\r\n    assertEquals(page.getUrl(), storedPage.getUrl());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-couchdb\\src\\test\\java\\org\\apache\\gora\\couchdb\\store\\TestCouchDBStore.java",
+  "methodName" : "testCreateAndDeleteSchema",
+  "sourceCode" : "@Test\r\npublic void testCreateAndDeleteSchema() throws IOException {\r\n    WebPage page = webPageStore.newPersistent();\r\n    // Write webpage data\r\n    page.setUrl(new Utf8(\"http://example.com\"));\r\n    webPageStore.put(\"com.example/http\", page);\r\n    webPageStore.flush();\r\n    assertEquals(\"WebPage isn't created.\", page.getUrl(), webPageStore.get(\"com.example/http\").getUrl());\r\n    webPageStore.deleteSchema();\r\n    assertNull(webPageStore.get(\"com.example/http\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-couchdb\\src\\test\\java\\org\\apache\\gora\\couchdb\\store\\TestCouchDBStore.java",
+  "methodName" : "testGetSchemaName",
+  "sourceCode" : "@Test\r\npublic void testGetSchemaName() throws IOException {\r\n    assertEquals(\"WebPage\", webPageStore.getSchemaName());\r\n    assertEquals(\"Employee\", employeeStore.getSchemaName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-couchdb\\src\\test\\java\\org\\apache\\gora\\couchdb\\store\\TestCouchDBStore.java",
+  "methodName" : "testExecute",
+  "sourceCode" : "@Test\r\npublic void testExecute() throws IOException {\r\n    WebPageDataCreator.createWebPageData(webPageStore);\r\n    final Query<String, WebPage> query = webPageStore.newQuery();\r\n    int limit = 5;\r\n    query.setLimit(limit);\r\n    CouchDBResult<String, WebPage> result = (CouchDBResult<String, WebPage>) webPageStore.execute(query);\r\n    assertEquals(limit, result.getResultData().size());\r\n    limit = 10;\r\n    query.setLimit(limit);\r\n    result = (CouchDBResult<String, WebPage>) webPageStore.execute(query);\r\n    assertEquals(limit, result.getResultData().size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-couchdb\\src\\test\\java\\org\\apache\\gora\\couchdb\\store\\TestCouchDBStore.java",
+  "methodName" : "testUpdate",
+  "sourceCode" : "/**\r\n * By design, you cannot update a CouchDB document blindly, you can only attempt to update a specific revision of a document. FIXME\r\n */\r\n@Test\r\n@Ignore\r\npublic void testUpdate() throws Exception {\r\n    //By design, you cannot update a CouchDB document blindly, you can only attempt to update a specific revision of a document. FIXME\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-hbase\\src\\test\\java\\org\\apache\\gora\\hbase\\mapreduce\\TestHBaseStoreCountQuery.java",
+  "methodName" : "testCountQuery",
+  "sourceCode" : "@Test\r\npublic void testCountQuery() throws Exception {\r\n    MapReduceTestUtils.testCountQuery(webPageStore, cluster.getConf());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-hbase\\src\\test\\java\\org\\apache\\gora\\hbase\\mapreduce\\TestHBaseStoreMapReduceSerialization.java",
+  "methodName" : "testMapReduceSerialization",
+  "sourceCode" : "@Test\r\npublic void testMapReduceSerialization() throws Exception {\r\n    MapReduceTestUtils.testMapReduceSerialization(cluster.getConf(), webPageStore, webPageStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-hbase\\src\\test\\java\\org\\apache\\gora\\hbase\\mapreduce\\TestHBaseStoreWordCount.java",
+  "methodName" : "testWordCount",
+  "sourceCode" : "@Test\r\npublic void testWordCount() throws Exception {\r\n    MapReduceTestUtils.testWordCount(cluster.getConf(), webPageStore, tokenStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-hbase\\src\\test\\java\\org\\apache\\gora\\hbase\\mapreduce\\TestHBaseStoreWordCount.java",
+  "methodName" : "testSparkWordCount",
+  "sourceCode" : "//todo fix config\r\n@Ignore\r\n@Test\r\npublic void testSparkWordCount() throws Exception {\r\n    MapReduceTestUtils.testSparkWordCount(cluster.getConf(), webPageStore, tokenStore);\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-hbase\\src\\test\\java\\org\\apache\\gora\\hbase\\store\\TestHBaseStore.java",
+  "methodName" : "assertTopLevelUnions",
+  "sourceCode" : "/**\r\n * Checks that when writing a top level union <code>['null','type']</code>\r\n * the value is written in raw format\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void assertTopLevelUnions() throws Exception {\r\n    WebPage page = webPageStore.newPersistent();\r\n    // Write webpage data\r\n    page.setUrl(new Utf8(\"http://example.com\"));\r\n    byte[] contentBytes = \"example content in example.com\".getBytes(Charset.defaultCharset());\r\n    ByteBuffer buff = ByteBuffer.wrap(contentBytes);\r\n    page.setContent(buff);\r\n    webPageStore.put(\"com.example/http\", page);\r\n    webPageStore.flush();\r\n    // Read directly from HBase\r\n    HTable table = new HTable(conf, \"WebPage\");\r\n    Get get = new Get(Bytes.toBytes(\"com.example/http\"));\r\n    org.apache.hadoop.hbase.client.Result result = table.get(get);\r\n    byte[] bytesRead = result.getValue(Bytes.toBytes(\"content\"), null);\r\n    assertNotNull(bytesRead);\r\n    assertTrue(Arrays.equals(bytesRead, contentBytes));\r\n    table.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-hbase\\src\\test\\java\\org\\apache\\gora\\hbase\\store\\TestHBaseStore.java",
+  "methodName" : "assertTopLevelUnionsNull",
+  "sourceCode" : "/**\r\n * Checks that when writing a top level union <code>['null','type']</code>\r\n * with the option <code>RAW_ROOT_FIELDS_OPTION=true</code>\r\n * the column is not created, and when <code>RAW_ROOT_FIELDS_OPTION=false</code>\r\n * the <code>null</code> value is serialized\r\n * with Avro.\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void assertTopLevelUnionsNull() throws Exception {\r\n    WebPage page = webPageStore.newPersistent();\r\n    // Write webpage data\r\n    page.setUrl(new Utf8(\"http://example.com\"));\r\n    // This won't change internal field status to dirty, so\r\n    page.setContent(null);\r\n    // need to change it manually\r\n    page.setDirty(\"content\");\r\n    webPageStore.put(\"com.example/http\", page);\r\n    webPageStore.flush();\r\n    // Read directly from HBase\r\n    HTable table = new HTable(conf, \"WebPage\");\r\n    Get get = new Get(Bytes.toBytes(\"com.example/http\"));\r\n    org.apache.hadoop.hbase.client.Result result = table.get(get);\r\n    table.close();\r\n    byte[] contentBytes = result.getValue(Bytes.toBytes(\"content\"), null);\r\n    assertNull(webPageStore.get(\"com.example/http\", new String[] { \"content\" }));\r\n    assertTrue(contentBytes == null || contentBytes.length == 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-hbase\\src\\test\\java\\org\\apache\\gora\\hbase\\store\\TestHBaseStore.java",
+  "methodName" : "assertScannerCachingValue",
+  "sourceCode" : "@Test\r\npublic void assertScannerCachingValue() {\r\n    assertEquals(1000, ((HBaseStore<String, WebPage>) this.webPageStore).getScannerCaching());\r\n    assertEquals(1000, ((HBaseStore<String, Employee>) this.employeeStore).getScannerCaching());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-hbase\\src\\test\\java\\org\\apache\\gora\\hbase\\util\\TestHBaseByteInterface.java",
+  "methodName" : "testEncodingDecoding",
+  "sourceCode" : "@Test\r\npublic void testEncodingDecoding() throws Exception {\r\n    for (int i = 0; i < 1000; i++) {\r\n        //employer\r\n        CharSequence name = new Utf8(\"john\");\r\n        long dateOfBirth = System.currentTimeMillis();\r\n        int salary = 1337;\r\n        CharSequence ssn = new Utf8(String.valueOf(RANDOM.nextLong()));\r\n        Employee e = Employee.newBuilder().build();\r\n        e.setName(name);\r\n        e.setDateOfBirth(dateOfBirth);\r\n        e.setSalary(salary);\r\n        e.setSsn(ssn);\r\n        byte[] employerBytes = HBaseByteInterface.toBytes(e, Employee.SCHEMA$);\r\n        Employee e2 = (Employee) HBaseByteInterface.fromBytes(Employee.SCHEMA$, employerBytes);\r\n        assertEquals(name, e2.getName());\r\n        assertEquals(dateOfBirth, e2.getDateOfBirth().longValue());\r\n        assertEquals(salary, e2.getSalary().intValue());\r\n        assertEquals(ssn, e2.getSsn());\r\n        //metadata\r\n        CharSequence key = new Utf8(\"theKey\");\r\n        CharSequence value = new Utf8(\"theValue \" + RANDOM.nextLong());\r\n        HashMap<CharSequence, CharSequence> data = new HashMap<>();\r\n        data.put(key, value);\r\n        Metadata m = Metadata.newBuilder().build();\r\n        m.setData(data);\r\n        byte[] datumBytes = HBaseByteInterface.toBytes(m, Metadata.SCHEMA$);\r\n        Metadata m2 = (Metadata) HBaseByteInterface.fromBytes(Metadata.SCHEMA$, datumBytes);\r\n        assertEquals(value, m2.getData().get(key));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-hbase\\src\\test\\java\\org\\apache\\gora\\hbase\\util\\TestHBaseByteInterface.java",
+  "methodName" : "testEncodingDecodingMultithreaded",
+  "sourceCode" : "@Test\r\npublic void testEncodingDecodingMultithreaded() throws Exception {\r\n    // create a fixed thread pool\r\n    int numThreads = 8;\r\n    ExecutorService pool = Executors.newFixedThreadPool(numThreads);\r\n    // define a list of tasks\r\n    Collection<Callable<Integer>> tasks = new ArrayList<>();\r\n    for (int i = 0; i < numThreads; i++) {\r\n        tasks.add(new Callable<Integer>() {\r\n\r\n            @Override\r\n            public Integer call() {\r\n                try {\r\n                    // run a sequence\r\n                    testEncodingDecoding();\r\n                    // everything ok, return 0\r\n                    return 0;\r\n                } catch (Exception e) {\r\n                    LOG.error(e.getMessage());\r\n                    throw new RuntimeException(e);\r\n                    // this will fail the test\r\n                }\r\n            }\r\n        });\r\n    }\r\n    // submit them at once\r\n    List<Future<Integer>> results = pool.invokeAll(tasks);\r\n    // check results\r\n    for (Future<Integer> result : results) {\r\n        assertEquals(0, (int) result.get());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-infinispan\\src\\test\\java\\org\\apache\\gora\\infinispan\\store\\InfinispanStoreTest.java",
+  "methodName" : "testQueryMarshability",
+  "sourceCode" : "@Test\r\npublic void testQueryMarshability() throws Exception {\r\n    Utils.populateEmployeeStore(employeeStore, 100);\r\n    InfinispanQuery<String, Employee> query = new InfinispanQuery<>(employeeDataStore);\r\n    query.setFields(\"field\");\r\n    query.setLimit(1);\r\n    query.setOffset(1);\r\n    query.build();\r\n    TestIOUtils.testSerializeDeserialize(query);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-infinispan\\src\\test\\java\\org\\apache\\gora\\infinispan\\store\\InfinispanStoreTest.java",
+  "methodName" : "testReadWriteQuery",
+  "sourceCode" : "@Test\r\npublic void testReadWriteQuery() throws Exception {\r\n    final int NEMPLOYEE = 100;\r\n    Utils.populateEmployeeStore(employeeStore, NEMPLOYEE);\r\n    InfinispanQuery<String, Employee> query;\r\n    // Partitioning\r\n    int retrieved = 0;\r\n    query = new InfinispanQuery<>(employeeDataStore);\r\n    query.build();\r\n    for (PartitionQuery<String, Employee> q : employeeDataStore.getPartitions(query)) {\r\n        retrieved += ((InfinispanQuery<String, Employee>) q).list().size();\r\n    }\r\n    assert retrieved == NEMPLOYEE;\r\n    // Test matching everything\r\n    query = new InfinispanQuery<>(employeeDataStore);\r\n    SingleFieldValueFilter<String, Employee> filter = new SingleFieldValueFilter<String, Employee>();\r\n    filter.setFieldName(\"name\");\r\n    filter.setFilterOp(FilterOp.EQUALS);\r\n    List<Object> operaands = new ArrayList<>();\r\n    operaands.add(\"*\");\r\n    filter.setOperands(operaands);\r\n    query.setFilter(filter);\r\n    query.build();\r\n    List<Employee> result = new ArrayList<>();\r\n    for (PartitionQuery<String, Employee> q : employeeDataStore.getPartitions(query)) {\r\n        result.addAll(((InfinispanQuery<String, Employee>) q).list());\r\n    }\r\n    assertEquals(NEMPLOYEE, result.size());\r\n    // Test matching nothing\r\n    query = new InfinispanQuery<>(employeeDataStore);\r\n    filter = new SingleFieldValueFilter<String, Employee>();\r\n    filter.setFieldName(\"name\");\r\n    filter.setFilterOp(FilterOp.NOT_EQUALS);\r\n    operaands.clear();\r\n    operaands.add(\"*\");\r\n    filter.setOperands(operaands);\r\n    query.setFilter(filter);\r\n    query.build();\r\n    assertEquals(0, query.list().size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-jcache\\src\\test\\java\\org\\apache\\gora\\jcache\\store\\JCacheGoraDataStoreTest.java",
+  "methodName" : "testGetMissingValue",
+  "sourceCode" : "@Test\r\npublic void testGetMissingValue() throws IOException {\r\n    DataStore<String, WebPage> store = super.webPageStore;\r\n    WebPage nullWebPage = store.get(\"missing\", new String[0]);\r\n    assertNull(nullWebPage);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-jcache\\src\\test\\java\\org\\apache\\gora\\jcache\\store\\JCacheGoraDataStoreTest.java",
+  "methodName" : "testDeleteSchema",
+  "sourceCode" : "@Test\r\npublic void testDeleteSchema() throws Exception {\r\n    DataStore<String, WebPage> store = super.webPageStore;\r\n    assertTrue(store.schemaExists());\r\n    store.deleteSchema();\r\n    assertTrue(!store.schemaExists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-jcache\\src\\test\\java\\org\\apache\\gora\\jcache\\store\\JCacheGoraDataStoreTest.java",
+  "methodName" : "testSchemaExists",
+  "sourceCode" : "@Test\r\npublic void testSchemaExists() throws Exception {\r\n    DataStore<String, WebPage> store = super.webPageStore;\r\n    assertTrue(store.schemaExists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-jcache\\src\\test\\java\\org\\apache\\gora\\jcache\\store\\JCacheGoraDataStoreTest.java",
+  "methodName" : "testStorePutGet",
+  "sourceCode" : "@Test\r\npublic void testStorePutGet() throws Exception {\r\n    String key = \"org.apache.gora:http:/\";\r\n    DataStore<String, WebPage> store = super.webPageStore;\r\n    assumeTrue(store.get(key, new String[0]) == null);\r\n    store.put(key, WebPage.newBuilder().build());\r\n    assertNotNull(store.get(key, new String[0]));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-jcache\\src\\test\\java\\org\\apache\\gora\\jcache\\store\\JCacheGoraDataStoreTest.java",
+  "methodName" : "testGetWithFields",
+  "sourceCode" : "@Test\r\npublic void testGetWithFields() throws Exception {\r\n    DataStore<String, WebPage> store = super.webPageStore;\r\n    BeanFactory<String, WebPage> beanFactory = new BeanFactoryImpl<>(String.class, WebPage.class);\r\n    store.setBeanFactory(beanFactory);\r\n    WebPageDataCreator.createWebPageData(store);\r\n    String[] interestFields = new String[2];\r\n    interestFields[0] = \"url\";\r\n    interestFields[1] = \"content\";\r\n    WebPage page = store.get(URLS[1], interestFields);\r\n    assertNotNull(page);\r\n    assertNotNull(page.getUrl());\r\n    assertEquals(page.getUrl().toString(), URLS[1]);\r\n    assertNotNull(page.getContent());\r\n    assertEquals(\"Map of Outlinks should have a size of '0' as it is omitted at retrieval\", 0, page.getOutlinks().size());\r\n    assertEquals(\"Map of Parsed Content should have a size of '0' as it is omitted at retrieval\", 0, page.getParsedContent().size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-jcache\\src\\test\\java\\org\\apache\\gora\\jcache\\store\\JCacheGoraDataStoreTest.java",
+  "methodName" : "testDeleteByQueryFields",
+  "sourceCode" : "@Test\r\npublic void testDeleteByQueryFields() throws Exception {\r\n    DataStore<String, WebPage> store = super.webPageStore;\r\n    BeanFactory<String, WebPage> beanFactory = new BeanFactoryImpl<>(String.class, WebPage.class);\r\n    store.setBeanFactory(beanFactory);\r\n    Query<String, WebPage> query;\r\n    WebPageDataCreator.createWebPageData(store);\r\n    query = store.newQuery();\r\n    query.setFields(\"outlinks\", \"parsedContent\", \"content\");\r\n    Query<String, WebPage> newQuery = store.newQuery();\r\n    newQuery.setStartKey(SORTED_URLS[0]);\r\n    newQuery.setEndKey(SORTED_URLS[9]);\r\n    newQuery.setFields(\"outlinks\", \"parsedContent\", \"content\");\r\n    DataStoreTestUtil.assertNumResults(newQuery, URLS.length);\r\n    store.deleteByQuery(query);\r\n    store.deleteByQuery(query);\r\n    store.deleteByQuery(query);\r\n    store.flush();\r\n    DataStoreTestUtil.assertNumResults(store.newQuery(), URLS.length);\r\n    for (String SORTED_URL : SORTED_URLS) {\r\n        WebPage page = store.get(SORTED_URL);\r\n        assertNotNull(page);\r\n        assertNotNull(page.getUrl());\r\n        assertEquals(page.getUrl().toString(), SORTED_URL);\r\n        assertEquals(\"Map of Outlinks should have a size of '0' as the deleteByQuery \" + \"not only removes the data but also the data structure.\", 0, page.getOutlinks().size());\r\n        assertEquals(0, page.getParsedContent().size());\r\n        if (page.getContent() != null) {\r\n            LOG.info(\"url:\" + page.getUrl().toString());\r\n            LOG.info(\"limit:\" + page.getContent().limit());\r\n        } else {\r\n            assertNull(page.getContent());\r\n        }\r\n    }\r\n    WebPageDataCreator.createWebPageData(store);\r\n    query = store.newQuery();\r\n    query.setFields(\"url\");\r\n    String startKey = SORTED_URLS[NUM_KEYS];\r\n    String endKey = SORTED_URLS[SORTED_URLS.length - NUM_KEYS];\r\n    query.setStartKey(startKey);\r\n    query.setEndKey(endKey);\r\n    DataStoreTestUtil.assertNumResults(store.newQuery(), URLS.length);\r\n    store.deleteByQuery(query);\r\n    store.deleteByQuery(query);\r\n    store.deleteByQuery(query);\r\n    store.flush();\r\n    DataStoreTestUtil.assertNumResults(store.newQuery(), URLS.length);\r\n    for (int i = 0; i < URLS.length; i++) {\r\n        WebPage page = store.get(URLS[i]);\r\n        assertNotNull(page);\r\n        if (URLS[i].compareTo(startKey) < 0 || URLS[i].compareTo(endKey) > 0) {\r\n            DataStoreTestUtil.assertWebPage(page, i);\r\n        } else {\r\n            assertNull(page.getUrl());\r\n            assertNotNull(page.getOutlinks());\r\n            assertNotNull(page.getParsedContent());\r\n            assertNotNull(page.getContent());\r\n            assertTrue(page.getOutlinks().size() > 0);\r\n            assertTrue(page.getParsedContent().size() > 0);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\filters\\DefaultFactoryTest.java",
+  "methodName" : "testCreateFilter_singleField_notEquals",
+  "sourceCode" : "@Test\r\npublic void testCreateFilter_singleField_notEquals() throws Exception {\r\n    SingleFieldValueFilter<String, WebPage> filter = createUrlFilter();\r\n    filter.setFilterOp(FilterOp.NOT_EQUALS);\r\n    filter.setFilterIfMissing(true);\r\n    DBObject dbObject = filterFactory.createFilter(filter, store);\r\n    assertEquals(\"{ \\\"url\\\" : { \\\"$ne\\\" : \\\"http://www.example.com\\\"}}\", dbObject.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\filters\\DefaultFactoryTest.java",
+  "methodName" : "testCreateFilter_singleField_equalsOrNull",
+  "sourceCode" : "@Test\r\npublic void testCreateFilter_singleField_equalsOrNull() throws Exception {\r\n    SingleFieldValueFilter<String, WebPage> filter = createUrlFilter();\r\n    filter.setFilterOp(FilterOp.EQUALS);\r\n    // include doc with missing field\r\n    filter.setFilterIfMissing(false);\r\n    DBObject dbObject = filterFactory.createFilter(filter, store);\r\n    assertEquals(\"{ \\\"$or\\\" : [ { \\\"url\\\" : { \\\"$exists\\\" : false}} , { \\\"url\\\" : \\\"http://www.example.com\\\"}]}\", dbObject.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\filters\\DefaultFactoryTest.java",
+  "methodName" : "testCreateFilter_mapField_notEquals",
+  "sourceCode" : "@Test\r\npublic void testCreateFilter_mapField_notEquals() throws Exception {\r\n    MapFieldValueFilter<String, WebPage> filter = createHeadersFilter();\r\n    filter.setFilterOp(FilterOp.NOT_EQUALS);\r\n    filter.setFilterIfMissing(true);\r\n    DBObject dbObject = filterFactory.createFilter(filter, store);\r\n    assertEquals(\"{ \\\"h.C·T\\\" : { \\\"$ne\\\" : \\\"text/html\\\"}}\", dbObject.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\filters\\DefaultFactoryTest.java",
+  "methodName" : "testCreateFilter_mapField_equalsOrNull",
+  "sourceCode" : "@Test\r\npublic void testCreateFilter_mapField_equalsOrNull() throws Exception {\r\n    MapFieldValueFilter<String, WebPage> filter = createHeadersFilter();\r\n    filter.setFilterOp(FilterOp.EQUALS);\r\n    // include doc with missing field\r\n    filter.setFilterIfMissing(false);\r\n    DBObject dbObject = filterFactory.createFilter(filter, store);\r\n    assertEquals(\"{ \\\"$or\\\" : [ { \\\"h.C·T\\\" : { \\\"$exists\\\" : false}} , { \\\"h.C·T\\\" : \\\"text/html\\\"}]}\", dbObject.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\filters\\DefaultFactoryTest.java",
+  "methodName" : "testCreateFilter_list_empty",
+  "sourceCode" : "@Test\r\npublic void testCreateFilter_list_empty() throws Exception {\r\n    FilterList<String, WebPage> filter = new FilterList<>();\r\n    DBObject dbObject = filterFactory.createFilter(filter, store);\r\n    assertEquals(\"{ }\", dbObject.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\filters\\DefaultFactoryTest.java",
+  "methodName" : "testCreateFilter_list_2",
+  "sourceCode" : "@Test\r\npublic void testCreateFilter_list_2() throws Exception {\r\n    FilterList<String, WebPage> filter = new FilterList<>();\r\n    MapFieldValueFilter<String, WebPage> hFilter = createHeadersFilter();\r\n    hFilter.setFilterIfMissing(true);\r\n    hFilter.setFilterOp(FilterOp.EQUALS);\r\n    filter.addFilter(hFilter);\r\n    SingleFieldValueFilter<String, WebPage> urlFilter = createUrlFilter();\r\n    urlFilter.setFilterIfMissing(true);\r\n    urlFilter.setFilterOp(FilterOp.EQUALS);\r\n    filter.addFilter(urlFilter);\r\n    DBObject dbObject = filterFactory.createFilter(filter, store);\r\n    assertEquals(\"{ \\\"h.C·T\\\" : \\\"text/html\\\" , \\\"url\\\" : \\\"http://www.example.com\\\"}\", dbObject.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\filters\\DefaultFactoryTest.java",
+  "methodName" : "testCreateFilter_handlingUtf8",
+  "sourceCode" : "/**\r\n * Check that <a href=\"https://issues.apache.org/jira/browse/GORA-388\">GORA-388</a> is fixed.\r\n * @see <a href=\"https://issues.apache.org/jira/browse/GORA-388\">GORA-388</a>\r\n */\r\n@Test\r\npublic void testCreateFilter_handlingUtf8() throws Exception {\r\n    SingleFieldValueFilter<String, WebPage> filter = new SingleFieldValueFilter<>();\r\n    filter.setFieldName(WebPage.Field.URL.toString());\r\n    filter.setFilterOp(FilterOp.EQUALS);\r\n    filter.getOperands().add(new Utf8(\"http://www.example.com\"));\r\n    filter.setFilterIfMissing(true);\r\n    DBObject dbObject = filterFactory.createFilter(filter, store);\r\n    assertEquals(\"{ \\\"url\\\" : \\\"http://www.example.com\\\"}\", dbObject.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\mapreduce\\TestMongoStoreCountQuery.java",
+  "methodName" : "testCountQuery",
+  "sourceCode" : "@Test\r\npublic void testCountQuery() throws Exception {\r\n    MapReduceTestUtils.testCountQuery(webPageStore, testDriver.getConfiguration());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\mapreduce\\TestMongoStoreWordCount.java",
+  "methodName" : "testWordCount",
+  "sourceCode" : "@Test\r\npublic void testWordCount() throws Exception {\r\n    MapReduceTestUtils.testWordCount(testDriver.getConfiguration(), webPageStore, tokenStore);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\mapreduce\\TestMongoStoreWordCount.java",
+  "methodName" : "testSparkWordCount",
+  "sourceCode" : "//todo fix config\r\n@Ignore\r\n@Test\r\npublic void testSparkWordCount() throws Exception {\r\n    MapReduceTestUtils.testSparkWordCount(testDriver.getConfiguration(), webPageStore, tokenStore);\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\store\\TestMongoMapping.java",
+  "methodName" : "addSeveralTopLevelDocumentFields",
+  "sourceCode" : "// /////////////////////////////////////// TEST DOCUMENT FIELDS REGISTRATION\r\n/**\r\n * Add several top level fields of each type\r\n */\r\n@Test\r\npublic void addSeveralTopLevelDocumentFields() {\r\n    MongoMapping mapping = new MongoMapping();\r\n    // Add fields of type binary\r\n    mapping.addClassField(\"classBin1\", \"topLevel1\", DocumentFieldType.BINARY.toString().toLowerCase(Locale.getDefault()));\r\n    mapping.addClassField(\"classBin2\", \"topLevel2\", DocumentFieldType.BINARY.toString().toUpperCase(Locale.getDefault()));\r\n    assertEquals(\"topLevel1\", mapping.getDocumentField(\"classBin1\"));\r\n    assertEquals(\"topLevel2\", mapping.getDocumentField(\"classBin2\"));\r\n    // Add fields of type int32\r\n    mapping.addClassField(\"classInt321\", \"topLevel3\", DocumentFieldType.INT32.toString().toLowerCase(Locale.getDefault()));\r\n    mapping.addClassField(\"classInt322\", \"topLevel4\", DocumentFieldType.INT32.toString().toUpperCase(Locale.getDefault()));\r\n    assertEquals(\"topLevel3\", mapping.getDocumentField(\"classInt321\"));\r\n    assertEquals(\"topLevel4\", mapping.getDocumentField(\"classInt322\"));\r\n    // Add fields of type int64\r\n    mapping.addClassField(\"classInt641\", \"topLevel5\", DocumentFieldType.INT64.toString().toLowerCase(Locale.getDefault()));\r\n    mapping.addClassField(\"classInt642\", \"topLevel6\", DocumentFieldType.INT64.toString().toUpperCase(Locale.getDefault()));\r\n    assertEquals(\"topLevel5\", mapping.getDocumentField(\"classInt641\"));\r\n    assertEquals(\"topLevel6\", mapping.getDocumentField(\"classInt642\"));\r\n    // Add fields of type double\r\n    mapping.addClassField(\"classDouble1\", \"topLevel7\", DocumentFieldType.DOUBLE.toString().toLowerCase(Locale.getDefault()));\r\n    mapping.addClassField(\"classDouble2\", \"topLevel8\", DocumentFieldType.DOUBLE.toString().toUpperCase(Locale.getDefault()));\r\n    assertEquals(\"topLevel7\", mapping.getDocumentField(\"classDouble1\"));\r\n    assertEquals(\"topLevel8\", mapping.getDocumentField(\"classDouble2\"));\r\n    // Add fields of type string\r\n    mapping.addClassField(\"classString1\", \"topLevel9\", DocumentFieldType.STRING.toString().toLowerCase(Locale.getDefault()));\r\n    mapping.addClassField(\"classString2\", \"topLevel10\", DocumentFieldType.STRING.toString().toUpperCase(Locale.getDefault()));\r\n    assertEquals(\"topLevel9\", mapping.getDocumentField(\"classString1\"));\r\n    assertEquals(\"topLevel10\", mapping.getDocumentField(\"classString2\"));\r\n    // Add fields of type date\r\n    mapping.addClassField(\"classDate1\", \"topLevel11\", DocumentFieldType.DATE.toString().toLowerCase(Locale.getDefault()));\r\n    mapping.addClassField(\"classDate2\", \"topLevel12\", DocumentFieldType.DATE.toString().toUpperCase(Locale.getDefault()));\r\n    assertEquals(\"topLevel11\", mapping.getDocumentField(\"classDate1\"));\r\n    assertEquals(\"topLevel12\", mapping.getDocumentField(\"classDate2\"));\r\n    // Add fields of type list\r\n    mapping.addClassField(\"classList1\", \"topLevel13\", DocumentFieldType.LIST.toString().toLowerCase(Locale.getDefault()));\r\n    mapping.addClassField(\"classList2\", \"topLevel14\", DocumentFieldType.LIST.toString().toUpperCase(Locale.getDefault()));\r\n    assertEquals(\"topLevel13\", mapping.getDocumentField(\"classList1\"));\r\n    assertEquals(\"topLevel14\", mapping.getDocumentField(\"classList2\"));\r\n    // Add fields of type document\r\n    mapping.addClassField(\"classDocument1\", \"topLevel15\", DocumentFieldType.DOCUMENT.toString().toLowerCase(Locale.getDefault()));\r\n    mapping.addClassField(\"classDocument2\", \"topLevel16\", DocumentFieldType.DOCUMENT.toString().toUpperCase(Locale.getDefault()));\r\n    assertEquals(\"topLevel15\", mapping.getDocumentField(\"classDocument1\"));\r\n    assertEquals(\"topLevel16\", mapping.getDocumentField(\"classDocument2\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\store\\TestMongoMapping.java",
+  "methodName" : "addSeveralDocumentFields",
+  "sourceCode" : "/**\r\n * Add several fields of each type and of different levels but no conflicting\r\n * configurations.\r\n */\r\n@Test\r\npublic void addSeveralDocumentFields() {\r\n    MongoMapping mapping;\r\n    // Add fields with already registered parent fields\r\n    mapping = new MongoMapping();\r\n    mapping.addClassField(\"classField1\", \"top1\", \"document\");\r\n    mapping.addClassField(\"classField2\", \"top1.level2-1\", \"string\");\r\n    mapping.addClassField(\"classField3\", \"top1.level2-2\", \"int32\");\r\n    mapping.addClassField(\"classField4\", \"top1.level2-3\", \"document\");\r\n    mapping.addClassField(\"classField5\", \"top1.level2-4\", \"date\");\r\n    mapping.addClassField(\"classField6\", \"top1.level2-3.leaf\", \"int64\");\r\n    assertEquals(\"top1\", mapping.getDocumentField(\"classField1\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"top1\"));\r\n    assertEquals(\"top1.level2-1\", mapping.getDocumentField(\"classField2\"));\r\n    assertEquals(DocumentFieldType.STRING, mapping.getDocumentFieldType(\"top1.level2-1\"));\r\n    assertEquals(\"top1.level2-2\", mapping.getDocumentField(\"classField3\"));\r\n    assertEquals(DocumentFieldType.INT32, mapping.getDocumentFieldType(\"top1.level2-2\"));\r\n    assertEquals(\"top1.level2-3\", mapping.getDocumentField(\"classField4\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"top1.level2-3\"));\r\n    assertEquals(\"top1.level2-4\", mapping.getDocumentField(\"classField5\"));\r\n    assertEquals(DocumentFieldType.DATE, mapping.getDocumentFieldType(\"top1.level2-4\"));\r\n    assertEquals(\"top1.level2-3.leaf\", mapping.getDocumentField(\"classField6\"));\r\n    assertEquals(DocumentFieldType.INT64, mapping.getDocumentFieldType(\"top1.level2-3.leaf\"));\r\n    // Add fields with not already registered parent fields\r\n    mapping = new MongoMapping();\r\n    mapping.addClassField(\"classField1\", \"top1.l2.l3.l4\", \"double\");\r\n    mapping.addClassField(\"classField2\", \"top2.l2\", \"document\");\r\n    mapping.addClassField(\"classField3\", \"top2.l2.l3.l5.l6\", \"list\");\r\n    mapping.addClassField(\"classField4\", \"top1.l2.date\", \"date\");\r\n    assertEquals(\"top1.l2.l3.l4\", mapping.getDocumentField(\"classField1\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"top1\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"top1.l2\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"top1.l2.l3\"));\r\n    assertEquals(DocumentFieldType.DOUBLE, mapping.getDocumentFieldType(\"top1.l2.l3.l4\"));\r\n    assertEquals(\"top2.l2\", mapping.getDocumentField(\"classField2\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"top2\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"top2.l2\"));\r\n    assertEquals(\"top2.l2.l3.l5.l6\", mapping.getDocumentField(\"classField3\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"top2\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"top2.l2\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"top2.l2.l3\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"top2.l2.l3.l5\"));\r\n    assertEquals(DocumentFieldType.LIST, mapping.getDocumentFieldType(\"top2.l2.l3.l5.l6\"));\r\n    assertEquals(\"top1.l2.date\", mapping.getDocumentField(\"classField4\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"top1\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"top1.l2\"));\r\n    assertEquals(DocumentFieldType.DATE, mapping.getDocumentFieldType(\"top1.l2.date\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\store\\TestMongoMapping.java",
+  "methodName" : "addConflictingFields1",
+  "sourceCode" : "/**\r\n * Add conflicting fields\r\n */\r\n@Test(expected = IllegalStateException.class)\r\npublic void addConflictingFields1() {\r\n    MongoMapping mapping = new MongoMapping();\r\n    mapping.addClassField(\"classFieldName\", \"top1\", \"int32\");\r\n    // conflict\r\n    mapping.addClassField(\"classFieldName\", \"top1.l2\", \"double\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\store\\TestMongoMapping.java",
+  "methodName" : "addConflictingFields2",
+  "sourceCode" : "/**\r\n * Add conflicting fields\r\n */\r\n@Test(expected = IllegalStateException.class)\r\npublic void addConflictingFields2() {\r\n    MongoMapping mapping = new MongoMapping();\r\n    mapping.addClassField(\"classFieldName\", \"top1\", \"int64\");\r\n    // conflict\r\n    mapping.addClassField(\"classFieldName\", \"top1\", \"string\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\store\\TestMongoMapping.java",
+  "methodName" : "addConflictingFields3",
+  "sourceCode" : "/**\r\n * Add conflicting fields\r\n */\r\n@Test(expected = IllegalStateException.class)\r\npublic void addConflictingFields3() {\r\n    MongoMapping mapping = new MongoMapping();\r\n    mapping.addClassField(\"classFieldName\", \"top1\", \"document\");\r\n    mapping.addClassField(\"classFieldName\", \"top1.l2\", \"string\");\r\n    // conflict\r\n    mapping.addClassField(\"classFieldName\", \"top1.l2.l3\", \"double\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\store\\TestMongoMappingBuilder.java",
+  "methodName" : "testMultiMapping_Webpage",
+  "sourceCode" : "@Test\r\npublic void testMultiMapping_Webpage() throws IOException {\r\n    MongoStore<String, WebPage> store = new MongoStore<>();\r\n    store.setKeyClass(String.class);\r\n    store.setPersistentClass(WebPage.class);\r\n    MongoMappingBuilder<String, WebPage> builder = new MongoMappingBuilder<>(store);\r\n    builder.fromFile(\"/multimapping.xml\");\r\n    MongoMapping mapping = builder.build();\r\n    // Check collection name\r\n    assertEquals(\"frontier\", mapping.getCollectionName());\r\n    mapping.renameCollection(\"frontier\", \"newNameForFrontier\");\r\n    assertEquals(\"newNameForFrontier\", mapping.getCollectionName());\r\n    // Check field names\r\n    assertEquals(\"baseUrl\", mapping.getDocumentField(\"baseUrl\"));\r\n    assertEquals(\"status\", mapping.getDocumentField(\"status\"));\r\n    assertEquals(\"fetchTime\", mapping.getDocumentField(\"fetchTime\"));\r\n    assertEquals(\"prevFetchTime\", mapping.getDocumentField(\"prevFetchTime\"));\r\n    assertEquals(\"fetchInterval\", mapping.getDocumentField(\"fetchInterval\"));\r\n    assertEquals(\"retriesSinceFetch\", mapping.getDocumentField(\"retriesSinceFetch\"));\r\n    assertEquals(\"modifiedTime\", mapping.getDocumentField(\"modifiedTime\"));\r\n    assertEquals(\"protocolStatus\", mapping.getDocumentField(\"protocolStatus\"));\r\n    assertEquals(\"content\", mapping.getDocumentField(\"content\"));\r\n    assertEquals(\"contentType\", mapping.getDocumentField(\"contentType\"));\r\n    assertEquals(\"prevSignature\", mapping.getDocumentField(\"prevSignature\"));\r\n    assertEquals(\"title\", mapping.getDocumentField(\"title\"));\r\n    assertEquals(\"text\", mapping.getDocumentField(\"text\"));\r\n    assertEquals(\"parseStatus\", mapping.getDocumentField(\"parseStatus\"));\r\n    assertEquals(\"score\", mapping.getDocumentField(\"score\"));\r\n    assertEquals(\"reprUrl\", mapping.getDocumentField(\"reprUrl\"));\r\n    assertEquals(\"headers\", mapping.getDocumentField(\"headers\"));\r\n    assertEquals(\"outlinks\", mapping.getDocumentField(\"outlinks\"));\r\n    assertEquals(\"inlinks\", mapping.getDocumentField(\"inlinks\"));\r\n    assertEquals(\"markers\", mapping.getDocumentField(\"markers\"));\r\n    assertEquals(\"metadata\", mapping.getDocumentField(\"metadata\"));\r\n    // Check field types\r\n    assertEquals(DocumentFieldType.STRING, mapping.getDocumentFieldType(\"baseUrl\"));\r\n    assertEquals(DocumentFieldType.INT32, mapping.getDocumentFieldType(\"status\"));\r\n    assertEquals(DocumentFieldType.INT64, mapping.getDocumentFieldType(\"fetchTime\"));\r\n    assertEquals(DocumentFieldType.INT64, mapping.getDocumentFieldType(\"prevFetchTime\"));\r\n    assertEquals(DocumentFieldType.INT32, mapping.getDocumentFieldType(\"fetchInterval\"));\r\n    assertEquals(DocumentFieldType.INT32, mapping.getDocumentFieldType(\"retriesSinceFetch\"));\r\n    assertEquals(DocumentFieldType.INT64, mapping.getDocumentFieldType(\"modifiedTime\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"protocolStatus\"));\r\n    assertEquals(DocumentFieldType.BINARY, mapping.getDocumentFieldType(\"content\"));\r\n    assertEquals(DocumentFieldType.STRING, mapping.getDocumentFieldType(\"contentType\"));\r\n    assertEquals(DocumentFieldType.BINARY, mapping.getDocumentFieldType(\"prevSignature\"));\r\n    assertEquals(DocumentFieldType.STRING, mapping.getDocumentFieldType(\"title\"));\r\n    assertEquals(DocumentFieldType.STRING, mapping.getDocumentFieldType(\"text\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"parseStatus\"));\r\n    assertEquals(DocumentFieldType.DOUBLE, mapping.getDocumentFieldType(\"score\"));\r\n    assertEquals(DocumentFieldType.STRING, mapping.getDocumentFieldType(\"reprUrl\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"headers\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"outlinks\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"inlinks\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"markers\"));\r\n    assertEquals(DocumentFieldType.DOCUMENT, mapping.getDocumentFieldType(\"metadata\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\store\\TestMongoStore.java",
+  "methodName" : "testFromMongoList_null",
+  "sourceCode" : "@Test\r\npublic void testFromMongoList_null() throws Exception {\r\n    MongoStore store = new MongoStore();\r\n    BasicDBObject noField = new BasicDBObject();\r\n    String field = \"myField\";\r\n    Object item = store.fromMongoList(field, null, new BSONDecorator(noField), null);\r\n    assertNotNull(item);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\store\\TestMongoStore.java",
+  "methodName" : "testFromMongoList_empty",
+  "sourceCode" : "@Test\r\npublic void testFromMongoList_empty() throws Exception {\r\n    MongoStore store = new MongoStore();\r\n    String field = \"myField\";\r\n    BasicDBObject emptyField = new BasicDBObject(field, new BasicDBList());\r\n    Object item = store.fromMongoList(field, null, new BSONDecorator(emptyField), null);\r\n    assertNotNull(item);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\store\\TestMongoStore.java",
+  "methodName" : "testFromMongoMap_null",
+  "sourceCode" : "@Test\r\npublic void testFromMongoMap_null() throws Exception {\r\n    MongoStore store = new MongoStore();\r\n    BasicDBObject noField = new BasicDBObject();\r\n    String field = \"myField\";\r\n    Object item = store.fromMongoMap(field, null, new BSONDecorator(noField), null);\r\n    assertNotNull(item);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\store\\TestMongoStore.java",
+  "methodName" : "testFromMongoMap_empty",
+  "sourceCode" : "@Test\r\npublic void testFromMongoMap_empty() throws Exception {\r\n    MongoStore store = new MongoStore();\r\n    String field = \"myField\";\r\n    BasicDBObject emptyField = new BasicDBObject(field, new BasicDBObject());\r\n    Object item = store.fromMongoMap(field, null, new BSONDecorator(emptyField), null);\r\n    assertNotNull(item);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\store\\TestMongoStore.java",
+  "methodName" : "testResultProgress",
+  "sourceCode" : "@Test\r\npublic void testResultProgress() throws Exception {\r\n    Query<String, WebPage> q;\r\n    // empty\r\n    q = webPageStore.newQuery();\r\n    assertProgress(q, 1);\r\n    addWebPage();\r\n    // one\r\n    q = webPageStore.newQuery();\r\n    assertProgress(q, 0, 1);\r\n    addWebPage();\r\n    // two\r\n    q = webPageStore.newQuery();\r\n    assertProgress(q, 0, 0.5f, 1);\r\n    addWebPage();\r\n    // three\r\n    q = webPageStore.newQuery();\r\n    assertProgress(q, 0, 0.33f, 0.66f, 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\store\\TestMongoStore.java",
+  "methodName" : "testResultProgressWithLimit",
+  "sourceCode" : "@Test\r\npublic void testResultProgressWithLimit() throws Exception {\r\n    for (int i = 0; i < 5; i++) {\r\n        addWebPage();\r\n    }\r\n    Query<String, WebPage> q = webPageStore.newQuery();\r\n    q.setLimit(2);\r\n    assertProgress(q, 0, 0.5f, 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\utils\\TestBSONDecorator.java",
+  "methodName" : "testContainsField",
+  "sourceCode" : "@Test\r\npublic void testContainsField() {\r\n    // Init the object used for testing\r\n    DBObject dbo1 = BasicDBObjectBuilder.start().add(\"root0\", \"value\").add(\"root1\", new BasicDBObject(\"leaf1\", 1)).add(\"root2\", new BasicDBObject(\"parent1\", new BasicDBObject(\"leaf2\", \"test\"))).get();\r\n    BSONDecorator dboc = new BSONDecorator(dbo1);\r\n    // Root level field, does exist\r\n    assertTrue(dboc.containsField(\"root0\"));\r\n    // Root level field, does not exist\r\n    assertFalse(dboc.containsField(\"doestNotExist\"));\r\n    // 1-deep level field, does exist\r\n    assertTrue(dboc.containsField(\"root1.leaf1\"));\r\n    // 1-deep level field, parent does not exist\r\n    assertFalse(dboc.containsField(\"doesNotExist.leaf2\"));\r\n    // 1-deep level field, leaf does not exist\r\n    assertFalse(dboc.containsField(\"root1.doestNotExist\"));\r\n    // 3-deep level field, does exist\r\n    assertTrue(dboc.containsField(\"root2.parent1.leaf2\"));\r\n    // 3-deep level field, leaf does not exist\r\n    assertFalse(dboc.containsField(\"root2.parent1.doestNotExist\"));\r\n    // 3-deep level field, first parent does not exist\r\n    assertFalse(dboc.containsField(\"doesNotExist.parent1.leaf2\"));\r\n    // 3-deep level field, intermediate parent does not exist\r\n    assertFalse(dboc.containsField(\"root2.doesNotExist.leaf2\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\utils\\TestBSONDecorator.java",
+  "methodName" : "testBinaryField",
+  "sourceCode" : "@Test\r\npublic void testBinaryField() {\r\n    // Init the object used for testing\r\n    DBObject dbo1 = BasicDBObjectBuilder.start().add(\"root0\", \"value\").add(\"root1\", new BasicDBObject(\"leaf1\", \"abcdefgh\".getBytes(Charset.defaultCharset()))).add(\"root2\", new BasicDBObject(\"parent1\", new BasicDBObject(\"leaf2\", \"test\".getBytes(Charset.defaultCharset())))).add(\"root3\", ByteBuffer.wrap(\"test2\".getBytes(Charset.defaultCharset()))).get();\r\n    BSONDecorator dboc = new BSONDecorator(dbo1);\r\n    // Access first bytes field\r\n    assertTrue(dboc.containsField(\"root1.leaf1\"));\r\n    assertArrayEquals(\"abcdefgh\".getBytes(Charset.defaultCharset()), dboc.getBytes(\"root1.leaf1\").array());\r\n    // Access second bytes field\r\n    assertTrue(dboc.containsField(\"root2.parent1.leaf2\"));\r\n    assertArrayEquals(\"test\".getBytes(Charset.defaultCharset()), dboc.getBytes(\"root2.parent1.leaf2\").array());\r\n    // Access third bytes field\r\n    assertTrue(dboc.containsField(\"root3\"));\r\n    assertArrayEquals(\"test2\".getBytes(Charset.defaultCharset()), dboc.getBytes(\"root3\").array());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\utils\\TestBSONDecorator.java",
+  "methodName" : "testNullStringField",
+  "sourceCode" : "@Test\r\npublic void testNullStringField() {\r\n    // Init the object used for testing\r\n    DBObject dbo1 = BasicDBObjectBuilder.start().add(\"key1\", null).get();\r\n    BSONDecorator dboc = new BSONDecorator(dbo1);\r\n    assertTrue(dboc.containsField(\"key1\"));\r\n    assertNull(dboc.getUtf8String(\"key1\"));\r\n    assertFalse(dboc.containsField(\"key2\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Gora\\gora-mongodb\\src\\test\\java\\org\\apache\\gora\\mongodb\\utils\\TestBSONDecorator.java",
+  "methodName" : "testNullFields",
+  "sourceCode" : "@Test\r\npublic void testNullFields() {\r\n    BSONDecorator dboc = new BSONDecorator(new BasicDBObject());\r\n    assertNull(dboc.getInt(\"key1\"));\r\n    assertNull(dboc.getLong(\"key1\"));\r\n    assertNull(dboc.getDouble(\"key1\"));\r\n    assertNull(dboc.getUtf8String(\"key1\"));\r\n    assertNull(dboc.getBoolean(\"key1\"));\r\n    assertNull(dboc.getBytes(\"key1\"));\r\n    assertNull(dboc.getDate(\"key1\"));\r\n    assertNull(dboc.getDBObject(\"key1\"));\r\n    assertNull(dboc.getDBList(\"key1\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

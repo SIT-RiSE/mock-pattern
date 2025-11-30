@@ -1,0 +1,145 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\contrib\\avro-rpc\\src\\main\\java\\org\\apache\\hama\\avro\\TestAvroMessageManager.java",
+  "methodName" : "testAvroMessenger",
+  "sourceCode" : "@Test\r\npublic void testAvroMessenger() throws Exception {\r\n    BSPMessageBundle<Writable> randomBundle = getRandomBundle();\r\n    Configuration conf = new Configuration();\r\n    conf.set(\"hama.messenger.class\", \"org.apache.hama.bsp.message.AvroMessageManagerImpl\");\r\n    conf.set(DiskQueue.DISK_QUEUE_PATH_KEY, TMP_OUTPUT_PATH);\r\n    MessageManager<Writable> messageManager = MessageManagerFactory.getMessageManager(conf);\r\n    conf.set(BSPMessageCompressorFactory.COMPRESSION_CODEC_CLASS, SnappyCompressor.class.getName());\r\n    assertTrue(messageManager instanceof AvroMessageManagerImpl);\r\n    InetSocketAddress peer = new InetSocketAddress(BSPNetUtils.getCanonicalHostname(), BSPNetUtils.getFreePort());\r\n    BSPPeer<?, ?, ?, ?, Writable> dummyPeer = new BSPPeerImpl<NullWritable, NullWritable, NullWritable, NullWritable, Writable>(conf, FileSystem.get(conf), new Counters());\r\n    TaskAttemptID id = new TaskAttemptID(\"1\", 1, 1, 1);\r\n    messageManager.init(id, dummyPeer, conf, peer);\r\n    messageManager.transfer(peer, randomBundle);\r\n    messageManager.clearOutgoingQueues();\r\n    assertEquals(SUM, messageManager.getNumCurrentMessages());\r\n    int numIntMsgs = 0, numBoolMsgs = 0, numDoubleMsgs = 0;\r\n    Writable msg = null;\r\n    while ((msg = messageManager.getCurrentMessage()) != null) {\r\n        if (msg instanceof IntegerMessage) {\r\n            numIntMsgs++;\r\n        } else if (msg instanceof BooleanMessage) {\r\n            numBoolMsgs++;\r\n        } else if (msg instanceof DoubleMessage) {\r\n            numDoubleMsgs++;\r\n        }\r\n    }\r\n    assertEquals(INT_MSG_COUNT, numIntMsgs);\r\n    assertEquals(BOOL_MSG_COUNT, numBoolMsgs);\r\n    assertEquals(DOUBLE_MSG_COUNT, numDoubleMsgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\core\\src\\test\\java\\org\\apache\\hama\\bsp\\message\\TestDiskQueue.java",
+  "methodName" : "testDiskQueue",
+  "sourceCode" : "@Test\r\npublic void testDiskQueue() throws Exception {\r\n    DiskQueue<IntWritable> queue = getQueue();\r\n    checkQueue(queue);\r\n    queue.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\core\\src\\test\\java\\org\\apache\\hama\\bsp\\message\\TestDiskQueue.java",
+  "methodName" : "testMultipleIterations",
+  "sourceCode" : "@Test\r\npublic void testMultipleIterations() throws Exception {\r\n    DiskQueue<IntWritable> queue = getQueue();\r\n    for (int superstep = 0; superstep < 15; superstep++) {\r\n        checkQueue(queue);\r\n    }\r\n    queue.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\core\\src\\test\\java\\org\\apache\\hama\\bsp\\sync\\TestSyncServiceFactory.java",
+  "methodName" : "testClientInstantiation",
+  "sourceCode" : "@Test\r\npublic void testClientInstantiation() throws Exception {\r\n    Configuration conf = new Configuration();\r\n    // given null, should return zookeeper\r\n    PeerSyncClient syncClient = SyncServiceFactory.getPeerSyncClient(conf);\r\n    assertTrue(syncClient instanceof ZooKeeperSyncClientImpl);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\core\\src\\test\\java\\org\\apache\\hama\\bsp\\sync\\TestSyncServiceFactory.java",
+  "methodName" : "testServerInstantiation",
+  "sourceCode" : "@Test\r\npublic void testServerInstantiation() throws Exception {\r\n    Configuration conf = new Configuration();\r\n    // given null, should return zookeeper\r\n    SyncServer syncServer = SyncServiceFactory.getSyncServer(conf);\r\n    assertTrue(syncServer instanceof ZooKeeperSyncServerImpl);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\core\\src\\test\\java\\org\\apache\\hama\\bsp\\sync\\TestSyncServiceFactory.java",
+  "methodName" : "testZKSyncStore",
+  "sourceCode" : "@Test\r\npublic void testZKSyncStore() throws Exception {\r\n    Configuration conf = new Configuration();\r\n    int zkPort = BSPNetUtils.getFreePort(21811);\r\n    conf.set(\"bsp.local.dir\", \"/tmp/hama-test\");\r\n    conf.set(\"bsp.output.dir\", \"/tmp/hama-test_out\");\r\n    conf.setInt(Constants.PEER_PORT, zkPort);\r\n    conf.set(Constants.ZOOKEEPER_QUORUM, \"localhost\");\r\n    conf.setInt(Constants.ZOOKEEPER_CLIENT_PORT, zkPort);\r\n    conf.set(Constants.ZOOKEEPER_SESSION_TIMEOUT, \"12000\");\r\n    System.setProperty(\"user.dir\", \"/tmp\");\r\n    // given null, should return zookeeper\r\n    final SyncServer syncServer = SyncServiceFactory.getSyncServer(conf);\r\n    syncServer.init(conf);\r\n    assertTrue(syncServer instanceof ZooKeeperSyncServerImpl);\r\n    ZKServerThread serverThread = new ZKServerThread(syncServer);\r\n    ExecutorService executorService = Executors.newFixedThreadPool(1);\r\n    executorService.submit(serverThread);\r\n    executorService.awaitTermination(10, TimeUnit.SECONDS);\r\n    final PeerSyncClient syncClient = SyncServiceFactory.getPeerSyncClient(conf);\r\n    assertTrue(syncClient instanceof ZooKeeperSyncClientImpl);\r\n    BSPJobID jobId = new BSPJobID(\"abc\", 1);\r\n    TaskAttemptID taskId = new TaskAttemptID(new TaskID(jobId, 1), 1);\r\n    syncClient.init(conf, jobId, taskId);\r\n    Runtime.getRuntime().addShutdownHook(new Thread() {\r\n\r\n        @Override\r\n        public void run() {\r\n            try {\r\n                syncServer.stopServer();\r\n            } catch (Exception e) {\r\n                // too late to log!\r\n            }\r\n        }\r\n    });\r\n    IntWritable data = new IntWritable(5);\r\n    syncClient.storeInformation(syncClient.constructKey(jobId, String.valueOf(1L), \"test\"), data, true, null);\r\n    ListenerTest listenerTest = new ListenerTest();\r\n    syncClient.registerListener(syncClient.constructKey(jobId, String.valueOf(1L), \"test\"), ZKSyncEventFactory.getValueChangeEvent(), listenerTest);\r\n    IntWritable valueHolder = new IntWritable();\r\n    boolean result = syncClient.getInformation(syncClient.constructKey(jobId, String.valueOf(1L), \"test\"), valueHolder);\r\n    assertTrue(result);\r\n    int intVal = valueHolder.get();\r\n    assertTrue(intVal == data.get());\r\n    data.set(6);\r\n    syncClient.storeInformation(syncClient.constructKey(jobId, String.valueOf(1L), \"test\"), data, true, null);\r\n    valueHolder = new IntWritable();\r\n    result = syncClient.getInformation(syncClient.constructKey(jobId, String.valueOf(1L), \"test\"), valueHolder);\r\n    assertTrue(result);\r\n    intVal = valueHolder.get();\r\n    assertTrue(intVal == data.get());\r\n    Thread.sleep(5000);\r\n    assertEquals(true, listenerTest.getValue().equals(\"Changed\"));\r\n    syncServer.stopServer();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\core\\src\\test\\java\\org\\apache\\hama\\bsp\\TestZooKeeper.java",
+  "methodName" : "testClearZKNodes",
+  "sourceCode" : "@Test\r\npublic void testClearZKNodes() throws IOException, KeeperException, InterruptedException {\r\n    final ZooKeeperSyncServerImpl server = new ZooKeeperSyncServerImpl();\r\n    boolean done = false;\r\n    try {\r\n        server.init(configuration);\r\n        ExecutorService executorService = Executors.newCachedThreadPool();\r\n        executorService.submit(new Runnable() {\r\n\r\n            @Override\r\n            public void run() {\r\n                try {\r\n                    server.start();\r\n                } catch (Exception e) {\r\n                    e.printStackTrace();\r\n                }\r\n            }\r\n        });\r\n        executorService.awaitTermination(10, TimeUnit.SECONDS);\r\n        String bspRoot = \"/bsp\";\r\n        ZooKeeperSyncClientImpl peerClient = (ZooKeeperSyncClientImpl) SyncServiceFactory.getPeerSyncClient(configuration);\r\n        ZKSyncBSPMasterClient masterClient = (ZKSyncBSPMasterClient) SyncServiceFactory.getMasterSyncClient(configuration);\r\n        masterClient.init(configuration);\r\n        Thread.sleep(100);\r\n        Log.info(\"Created master and client sync clients\");\r\n        assertTrue(masterClient.hasKey(bspRoot));\r\n        Log.info(\"BSP root exists\");\r\n        BSPJobID jobID = new BSPJobID(\"test1\", 1);\r\n        masterClient.registerJob(jobID.toString());\r\n        TaskID taskId1 = new TaskID(jobID, 1);\r\n        TaskID taskId2 = new TaskID(jobID, 2);\r\n        TaskAttemptID task1 = new TaskAttemptID(taskId1, 1);\r\n        TaskAttemptID task2 = new TaskAttemptID(taskId2, 1);\r\n        int zkPort = BSPNetUtils.getFreePort(21815);\r\n        configuration.setInt(Constants.PEER_PORT, zkPort);\r\n        peerClient.init(configuration, jobID, task1);\r\n        peerClient.registerTask(jobID, \"hamanode1\", 5000L, task1);\r\n        peerClient.registerTask(jobID, \"hamanode2\", 5000L, task2);\r\n        peerClient.storeInformation(peerClient.constructKey(jobID, \"info\", \"level2\"), new IntWritable(5), true, null);\r\n        String[] names = peerClient.getAllPeerNames(task1);\r\n        Log.info(\"Found child count = \" + names.length);\r\n        assertEquals(2, names.length);\r\n        Log.info(\"Passed the child count test\");\r\n        masterClient.addKey(masterClient.constructKey(jobID, \"peer\", \"1\"), true, null);\r\n        masterClient.addKey(masterClient.constructKey(jobID, \"peer\", \"2\"), true, null);\r\n        String[] peerChild = masterClient.getChildKeySet(masterClient.constructKey(jobID, \"peer\"), null);\r\n        Log.info(\"Found child count = \" + peerChild.length);\r\n        assertEquals(2, peerChild.length);\r\n        Log.info(\" Peer name \" + peerChild[0]);\r\n        Log.info(\" Peer name \" + peerChild[1]);\r\n        Log.info(\"Passed the child key set test\");\r\n        masterClient.deregisterJob(jobID.toString());\r\n        Log.info(masterClient.constructKey(jobID));\r\n        Thread.sleep(200);\r\n        assertEquals(false, masterClient.hasKey(masterClient.constructKey(jobID)));\r\n        Log.info(\"Passed the key presence test\");\r\n        boolean result = masterClient.getInformation(masterClient.constructKey(jobID, \"info\", \"level3\"), new IntWritable());\r\n        assertEquals(false, result);\r\n        Writable[] writableArr = new Writable[2];\r\n        writableArr[0] = new LongWritable(3L);\r\n        writableArr[1] = new LongWritable(5L);\r\n        ArrayWritable arrWritable = new ArrayWritable(LongWritable.class);\r\n        arrWritable.set(writableArr);\r\n        masterClient.storeInformation(masterClient.constructKey(jobID, \"info\", \"level3\"), arrWritable, true, null);\r\n        ArrayWritable valueHolder = new ArrayWritable(LongWritable.class);\r\n        boolean getResult = masterClient.getInformation(masterClient.constructKey(jobID, \"info\", \"level3\"), valueHolder);\r\n        assertTrue(getResult);\r\n        assertEquals(arrWritable.get()[0], valueHolder.get()[0]);\r\n        assertEquals(arrWritable.get()[1], valueHolder.get()[1]);\r\n        Log.info(\"Passed array writable test\");\r\n        done = true;\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    } finally {\r\n        server.stopServer();\r\n    }\r\n    assertEquals(true, done);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\BipartiteMatchingTest.java",
+  "methodName" : "testBipartiteMatching",
+  "sourceCode" : "@Test\r\npublic void testBipartiteMatching() throws IOException, InterruptedException, ClassNotFoundException {\r\n    generateTestData();\r\n    try {\r\n        String seed = \"2\";\r\n        HamaConfiguration conf = new HamaConfiguration();\r\n        GraphJob job = BipartiteMatching.createJob(new String[] { INPUT, OUTPUT, \"30\", \"2\", seed }, conf);\r\n        job.setPartitioner(CustomTextPartitioner.class);\r\n        long startTime = System.currentTimeMillis();\r\n        if (job.waitForCompletion(true)) {\r\n            System.out.println(\"Job Finished in \" + (System.currentTimeMillis() - startTime) / 1000.0 + \" seconds\");\r\n        }\r\n        verifyResult();\r\n    } finally {\r\n        deleteTempDirs();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\CombineExampleTest.java",
+  "methodName" : "testCorrectCombineExecution",
+  "sourceCode" : "@Test\r\npublic void testCorrectCombineExecution() {\r\n    try {\r\n        CombineExample.main(new String[] {});\r\n    } catch (Exception e) {\r\n        fail(e.getLocalizedMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\LinearRegressionTest.java",
+  "methodName" : "testCorrectGDWithLinearRegressionExecution",
+  "sourceCode" : "@Test\r\npublic void testCorrectGDWithLinearRegressionExecution() throws Exception {\r\n    GradientDescentExample.main(new String[] { \"src/test/resources/linear_regression_sample.txt\", \"linear\" });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\LogisticRegressionTest.java",
+  "methodName" : "testCorrectGDWithLogisticRegressionExecution",
+  "sourceCode" : "@Test\r\npublic void testCorrectGDWithLogisticRegressionExecution() throws Exception {\r\n    GradientDescentExample.main(new String[] { \"src/test/resources/logistic_regression_sample.txt\", \"logistic\" });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\PiEstimatorTest.java",
+  "methodName" : "testCorrectPiExecution",
+  "sourceCode" : "@Test\r\npublic void testCorrectPiExecution() {\r\n    try {\r\n        PiEstimator.main(new String[] { \"10\" });\r\n    } catch (Exception e) {\r\n        fail(e.getLocalizedMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\PiEstimatorTest.java",
+  "methodName" : "testPiExecutionWithEmptyArgs",
+  "sourceCode" : "@Test\r\npublic void testPiExecutionWithEmptyArgs() {\r\n    try {\r\n        PiEstimator.main(new String[10]);\r\n        fail(\"PiEstimator should fail if the argument list has size 0\");\r\n    } catch (Exception e) {\r\n        // everything ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\RandBenchTest.java",
+  "methodName" : "testCorrectRandBenchExecution",
+  "sourceCode" : "@Test\r\npublic void testCorrectRandBenchExecution() {\r\n    try {\r\n        RandBench.main(new String[] { \"10\", \"3\", \"2\" });\r\n    } catch (Exception e) {\r\n        fail(e.getLocalizedMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\RandBenchTest.java",
+  "methodName" : "testRandBenchExecutionWithEmptyArgs",
+  "sourceCode" : "@Test\r\npublic void testRandBenchExecutionWithEmptyArgs() {\r\n    try {\r\n        RandBench.main(new String[10]);\r\n        fail(\"RandBench should fail if the argument list has size < 3\");\r\n    } catch (Exception e) {\r\n        // everything ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\SpMVTest.java",
+  "methodName" : "runFromDriver",
+  "sourceCode" : "/**\r\n * Simple test of running spmv from {@link ExampleDriver}. You should specify\r\n * paths.\r\n */\r\n@Test\r\npublic void runFromDriver() {\r\n    try {\r\n        String matrixPath = \"\";\r\n        String vectorPath = \"\";\r\n        String outputPath = \"\";\r\n        if (matrixPath.isEmpty() || vectorPath.isEmpty() || outputPath.isEmpty()) {\r\n            LOG.info(\"Please setup input path for vector and matrix and output path for result.\");\r\n            return;\r\n        }\r\n        ExampleDriver.main(new String[] { \"spmv\", matrixPath, vectorPath, outputPath, \"4\" });\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail(e.getLocalizedMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\SpMVTest.java",
+  "methodName" : "simpleSpMVTest",
+  "sourceCode" : "/**\r\n * Simple test. multiplying [1 0 6 0] [2] [38] [0 4 0 0] * [3] = [12] [0 2 3\r\n * 0] [6] [24] [3 0 0 5] [1] [11]\r\n */\r\n@Test\r\npublic void simpleSpMVTest() {\r\n    try {\r\n        HamaConfiguration conf = new HamaConfiguration();\r\n        String testDir = \"/simple/\";\r\n        int size = 4;\r\n        // creating test matrix\r\n        HashMap<Integer, Writable> inputMatrix = new HashMap<Integer, Writable>();\r\n        SparseVectorWritable vector0 = new SparseVectorWritable();\r\n        vector0.setSize(size);\r\n        vector0.addCell(0, 1);\r\n        vector0.addCell(2, 6);\r\n        SparseVectorWritable vector1 = new SparseVectorWritable();\r\n        vector1.setSize(size);\r\n        vector1.addCell(1, 4);\r\n        SparseVectorWritable vector2 = new SparseVectorWritable();\r\n        vector2.setSize(size);\r\n        vector2.addCell(1, 2);\r\n        vector2.addCell(2, 3);\r\n        SparseVectorWritable vector3 = new SparseVectorWritable();\r\n        vector3.setSize(size);\r\n        vector3.addCell(0, 3);\r\n        vector3.addCell(3, 5);\r\n        inputMatrix.put(0, vector0);\r\n        inputMatrix.put(1, vector1);\r\n        inputMatrix.put(2, vector2);\r\n        inputMatrix.put(3, vector3);\r\n        String matrixPath = baseDir + testDir + \"inputMatrix\";\r\n        writeMatrix(matrixPath, conf, inputMatrix);\r\n        HashMap<Integer, Writable> inputVector = new HashMap<Integer, Writable>();\r\n        DenseVectorWritable vector = new DenseVectorWritable();\r\n        vector.setSize(size);\r\n        vector.addCell(0, 2);\r\n        vector.addCell(1, 3);\r\n        vector.addCell(2, 6);\r\n        vector.addCell(3, 1);\r\n        inputVector.put(0, vector);\r\n        String vectorPath = baseDir + testDir + \"inputVector\";\r\n        writeMatrix(vectorPath, conf, inputVector);\r\n        String outputPath = baseDir + testDir;\r\n        SpMV.main(new String[] { matrixPath, vectorPath, outputPath, \"4\" });\r\n        String resultPath = SpMV.getResultPath();\r\n        DenseVectorWritable result = new DenseVectorWritable();\r\n        SpMV.readFromFile(resultPath, result, conf);\r\n        double[] expected = { 38, 12, 24, 11 };\r\n        if (result.getSize() != size)\r\n            throw new Exception(\"Incorrect size of output vector\");\r\n        for (int i = 0; i < result.getSize(); i++) if ((result.get(i) - expected[i]) < 0.01)\r\n            expected[i] = 0;\r\n        for (int i = 0; i < expected.length; i++) if (expected[i] != 0)\r\n            throw new Exception(\"Result doesn't meets expectations\");\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail(e.getLocalizedMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\SpMVTest.java",
+  "methodName" : "simpleSpMVTestFile",
+  "sourceCode" : "/**\r\n * Simple test of spmv work with files. You should specify paths.\r\n */\r\n@Test\r\npublic void simpleSpMVTestFile() {\r\n    try {\r\n        int size = 4;\r\n        String matrixPath = \"\";\r\n        String vectorPath = \"\";\r\n        String outputPath = \"\";\r\n        if (matrixPath.isEmpty() || vectorPath.isEmpty() || outputPath.isEmpty()) {\r\n            LOG.info(\"Please setup input path for vector and matrix and output path for result, \" + \"if you want to run this example\");\r\n            return;\r\n        }\r\n        SpMV.main(new String[] { matrixPath, vectorPath, outputPath, \"4\" });\r\n        String resultPath = SpMV.getResultPath();\r\n        DenseVectorWritable result = new DenseVectorWritable();\r\n        SpMV.readFromFile(resultPath, result, conf);\r\n        double[] expected = { 38, 12, 24, 11 };\r\n        if (result.getSize() != size)\r\n            throw new Exception(\"Incorrect size of output vector\");\r\n        for (int i = 0; i < result.getSize(); i++) if ((result.get(i) - expected[i]) < 0.01)\r\n            expected[i] = 0;\r\n        for (int i = 0; i < expected.length; i++) if (expected[i] != 0)\r\n            throw new Exception(\"Result doesn't meets expectations\");\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail(e.getLocalizedMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\SymmetricMatrixGenTest.java",
+  "methodName" : "testGraphGenerator",
+  "sourceCode" : "@Test\r\npublic void testGraphGenerator() throws Exception {\r\n    Configuration conf = new Configuration();\r\n    SymmetricMatrixGen.main(new String[] { \"20\", \"10\", TEST_OUTPUT, \"3\" });\r\n    FileSystem fs = FileSystem.get(conf);\r\n    FileStatus[] globStatus = fs.globStatus(new Path(TEST_OUTPUT + \"/part-*\"));\r\n    for (FileStatus fts : globStatus) {\r\n        SequenceFile.Reader reader = new SequenceFile.Reader(fs, fts.getPath(), conf);\r\n        Text key = new Text();\r\n        TextArrayWritable value = new TextArrayWritable();\r\n        while (reader.next(key, value)) {\r\n            String values = \"\";\r\n            for (Writable v : value.get()) {\r\n                values += v.toString() + \" \";\r\n            }\r\n            LOG.info(fts.getPath() + \": \" + key.toString() + \" | \" + values);\r\n        }\r\n        reader.close();\r\n    }\r\n    fs.delete(new Path(TEST_OUTPUT), true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\regression\\LinearRegressionModelTest.java",
+  "methodName" : "testCorrectCostCalculation",
+  "sourceCode" : "@Test\r\npublic void testCorrectCostCalculation() throws Exception {\r\n    LinearRegressionModel linearRegressionModel = new LinearRegressionModel();\r\n    DoubleVector x = new DenseDoubleVector(new double[] { 2, 3, 4 });\r\n    double y = 1;\r\n    DoubleVector theta = new DenseDoubleVector(new double[] { 1, 1, 1 });\r\n    Double cost = linearRegressionModel.calculateCostForItem(x, y, 2, theta);\r\n    assertEquals(\"wrong cost calculation for linear regression\", Double.valueOf(16d), cost);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\regression\\LinearRegressionModelTest.java",
+  "methodName" : "testCorrectHypothesisCalculation",
+  "sourceCode" : "@Test\r\npublic void testCorrectHypothesisCalculation() throws Exception {\r\n    LinearRegressionModel linearRegressionModel = new LinearRegressionModel();\r\n    Double hypothesisValue = linearRegressionModel.applyHypothesis(new DenseDoubleVector(new double[] { 1, 1, 1 }), new DenseDoubleVector(new double[] { 2, 3, 4 }));\r\n    assertEquals(\"wrong hypothesis value for linear regression\", Double.valueOf(9), hypothesisValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\regression\\LogisticRegressionModelTest.java",
+  "methodName" : "testCorrectCostCalculation",
+  "sourceCode" : "@Test\r\npublic void testCorrectCostCalculation() throws Exception {\r\n    LogisticRegressionModel logisticRegressionModel = new LogisticRegressionModel();\r\n    DoubleVector x = new DenseDoubleVector(new double[] { 2, 3, 4 });\r\n    double y = 1;\r\n    DoubleVector theta = new DenseDoubleVector(new double[] { 1, 1, 1 });\r\n    Double cost = logisticRegressionModel.calculateCostForItem(x, y, 2, theta);\r\n    assertEquals(\"wrong cost calculation for logistic regression\", Double.valueOf(6.170109486162941E-5), cost);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\regression\\LogisticRegressionModelTest.java",
+  "methodName" : "testCorrectHypothesisCalculation",
+  "sourceCode" : "@Test\r\npublic void testCorrectHypothesisCalculation() throws Exception {\r\n    LogisticRegressionModel logisticRegressionModel = new LogisticRegressionModel();\r\n    Double hypothesisValue = logisticRegressionModel.applyHypothesis(new DenseDoubleVector(new double[] { 1, 1, 1 }), new DenseDoubleVector(new double[] { 2, 3, 4 }));\r\n    assertEquals(\"wrong hypothesis value for logistic regression\", Double.valueOf(0.9998766054240138), hypothesisValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\regression\\VectorDoubleFileInputFormatTest.java",
+  "methodName" : "testFileRead",
+  "sourceCode" : "@Test\r\npublic void testFileRead() throws Exception {\r\n    VectorDoubleFileInputFormat inputFormat = new VectorDoubleFileInputFormat();\r\n    Path file = new Path(\"src/test/resources/vd_file_sample.txt\");\r\n    InputSplit split = new FileSplit(file, 0, 1000, new String[] { \"localhost\" });\r\n    BSPJob job = new BSPJob();\r\n    RecordReader<VectorWritable, DoubleWritable> recordReader = inputFormat.getRecordReader(split, job);\r\n    assertNotNull(recordReader);\r\n    VectorWritable key = recordReader.createKey();\r\n    assertNotNull(key);\r\n    DoubleWritable value = recordReader.createValue();\r\n    assertNotNull(value);\r\n    assertTrue(recordReader.next(key, value));\r\n    assertEquals(new DenseDoubleVector(new double[] { 2d, 3d, 4d }), key.getVector());\r\n    assertEquals(new DoubleWritable(1d), value);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

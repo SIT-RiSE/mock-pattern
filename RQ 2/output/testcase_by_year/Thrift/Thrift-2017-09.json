@@ -1,0 +1,73 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestAbstractThriftMojo.java",
+  "methodName" : "testMakeThriftPathFromJars",
+  "sourceCode" : "@Test\r\npublic void testMakeThriftPathFromJars() throws Throwable {\r\n    final File temporaryThriftFileDirectory = testRootDir;\r\n    // The SharedIdl.jar file contains the same idl/shared.thrift and idl/tutorial.thrift hierarchy\r\n    // used by other tests. It's used here to represent a dependency of the project maven is building,\r\n    // one that is contributing .thrift IDL files as well as any other artifacts.\r\n    final Iterable<File> classpathElementFiles = Lists.newArrayList(new File(\"src/test/resources/dependency-jar-test/SharedIdl.jar\"));\r\n    final Set<File> thriftDirectories = mojo.makeThriftPathFromJars(temporaryThriftFileDirectory, classpathElementFiles);\r\n    // The results should be a path to a directory named after the JAR itself (assuming no path hashing,\r\n    // but see below for a separate test of that) representing the root of a hierarchy containing thrift\r\n    // files, suitable for providing to the thrift compiler as an include directory. In this case, that\r\n    // means it points to the directory containing the \"idl\" hierarchy rather than to the idl directory\r\n    // itself.\r\n    final Set<File> expected = Sets.newHashSet(new File(testRootDir, \"src/test/resources/dependency-jar-test/SharedIdl.jar\"));\r\n    assertEquals(\"makeThriftPathFromJars should return thrift IDL base path from within JAR\", expected, thriftDirectories);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestAbstractThriftMojo.java",
+  "methodName" : "testTruncatePath",
+  "sourceCode" : "@Test\r\npublic void testTruncatePath() throws Throwable {\r\n    // JAR path is unrelated to maven repo, and should be unchanged\r\n    assertEquals(\"/path/to/somejar.jar\", mojo.truncatePath(\"/path/to/somejar.jar\"));\r\n    // JAR path is within maven repo, and should be made relative to the repo\r\n    assertEquals(\"path/to/somejar.jar\", mojo.truncatePath(\"/test/maven/repo/basedir/path/to/somejar.jar\"));\r\n    // JAR path contains forward slashes that should be normalized\r\n    assertEquals(\"/path/to/somejar.jar\", mojo.truncatePath(\"\\\\path\\\\to\\\\somejar.jar\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestAbstractThriftMojo.java",
+  "methodName" : "testTruncatePathWithDependentPathHashing",
+  "sourceCode" : "@Test\r\npublic void testTruncatePathWithDependentPathHashing() throws Throwable {\r\n    mojo.setHashDependentPaths(true);\r\n    // hashDependentPaths set to true, the JAR path is immediately hashed (MD5) and converted to a hex string\r\n    assertEquals(\"1c85950987b23493462cf3c261d9510a\", mojo.truncatePath(\"/path/to/somejar.jar\"));\r\n    assertEquals(\"39fc2b4c34cb6cb0da38bed5d8b5fc67\", mojo.truncatePath(\"/test/maven/repo/basedir/path/to/somejar.jar\"));\r\n    assertEquals(\"25b6924f5b0e19486d0ff88448e999d5\", mojo.truncatePath(\"\\\\path\\\\to\\\\somejar.jar\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestThrift.java",
+  "methodName" : "testThriftCompile",
+  "sourceCode" : "@Test\r\npublic void testThriftCompile() throws Exception {\r\n    executeThriftCompile();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestThrift.java",
+  "methodName" : "testThriftCompileWithGeneratorOption",
+  "sourceCode" : "@Test\r\npublic void testThriftCompileWithGeneratorOption() throws Exception {\r\n    builder.setGenerator(\"java:private-members\");\r\n    executeThriftCompile();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestThrift.java",
+  "methodName" : "testThriftMultipleFileCompile",
+  "sourceCode" : "@Test\r\npublic void testThriftMultipleFileCompile() throws Exception {\r\n    final File sharedThrift = new File(idlDir, \"shared.thrift\");\r\n    final File tutorialThrift = new File(idlDir, \"tutorial.thrift\");\r\n    builder.addThriftFile(sharedThrift);\r\n    builder.addThriftFile(tutorialThrift);\r\n    final Thrift thrift = builder.build();\r\n    assertTrue(\"File not found: shared.thrift\", sharedThrift.exists());\r\n    assertFalse(\"gen-java directory should not exist\", genJavaDir.exists());\r\n    // execute the compile\r\n    final int result = thrift.compile();\r\n    assertEquals(0, result);\r\n    assertFalse(\"gen-java directory was not removed\", genJavaDir.exists());\r\n    assertTrue(\"generated java code doesn't exist\", new File(testRootDir, \"shared/SharedService.java\").exists());\r\n    assertTrue(\"generated java code doesn't exist\", new File(testRootDir, \"tutorial/InvalidOperation.java\").exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestThrift.java",
+  "methodName" : "testBadCompile",
+  "sourceCode" : "@Test\r\npublic void testBadCompile() throws Exception {\r\n    final File thriftFile = new File(testRootDir, \"missing.thrift\");\r\n    builder.addThriftPathElement(testRootDir);\r\n    // Hacking around checks in addThrift file.\r\n    assertTrue(thriftFile.createNewFile());\r\n    builder.addThriftFile(thriftFile);\r\n    assertTrue(thriftFile.delete());\r\n    final Thrift thrift = builder.build();\r\n    assertTrue(!thriftFile.exists());\r\n    assertFalse(\"gen-java directory should not exist\", genJavaDir.exists());\r\n    // execute the compile\r\n    final int result = thrift.compile();\r\n    assertEquals(1, result);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestThrift.java",
+  "methodName" : "testFileInPathPreCondition",
+  "sourceCode" : "@Test\r\npublic void testFileInPathPreCondition() throws Exception {\r\n    final File thriftFile = new File(testRootDir, \"missing.thrift\");\r\n    // Hacking around checks in addThrift file.\r\n    assertTrue(thriftFile.createNewFile());\r\n    try {\r\n        builder.addThriftFile(thriftFile);\r\n        fail(\"Expected IllegalStateException\");\r\n    } catch (IllegalStateException e) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\TestMultiplexedProcessor.java",
+  "methodName" : "testWrongMessageType",
+  "sourceCode" : "@Test(expected = TException.class)\r\npublic void testWrongMessageType() throws TException {\r\n    when(iprot.readMessageBegin()).thenReturn(new TMessage(\"service:func\", TMessageType.REPLY, 42));\r\n    mp.process(iprot, oprot);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\TestMultiplexedProcessor.java",
+  "methodName" : "testNoSuchService",
+  "sourceCode" : "@Test(expected = TException.class)\r\npublic void testNoSuchService() throws TException {\r\n    when(iprot.readMessageBegin()).thenReturn(new TMessage(\"service:func\", TMessageType.CALL, 42));\r\n    mp.process(iprot, oprot);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\TestMultiplexedProcessor.java",
+  "methodName" : "testExistingService",
+  "sourceCode" : "@Test\r\npublic void testExistingService() throws TException {\r\n    when(iprot.readMessageBegin()).thenReturn(new TMessage(\"service:func\", TMessageType.CALL, 42));\r\n    mp.registerProcessor(\"service\", new StubProcessor());\r\n    mp.process(iprot, oprot);\r\n    verify(oprot).writeMessageBegin(any(TMessage.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\lib\\java\\test\\org\\apache\\thrift\\TestMultiplexedProcessor.java",
+  "methodName" : "testDefaultService",
+  "sourceCode" : "@Test\r\npublic void testDefaultService() throws TException {\r\n    when(iprot.readMessageBegin()).thenReturn(new TMessage(\"func\", TMessageType.CALL, 42));\r\n    mp.registerDefault(new StubProcessor());\r\n    mp.process(iprot, oprot);\r\n    verify(oprot).writeMessageBegin(any(TMessage.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

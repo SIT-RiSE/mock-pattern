@@ -1,0 +1,175 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\command\\TestCommandLine.java",
+  "methodName" : "testWithoutOption",
+  "sourceCode" : "@Test\r\npublic void testWithoutOption() throws CommandException {\r\n    String line = \"cmd value\";\r\n    CommandLine commandLine = new CommandLine(reg, line);\r\n    assertEquals(\"cmd\", commandLine.getCommand().getName());\r\n    assertEquals(\"value\", commandLine.getParameterValue(\"arg1\"));\r\n    assertNull(commandLine.getParameter(\"-r\"));\r\n    assertNull(commandLine.getParameter(\"-o\"));\r\n    //assertEquals(\"tutu\", commandLine.getParameterValue(\"titi\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\command\\TestCommandLine.java",
+  "methodName" : "testWithOption",
+  "sourceCode" : "@Test\r\npublic void testWithOption() throws CommandException {\r\n    String line = \"cmd -r -o option value\";\r\n    CommandLine commandLine = new CommandLine(reg, line);\r\n    assertEquals(\"cmd\", commandLine.getCommand().getName());\r\n    assertEquals(\"value\", commandLine.getParameterValue(\"arg1\"));\r\n    assertEquals(\"option\", commandLine.getParameterValue(\"-o\"));\r\n    assertNotNull(commandLine.getParameter(\"-r\"));\r\n    //assertEquals(\"tutu\", commandLine.getParameterValue(\"titi\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\command\\TestCommandSyntax.java",
+  "methodName" : "testNoArgument",
+  "sourceCode" : "@Test\r\npublic void testNoArgument() {\r\n    CommandSyntax cs = CommandSyntax.parse(\"cmd\");\r\n    assertEquals(0, cs.getArguments().size());\r\n    assertEquals(1, cs.getTokens().size());\r\n    assertEquals(\"cmd\", cs.getCommandToken().getName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\command\\TestCommandSyntax.java",
+  "methodName" : "testOneMandatoryArgument",
+  "sourceCode" : "@Test\r\npublic void testOneMandatoryArgument() {\r\n    CommandSyntax cs = CommandSyntax.parse(\"cmd arg1\");\r\n    assertEquals(1, cs.getArguments().size());\r\n    assertEquals(2, cs.getTokens().size());\r\n    CommandToken cmd = cs.getCommandToken();\r\n    assertEquals(\"cmd\", cmd.getName());\r\n    assertTrue(cmd.isCommand());\r\n    assertFalse(cmd.isArgument());\r\n    CommandToken arg1 = cs.getArgument(0);\r\n    CommandToken arg1ByName = cs.getToken(\"arg1\");\r\n    assertEquals(arg1ByName, arg1);\r\n    assertEquals(\"arg1\", arg1.getName());\r\n    assertTrue(arg1.isArgument());\r\n    assertFalse(arg1.isCommand());\r\n    assertFalse(arg1.isOptional());\r\n    assertFalse(arg1.isFlag());\r\n    assertNull(arg1.getValueType());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\command\\TestCommandSyntax.java",
+  "methodName" : "testOneMandatoryWithType",
+  "sourceCode" : "@Test\r\npublic void testOneMandatoryWithType() {\r\n    CommandSyntax cs = CommandSyntax.parse(\"cmd arg1:file\");\r\n    assertEquals(1, cs.getArguments().size());\r\n    assertEquals(2, cs.getTokens().size());\r\n    CommandToken arg1 = cs.getArgument(0);\r\n    CommandToken arg1ByName = cs.getToken(\"arg1\");\r\n    assertEquals(arg1ByName, arg1);\r\n    assertEquals(\"arg1\", arg1.getName());\r\n    assertTrue(arg1.isArgument());\r\n    assertFalse(arg1.isCommand());\r\n    assertFalse(arg1.isFlag());\r\n    assertEquals(\"file\", arg1.getValueType());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\command\\TestCommandSyntax.java",
+  "methodName" : "testOneOptionalArgument",
+  "sourceCode" : "@Test\r\npublic void testOneOptionalArgument() {\r\n    CommandSyntax cs = CommandSyntax.parse(\"cmd [arg1]\");\r\n    assertEquals(1, cs.getArguments().size());\r\n    assertEquals(2, cs.getTokens().size());\r\n    CommandToken cmd = cs.getCommandToken();\r\n    assertEquals(\"cmd\", cmd.getName());\r\n    assertTrue(cmd.isCommand());\r\n    assertFalse(cmd.isArgument());\r\n    CommandToken arg1 = cs.getArgument(0);\r\n    CommandToken arg1ByName = cs.getToken(\"arg1\");\r\n    assertEquals(arg1ByName, arg1);\r\n    assertEquals(\"arg1\", arg1.getName());\r\n    assertTrue(arg1.isArgument());\r\n    assertFalse(arg1.isCommand());\r\n    assertTrue(arg1.isOptional());\r\n    assertFalse(arg1.isFlag());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\command\\TestCommandSyntax.java",
+  "methodName" : "testOneOptionalFlag",
+  "sourceCode" : "@Test\r\npublic void testOneOptionalFlag() {\r\n    CommandSyntax cs = CommandSyntax.parse(\"cmd [-s] arg1\");\r\n    assertEquals(1, cs.getArguments().size());\r\n    assertEquals(3, cs.getTokens().size());\r\n    CommandToken cmd = cs.getCommandToken();\r\n    assertEquals(\"cmd\", cmd.getName());\r\n    assertTrue(cmd.isCommand());\r\n    assertFalse(cmd.isArgument());\r\n    CommandToken arg1 = cs.getToken(\"arg1\");\r\n    assertEquals(\"arg1\", arg1.getName());\r\n    CommandToken flag = cs.getToken(\"-s\");\r\n    assertEquals(\"-s\", flag.getName());\r\n    assertFalse(flag.isArgument());\r\n    assertFalse(flag.isCommand());\r\n    assertTrue(flag.isOptional());\r\n    assertTrue(flag.isFlag());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\command\\TestCommandSyntax.java",
+  "methodName" : "testDefaultValue",
+  "sourceCode" : "@Test\r\npublic void testDefaultValue() {\r\n    CommandSyntax cs = CommandSyntax.parse(\"cmd [arg1:file?toto]\");\r\n    CommandToken arg1 = cs.getToken(\"arg1\");\r\n    assertEquals(\"arg1\", arg1.getName());\r\n    assertEquals(\"file\", arg1.getValueType());\r\n    assertEquals(\"toto\", arg1.getDefaultValue());\r\n    assertTrue(arg1.isArgument());\r\n    assertFalse(arg1.isCommand());\r\n    assertTrue(arg1.isOptional());\r\n    assertFalse(arg1.isFlag());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\TestWithTestScript.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() throws Exception {\r\n    Main.main(new String[] { \"cmissh\", \"-t\", \"-b\", \"testscript\" });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestPath.java",
+  "methodName" : "testRelative",
+  "sourceCode" : "@Test\r\npublic void testRelative() {\r\n    Path p = new Path(\"abc/asdf/file.ext\");\r\n    assertEquals(\"abc/asdf/file.ext\", p.toString());\r\n    assertEquals(\"ext\", p.getFileExtension());\r\n    assertEquals(\"file\", p.getFileName());\r\n    assertEquals(\"abc\", p.segment(0));\r\n    assertEquals(\"asdf\", p.segment(1));\r\n    assertEquals(\"file.ext\", p.getLastSegment());\r\n    p = p.makeAbsolute();\r\n    assertEquals(\"/abc/asdf/file.ext\", p.toString());\r\n    p = p.makeAbsolute();\r\n    assertEquals(\"/abc/asdf/file.ext\", p.toString());\r\n    Path p1 = p.getParent();\r\n    assertEquals(\"/abc/asdf\", p1.toString());\r\n    p1 = p.up();\r\n    assertEquals(\"/abc/asdf\", p1.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestPath.java",
+  "methodName" : "testAbsolute",
+  "sourceCode" : "@Test\r\npublic void testAbsolute() {\r\n    Path p = new Path(\"/abc/asdf/file.ext\");\r\n    assertEquals(\"/abc/asdf/file.ext\", p.toString());\r\n    p = p.makeRelative();\r\n    assertEquals(\"abc/asdf/file.ext\", p.toString());\r\n    p = p.makeRelative();\r\n    assertEquals(\"abc/asdf/file.ext\", p.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestPath.java",
+  "methodName" : "testDots",
+  "sourceCode" : "@Test\r\npublic void testDots() {\r\n    Path p = new Path(\"/./abc//asdf/../file.ext\");\r\n    assertEquals(\"/abc/file.ext\", p.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestPath.java",
+  "methodName" : "testAppend",
+  "sourceCode" : "@Test\r\npublic void testAppend() {\r\n    Path p = new Path(\"/commands\");\r\n    p = p.append((Path) null);\r\n    assertEquals(\"/commands\", p.toString());\r\n    p = p.append(\"\");\r\n    assertEquals(\"/commands\", p.toString());\r\n    p = p.append(Path.EMPTY);\r\n    assertEquals(\"/commands\", p.toString());\r\n    p = Path.EMPTY.append(p);\r\n    assertEquals(\"commands\", p.toString());\r\n    p = new Path(\"/commands\");\r\n    p = p.append(\"test\");\r\n    assertEquals(\"/commands/test\", p.toString());\r\n    p = p.append(\"../../../test2\");\r\n    assertEquals(\"../test2\", p.toString());\r\n    p = p.makeAbsolute();\r\n    assertEquals(\"/test2\", p.toString());\r\n    p = p.append(\".\");\r\n    assertEquals(\"/test2\", p.toString());\r\n    p = p.append(\"..\");\r\n    assertEquals(\"/\", p.toString());\r\n    p = p.append(\"..\");\r\n    assertEquals(\"/\", p.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestPath.java",
+  "methodName" : "testRoot",
+  "sourceCode" : "@Test\r\npublic void testRoot() {\r\n    assertTrue(Path.ROOT.isRoot());\r\n    assertFalse(Path.ROOT.isEmpty());\r\n    assertEquals(\"/\", Path.ROOT.toString());\r\n    Path p1 = new Path(\"/\");\r\n    assertEquals(Path.ROOT, p1);\r\n    Path p2 = new Path(Path.ROOT);\r\n    assertEquals(Path.ROOT, p2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestPath.java",
+  "methodName" : "testEmpty",
+  "sourceCode" : "@Test\r\npublic void testEmpty() {\r\n    assertTrue(Path.EMPTY.isEmpty());\r\n    assertFalse(Path.EMPTY.isRoot());\r\n    assertEquals(\"\", Path.EMPTY.toString());\r\n    Path p1 = new Path(\"\");\r\n    assertEquals(Path.EMPTY, p1);\r\n    Path p2 = new Path(Path.EMPTY);\r\n    assertEquals(Path.EMPTY, p2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestPath.java",
+  "methodName" : "test",
+  "sourceCode" : "// Tests copied (mutatis mutandis) from the org.nuxeo.commons Path\r\n@Test\r\npublic void test() {\r\n    Path path = new Path(\"/a/b/c/d\");\r\n    assertFalse(path.isRoot());\r\n    assertFalse(path.isEmpty());\r\n    assertTrue(path.isAbsolute());\r\n    assertEquals(\"/a/b/c/d\", path.toString());\r\n    assertEquals(4, path.segmentCount());\r\n    assertEquals(4, path.segments().length);\r\n    assertEquals(\"a\", path.segment(0));\r\n    assertEquals(\"b\", path.segment(1));\r\n    assertEquals(\"c\", path.segment(2));\r\n    assertEquals(\"d\", path.segment(3));\r\n    assertEquals(\"d\", path.getLastSegment());\r\n    assertEquals(new Path(\"b/c/d\"), path.removeFirstSegments(1));\r\n    assertEquals(new Path(\"/a/b/c\"), path.removeLastSegments(1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestPath.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "@Test\r\npublic void testEquals() {\r\n    Path path = new Path(\"/a/b/c/d\");\r\n    Path path2 = new Path(\"/a/b/c/d/\");\r\n    Path path3 = new Path(\"/a/b/c////d/\");\r\n    Path path4 = new Path(\"/a/b/././c/./e/../d/\");\r\n    assertEquals(path, path);\r\n    assertFalse(path.equals(path2));\r\n    assertEquals(path2, path3);\r\n    assertEquals(path2, path4);\r\n    // SF: I think this shouldn't pass...\r\n    assertEquals(path.hashCode(), path2.hashCode());\r\n    assertEquals(path.hashCode(), path3.hashCode());\r\n    assertEquals(path.hashCode(), path4.hashCode());\r\n    assertFalse(path.equals(null));\r\n    assertFalse(path.equals(new Path(\"a/b/c/d\")));\r\n    assertFalse(path.equals(new Path(\"/a/b/c/e\")));\r\n    assertFalse(path.equals(new Path(\"/a/b/c/d/e\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestPath.java",
+  "methodName" : "testGetFileExtension",
+  "sourceCode" : "@Test\r\npublic void testGetFileExtension() {\r\n    assertNull(new Path(\"/a/b/c/\").getFileExtension());\r\n    assertNull(new Path(\"/a/b/c\").getFileExtension());\r\n    assertEquals(\"doc\", new Path(\"/a/b/c.doc\").getFileExtension());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestPath.java",
+  "methodName" : "testBasic",
+  "sourceCode" : "@Test\r\npublic void testBasic() {\r\n    final Path path = new Path(\"/a/b/c\");\r\n    assertEquals(3, path.segmentCount());\r\n    assertTrue(path.isAbsolute());\r\n    assertFalse(path.isEmpty());\r\n    assertFalse(path.isRoot());\r\n    assertEquals(3, path.segments().length);\r\n    assertEquals(\"a\", path.segment(0));\r\n    assertEquals(\"b\", path.segment(1));\r\n    assertEquals(\"c\", path.segment(2));\r\n    assertEquals(path, new Path(\"/a/b/c\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestPath.java",
+  "methodName" : "testFileExtension",
+  "sourceCode" : "@Test\r\npublic void testFileExtension() {\r\n    Path path = new Path(\"/a/b/c\");\r\n    assertNull(path.getFileExtension());\r\n    path = new Path(\"/a/b/c.txt\");\r\n    assertEquals(\"txt\", path.getFileExtension());\r\n    assertEquals(\"/a/b/c\", path.removeFileExtension().toString());\r\n    path = new Path(\"/a/b/c/\");\r\n    assertNull(path.getFileExtension());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestPath.java",
+  "methodName" : "testPathNormalisation",
+  "sourceCode" : "@Test\r\npublic void testPathNormalisation() {\r\n    Path path = new Path(\"////a/./b/../c\");\r\n    assertEquals(\"/a/c\", path.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestPath.java",
+  "methodName" : "testEquality",
+  "sourceCode" : "@Test\r\npublic void testEquality() {\r\n    assertEquals(new Path(\"/a/b/c\"), new Path(\"/a/b/c\"));\r\n    assertEquals(new Path(\"/a/b/c/\"), new Path(\"/a/b/c/\"));\r\n    assert !new Path(\"/a/b/c\").equals(new Path(\"/a/b\"));\r\n    assert !new Path(\"/a/b\").equals(new Path(\"/a/b/c\"));\r\n    assert !new Path(\"/a/b/c/\").equals(new Path(\"/a/b/c\"));\r\n    assert !new Path(\"/a/b/c\").equals(new Path(\"/a/b/c/\"));\r\n    assert !new Path(\"/a/b/d\").equals(new Path(\"/a/b/c\"));\r\n    assert !new Path(\"/a/d/c\").equals(new Path(\"/a/b/c\"));\r\n    assert !new Path(\"/d/b/c\").equals(new Path(\"/a/b/c\"));\r\n    assert !new Path(\"/a/b/c\").equals(new Path(\"/a/b/d\"));\r\n    assert !new Path(\"/a/b/c\").equals(new Path(\"/a/d/c\"));\r\n    assert !new Path(\"/a/b/c\").equals(new Path(\"/d/b/c\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestPath.java",
+  "methodName" : "testAppend1",
+  "sourceCode" : "@Test\r\npublic void testAppend1() {\r\n    Path path1 = new Path(\"/a/b/c\");\r\n    Path path2 = new Path(\"/d/e/f\");\r\n    Path path3 = new Path(\"/a/b/c/d/e/f\");\r\n    assertEquals(path3, path1.append(path2));\r\n    assertEquals(\"/a/b/c\", path1.append(\".\").toString());\r\n    assertEquals(\"/a/b\", path1.append(\"..\").toString());\r\n    assertEquals(\"/a/b/c\", path1.append(new Path(\".\")).toString());\r\n    assertEquals(\"/a/b\", path1.append(new Path(\"..\")).toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestStringUtils.java",
+  "methodName" : "testSplit",
+  "sourceCode" : "@Test\r\npublic void testSplit() {\r\n    String[] res = StringUtils.split(\"abc\", '|', true);\r\n    assertArrayEquals(new String[] { \"abc\" }, res);\r\n    res = StringUtils.split(\" abc \", '|', true);\r\n    assertArrayEquals(new String[] { \"abc\" }, res);\r\n    res = StringUtils.split(\" abc \", '|', false);\r\n    assertArrayEquals(new String[] { \" abc \" }, res);\r\n    res = StringUtils.split(\"a|b|c\", '|', true);\r\n    assertArrayEquals(new String[] { \"a\", \"b\", \"c\" }, res);\r\n    res = StringUtils.split(\" a | b |c \", '|', true);\r\n    assertArrayEquals(new String[] { \"a\", \"b\", \"c\" }, res);\r\n    res = StringUtils.split(\" a | b |c \", '|', false);\r\n    assertArrayEquals(new String[] { \" a \", \" b \", \"c \" }, res);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestStringUtils.java",
+  "methodName" : "testTokenizeSimple",
+  "sourceCode" : "@Test\r\npublic void testTokenizeSimple() {\r\n    String[] res = StringUtils.tokenize(\"a bc def\");\r\n    assertArrayEquals(new String[] { \"a\", \"bc\", \"def\" }, res);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestStringUtils.java",
+  "methodName" : "testTokenizeEscape",
+  "sourceCode" : "@Test\r\npublic void testTokenizeEscape() {\r\n    String[] res = StringUtils.tokenize(\"a\\\\ bc def\");\r\n    assertArrayEquals(new String[] { \"a bc\", \"def\" }, res);\r\n    res = StringUtils.tokenize(\"a\\\\\\\\\\\\n\\\\t def\");\r\n    assertArrayEquals(new String[] { \"a\\\\\\n\\t\", \"def\" }, res);\r\n    res = StringUtils.tokenize(\"a\\\\bc def\");\r\n    assertArrayEquals(new String[] { \"abc\", \"def\" }, res);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestStringUtils.java",
+  "methodName" : "testTokenizeString",
+  "sourceCode" : "@Test\r\npublic void testTokenizeString() {\r\n    String[] res = StringUtils.tokenize(\"a \\\"bc def\\\"\");\r\n    assertArrayEquals(new String[] { \"a\", \"bc def\" }, res);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\chemistry\\chemistry-shell\\src\\test\\java\\org\\apache\\chemistry\\shell\\util\\TestStringUtils.java",
+  "methodName" : "testTokenizeBoth",
+  "sourceCode" : "@Test\r\npublic // \"\" is stronger than \\\r\nvoid testTokenizeBoth() {\r\n    String[] res = StringUtils.tokenize(\"a \\\"bc\\\\ \\\\ndef\\\"\");\r\n    assertArrayEquals(new String[] { \"a\", \"bc\\\\ \\\\ndef\" }, res);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Chemistry\\jcr-cmis\\server\\atompub\\src\\test\\java\\org\\apache\\jackrabbit\\cmis\\server\\atompub\\RepositoryInfoTest.java",
+  "methodName" : "testGetService",
+  "sourceCode" : "@Test\r\npublic void testGetService() throws Exception {\r\n    System.in.read();\r\n    ClientResponse resp = client.get(\"http://localhost:9002/\");\r\n    System.out.println(resp.getDocument().getRoot());\r\n    Service root = (Service) resp.getDocument().getRoot();\r\n    System.out.println(root);\r\n    Workspace workspace = root.getWorkspaces().get(0);\r\n    System.out.println(workspace);\r\n    CMISRepositoryInfo info = workspace.getFirstChild(CMIS.REPOSITORY_INFO);\r\n    System.out.println(info.getId());\r\n    System.out.println(info.getVendorName());\r\n    System.out.println(info.getProductName());\r\n    System.out.println(info.getRootFolderId());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

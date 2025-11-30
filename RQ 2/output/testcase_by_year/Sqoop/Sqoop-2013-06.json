@@ -1,0 +1,1261 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hbase\\HBaseImportAddRowKeyTest.java",
+  "methodName" : "testAddRowKey",
+  "sourceCode" : "@Test\r\npublic void testAddRowKey() throws IOException {\r\n    String[] types = { \"INT\", \"INT\" };\r\n    String[] vals = { \"0\", \"1\" };\r\n    createTableWithColTypes(types, vals);\r\n    String[] otherArg = getArgv(true, \"addRowKeyT\", \"addRowKeyF\", true, null);\r\n    String[] argv = new String[otherArg.length + 2];\r\n    argv[0] = \"-D\";\r\n    argv[1] = \"sqoop.hbase.add.row.key=true\";\r\n    System.arraycopy(otherArg, 0, argv, 2, otherArg.length);\r\n    runImport(argv);\r\n    // Row key should have been added\r\n    verifyHBaseCell(\"addRowKeyT\", \"0\", \"addRowKeyF\", getColName(0), \"0\");\r\n    verifyHBaseCell(\"addRowKeyT\", \"0\", \"addRowKeyF\", getColName(1), \"1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hbase\\HBaseImportAddRowKeyTest.java",
+  "methodName" : "testAddRowKeyDefault",
+  "sourceCode" : "@Test\r\npublic void testAddRowKeyDefault() throws IOException {\r\n    String[] types = { \"INT\", \"INT\" };\r\n    String[] vals = { \"0\", \"1\" };\r\n    createTableWithColTypes(types, vals);\r\n    String[] argv = getArgv(true, \"addRowKeyDfT\", \"addRowKeyDfF\", true, null);\r\n    runImport(argv);\r\n    // Row key should not be added by default\r\n    verifyHBaseCell(\"addRowKeyDfT\", \"0\", \"addRowKeyDfF\", getColName(0), null);\r\n    verifyHBaseCell(\"addRowKeyDfT\", \"0\", \"addRowKeyDfF\", getColName(1), \"1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hbase\\HBaseImportAddRowKeyTest.java",
+  "methodName" : "testAddCompositeKey",
+  "sourceCode" : "@Test\r\npublic void testAddCompositeKey() throws IOException {\r\n    String[] types = { \"INT\", \"INT\" };\r\n    String[] vals = { \"0\", \"1\" };\r\n    createTableWithColTypes(types, vals);\r\n    String[] otherArg = getArgv(true, \"addRowKeyT\", \"addRowKeyF\", true, null);\r\n    String[] argv = new String[otherArg.length + 4];\r\n    argv[0] = \"-D\";\r\n    argv[1] = \"sqoop.hbase.add.row.key=true\";\r\n    System.arraycopy(otherArg, 0, argv, 2, otherArg.length);\r\n    argv[argv.length - 2] = \"--hbase-row-key\";\r\n    argv[argv.length - 1] = getColName(0) + \",\" + getColName(1);\r\n    runImport(argv);\r\n    // Row key should have been added\r\n    verifyHBaseCell(\"addRowKeyT\", \"0_1\", \"addRowKeyF\", getColName(0), \"0\");\r\n    verifyHBaseCell(\"addRowKeyT\", \"0_1\", \"addRowKeyF\", getColName(1), \"1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hbase\\HBaseImportNullTest.java",
+  "methodName" : "testNullRow",
+  "sourceCode" : "@Test\r\npublic void testNullRow() throws IOException {\r\n    String[] argv = getArgv(true, \"nullRowT\", \"nullRowF\", true, null);\r\n    String[] types = { \"INT\", \"INT\" };\r\n    String[] vals = { \"0\", \"null\" };\r\n    createTableWithColTypes(types, vals);\r\n    runImport(argv);\r\n    // This cell should not be placed in the results..\r\n    verifyHBaseCell(\"nullRowT\", \"0\", \"nullRowF\", getColName(1), null);\r\n    int rowCount = countHBaseTable(\"nullRowT\", \"nullRowF\");\r\n    assertEquals(0, rowCount);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hbase\\HBaseImportNullTest.java",
+  "methodName" : "testNulls",
+  "sourceCode" : "@Test\r\npublic void testNulls() throws IOException {\r\n    String[] argv = getArgv(true, \"nullT\", \"nullF\", true, null);\r\n    String[] types = { \"INT\", \"INT\", \"INT\" };\r\n    String[] vals = { \"0\", \"42\", \"null\" };\r\n    createTableWithColTypes(types, vals);\r\n    runImport(argv);\r\n    // This cell should import correctly.\r\n    verifyHBaseCell(\"nullT\", \"0\", \"nullF\", getColName(1), \"42\");\r\n    // This cell should not be placed in the results..\r\n    verifyHBaseCell(\"nullT\", \"0\", \"nullF\", getColName(2), null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hbase\\HBaseImportTest.java",
+  "methodName" : "testBasicUsage",
+  "sourceCode" : "@Test\r\npublic void testBasicUsage() throws IOException {\r\n    // Create the HBase table in Sqoop as we run the job.\r\n    String[] argv = getArgv(true, \"BasicUsage\", \"BasicColFam\", true, null);\r\n    String[] types = { \"INT\", \"INT\" };\r\n    String[] vals = { \"0\", \"1\" };\r\n    createTableWithColTypes(types, vals);\r\n    runImport(argv);\r\n    verifyHBaseCell(\"BasicUsage\", \"0\", \"BasicColFam\", getColName(1), \"1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hbase\\HBaseImportTest.java",
+  "methodName" : "testMissingTableFails",
+  "sourceCode" : "@Test\r\npublic void testMissingTableFails() throws IOException {\r\n    // Test that if the table doesn't exist, we fail unless we\r\n    // explicitly create the table.\r\n    String[] argv = getArgv(true, \"MissingTable\", \"MissingFam\", false, null);\r\n    String[] types = { \"INT\", \"INT\" };\r\n    String[] vals = { \"0\", \"1\" };\r\n    createTableWithColTypes(types, vals);\r\n    try {\r\n        runImport(argv);\r\n        fail(\"Expected IOException\");\r\n    } catch (IOException ioe) {\r\n        LOG.info(\"Got exception -- ok; we expected that job to fail.\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hbase\\HBaseImportTest.java",
+  "methodName" : "testOverwriteSucceeds",
+  "sourceCode" : "@Test\r\npublic void testOverwriteSucceeds() throws IOException {\r\n    // Test that we can create a table and then import immediately\r\n    // back on top of it without problem.\r\n    String[] argv = getArgv(true, \"OverwriteT\", \"OverwriteF\", true, null);\r\n    String[] types = { \"INT\", \"INT\" };\r\n    String[] vals = { \"0\", \"1\" };\r\n    createTableWithColTypes(types, vals);\r\n    runImport(argv);\r\n    verifyHBaseCell(\"OverwriteT\", \"0\", \"OverwriteF\", getColName(1), \"1\");\r\n    // Run a second time.\r\n    runImport(argv);\r\n    verifyHBaseCell(\"OverwriteT\", \"0\", \"OverwriteF\", getColName(1), \"1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hbase\\HBaseImportTest.java",
+  "methodName" : "testExitFailure",
+  "sourceCode" : "@Test\r\npublic void testExitFailure() throws IOException {\r\n    String[] types = { \"INT\", \"INT\", \"INT\" };\r\n    String[] vals = { \"0\", \"42\", \"43\" };\r\n    createTableWithColTypes(types, vals);\r\n    String[] argv = getArgv(true, \"NoHBaseT\", \"NoHBaseF\", true, null);\r\n    try {\r\n        HBaseUtil.setAlwaysNoHBaseJarMode(true);\r\n        runImport(argv);\r\n    } catch (IOException e) {\r\n        return;\r\n    } finally {\r\n        HBaseUtil.setAlwaysNoHBaseJarMode(false);\r\n    }\r\n    fail(\"should have gotten exception\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hbase\\HBaseImportTypesTest.java",
+  "methodName" : "testStrings",
+  "sourceCode" : "@Test\r\npublic void testStrings() throws IOException {\r\n    String[] argv = getArgv(true, \"stringT\", \"stringF\", true, null);\r\n    String[] types = { \"INT\", \"VARCHAR(32)\" };\r\n    String[] vals = { \"0\", \"'abc'\" };\r\n    createTableWithColTypes(types, vals);\r\n    runImport(argv);\r\n    verifyHBaseCell(\"stringT\", \"0\", \"stringF\", getColName(1), \"abc\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hbase\\HBaseQueryImportTest.java",
+  "methodName" : "testImportFromQuery",
+  "sourceCode" : "@Test\r\npublic void testImportFromQuery() throws IOException {\r\n    String[] types = { \"INT\", \"INT\", \"INT\" };\r\n    String[] vals = { \"0\", \"42\", \"43\" };\r\n    createTableWithColTypes(types, vals);\r\n    String[] argv = getArgv(true, \"queryT\", \"queryF\", true, \"SELECT \" + getColName(0) + \", \" + getColName(1) + \" FROM \" + getTableName() + \" WHERE $CONDITIONS\");\r\n    runImport(argv);\r\n    // This cell should import correctly.\r\n    verifyHBaseCell(\"queryT\", \"0\", \"queryF\", getColName(1), \"42\");\r\n    // This cell should not be placed in the results..\r\n    verifyHBaseCell(\"queryT\", \"0\", \"queryF\", getColName(2), null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hbase\\HBaseQueryImportTest.java",
+  "methodName" : "testExitFailure",
+  "sourceCode" : "@Test\r\npublic void testExitFailure() throws IOException {\r\n    String[] types = { \"INT\", \"INT\", \"INT\" };\r\n    String[] vals = { \"0\", \"42\", \"43\" };\r\n    createTableWithColTypes(types, vals);\r\n    String[] argv = getArgv(true, \"queryT\", \"queryF\", true, \"SELECT \" + getColName(0) + \", \" + getColName(1) + \" FROM \" + getTableName() + \" WHERE $CONDITIONS\");\r\n    try {\r\n        HBaseUtil.setAlwaysNoHBaseJarMode(true);\r\n        runImport(argv);\r\n    } catch (Exception e) {\r\n        return;\r\n    } finally {\r\n        HBaseUtil.setAlwaysNoHBaseJarMode(false);\r\n    }\r\n    fail(\"should have gotten exception\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hbase\\HBaseUtilTest.java",
+  "methodName" : "testHBasePresent",
+  "sourceCode" : "@Test\r\npublic void testHBasePresent() {\r\n    assertTrue(HBaseUtil.isHBaseJarPresent());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hbase\\HBaseUtilTest.java",
+  "methodName" : "testHBaseNotPresent",
+  "sourceCode" : "@Test\r\npublic void testHBaseNotPresent() {\r\n    HBaseUtil.setAlwaysNoHBaseJarMode(true);\r\n    boolean present = HBaseUtil.isHBaseJarPresent();\r\n    HBaseUtil.setAlwaysNoHBaseJarMode(false);\r\n    assertFalse(present);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hive\\TestHiveImport.java",
+  "methodName" : "testGenerateOnly",
+  "sourceCode" : "/**\r\n * Test that we can generate a file containing the DDL and not import.\r\n */\r\n@Test\r\npublic void testGenerateOnly() throws IOException {\r\n    final String TABLE_NAME = \"GenerateOnly\";\r\n    setCurTableName(TABLE_NAME);\r\n    setNumCols(1);\r\n    // Figure out where our target generated .q file is going to be.\r\n    SqoopOptions options = getSqoopOptions(getArgv(false, null), new ImportTool());\r\n    Path ddlFile = new Path(new Path(options.getCodeOutputDir()), TABLE_NAME + \".q\");\r\n    FileSystem fs = FileSystem.getLocal(new Configuration());\r\n    // If it's already there, remove it before running the test to ensure\r\n    // that it's the current test that generated the file.\r\n    if (fs.exists(ddlFile)) {\r\n        if (!fs.delete(ddlFile, false)) {\r\n            LOG.warn(\"Could not delete previous ddl file: \" + ddlFile);\r\n        }\r\n    }\r\n    // Run a basic import, but specify that we're just generating definitions.\r\n    String[] types = { \"INTEGER\" };\r\n    String[] vals = { \"42\" };\r\n    runImportTest(TABLE_NAME, types, vals, null, getCodeGenArgs(), new CodeGenTool());\r\n    // Test that the generated definition file exists.\r\n    assertTrue(\"Couldn't find expected ddl file\", fs.exists(ddlFile));\r\n    Path hiveImportPath = new Path(new Path(options.getWarehouseDir()), TABLE_NAME);\r\n    assertFalse(\"Import actually happened!\", fs.exists(hiveImportPath));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hive\\TestHiveImport.java",
+  "methodName" : "testNormalHiveImport",
+  "sourceCode" : "/**\r\n * Test that strings and ints are handled in the normal fashion.\r\n */\r\n@Test\r\npublic void testNormalHiveImport() throws IOException {\r\n    final String TABLE_NAME = \"NORMAL_HIVE_IMPORT\";\r\n    setCurTableName(TABLE_NAME);\r\n    setNumCols(3);\r\n    String[] types = { \"VARCHAR(32)\", \"INTEGER\", \"CHAR(64)\" };\r\n    String[] vals = { \"'test'\", \"42\", \"'somestring'\" };\r\n    runImportTest(TABLE_NAME, types, vals, \"normalImport.q\", getArgv(false, null), new ImportTool());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hive\\TestHiveImport.java",
+  "methodName" : "testCreateOnlyHiveImport",
+  "sourceCode" : "/**\r\n * Test that table is created in hive with no data import.\r\n */\r\n@Test\r\npublic void testCreateOnlyHiveImport() throws IOException {\r\n    final String TABLE_NAME = \"CREATE_ONLY_HIVE_IMPORT\";\r\n    setCurTableName(TABLE_NAME);\r\n    setNumCols(3);\r\n    String[] types = { \"VARCHAR(32)\", \"INTEGER\", \"CHAR(64)\" };\r\n    String[] vals = { \"'test'\", \"42\", \"'somestring'\" };\r\n    runImportTest(TABLE_NAME, types, vals, \"createOnlyImport.q\", getCreateHiveTableArgs(null), new CreateHiveTableTool());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hive\\TestHiveImport.java",
+  "methodName" : "testCreateOverwriteHiveImport",
+  "sourceCode" : "/**\r\n * Test that table is created in hive and replaces the existing table if\r\n * any.\r\n */\r\n@Test\r\npublic void testCreateOverwriteHiveImport() throws IOException {\r\n    final String TABLE_NAME = \"CREATE_OVERWRITE_HIVE_IMPORT\";\r\n    setCurTableName(TABLE_NAME);\r\n    setNumCols(3);\r\n    String[] types = { \"VARCHAR(32)\", \"INTEGER\", \"CHAR(64)\" };\r\n    String[] vals = { \"'test'\", \"42\", \"'somestring'\" };\r\n    String[] extraArgs = { \"--hive-overwrite\", \"--create-hive-table\" };\r\n    runImportTest(TABLE_NAME, types, vals, \"createOverwriteImport.q\", getCreateHiveTableArgs(extraArgs), new CreateHiveTableTool());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hive\\TestHiveImport.java",
+  "methodName" : "testDate",
+  "sourceCode" : "/**\r\n * Test that dates are coerced properly to strings.\r\n */\r\n@Test\r\npublic void testDate() throws IOException {\r\n    final String TABLE_NAME = \"DATE_HIVE_IMPORT\";\r\n    setCurTableName(TABLE_NAME);\r\n    setNumCols(2);\r\n    String[] types = { \"VARCHAR(32)\", \"DATE\" };\r\n    String[] vals = { \"'test'\", \"'2009-05-12'\" };\r\n    runImportTest(TABLE_NAME, types, vals, \"dateImport.q\", getArgv(false, null), new ImportTool());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hive\\TestHiveImport.java",
+  "methodName" : "testNumeric",
+  "sourceCode" : "/**\r\n * Test that NUMERICs are coerced to doubles.\r\n */\r\n@Test\r\npublic void testNumeric() throws IOException {\r\n    final String TABLE_NAME = \"NUMERIC_HIVE_IMPORT\";\r\n    setCurTableName(TABLE_NAME);\r\n    setNumCols(2);\r\n    String[] types = { \"NUMERIC\", \"CHAR(64)\" };\r\n    String[] vals = { \"3.14159\", \"'foo'\" };\r\n    runImportTest(TABLE_NAME, types, vals, \"numericImport.q\", getArgv(false, null), new ImportTool());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hive\\TestHiveImport.java",
+  "methodName" : "testHiveExitFails",
+  "sourceCode" : "/**\r\n * If bin/hive returns an error exit status, we should get an IOException.\r\n */\r\n@Test\r\npublic void testHiveExitFails() {\r\n    // The expected script is different than the one which would be generated\r\n    // by this, so we expect an IOException out.\r\n    final String TABLE_NAME = \"FAILING_HIVE_IMPORT\";\r\n    setCurTableName(TABLE_NAME);\r\n    setNumCols(2);\r\n    String[] types = { \"NUMERIC\", \"CHAR(64)\" };\r\n    String[] vals = { \"3.14159\", \"'foo'\" };\r\n    try {\r\n        runImportTest(TABLE_NAME, types, vals, \"failingImport.q\", getArgv(false, null), new ImportTool());\r\n        // If we get here, then the run succeeded -- which is incorrect.\r\n        fail(\"FAILING_HIVE_IMPORT test should have thrown IOException\");\r\n    } catch (IOException ioe) {\r\n        // expected; ok.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hive\\TestHiveImport.java",
+  "methodName" : "testCustomDelimiters",
+  "sourceCode" : "/**\r\n * Test that we can set delimiters how we want them.\r\n */\r\n@Test\r\npublic void testCustomDelimiters() throws IOException {\r\n    final String TABLE_NAME = \"CUSTOM_DELIM_IMPORT\";\r\n    setCurTableName(TABLE_NAME);\r\n    setNumCols(3);\r\n    String[] types = { \"VARCHAR(32)\", \"INTEGER\", \"CHAR(64)\" };\r\n    String[] vals = { \"'test'\", \"42\", \"'somestring'\" };\r\n    String[] extraArgs = { \"--fields-terminated-by\", \",\", \"--lines-terminated-by\", \"|\" };\r\n    runImportTest(TABLE_NAME, types, vals, \"customDelimImport.q\", getArgv(false, extraArgs), new ImportTool());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hive\\TestHiveImport.java",
+  "methodName" : "testFieldWithHiveDelims",
+  "sourceCode" : "/**\r\n * Test hive import with row that has new line in it.\r\n */\r\n@Test\r\npublic void testFieldWithHiveDelims() throws IOException, InterruptedException {\r\n    final String TABLE_NAME = \"FIELD_WITH_NL_HIVE_IMPORT\";\r\n    LOG.info(\"Doing import of single row into FIELD_WITH_NL_HIVE_IMPORT table\");\r\n    setCurTableName(TABLE_NAME);\r\n    setNumCols(3);\r\n    String[] types = getTypesNewLineTest();\r\n    String[] vals = { \"'test with \\n new lines \\n'\", \"42\", \"'oh no \" + '\\01' + \" field delims \" + '\\01' + \"'\" };\r\n    String[] moreArgs = { \"--\" + BaseSqoopTool.HIVE_DROP_DELIMS_ARG };\r\n    runImportTest(TABLE_NAME, types, vals, \"fieldWithNewlineImport.q\", getArgv(false, moreArgs), new ImportTool());\r\n    LOG.info(\"Validating data in single row is present in: \" + \"FIELD_WITH_NL_HIVE_IMPORT table\");\r\n    // Ideally, we would actually invoke hive code to verify that record with\r\n    // record and field delimiters have values replaced and that we have the\r\n    // proper number of hive records. Unfortunately, this is a non-trivial task,\r\n    // and better dealt with at an integration test level\r\n    //\r\n    // Instead, this assumes the path of the generated table and just validate\r\n    // map job output.\r\n    // Get and read the raw output file\r\n    String whDir = getWarehouseDir();\r\n    File p = new File(new File(whDir, TABLE_NAME), \"part-m-00000\");\r\n    File f = new File(p.toString());\r\n    FileReader fr = new FileReader(f);\r\n    BufferedReader br = new BufferedReader(fr);\r\n    try {\r\n        // verify the output\r\n        assertEquals(br.readLine(), \"test with  new lines \" + '\\01' + \"42\" + '\\01' + \"oh no  field delims \");\r\n        // should only be one line\r\n        assertEquals(br.readLine(), null);\r\n    } catch (IOException ioe) {\r\n        fail(\"Unable to read files generated from hive\");\r\n    } finally {\r\n        br.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hive\\TestHiveImport.java",
+  "methodName" : "testFieldWithHiveDelimsReplacement",
+  "sourceCode" : "/**\r\n * Test hive import with row that has new line in it.\r\n */\r\n@Test\r\npublic void testFieldWithHiveDelimsReplacement() throws IOException, InterruptedException {\r\n    final String TABLE_NAME = \"FIELD_WITH_NL_REPLACEMENT_HIVE_IMPORT\";\r\n    LOG.info(\"Doing import of single row into \" + \"FIELD_WITH_NL_REPLACEMENT_HIVE_IMPORT table\");\r\n    setCurTableName(TABLE_NAME);\r\n    setNumCols(3);\r\n    String[] types = getTypesNewLineTest();\r\n    String[] vals = { \"'test with\\nnew lines\\n'\", \"42\", \"'oh no \" + '\\01' + \" field delims \" + '\\01' + \"'\" };\r\n    String[] moreArgs = { \"--\" + BaseSqoopTool.HIVE_DELIMS_REPLACEMENT_ARG, \" \" };\r\n    runImportTest(TABLE_NAME, types, vals, \"fieldWithNewlineReplacementImport.q\", getArgv(false, moreArgs), new ImportTool());\r\n    LOG.info(\"Validating data in single row is present in: \" + \"FIELD_WITH_NL_REPLACEMENT_HIVE_IMPORT table\");\r\n    // Ideally, we would actually invoke hive code to verify that record with\r\n    // record and field delimiters have values replaced and that we have the\r\n    // proper number of hive records. Unfortunately, this is a non-trivial task,\r\n    // and better dealt with at an integration test level\r\n    //\r\n    // Instead, this assumes the path of the generated table and just validate\r\n    // map job output.\r\n    // Get and read the raw output file\r\n    String whDir = getWarehouseDir();\r\n    File p = new File(new File(whDir, TABLE_NAME), \"part-m-00000\");\r\n    File f = new File(p.toString());\r\n    FileReader fr = new FileReader(f);\r\n    BufferedReader br = new BufferedReader(fr);\r\n    try {\r\n        // verify the output\r\n        assertEquals(br.readLine(), \"test with new lines \" + '\\01' + \"42\" + '\\01' + \"oh no   field delims  \");\r\n        // should only be one line\r\n        assertEquals(br.readLine(), null);\r\n    } catch (IOException ioe) {\r\n        fail(\"Unable to read files generated from hive\");\r\n    } finally {\r\n        br.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hive\\TestHiveImport.java",
+  "methodName" : "testHiveDropAndReplaceOptionValidation",
+  "sourceCode" : "/**\r\n * Test hive drop and replace option validation.\r\n */\r\n@Test\r\npublic void testHiveDropAndReplaceOptionValidation() throws ParseException {\r\n    LOG.info(\"Testing conflicting Hive delimiter drop/replace options\");\r\n    setNumCols(3);\r\n    String[] moreArgs = { \"--\" + BaseSqoopTool.HIVE_DELIMS_REPLACEMENT_ARG, \" \", \"--\" + BaseSqoopTool.HIVE_DROP_DELIMS_ARG };\r\n    ImportTool tool = new ImportTool();\r\n    try {\r\n        tool.validateOptions(tool.parseArguments(getArgv(false, moreArgs), null, null, true));\r\n        fail(\"Expected InvalidOptionsException\");\r\n    } catch (InvalidOptionsException ex) {\r\n        /* success */\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hive\\TestHiveImport.java",
+  "methodName" : "testImportHiveWithPartitions",
+  "sourceCode" : "/**\r\n * Test hive import with row that has new line in it.\r\n */\r\n@Test\r\npublic void testImportHiveWithPartitions() throws IOException, InterruptedException {\r\n    final String TABLE_NAME = \"PARTITION_HIVE_IMPORT\";\r\n    LOG.info(\"Doing import of single row into PARTITION_HIVE_IMPORT table\");\r\n    setCurTableName(TABLE_NAME);\r\n    setNumCols(3);\r\n    String[] types = { \"VARCHAR(32)\", \"INTEGER\", \"CHAR(64)\" };\r\n    String[] vals = { \"'whoop'\", \"42\", \"'I am a row in a partition'\" };\r\n    String[] moreArgs = { \"--\" + BaseSqoopTool.HIVE_PARTITION_KEY_ARG, \"ds\", \"--\" + BaseSqoopTool.HIVE_PARTITION_VALUE_ARG, \"20110413\" };\r\n    runImportTest(TABLE_NAME, types, vals, \"partitionImport.q\", getArgv(false, moreArgs), new ImportTool());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\hive\\TestHiveImport.java",
+  "methodName" : "testImportWithBadPartitionKey",
+  "sourceCode" : "/**\r\n * If partition key is set to one of importing columns, we should get an\r\n * IOException.\r\n */\r\n@Test\r\npublic void testImportWithBadPartitionKey() {\r\n    final String TABLE_NAME = \"FAILING_PARTITION_HIVE_IMPORT\";\r\n    LOG.info(\"Doing import of single row into \" + TABLE_NAME + \" table\");\r\n    setCurTableName(TABLE_NAME);\r\n    setNumCols(3);\r\n    String[] types = { \"VARCHAR(32)\", \"INTEGER\", \"CHAR(64)\" };\r\n    String[] vals = { \"'key'\", \"42\", \"'I am a row in a partition'\" };\r\n    String partitionKey = getColNames()[0];\r\n    // Specify 1st column as partition key and import every column of the\r\n    // table by default (i.e. no --columns option).\r\n    String[] moreArgs1 = { \"--\" + BaseSqoopTool.HIVE_PARTITION_KEY_ARG, partitionKey };\r\n    // Specify 1st column as both partition key and importing column.\r\n    String[] moreArgs2 = { \"--\" + BaseSqoopTool.HIVE_PARTITION_KEY_ARG, partitionKey, \"--\" + BaseSqoopTool.COLUMNS_ARG, partitionKey };\r\n    // Test hive-import with the 1st args.\r\n    try {\r\n        runImportTest(TABLE_NAME, types, vals, \"partitionImport.q\", getArgv(false, moreArgs1), new ImportTool());\r\n        fail(TABLE_NAME + \" test should have thrown IOException\");\r\n    } catch (IOException ioe) {\r\n        // expected; ok.\r\n    }\r\n    // Test hive-import with the 2nd args.\r\n    try {\r\n        runImportTest(TABLE_NAME, types, vals, \"partitionImport.q\", getArgv(false, moreArgs2), new ImportTool());\r\n        fail(TABLE_NAME + \" test should have thrown IOException\");\r\n    } catch (IOException ioe) {\r\n        // expected; ok.\r\n    }\r\n    // Test create-hive-table with the 1st args.\r\n    try {\r\n        runImportTest(TABLE_NAME, types, vals, \"partitionImport.q\", getCreateTableArgv(false, moreArgs1), new CreateHiveTableTool());\r\n        fail(TABLE_NAME + \" test should have thrown IOException\");\r\n    } catch (IOException ioe) {\r\n        // expected; ok.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\DB2ManagerImportManualTest.java",
+  "methodName" : "testDb2Import",
+  "sourceCode" : "@Test\r\npublic void testDb2Import() throws IOException {\r\n    useQualifiedTableName = false;\r\n    // Verify that GenericJdbcManager works.\r\n    useDefaultConnectManager = true;\r\n    runDb2Test(getExpectedResults());\r\n    // Verify that Db2Manager works.\r\n    useDefaultConnectManager = false;\r\n    runDb2Test(getExpectedResults());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\DB2ManagerImportManualTest.java",
+  "methodName" : "testDb2ImportQualifiedTableName",
+  "sourceCode" : "@Test\r\npublic void testDb2ImportQualifiedTableName() throws IOException {\r\n    useQualifiedTableName = true;\r\n    // Verify that GenericJdbcManager works.\r\n    useDefaultConnectManager = true;\r\n    runDb2Test(getExpectedResults());\r\n    // Verify that Db2Manager works.\r\n    useDefaultConnectManager = false;\r\n    runDb2Test(getExpectedResults());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\DirectMySQLTest.java",
+  "methodName" : "testDirectBulkImportWithDefaultDelims",
+  "sourceCode" : "@Test\r\npublic void testDirectBulkImportWithDefaultDelims() throws IOException {\r\n    // no quoting of strings allowed.\r\n    String[] expectedResults = { \"2,Bob,100,2009-04-20,400,sales\", \"3,Fred,4000000000,2009-01-23,15,marketing\" };\r\n    doImport(false, true, getTableName(), expectedResults, null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\DirectMySQLTest.java",
+  "methodName" : "testWithExtraParams",
+  "sourceCode" : "@Test\r\npublic void testWithExtraParams() throws IOException {\r\n    // no quoting of strings allowed.\r\n    String[] expectedResults = { \"2,Bob,100,2009-04-20,400,sales\", \"3,Fred,4000000000,2009-01-23,15,marketing\" };\r\n    String[] extraArgs = { \"--\", \"--lock-tables\" };\r\n    doImport(false, true, getTableName(), expectedResults, extraArgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\DirectMySQLTest.java",
+  "methodName" : "testMultiMappers",
+  "sourceCode" : "@Test\r\npublic void testMultiMappers() throws IOException {\r\n    // no quoting of strings allowed.\r\n    String[] expectedResults = { \"2,Bob,100,2009-04-20,400,sales\", \"3,Fred,4000000000,2009-01-23,15,marketing\" };\r\n    String[] extraArgs = { \"-m\", \"2\" };\r\n    doImport(false, true, getTableName(), expectedResults, extraArgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\DirectMySQLTest.java",
+  "methodName" : "testJdbcColumnSubset",
+  "sourceCode" : "@Test\r\npublic void testJdbcColumnSubset() throws IOException {\r\n    // Test that column subsets work in JDBC mode.\r\n    LOG.info(\"Starting JDBC Column Subset test.\");\r\n    String[] expectedResults = { \"2,Bob,400.0\", \"3,Fred,15.0\" };\r\n    String[] extraArgs = { \"--columns\", \"id,name,salary\" };\r\n    doImport(false, false, getTableName(), expectedResults, extraArgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\DirectMySQLTest.java",
+  "methodName" : "testDirectColumnSubset",
+  "sourceCode" : "@Test\r\npublic void testDirectColumnSubset() throws IOException {\r\n    // Using a column subset should actually force direct mode off, but this\r\n    // should just warn the user and do a normal import.\r\n    LOG.info(\"Starting Direct Column Subset test.\");\r\n    String[] expectedResults = { \"2,Bob,400.0\", \"3,Fred,15.0\" };\r\n    String[] extraArgs = { \"--columns\", \"id,name,salary\" };\r\n    doImport(false, true, getTableName(), expectedResults, extraArgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\DirectMySQLTest.java",
+  "methodName" : "testDirectBulkImportWithMySQLQuotes",
+  "sourceCode" : "@Test\r\npublic void testDirectBulkImportWithMySQLQuotes() throws IOException {\r\n    // mysql quotes all string-based output.\r\n    String[] expectedResults = { \"2,'Bob',100,'2009-04-20',400,'sales'\", \"3,'Fred',4000000000,'2009-01-23',15,'marketing'\" };\r\n    doImport(true, true, getTableName(), expectedResults, null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\DirectMySQLTest.java",
+  "methodName" : "testMySQLJdbcImport",
+  "sourceCode" : "@Test\r\npublic void testMySQLJdbcImport() throws IOException {\r\n    String[] expectedResults = { \"2,Bob,100,2009-04-20,400.0,sales\", \"3,Fred,4000000000,2009-01-23,15.0,marketing\" };\r\n    doImport(false, false, getTableName(), expectedResults, null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\DirectMySQLTest.java",
+  "methodName" : "testJdbcEscapedTableName",
+  "sourceCode" : "@Test\r\npublic void testJdbcEscapedTableName() throws Exception {\r\n    // Test a JDBC-based import of a table whose name is\r\n    // a reserved sql keyword (and is thus `quoted`)\r\n    final String RESERVED_TABLE_NAME = \"TABLE\";\r\n    SqoopOptions options = new SqoopOptions(MySQLTestUtils.CONNECT_STRING, RESERVED_TABLE_NAME);\r\n    options.setUsername(MySQLTestUtils.getCurrentUser());\r\n    ConnManager mgr = new MySQLManager(options);\r\n    Connection connection = null;\r\n    Statement st = null;\r\n    try {\r\n        connection = mgr.getConnection();\r\n        connection.setAutoCommit(false);\r\n        st = connection.createStatement();\r\n        // create the database table and populate it with data.\r\n        st.executeUpdate(\"DROP TABLE IF EXISTS `\" + RESERVED_TABLE_NAME + \"`\");\r\n        st.executeUpdate(\"CREATE TABLE `\" + RESERVED_TABLE_NAME + \"` (\" + \"id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, \" + \"name VARCHAR(24) NOT NULL, \" + \"start_date DATE, \" + \"salary FLOAT, \" + \"dept VARCHAR(32))\");\r\n        st.executeUpdate(\"INSERT INTO `\" + RESERVED_TABLE_NAME + \"` VALUES(\" + \"2,'Aaron','2009-05-14',1000000.00,'engineering')\");\r\n        connection.commit();\r\n    } finally {\r\n        if (null != st) {\r\n            st.close();\r\n        }\r\n        if (null != connection) {\r\n            connection.close();\r\n        }\r\n    }\r\n    String[] expectedResults = { \"2,Aaron,2009-05-14,1000000.0,engineering\" };\r\n    doImport(false, false, RESERVED_TABLE_NAME, expectedResults, null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\DirectMySQLTest.java",
+  "methodName" : "testJdbcEscapedColumnName",
+  "sourceCode" : "@Test\r\npublic void testJdbcEscapedColumnName() throws Exception {\r\n    // Test a JDBC-based import of a table with a column whose name is\r\n    // a reserved sql keyword (and is thus `quoted`).\r\n    final String TABLE_NAME = \"mysql_escaped_col_table\";\r\n    setCurTableName(TABLE_NAME);\r\n    SqoopOptions options = new SqoopOptions(MySQLTestUtils.CONNECT_STRING, TABLE_NAME);\r\n    options.setUsername(MySQLTestUtils.getCurrentUser());\r\n    ConnManager mgr = new MySQLManager(options);\r\n    Connection connection = null;\r\n    Statement st = null;\r\n    try {\r\n        connection = mgr.getConnection();\r\n        connection.setAutoCommit(false);\r\n        st = connection.createStatement();\r\n        // create the database table and populate it with data.\r\n        st.executeUpdate(\"DROP TABLE IF EXISTS \" + TABLE_NAME);\r\n        st.executeUpdate(\"CREATE TABLE \" + TABLE_NAME + \" (\" + \"id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, \" + \"`table` VARCHAR(24) NOT NULL, \" + \"`CREATE` DATE, \" + \"salary FLOAT, \" + \"dept VARCHAR(32))\");\r\n        st.executeUpdate(\"INSERT INTO \" + TABLE_NAME + \" VALUES(\" + \"2,'Aaron','2009-05-14',1000000.00,'engineering')\");\r\n        connection.commit();\r\n    } finally {\r\n        if (null != st) {\r\n            st.close();\r\n        }\r\n        if (null != connection) {\r\n            connection.close();\r\n        }\r\n    }\r\n    String[] expectedResults = { \"2,Aaron,2009-05-14,1000000.0,engineering\" };\r\n    doImport(false, false, TABLE_NAME, expectedResults, null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\DirectNetezzaExportManualTest.java",
+  "methodName" : "testSimpleExport",
+  "sourceCode" : "/**\r\n * Test an authenticated export using netezza external table import.\r\n */\r\n@Test\r\npublic void testSimpleExport() throws IOException, SQLException {\r\n    String[] argv = getArgv(true, 10, 10);\r\n    runNetezzaTest(getTableName(), argv);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\DirectNetezzaExportManualTest.java",
+  "methodName" : "testValidExtraArgs",
+  "sourceCode" : "@Test\r\npublic void testValidExtraArgs() throws Exception {\r\n    String[] extraArgs = { \"--\", \"--log-dir\", \"/tmp\", \"--max-errors\", \"2\" };\r\n    String[] argv = getArgv(true, 10, 10, extraArgs);\r\n    runNetezzaTest(getTableName(), argv);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\DirectNetezzaExportManualTest.java",
+  "methodName" : "testNullStringExport",
+  "sourceCode" : "@Test\r\npublic void testNullStringExport() throws Exception {\r\n    String[] extraArgs = { \"--input-null-string\", \"\\\\\\\\N\", \"--input-null-non-string\", \"\\\\\\\\N\", \"--input-escaped-by\", \"\\\\\" };\r\n    ColumnGenerator[] extraCols = new ColumnGenerator[] { new NullColumnGenerator() };\r\n    String[] argv = getArgv(true, 10, 10, extraArgs);\r\n    runNetezzaTest(getTableName(), argv, extraCols);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\DirectNetezzaExportManualTest.java",
+  "methodName" : "testLongNullStrings",
+  "sourceCode" : "@Test(expected = java.io.IOException.class)\r\npublic void testLongNullStrings() throws IOException, SQLException {\r\n    ColumnGenerator[] extraCols = new ColumnGenerator[] { new NullColumnGenerator() };\r\n    String[] extraArgs = { \"--input-null-string\", \"morethan4chars\", \"--input-null-non-string\", \"morethan4chars\" };\r\n    String[] argv = getArgv(true, 10, 10, extraArgs);\r\n    try {\r\n        runNetezzaTest(getTableName(), argv, extraCols);\r\n        fail(\"Expected failure for long null strings\");\r\n    } catch (IOException ioe) {\r\n        // success\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\MySQLAuthTest.java",
+  "methodName" : "testAuthAccess",
+  "sourceCode" : "/**\r\n * Connect to a db and ensure that password-based authentication\r\n * succeeds.\r\n */\r\n@Test\r\npublic void testAuthAccess() {\r\n    String[] argv = getArgv(true, true, AUTH_CONNECT_STRING, AUTH_TABLE_NAME);\r\n    try {\r\n        runImport(argv);\r\n    } catch (IOException ioe) {\r\n        LOG.error(\"Got IOException during import: \" + ioe.toString());\r\n        ioe.printStackTrace();\r\n        fail(ioe.toString());\r\n    }\r\n    Path warehousePath = new Path(this.getWarehouseDir());\r\n    Path tablePath = new Path(warehousePath, AUTH_TABLE_NAME);\r\n    Path filePath = new Path(tablePath, \"part-m-00000\");\r\n    File f = new File(filePath.toString());\r\n    assertTrue(\"Could not find imported data file\", f.exists());\r\n    BufferedReader r = null;\r\n    try {\r\n        // Read through the file and make sure it's all there.\r\n        r = new BufferedReader(new InputStreamReader(new FileInputStream(f)));\r\n        assertEquals(\"1,'Aaron'\", r.readLine());\r\n    } catch (IOException ioe) {\r\n        LOG.error(\"Got IOException verifying results: \" + ioe.toString());\r\n        ioe.printStackTrace();\r\n        fail(ioe.toString());\r\n    } finally {\r\n        IOUtils.closeStream(r);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\MySQLAuthTest.java",
+  "methodName" : "testZeroTimestamp",
+  "sourceCode" : "@Test\r\npublic void testZeroTimestamp() throws IOException, SQLException {\r\n    // MySQL timestamps can hold values whose range causes problems\r\n    // for java.sql.Timestamp. The MySQLManager adds settings to the\r\n    // connect string which configure the driver's handling of\r\n    // zero-valued timestamps. Check that all of these modifications\r\n    // to the connect string are successful.\r\n    try {\r\n        // A connect string with a null 'query' component.\r\n        doZeroTimestampTest(0, true, AUTH_CONNECT_STRING);\r\n        // A connect string with a zero-length query component.\r\n        doZeroTimestampTest(1, true, AUTH_CONNECT_STRING + \"?\");\r\n        // A connect string with another argument\r\n        doZeroTimestampTest(2, true, AUTH_CONNECT_STRING + \"?connectTimeout=0\");\r\n        doZeroTimestampTest(3, true, AUTH_CONNECT_STRING + \"?connectTimeout=0&\");\r\n        // A connect string with the zero-timestamp behavior already\r\n        // configured.\r\n        doZeroTimestampTest(4, true, AUTH_CONNECT_STRING + \"?zeroDateTimeBehavior=convertToNull\");\r\n        // And finally, behavior already configured in such a way as to\r\n        // cause the timestamp import to fail.\r\n        doZeroTimestampTest(5, false, AUTH_CONNECT_STRING + \"?zeroDateTimeBehavior=exception\");\r\n    } finally {\r\n        // Clean up our mess on the way out.\r\n        dropTimestampTables();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\MySQLCompatTest.java",
+  "methodName" : "testYear",
+  "sourceCode" : "@Test\r\npublic void testYear() {\r\n    verifyType(\"YEAR\", \"2012\", \"2012\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\NetezzaImportManualTest.java",
+  "methodName" : "testNetezzaImport",
+  "sourceCode" : "@Test\r\npublic void testNetezzaImport() throws IOException {\r\n    runNetezzaTest(false, getTableName(), getExpectedResults());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\NetezzaImportManualTest.java",
+  "methodName" : "testDirectImport",
+  "sourceCode" : "@Test\r\npublic void testDirectImport() throws IOException {\r\n    runNetezzaTest(true, getTableName(), getDirectModeExpectedResults());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\NetezzaImportManualTest.java",
+  "methodName" : "testListTables",
+  "sourceCode" : "@Test\r\npublic void testListTables() throws IOException {\r\n    SqoopOptions options = new SqoopOptions(NetezzaTestUtils.getNZConnectString(), getTableName());\r\n    options.setUsername(NetezzaTestUtils.getNZUser());\r\n    options.setPassword(NetezzaTestUtils.getNZPassword());\r\n    ConnManager mgr = new NetezzaManager(options);\r\n    String[] tables = mgr.listTables();\r\n    Arrays.sort(tables);\r\n    assertTrue(getTableName() + \" is not found!\", Arrays.binarySearch(tables, getTableName()) >= 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\NetezzaImportManualTest.java",
+  "methodName" : "testIncrementalImport",
+  "sourceCode" : "@Test\r\npublic void testIncrementalImport() throws IOException {\r\n    String[] expectedResults = {};\r\n    String[] extraArgs = { \"--incremental\", \"lastmodified\", \"--check-column\", \"START_DATE\" };\r\n    runNetezzaTest(false, getTableName(), expectedResults, extraArgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\NetezzaImportManualTest.java",
+  "methodName" : "testNullStringValue",
+  "sourceCode" : "@Test\r\npublic void testNullStringValue() throws Exception {\r\n    String[] extraArgs = { \"--null-string\", \"\\\\\\\\N\", \"--null-non-string\", \"\\\\\\\\N\" };\r\n    String[] expectedResultsWithNulls = getExpectedResultsWithNulls();\r\n    String tableNameWithNull = getTableName() + \"_W_N\";\r\n    runNetezzaTest(false, tableNameWithNull, expectedResultsWithNulls, extraArgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\NetezzaImportManualTest.java",
+  "methodName" : "testValidExtraArgs",
+  "sourceCode" : "@Test\r\npublic void testValidExtraArgs() throws Exception {\r\n    String[] extraArgs = { \"--\", \"--log-dir\", \"/tmp\", \"--max-errors\", \"2\" };\r\n    String[] expectedResults = getDirectModeExpectedResults();\r\n    String tableName = getTableName();\r\n    runNetezzaTest(true, tableName, expectedResults, extraArgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\OracleManagerTest.java",
+  "methodName" : "testOracleImport",
+  "sourceCode" : "@Test\r\npublic void testOracleImport() throws IOException {\r\n    // no quoting of strings allowed.  NOTE: Oracle JDBC 11.1 drivers\r\n    // auto-cast SQL DATE to java.sql.Timestamp.  Even if you define your\r\n    // columns as DATE in Oracle, they may still contain time information, so\r\n    // the JDBC drivers lie to us and will never tell us we have a strict DATE\r\n    // type. Thus we include HH:MM:SS.mmmmm below.\r\n    // See http://www.oracle.com\r\n    //     /technology/tech/java/sqlj_jdbc/htdocs/jdbc_faq.html#08_01\r\n    String[] expectedResults = { \"1,Aaron,2009-05-14 00:00:00.0,1000000,engineering,\" + \"2009-12-29 12:00:00.0,2009-12-29 12:00:00.0\", \"2,Bob,2009-04-20 00:00:00.0,400,sales,\" + \"2009-12-30 12:00:00.0,2009-12-30 12:00:00.0\", \"3,Fred,2009-01-23 00:00:00.0,15,marketing,\" + \"2009-12-31 12:00:00.0,2009-12-31 12:00:00.0\" };\r\n    runOracleTest(expectedResults);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\OracleManagerTest.java",
+  "methodName" : "testSecondaryTableImport",
+  "sourceCode" : "@Test\r\npublic void testSecondaryTableImport() throws IOException {\r\n    String[] expectedResults = { \"1,MercuryCorp\", \"2,VenusCorp\", \"3,EarthCorp\", \"4,MarsCorp\", \"5,JupiterCorp\", \"6,SaturnCorp\" };\r\n    runSecondaryTableTest(expectedResults);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\PostgresqlImportTest.java",
+  "methodName" : "testJdbcBasedImport",
+  "sourceCode" : "@Test\r\npublic void testJdbcBasedImport() throws IOException {\r\n    String[] expectedResults = { \"2,Bob,2009-04-20,400.0,true,sales\", \"3,Fred,2009-01-23,15.0,false,marketing\" };\r\n    doImportAndVerify(false, expectedResults, TABLE_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\PostgresqlImportTest.java",
+  "methodName" : "testDirectImport",
+  "sourceCode" : "@Test\r\npublic void testDirectImport() throws IOException {\r\n    String[] expectedResults = { \"2,Bob,2009-04-20,400,TRUE,sales\", \"3,Fred,2009-01-23,15,FALSE,marketing\" };\r\n    doImportAndVerify(true, expectedResults, TABLE_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\PostgresqlImportTest.java",
+  "methodName" : "testListTables",
+  "sourceCode" : "@Test\r\npublic void testListTables() throws IOException {\r\n    SqoopOptions options = new SqoopOptions(new Configuration());\r\n    options.setConnectString(CONNECT_STRING);\r\n    options.setUsername(DATABASE_USER);\r\n    ConnManager mgr = new PostgresqlManager(options);\r\n    String[] tables = mgr.listTables();\r\n    Arrays.sort(tables);\r\n    assertTrue(TABLE_NAME + \" is not found!\", Arrays.binarySearch(tables, TABLE_NAME) >= 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\PostgresqlImportTest.java",
+  "methodName" : "testTableNameWithSpecialCharacter",
+  "sourceCode" : "@Test\r\npublic void testTableNameWithSpecialCharacter() throws IOException {\r\n    String[] expectedResults = { \"2,Bob,2009-04-20,400.0,true,sales\", \"3,Fred,2009-01-23,15.0,false,marketing\" };\r\n    doImportAndVerify(false, expectedResults, SPECIAL_TABLE_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\PostgresqlImportTest.java",
+  "methodName" : "testIncrementalImport",
+  "sourceCode" : "@Test\r\npublic void testIncrementalImport() throws IOException {\r\n    String[] expectedResults = {};\r\n    String[] extraArgs = { \"--incremental\", \"lastmodified\", \"--check-column\", \"start_date\" };\r\n    doImportAndVerify(false, expectedResults, TABLE_NAME, extraArgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\PostgresqlImportTest.java",
+  "methodName" : "testDifferentSchemaImport",
+  "sourceCode" : "@Test\r\npublic void testDifferentSchemaImport() throws IOException {\r\n    String[] expectedResults = { \"2,Bob,2009-04-20,400.0,true,sales\", \"3,Fred,2009-01-23,15.0,false,marketing\" };\r\n    String[] extraArgs = { \"--\", \"--schema\", SCHEMA_SPECIAL };\r\n    doImportAndVerify(false, expectedResults, DIFFERENT_TABLE_NAME, extraArgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\PostgresqlImportTest.java",
+  "methodName" : "testDifferentSchemaImportDirect",
+  "sourceCode" : "@Test\r\npublic void testDifferentSchemaImportDirect() throws IOException {\r\n    String[] expectedResults = { \"2,Bob,2009-04-20,400,TRUE,sales\", \"3,Fred,2009-01-23,15,FALSE,marketing\" };\r\n    String[] extraArgs = { \"--\", \"--schema\", SCHEMA_SPECIAL };\r\n    doImportAndVerify(true, expectedResults, DIFFERENT_TABLE_NAME, extraArgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\PostgresqlImportTest.java",
+  "methodName" : "testNullEscapeCharacters",
+  "sourceCode" : "@Test\r\npublic void testNullEscapeCharacters() throws Exception {\r\n    String[] expectedResults = { \"2,Bob,2009-04-20,400,TRUE,sales\", \"3,Fred,2009-01-23,15,FALSE,marketing\", \"4,Mike,\\\\N,\\\\N,\\\\N,\\\\N\" };\r\n    String[] extraArgs = { \"--null-string\", \"\\\\\\\\\\\\\\\\N\", \"--null-non-string\", \"\\\\\\\\\\\\\\\\N\" };\r\n    doImportAndVerify(true, expectedResults, NULL_TABLE_NAME, extraArgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\PostgresqlImportTest.java",
+  "methodName" : "testDifferentBooleanValues",
+  "sourceCode" : "@Test\r\npublic void testDifferentBooleanValues() throws Exception {\r\n    String[] expectedResults = { \"2,Bob,2009-04-20,400,REAL_TRUE,sales\", \"3,Fred,2009-01-23,15,REAL_FALSE,marketing\" };\r\n    String[] extraArgs = { \"--\", \"--boolean-true-string\", \"REAL_TRUE\", \"--boolean-false-string\", \"REAL_FALSE\" };\r\n    doImportAndVerify(true, expectedResults, TABLE_NAME, extraArgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\SQLServerManagerImportManualTest.java",
+  "methodName" : "testImportSimple",
+  "sourceCode" : "@Test\r\npublic void testImportSimple() throws IOException {\r\n    String[] expectedResults = { \"1,Aaron,1000000.0,engineering\", \"2,Bob,400.0,sales\", \"3,Fred,15.0,marketing\" };\r\n    doImportAndVerify(DBO_TABLE_NAME, expectedResults);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\SQLServerManagerImportManualTest.java",
+  "methodName" : "testImportExplicitDefaultSchema",
+  "sourceCode" : "@Test\r\npublic void testImportExplicitDefaultSchema() throws IOException {\r\n    String[] expectedResults = { \"1,Aaron,1000000.0,engineering\", \"2,Bob,400.0,sales\", \"3,Fred,15.0,marketing\" };\r\n    String[] extraArgs = new String[] { \"--schema\", SCHEMA_DBO };\r\n    doImportAndVerify(DBO_TABLE_NAME, expectedResults, extraArgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\SQLServerManagerImportManualTest.java",
+  "methodName" : "testImportDifferentSchema",
+  "sourceCode" : "@Test\r\npublic void testImportDifferentSchema() throws IOException {\r\n    String[] expectedResults = { \"1,Aaron,1000000.0,engineering\", \"2,Bob,400.0,sales\", \"3,Fred,15.0,marketing\" };\r\n    String[] extraArgs = new String[] { \"--schema\", SCHEMA_SCH };\r\n    doImportAndVerify(SCH_TABLE_NAME, expectedResults, extraArgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\SQLServerManagerImportManualTest.java",
+  "methodName" : "testImportTableHints",
+  "sourceCode" : "@Test\r\npublic void testImportTableHints() throws IOException {\r\n    String[] expectedResults = { \"1,Aaron,1000000.0,engineering\", \"2,Bob,400.0,sales\", \"3,Fred,15.0,marketing\" };\r\n    String[] extraArgs = new String[] { \"--table-hints\", \"NOLOCK\" };\r\n    doImportAndVerify(DBO_TABLE_NAME, expectedResults, extraArgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\SQLServerManagerImportManualTest.java",
+  "methodName" : "testImportTableHintsMultiple",
+  "sourceCode" : "@Test\r\npublic void testImportTableHintsMultiple() throws IOException {\r\n    String[] expectedResults = { \"1,Aaron,1000000.0,engineering\", \"2,Bob,400.0,sales\", \"3,Fred,15.0,marketing\" };\r\n    String[] extraArgs = new String[] { \"--table-hints\", \"NOLOCK,NOWAIT\" };\r\n    doImportAndVerify(DBO_TABLE_NAME, expectedResults, extraArgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\TestHsqldbManager.java",
+  "methodName" : "testListDatabases",
+  "sourceCode" : "// note: hsql returns only the \"PUBLIC\" schema name; not individual user db\r\n// names.\r\n@Test\r\npublic void testListDatabases() {\r\n    String[] databases = manager.listDatabases();\r\n    assertNotNull(\"manager returned no database list\", databases);\r\n    assertEquals(\"Database list should be length 1\", 1, databases.length);\r\n    assertEquals(HsqldbTestServer.getSchemaName(), databases[0]);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\TestSqlManager.java",
+  "methodName" : "testListColNames",
+  "sourceCode" : "@Test\r\npublic void testListColNames() {\r\n    String[] colNames = manager.getColumnNames(HsqldbTestServer.getTableName());\r\n    assertNotNull(\"manager returned no colname list\", colNames);\r\n    assertEquals(\"Table list should be length 2\", 2, colNames.length);\r\n    String[] knownFields = HsqldbTestServer.getFieldNames();\r\n    for (int i = 0; i < colNames.length; i++) {\r\n        assertEquals(knownFields[i], colNames[i]);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\TestSqlManager.java",
+  "methodName" : "testListColTypes",
+  "sourceCode" : "@Test\r\npublic void testListColTypes() {\r\n    Map<String, Integer> types = manager.getColumnTypes(HsqldbTestServer.getTableName());\r\n    assertNotNull(\"manager returned no types map\", types);\r\n    assertEquals(\"Map should be size=2\", 2, types.size());\r\n    assertEquals(types.get(\"INTFIELD1\").intValue(), Types.INTEGER);\r\n    assertEquals(types.get(\"INTFIELD2\").intValue(), Types.INTEGER);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\TestSqlManager.java",
+  "methodName" : "testMissingTableColNames",
+  "sourceCode" : "@Test\r\npublic void testMissingTableColNames() {\r\n    String[] colNames = manager.getColumnNames(MISSING_TABLE);\r\n    assertNull(\"No column names should be returned for missing table\", colNames);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\TestSqlManager.java",
+  "methodName" : "testMissingTableColTypes",
+  "sourceCode" : "@Test\r\npublic void testMissingTableColTypes() {\r\n    Map<String, Integer> colTypes = manager.getColumnTypes(MISSING_TABLE);\r\n    assertNull(\"No column types should be returned for missing table\", colTypes);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\TestSqlManager.java",
+  "methodName" : "testListTables",
+  "sourceCode" : "@Test\r\npublic void testListTables() {\r\n    String[] tables = manager.listTables();\r\n    for (String table : tables) {\r\n        System.err.println(\"Got table: \" + table);\r\n    }\r\n    assertNotNull(\"manager returned no table list\", tables);\r\n    assertEquals(\"Table list should be length 1\", 1, tables.length);\r\n    assertEquals(HsqldbTestServer.getTableName(), tables[0]);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\TestSqlManager.java",
+  "methodName" : "testReadTable",
+  "sourceCode" : "@Test\r\npublic void testReadTable() {\r\n    ResultSet results = null;\r\n    try {\r\n        results = manager.readTable(HsqldbTestServer.getTableName(), HsqldbTestServer.getFieldNames());\r\n        assertNotNull(\"ResultSet from readTable() is null!\", results);\r\n        ResultSetMetaData metaData = results.getMetaData();\r\n        assertNotNull(\"ResultSetMetadata is null in readTable()\", metaData);\r\n        // ensure that we get the correct number of columns back\r\n        assertEquals(\"Number of returned columns was unexpected!\", metaData.getColumnCount(), HsqldbTestServer.getFieldNames().length);\r\n        // should get back 4 rows. They are:\r\n        // 1 2\r\n        // 3 4\r\n        // 5 6\r\n        // 7 8\r\n        // .. so while order isn't guaranteed, we should get back 16 on the left\r\n        // and 20 on the right.\r\n        int sumCol1 = 0, sumCol2 = 0, rowCount = 0;\r\n        while (results.next()) {\r\n            rowCount++;\r\n            sumCol1 += results.getInt(1);\r\n            sumCol2 += results.getInt(2);\r\n        }\r\n        assertEquals(\"Expected 4 rows back\", EXPECTED_NUM_ROWS, rowCount);\r\n        assertEquals(\"Expected left sum of 16\", EXPECTED_COL1_SUM, sumCol1);\r\n        assertEquals(\"Expected right sum of 20\", EXPECTED_COL2_SUM, sumCol2);\r\n    } catch (SQLException sqlException) {\r\n        fail(\"SQL Exception: \" + sqlException.toString());\r\n    } finally {\r\n        if (null != results) {\r\n            try {\r\n                results.close();\r\n            } catch (SQLException sqlE) {\r\n                fail(\"SQL Exception in ResultSet.close(): \" + sqlE.toString());\r\n            }\r\n        }\r\n        manager.release();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\TestSqlManager.java",
+  "methodName" : "testReadMissingTable",
+  "sourceCode" : "@Test\r\npublic void testReadMissingTable() {\r\n    ResultSet results = null;\r\n    try {\r\n        String[] colNames = { \"*\" };\r\n        results = manager.readTable(MISSING_TABLE, colNames);\r\n        assertNull(\"Expected null resultset from readTable(MISSING_TABLE)\", results);\r\n    } catch (SQLException sqlException) {\r\n        // we actually expect this. pass.\r\n    } finally {\r\n        if (null != results) {\r\n            try {\r\n                results.close();\r\n            } catch (SQLException sqlE) {\r\n                fail(\"SQL Exception in ResultSet.close(): \" + sqlE.toString());\r\n            }\r\n        }\r\n        manager.release();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\TestSqlManager.java",
+  "methodName" : "getPrimaryKeyFromMissingTable",
+  "sourceCode" : "@Test\r\npublic void getPrimaryKeyFromMissingTable() {\r\n    String primaryKey = manager.getPrimaryKey(MISSING_TABLE);\r\n    assertNull(\"Expected null pkey for missing table\", primaryKey);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\TestSqlManager.java",
+  "methodName" : "getPrimaryKeyFromTableWithoutKey",
+  "sourceCode" : "@Test\r\npublic void getPrimaryKeyFromTableWithoutKey() {\r\n    String primaryKey = manager.getPrimaryKey(HsqldbTestServer.getTableName());\r\n    assertNull(\"Expected null pkey for table without key\", primaryKey);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\manager\\TestSqlManager.java",
+  "methodName" : "getPrimaryKeyFromTable",
+  "sourceCode" : "@Test\r\npublic void getPrimaryKeyFromTable() {\r\n    // first, create a table with a primary key\r\n    Connection conn = null;\r\n    try {\r\n        conn = testServer.getConnection();\r\n        PreparedStatement statement = conn.prepareStatement(\"CREATE TABLE \" + TABLE_WITH_KEY + \"(\" + KEY_FIELD_NAME + \" INT NOT NULL PRIMARY KEY, foo INT)\", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);\r\n        statement.executeUpdate();\r\n        statement.close();\r\n    } catch (SQLException sqlException) {\r\n        fail(\"Could not create table with primary key: \" + sqlException.toString());\r\n    } finally {\r\n        if (null != conn) {\r\n            try {\r\n                conn.close();\r\n            } catch (SQLException sqlE) {\r\n                LOG.warn(\"Got SQLException during close: \" + sqlE.toString());\r\n            }\r\n        }\r\n    }\r\n    String primaryKey = manager.getPrimaryKey(TABLE_WITH_KEY);\r\n    assertEquals(\"Expected null pkey for table without key\", primaryKey, KEY_FIELD_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\orm\\TestClassWriter.java",
+  "methodName" : "testCodeGen",
+  "sourceCode" : "/**\r\n * Test that we can generate code. Test that we can redirect the --outdir\r\n * and --bindir too.\r\n */\r\n@Test\r\npublic void testCodeGen() {\r\n    // Set the option strings in an \"argv\" to redirect our srcdir and bindir.\r\n    String[] argv = { \"--bindir\", JAR_GEN_DIR, \"--outdir\", CODE_GEN_DIR };\r\n    runGenerationTest(argv, HsqldbTestServer.getTableName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\orm\\TestClassWriter.java",
+  "methodName" : "testSetClassName",
+  "sourceCode" : "/**\r\n * Test that we can generate code with a custom class name.\r\n */\r\n@Test\r\npublic void testSetClassName() {\r\n    // Set the option strings in an \"argv\" to redirect our srcdir and bindir\r\n    String[] argv = { \"--bindir\", JAR_GEN_DIR, \"--outdir\", CODE_GEN_DIR, \"--class-name\", OVERRIDE_CLASS_NAME };\r\n    runGenerationTest(argv, OVERRIDE_CLASS_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\orm\\TestClassWriter.java",
+  "methodName" : "testSetClassAndPackageName",
+  "sourceCode" : "/**\r\n * Test that we can generate code with a custom class name that includes a\r\n * package.\r\n */\r\n@Test\r\npublic void testSetClassAndPackageName() {\r\n    // Set the option strings in an \"argv\" to redirect our srcdir and bindir\r\n    String[] argv = { \"--bindir\", JAR_GEN_DIR, \"--outdir\", CODE_GEN_DIR, \"--class-name\", OVERRIDE_CLASS_AND_PACKAGE_NAME };\r\n    runGenerationTest(argv, OVERRIDE_CLASS_AND_PACKAGE_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\orm\\TestClassWriter.java",
+  "methodName" : "testSetPackageName",
+  "sourceCode" : "/**\r\n * Test that we can generate code with a custom class name that includes a\r\n * package.\r\n */\r\n@Test\r\npublic void testSetPackageName() {\r\n    // Set the option strings in an \"argv\" to redirect our srcdir and bindir\r\n    String[] argv = { \"--bindir\", JAR_GEN_DIR, \"--outdir\", CODE_GEN_DIR, \"--package-name\", OVERRIDE_PACKAGE_NAME };\r\n    runGenerationTest(argv, OVERRIDE_PACKAGE_NAME + \".\" + HsqldbTestServer.getTableName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\orm\\TestClassWriter.java",
+  "methodName" : "testJavaIdentifierConversion",
+  "sourceCode" : "// Test the SQL identifier -> Java identifier conversion.\r\n@Test\r\npublic void testJavaIdentifierConversion() {\r\n    assertNull(ClassWriter.getIdentifierStrForChar(' '));\r\n    assertNull(ClassWriter.getIdentifierStrForChar('\\t'));\r\n    assertNull(ClassWriter.getIdentifierStrForChar('\\r'));\r\n    assertNull(ClassWriter.getIdentifierStrForChar('\\n'));\r\n    assertEquals(\"x\", ClassWriter.getIdentifierStrForChar('x'));\r\n    assertEquals(\"_\", ClassWriter.getIdentifierStrForChar('-'));\r\n    assertEquals(\"_\", ClassWriter.getIdentifierStrForChar('_'));\r\n    assertEquals(\"foo\", ClassWriter.toJavaIdentifier(\"foo\"));\r\n    assertEquals(\"_class\", ClassWriter.toJavaIdentifier(\"class\"));\r\n    assertEquals(\"_class\", ClassWriter.toJavaIdentifier(\"cla ss\"));\r\n    assertEquals(\"_int\", ClassWriter.toJavaIdentifier(\"int\"));\r\n    assertEquals(\"thisismanywords\", ClassWriter.toJavaIdentifier(\"this is many words\"));\r\n    assertEquals(\"_9isLegalInSql\", ClassWriter.toJavaIdentifier(\"9isLegalInSql\"));\r\n    assertEquals(\"____\", ClassWriter.toJavaIdentifier(\"___\"));\r\n    assertEquals(\"__class\", ClassWriter.toJavaIdentifier(\"_class\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\orm\\TestClassWriter.java",
+  "methodName" : "testWeirdColumnNames",
+  "sourceCode" : "@Test\r\npublic void testWeirdColumnNames() throws SQLException {\r\n    // Recreate the table with column names that aren't legal Java identifiers.\r\n    String tableName = HsqldbTestServer.getTableName();\r\n    Connection connection = testServer.getConnection();\r\n    Statement st = connection.createStatement();\r\n    try {\r\n        st.executeUpdate(\"DROP TABLE \" + tableName + \" IF EXISTS\");\r\n        st.executeUpdate(\"CREATE TABLE \" + tableName + \" (class INT, \\\"9field\\\" INT)\");\r\n        st.executeUpdate(\"INSERT INTO \" + tableName + \" VALUES(42, 41)\");\r\n        connection.commit();\r\n    } finally {\r\n        st.close();\r\n        connection.close();\r\n    }\r\n    String[] argv = { \"--bindir\", JAR_GEN_DIR, \"--outdir\", CODE_GEN_DIR, \"--package-name\", OVERRIDE_PACKAGE_NAME };\r\n    runGenerationTest(argv, OVERRIDE_PACKAGE_NAME + \".\" + HsqldbTestServer.getTableName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\orm\\TestClassWriter.java",
+  "methodName" : "testEqualsMethod",
+  "sourceCode" : "/**\r\n * Test the generated equals method.\r\n * @throws IOException\r\n * @throws ClassNotFoundException\r\n * @throws IllegalAccessException\r\n * @throws InstantiationException\r\n * @throws NoSuchMethodException\r\n * @throws SecurityException\r\n * @throws InvocationTargetException\r\n * @throws IllegalArgumentException\r\n */\r\n@Test\r\npublic void testEqualsMethod() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {\r\n    // Set the option strings in an \"argv\" to redirect our srcdir and bindir\r\n    String[] argv = { \"--bindir\", JAR_GEN_DIR, \"--outdir\", CODE_GEN_DIR, \"--class-name\", OVERRIDE_CLASS_AND_PACKAGE_NAME };\r\n    File ormJarFile = runGenerationTest(argv, OVERRIDE_CLASS_AND_PACKAGE_NAME);\r\n    ClassLoader prevClassLoader = ClassLoaderStack.addJarFile(ormJarFile.getCanonicalPath(), OVERRIDE_CLASS_AND_PACKAGE_NAME);\r\n    Class tableClass = Class.forName(OVERRIDE_CLASS_AND_PACKAGE_NAME, true, Thread.currentThread().getContextClassLoader());\r\n    Method setterIntField1 = tableClass.getMethod(\"set_INTFIELD1\", Integer.class);\r\n    Method setterIntField2 = tableClass.getMethod(\"set_INTFIELD2\", Integer.class);\r\n    Method equalsImplementation = tableClass.getMethod(\"equals\", Object.class);\r\n    Object instance1 = tableClass.newInstance();\r\n    Object instance2 = tableClass.newInstance();\r\n    // test reflexivity\r\n    assertTrue((Boolean) equalsImplementation.invoke(instance1, instance1));\r\n    // test equality for uninitialized fields\r\n    assertTrue((Boolean) equalsImplementation.invoke(instance1, instance2));\r\n    // test symmetry\r\n    assertTrue((Boolean) equalsImplementation.invoke(instance2, instance1));\r\n    // test reflexivity with initialized fields\r\n    setterIntField1.invoke(instance1, new Integer(1));\r\n    setterIntField2.invoke(instance1, new Integer(2));\r\n    assertTrue((Boolean) equalsImplementation.invoke(instance1, instance1));\r\n    // test difference in both fields\r\n    setterIntField1.invoke(instance2, new Integer(3));\r\n    setterIntField2.invoke(instance2, new Integer(4));\r\n    assertFalse((Boolean) equalsImplementation.invoke(instance1, instance2));\r\n    // test difference in second field\r\n    setterIntField1.invoke(instance2, new Integer(1));\r\n    setterIntField2.invoke(instance2, new Integer(3));\r\n    assertFalse((Boolean) equalsImplementation.invoke(instance1, instance2));\r\n    // test difference in first field\r\n    setterIntField1.invoke(instance2, new Integer(3));\r\n    setterIntField2.invoke(instance2, new Integer(2));\r\n    assertFalse((Boolean) equalsImplementation.invoke(instance1, instance2));\r\n    // test equality for initialized fields\r\n    setterIntField1.invoke(instance2, new Integer(1));\r\n    setterIntField2.invoke(instance2, new Integer(2));\r\n    assertTrue((Boolean) equalsImplementation.invoke(instance1, instance2));\r\n    if (null != prevClassLoader) {\r\n        ClassLoaderStack.setCurrentClassLoader(prevClassLoader);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\orm\\TestClassWriter.java",
+  "methodName" : "testUserMapping",
+  "sourceCode" : "@Test\r\npublic void testUserMapping() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {\r\n    // Set the option strings in an \"argv\" to redirect our srcdir and bindir\r\n    String[] argv = { \"--bindir\", JAR_GEN_DIR, \"--outdir\", CODE_GEN_DIR, \"--class-name\", USERMAPPING_CLASS_AND_PACKAGE_NAME, \"--map-column-java\", \"INTFIELD1=String\" };\r\n    File ormJarFile = runGenerationTest(argv, USERMAPPING_CLASS_AND_PACKAGE_NAME);\r\n    ClassLoader prevClassLoader = ClassLoaderStack.addJarFile(ormJarFile.getCanonicalPath(), USERMAPPING_CLASS_AND_PACKAGE_NAME);\r\n    Class tableClass = Class.forName(USERMAPPING_CLASS_AND_PACKAGE_NAME, true, Thread.currentThread().getContextClassLoader());\r\n    try {\r\n        Field intfield = tableClass.getDeclaredField(\"INTFIELD1\");\r\n        assertEquals(String.class, intfield.getType());\r\n    } catch (NoSuchFieldException ex) {\r\n        fail(\"Can't find field for INTFIELD1\");\r\n    } catch (SecurityException ex) {\r\n        fail(\"Can't find field for INTFIELD1\");\r\n    }\r\n    if (null != prevClassLoader) {\r\n        ClassLoaderStack.setCurrentClassLoader(prevClassLoader);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\orm\\TestClassWriter.java",
+  "methodName" : "testBrokenUserMapping",
+  "sourceCode" : "@Test\r\npublic void testBrokenUserMapping() throws Exception {\r\n    String[] argv = { \"--bindir\", JAR_GEN_DIR, \"--outdir\", CODE_GEN_DIR, \"--class-name\", USERMAPPING_CLASS_AND_PACKAGE_NAME, \"--map-column-java\", \"INTFIELD1=NotARealClass\" };\r\n    try {\r\n        runGenerationTest(argv, USERMAPPING_CLASS_AND_PACKAGE_NAME);\r\n    } catch (IllegalArgumentException e) {\r\n        return;\r\n    }\r\n    fail(\"we shouldn't successfully generate code\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\orm\\TestClassWriter.java",
+  "methodName" : "testNoClassGeneration",
+  "sourceCode" : "@Test\r\npublic void testNoClassGeneration() throws Exception {\r\n    manager = new DummyDirectManager();\r\n    String[] argv = { \"--bindir\", JAR_GEN_DIR, \"--outdir\", CODE_GEN_DIR };\r\n    runFailedGenerationTest(argv, HsqldbTestServer.getTableName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testStringCol1",
+  "sourceCode" : "@Test\r\npublic void testStringCol1() {\r\n    verifyType(\"VARCHAR(32)\", STRING_VAL_IN, STRING_VAL_OUT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testStringCol2",
+  "sourceCode" : "@Test\r\npublic void testStringCol2() {\r\n    verifyType(\"CHAR(32)\", STRING_VAL_IN, getFixedCharSeqOut(32, STRING_VAL_OUT));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testEmptyStringCol",
+  "sourceCode" : "@Test\r\npublic void testEmptyStringCol() {\r\n    verifyType(\"VARCHAR(32)\", \"''\", \"\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testNullStringCol",
+  "sourceCode" : "@Test\r\npublic void testNullStringCol() {\r\n    verifyType(\"VARCHAR(32)\", \"NULL\", null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testInt",
+  "sourceCode" : "@Test\r\npublic void testInt() {\r\n    verifyType(\"INTEGER\", \"42\", \"42\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testNullInt",
+  "sourceCode" : "@Test\r\npublic void testNullInt() {\r\n    verifyType(\"INTEGER\", \"NULL\", null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testBoolean",
+  "sourceCode" : "@Test\r\npublic void testBoolean() {\r\n    if (!supportsBoolean()) {\r\n        log.info(\"Skipping boolean test (unsupported)\");\r\n        skipped = true;\r\n        return;\r\n    }\r\n    verifyType(\"BOOLEAN\", getTrueBoolNumericSqlInput(), getTrueBoolSeqOutput());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testBoolean2",
+  "sourceCode" : "@Test\r\npublic void testBoolean2() {\r\n    if (!supportsBoolean()) {\r\n        log.info(\"Skipping boolean test (unsupported)\");\r\n        skipped = true;\r\n        return;\r\n    }\r\n    verifyType(\"BOOLEAN\", getFalseBoolNumericSqlInput(), getFalseBoolSeqOutput());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testBoolean3",
+  "sourceCode" : "@Test\r\npublic void testBoolean3() {\r\n    if (!supportsBoolean()) {\r\n        log.info(\"Skipping boolean test (unsupported)\");\r\n        skipped = true;\r\n        return;\r\n    }\r\n    verifyType(\"BOOLEAN\", getFalseBoolLiteralSqlInput(), getFalseBoolSeqOutput());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testTinyInt1",
+  "sourceCode" : "@Test\r\npublic void testTinyInt1() {\r\n    if (!supportsTinyInt()) {\r\n        log.info(\"Skipping tinyint test (unsupported)\");\r\n        skipped = true;\r\n        return;\r\n    }\r\n    verifyType(getTinyIntType(), \"0\", \"0\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testTinyInt2",
+  "sourceCode" : "@Test\r\npublic void testTinyInt2() {\r\n    if (!supportsTinyInt()) {\r\n        log.info(\"Skipping tinyint test (unsupported)\");\r\n        skipped = true;\r\n        return;\r\n    }\r\n    verifyType(getTinyIntType(), \"42\", \"42\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testSmallInt1",
+  "sourceCode" : "@Test\r\npublic void testSmallInt1() {\r\n    verifyType(\"SMALLINT\", \"-1024\", \"-1024\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testSmallInt2",
+  "sourceCode" : "@Test\r\npublic void testSmallInt2() {\r\n    verifyType(\"SMALLINT\", \"2048\", \"2048\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testBigInt1",
+  "sourceCode" : "@Test\r\npublic void testBigInt1() {\r\n    if (!supportsBigInt()) {\r\n        log.info(\"Skipping bigint test (unsupported)\");\r\n        skipped = true;\r\n        return;\r\n    }\r\n    verifyType(\"BIGINT\", \"10000000000\", \"10000000000\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testReal1",
+  "sourceCode" : "@Test\r\npublic void testReal1() {\r\n    verifyType(\"REAL\", \"256\", getRealSeqOutput(\"256\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testReal2",
+  "sourceCode" : "@Test\r\npublic void testReal2() {\r\n    verifyType(\"REAL\", \"256.45\", getRealSeqOutput(\"256.45\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testFloat1",
+  "sourceCode" : "@Test\r\npublic void testFloat1() {\r\n    verifyType(\"FLOAT\", \"256\", getFloatSeqOutput(\"256\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testFloat2",
+  "sourceCode" : "@Test\r\npublic void testFloat2() {\r\n    verifyType(\"FLOAT\", \"256.5\", getFloatSeqOutput(\"256.5\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testDouble1",
+  "sourceCode" : "@Test\r\npublic void testDouble1() {\r\n    verifyType(getDoubleType(), \"-256\", getDoubleSeqOutput(\"-256\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testDouble2",
+  "sourceCode" : "@Test\r\npublic void testDouble2() {\r\n    verifyType(getDoubleType(), \"256.45\", getDoubleSeqOutput(\"256.45\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testDate1",
+  "sourceCode" : "@Test\r\npublic void testDate1() {\r\n    verifyType(\"DATE\", getDateInsertStr(\"'2009-01-12'\"), getDateSeqOutput(\"2009-01-12\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testDate2",
+  "sourceCode" : "@Test\r\npublic void testDate2() {\r\n    verifyType(\"DATE\", getDateInsertStr(\"'2009-04-24'\"), getDateSeqOutput(\"2009-04-24\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testTime1",
+  "sourceCode" : "@Test\r\npublic void testTime1() {\r\n    if (!supportsTime()) {\r\n        log.info(\"Skipping time test (unsupported)\");\r\n        skipped = true;\r\n        return;\r\n    }\r\n    verifyType(\"TIME\", getTimeInsertStr(\"'12:24:00'\"), \"12:24:00\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testTime2",
+  "sourceCode" : "@Test\r\npublic void testTime2() {\r\n    if (!supportsTime()) {\r\n        log.info(\"Skipping time test (unsupported)\");\r\n        skipped = true;\r\n        return;\r\n    }\r\n    verifyType(\"TIME\", getTimeInsertStr(\"'06:24:00'\"), \"06:24:00\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testTime3",
+  "sourceCode" : "@Test\r\npublic void testTime3() {\r\n    if (!supportsTime()) {\r\n        log.info(\"Skipping time test (unsupported)\");\r\n        skipped = true;\r\n        return;\r\n    }\r\n    verifyType(\"TIME\", getTimeInsertStr(\"'6:24:00'\"), \"06:24:00\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testTime4",
+  "sourceCode" : "@Test\r\npublic void testTime4() {\r\n    if (!supportsTime()) {\r\n        log.info(\"Skipping time test (unsupported)\");\r\n        skipped = true;\r\n        return;\r\n    }\r\n    verifyType(\"TIME\", getTimeInsertStr(\"'18:24:00'\"), \"18:24:00\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testTimestamp1",
+  "sourceCode" : "@Test\r\npublic void testTimestamp1() {\r\n    verifyType(getTimestampType(), getTimestampInsertStr(\"'2009-04-24 18:24:00'\"), getTimestampSeqOutput(\"2009-04-24 18:24:00\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testTimestamp2",
+  "sourceCode" : "@Test\r\npublic void testTimestamp2() {\r\n    try {\r\n        log.debug(\"Beginning testTimestamp2\");\r\n        verifyType(getTimestampType(), getTimestampInsertStr(\"'2009-04-24 18:24:00.0002'\"), getTimestampSeqOutput(\"2009-04-24 18:24:00.0002\"));\r\n    } finally {\r\n        log.debug(\"End testTimestamp2\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testTimestamp3",
+  "sourceCode" : "@Test\r\npublic void testTimestamp3() {\r\n    try {\r\n        log.debug(\"Beginning testTimestamp3\");\r\n        verifyType(getTimestampType(), \"null\", null);\r\n    } finally {\r\n        log.debug(\"End testTimestamp3\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testNumeric1",
+  "sourceCode" : "@Test\r\npublic void testNumeric1() {\r\n    verifyType(getNumericType(), \"1\", getNumericSeqOutput(\"1\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testNumeric2",
+  "sourceCode" : "@Test\r\npublic void testNumeric2() {\r\n    verifyType(getNumericType(), \"-10\", getNumericSeqOutput(\"-10\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testNumeric3",
+  "sourceCode" : "@Test\r\npublic void testNumeric3() {\r\n    verifyType(getNumericType(), \"3.14159\", getNumericSeqOutput(\"3.14159\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testNumeric4",
+  "sourceCode" : "@Test\r\npublic void testNumeric4() {\r\n    verifyType(getNumericType(), \"3000000000000000000.14159\", getNumericSeqOutput(\"3000000000000000000.14159\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testNumeric5",
+  "sourceCode" : "@Test\r\npublic void testNumeric5() {\r\n    verifyType(getNumericType(), \"99999999999999999999.14159\", getNumericSeqOutput(\"99999999999999999999.14159\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testNumeric6",
+  "sourceCode" : "@Test\r\npublic void testNumeric6() {\r\n    verifyType(getNumericType(), \"-99999999999999999999.14159\", getNumericSeqOutput(\"-99999999999999999999.14159\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testDecimal1",
+  "sourceCode" : "@Test\r\npublic void testDecimal1() {\r\n    verifyType(getDecimalType(), \"1\", getDecimalSeqOutput(\"1\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testDecimal2",
+  "sourceCode" : "@Test\r\npublic void testDecimal2() {\r\n    verifyType(getDecimalType(), \"-10\", getDecimalSeqOutput(\"-10\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testDecimal3",
+  "sourceCode" : "@Test\r\npublic void testDecimal3() {\r\n    verifyType(getDecimalType(), \"3.14159\", getDecimalSeqOutput(\"3.14159\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testDecimal4",
+  "sourceCode" : "@Test\r\npublic void testDecimal4() {\r\n    verifyType(getDecimalType(), \"3000000000000000000.14159\", getDecimalSeqOutput(\"3000000000000000000.14159\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testDecimal5",
+  "sourceCode" : "@Test\r\npublic void testDecimal5() {\r\n    verifyType(getDecimalType(), \"99999999999999999999.14159\", getDecimalSeqOutput(\"99999999999999999999.14159\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testDecimal6",
+  "sourceCode" : "@Test\r\npublic void testDecimal6() {\r\n    verifyType(getDecimalType(), \"-99999999999999999999.14159\", getDecimalSeqOutput(\"-99999999999999999999.14159\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testLongVarChar",
+  "sourceCode" : "@Test\r\npublic void testLongVarChar() {\r\n    if (!supportsLongVarChar()) {\r\n        log.info(\"Skipping long varchar test (unsupported)\");\r\n        skipped = true;\r\n        return;\r\n    }\r\n    verifyType(getLongVarCharType(), \"'this is a long varchar'\", \"this is a long varchar\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testClob1",
+  "sourceCode" : "@Test\r\npublic void testClob1() {\r\n    if (!supportsClob()) {\r\n        log.info(\"Skipping CLOB test; database does not support CLOB\");\r\n        return;\r\n    }\r\n    verifyClob(\"'This is short CLOB data'\", \"This is short CLOB data\", \"This is short CLOB data\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testBlob1",
+  "sourceCode" : "@Test\r\npublic void testBlob1() {\r\n    if (!supportsBlob()) {\r\n        log.info(\"Skipping BLOB test; database does not support BLOB\");\r\n        return;\r\n    }\r\n    verifyBlob(getBlobInsertStr(\"This is short BLOB data\"), getBlobDbOutput(\"This is short BLOB data\"), getBlobSeqOutput(\"This is short BLOB data\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\com\\cloudera\\sqoop\\testutil\\ManagerCompatTestCase.java",
+  "methodName" : "testVarBinary",
+  "sourceCode" : "@Test\r\npublic void testVarBinary() {\r\n    if (!supportsVarBinary()) {\r\n        log.info(\"Skipping VARBINARY test; database does not support VARBINARY\");\r\n        return;\r\n    }\r\n    verifyType(getVarBinaryType(), \"'F00FABCD'\", getVarBinarySeqOutput(\"F00FABCD\"), true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testSmalldatetime",
+  "sourceCode" : "@Test\r\npublic void testSmalldatetime() {\r\n    exportTestMethod(DATATYPES.SMALLDATETIME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testdatetime2",
+  "sourceCode" : "@Test\r\npublic void testdatetime2() {\r\n    exportTestMethod(DATATYPES.DATETIME2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testdatetime",
+  "sourceCode" : "@Test\r\npublic void testdatetime() {\r\n    exportTestMethod(DATATYPES.DATETIME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testdatetimeoffset",
+  "sourceCode" : "@Test\r\npublic void testdatetimeoffset() {\r\n    exportTestMethod(DATATYPES.DATETIMEOFFSET);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testBigInt",
+  "sourceCode" : "@Test\r\npublic void testBigInt() {\r\n    exportTestMethod(DATATYPES.BIGINT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testInt",
+  "sourceCode" : "@Test\r\npublic void testInt() {\r\n    exportTestMethod(DATATYPES.INT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testSmallInt",
+  "sourceCode" : "@Test\r\npublic void testSmallInt() {\r\n    exportTestMethod(DATATYPES.SMALLINT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testTinyint",
+  "sourceCode" : "@Test\r\npublic void testTinyint() {\r\n    exportTestMethod(DATATYPES.TINYINT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testFloat",
+  "sourceCode" : "@Test\r\npublic void testFloat() {\r\n    exportTestMethod(DATATYPES.FLOAT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testReal",
+  "sourceCode" : "@Test\r\npublic void testReal() {\r\n    exportTestMethod(DATATYPES.REAL);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testDate",
+  "sourceCode" : "@Test\r\npublic void testDate() {\r\n    exportTestMethod(DATATYPES.DATE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testSmallMoney",
+  "sourceCode" : "@Test\r\npublic void testSmallMoney() {\r\n    exportTestMethod(DATATYPES.SMALLMONEY);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testText",
+  "sourceCode" : "@Test\r\npublic void testText() {\r\n    exportTestMethod(DATATYPES.TEXT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testVarchar",
+  "sourceCode" : "@Test\r\npublic void testVarchar() {\r\n    exportTestMethod(DATATYPES.VARCHAR);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testChar",
+  "sourceCode" : "@Test\r\npublic void testChar() {\r\n    exportTestMethod(DATATYPES.CHAR);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testNText",
+  "sourceCode" : "@Test\r\npublic void testNText() {\r\n    exportTestMethod(DATATYPES.NTEXT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testNChar",
+  "sourceCode" : "@Test\r\npublic void testNChar() {\r\n    exportTestMethod(DATATYPES.NCHAR);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\ManagerCompatExport.java",
+  "methodName" : "testNVarchar",
+  "sourceCode" : "@Test\r\npublic void testNVarchar() {\r\n    exportTestMethod(DATATYPES.NVARCHAR);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testBit",
+  "sourceCode" : "@Test\r\npublic void testBit() {\r\n    if (!supportsBoolean()) {\r\n        skipped = true;\r\n        return;\r\n    }\r\n    verifyType(\"BIT\", getTrueBoolNumericSqlInput(), getTrueBoolSeqOutput());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testBit2",
+  "sourceCode" : "@Test\r\npublic void testBit2() {\r\n    if (!supportsBoolean()) {\r\n        skipped = true;\r\n        return;\r\n    }\r\n    verifyType(\"BIT\", getFalseBoolNumericSqlInput(), getFalseBoolSeqOutput());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testBit3",
+  "sourceCode" : "@Test\r\npublic void testBit3() {\r\n    if (!supportsBoolean()) {\r\n        skipped = true;\r\n        return;\r\n    }\r\n    verifyType(\"BIT\", getFalseBoolLiteralSqlInput(), getFalseBoolSeqOutput());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testDouble2",
+  "sourceCode" : "@Test\r\npublic void testDouble2() {\r\n    try {\r\n        super.testDouble2();\r\n        assertTrue(\"This test should not pass on sql server\", false);\r\n    } catch (AssertionError a) {\r\n        System.out.println(\"Test failed, this was expected\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testSmalldatetime",
+  "sourceCode" : "@Test\r\npublic void testSmalldatetime() {\r\n    if (!supportsTime()) {\r\n        skipped = true;\r\n        return;\r\n    }\r\n    dataTypeTest(DATATYPES.SMALLDATETIME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testdatetime2",
+  "sourceCode" : "@Test\r\npublic void testdatetime2() {\r\n    if (!supportsTime()) {\r\n        skipped = true;\r\n        return;\r\n    }\r\n    dataTypeTest(DATATYPES.DATETIME2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testdatetime",
+  "sourceCode" : "@Test\r\npublic void testdatetime() {\r\n    if (!supportsTime()) {\r\n        skipped = true;\r\n        return;\r\n    }\r\n    dataTypeTest(DATATYPES.DATETIME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testdatetimeoffset",
+  "sourceCode" : "@Test\r\npublic void testdatetimeoffset() {\r\n    if (!supportsTime()) {\r\n        skipped = true;\r\n        return;\r\n    }\r\n    dataTypeTest(DATATYPES.DATETIMEOFFSET);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testBigInt",
+  "sourceCode" : "@Test\r\npublic void testBigInt() {\r\n    dataTypeTest(DATATYPES.BIGINT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testBigInt1",
+  "sourceCode" : "@Test\r\npublic void testBigInt1() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testInt",
+  "sourceCode" : "@Test\r\npublic void testInt() {\r\n    dataTypeTest(DATATYPES.INT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testSmallInt",
+  "sourceCode" : "@Test\r\npublic void testSmallInt() {\r\n    dataTypeTest(DATATYPES.SMALLINT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testSmallInt1",
+  "sourceCode" : "@Test\r\npublic void testSmallInt1() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testSmallInt2",
+  "sourceCode" : "@Test\r\npublic void testSmallInt2() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testTinyint",
+  "sourceCode" : "@Test\r\npublic void testTinyint() {\r\n    dataTypeTest(DATATYPES.TINYINT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testTinyInt1",
+  "sourceCode" : "@Test\r\npublic void testTinyInt1() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testTinyInt2",
+  "sourceCode" : "@Test\r\npublic void testTinyInt2() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testFloat",
+  "sourceCode" : "@Test\r\npublic void testFloat() {\r\n    dataTypeTest(DATATYPES.FLOAT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testReal",
+  "sourceCode" : "@Test\r\npublic void testReal() {\r\n    dataTypeTest(DATATYPES.REAL);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testDate",
+  "sourceCode" : "@Test\r\npublic void testDate() {\r\n    dataTypeTest(DATATYPES.DATE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testSmallMoney",
+  "sourceCode" : "@Test\r\npublic void testSmallMoney() {\r\n    dataTypeTest(DATATYPES.SMALLMONEY);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testText",
+  "sourceCode" : "@Test\r\npublic void testText() {\r\n    dataTypeTest(DATATYPES.TEXT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testVarchar",
+  "sourceCode" : "@Test\r\npublic void testVarchar() {\r\n    dataTypeTest(DATATYPES.VARCHAR);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testChar",
+  "sourceCode" : "@Test\r\npublic void testChar() {\r\n    dataTypeTest(DATATYPES.CHAR);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testNText",
+  "sourceCode" : "@Test\r\npublic void testNText() {\r\n    dataTypeTest(DATATYPES.NTEXT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testNChar",
+  "sourceCode" : "@Test\r\npublic void testNChar() {\r\n    dataTypeTest(DATATYPES.NCHAR);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testNVarchar",
+  "sourceCode" : "@Test\r\npublic void testNVarchar() {\r\n    dataTypeTest(DATATYPES.NVARCHAR);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testTime1",
+  "sourceCode" : "//---------------disabled tests-----\r\n@Test\r\npublic void testTime1() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testTime2",
+  "sourceCode" : "@Test\r\npublic void testTime2() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testTime3",
+  "sourceCode" : "@Test\r\npublic void testTime3() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testTime4",
+  "sourceCode" : "@Test\r\npublic void testTime4() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testStringCol1",
+  "sourceCode" : "@Test\r\npublic void testStringCol1() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testStringCol2",
+  "sourceCode" : "@Test\r\npublic void testStringCol2() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testEmptyStringCol",
+  "sourceCode" : "@Test\r\npublic void testEmptyStringCol() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testNullStringCol",
+  "sourceCode" : "@Test\r\npublic void testNullStringCol() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testNullInt",
+  "sourceCode" : "@Test\r\npublic void testNullInt() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testReal1",
+  "sourceCode" : "@Test\r\npublic void testReal1() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testReal2",
+  "sourceCode" : "@Test\r\npublic void testReal2() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testFloat1",
+  "sourceCode" : "@Test\r\npublic void testFloat1() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testFloat2",
+  "sourceCode" : "@Test\r\npublic void testFloat2() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testDate1",
+  "sourceCode" : "@Test\r\npublic void testDate1() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testDate2",
+  "sourceCode" : "@Test\r\npublic void testDate2() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testNumeric3",
+  "sourceCode" : "@Test\r\npublic void testNumeric3() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testNumeric4",
+  "sourceCode" : "@Test\r\npublic void testNumeric4() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testNumeric5",
+  "sourceCode" : "@Test\r\npublic void testNumeric5() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testNumeric6",
+  "sourceCode" : "@Test\r\npublic void testNumeric6() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testDecimal3",
+  "sourceCode" : "@Test\r\npublic void testDecimal3() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testDecimal4",
+  "sourceCode" : "@Test\r\npublic void testDecimal4() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testDecimal5",
+  "sourceCode" : "@Test\r\npublic void testDecimal5() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerDatatypeImportSequenceFileManualTest.java",
+  "methodName" : "testDecimal6",
+  "sourceCode" : "@Test\r\npublic void testDecimal6() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerManagerManualTest.java",
+  "methodName" : "testListColNames",
+  "sourceCode" : "@Test\r\npublic void testListColNames() {\r\n    String[] colNames = manager.getColumnNames(getTableName());\r\n    assertNotNull(\"manager returned no colname list\", colNames);\r\n    assertEquals(\"Table list should be length 2\", 16, colNames.length);\r\n    String[] knownFields = MSSQLTestUtils.getColumns();\r\n    for (int i = 0; i < colNames.length; i++) {\r\n        assertEquals(knownFields[i], colNames[i]);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerManagerManualTest.java",
+  "methodName" : "testListColTypes",
+  "sourceCode" : "@Test\r\npublic void testListColTypes() {\r\n    Map<String, Integer> types = manager.getColumnTypes(getTableName());\r\n    assertNotNull(\"manager returned no types map\", types);\r\n    assertEquals(\"Map should be size=16\", 16, types.size());\r\n    assertEquals(types.get(\"L_ORDERKEY\").intValue(), Types.INTEGER);\r\n    assertEquals(types.get(\"L_COMMENT\").intValue(), Types.VARCHAR);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerManagerManualTest.java",
+  "methodName" : "testMissingTableColNames",
+  "sourceCode" : "@Test\r\npublic void testMissingTableColNames() {\r\n    // SQL Server returns an empty column list which gets translated as a\r\n    // zero length array\r\n    // how ever also check in case it returns null, which is also correct\r\n    String[] colNames = manager.getColumnNames(MISSING_TABLE);\r\n    if (colNames == null) {\r\n        assertNull(\"No column names should be returned for missing table\", colNames);\r\n    }\r\n    int numItems = colNames.length;\r\n    assertEquals(0, numItems);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerManagerManualTest.java",
+  "methodName" : "testMissingTableColTypes",
+  "sourceCode" : "@Test\r\npublic void testMissingTableColTypes() {\r\n    Map<String, Integer> colTypes = manager.getColumnTypes(MISSING_TABLE);\r\n    assertNull(\"No column types should be returned for missing table\", colTypes);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerManagerManualTest.java",
+  "methodName" : "testReadTable",
+  "sourceCode" : "@Test\r\npublic void testReadTable() {\r\n    ResultSet results = null;\r\n    try {\r\n        results = manager.readTable(getTableName(), MSSQLTestUtils.getColumns());\r\n        assertNotNull(\"ResultSet from readTable() is null!\", results);\r\n        ResultSetMetaData metaData = results.getMetaData();\r\n        assertNotNull(\"ResultSetMetadata is null in readTable()\", metaData);\r\n        // ensure that we get the correct number of columns back\r\n        assertEquals(\"Number of returned columns was unexpected!\", metaData.getColumnCount(), 16);\r\n        // should get back 4 rows. They are:\r\n        // 1 2\r\n        // 3 4\r\n        // 5 6\r\n        // 7 8\r\n        // .. so while order isn't guaranteed, we should get back 16 on the\r\n        // left\r\n        // and 20 on the right.\r\n        int sumCol1 = 0, sumCol2 = 0, rowCount = 0;\r\n        while (results.next()) {\r\n            rowCount++;\r\n            sumCol1 += results.getInt(1);\r\n            sumCol2 += results.getInt(2);\r\n        }\r\n        assertEquals(\"Expected 4 rows back\", EXPECTED_NUM_ROWS, rowCount);\r\n        assertEquals(\"Expected left sum of 10\", EXPECTED_COL1_SUM, sumCol1);\r\n        assertEquals(\"Expected right sum of 14\", EXPECTED_COL2_SUM, sumCol2);\r\n    } catch (SQLException sqlException) {\r\n        LOG.error(StringUtils.stringifyException(sqlException));\r\n        fail(\"SQL Exception: \" + sqlException.toString());\r\n    } finally {\r\n        if (null != results) {\r\n            try {\r\n                results.close();\r\n            } catch (SQLException sqlE) {\r\n                LOG.error(StringUtils.stringifyException(sqlE));\r\n                fail(\"SQL Exception in ResultSet.close(): \" + sqlE.toString());\r\n            }\r\n        }\r\n        manager.release();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerManagerManualTest.java",
+  "methodName" : "testReadMissingTable",
+  "sourceCode" : "@Test\r\npublic void testReadMissingTable() {\r\n    ResultSet results = null;\r\n    try {\r\n        String[] colNames = { \"*\" };\r\n        results = manager.readTable(MISSING_TABLE, colNames);\r\n        assertNull(\"Expected null resultset from readTable(MISSING_TABLE)\", results);\r\n    } catch (SQLException sqlException) {\r\n        // we actually expect this pass.\r\n    } finally {\r\n        if (null != results) {\r\n            try {\r\n                results.close();\r\n            } catch (SQLException sqlE) {\r\n                fail(\"SQL Exception in ResultSet.close(): \" + sqlE.toString());\r\n            }\r\n        }\r\n        manager.release();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerManagerManualTest.java",
+  "methodName" : "testgetPrimaryKeyFromMissingTable",
+  "sourceCode" : "@Test\r\npublic void testgetPrimaryKeyFromMissingTable() {\r\n    String primaryKey = manager.getPrimaryKey(MISSING_TABLE);\r\n    assertNull(\"Expected null pkey for missing table\", primaryKey);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerManagerManualTest.java",
+  "methodName" : "testgetPrimaryKeyFromTableWithoutKey",
+  "sourceCode" : "@Test\r\npublic void testgetPrimaryKeyFromTableWithoutKey() {\r\n    String primaryKey = manager.getPrimaryKey(getTableName());\r\n    assertNull(\"Expected null pkey for table without key\", primaryKey);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\manager\\sqlserver\\SQLServerManagerManualTest.java",
+  "methodName" : "testgetPrimaryKeyFromTable",
+  "sourceCode" : "@Test\r\npublic void testgetPrimaryKeyFromTable() {\r\n    // first, create a table with a primary key\r\n    Connection conn = null;\r\n    try {\r\n        conn = getManager().getConnection();\r\n        dropTableIfExists(TABLE_WITH_KEY);\r\n        PreparedStatement statement = conn.prepareStatement(\"CREATE TABLE \" + TABLE_WITH_KEY + \"(\" + KEY_FIELD_NAME + \" INT NOT NULL PRIMARY KEY, foo INT)\", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);\r\n        statement.executeUpdate();\r\n        statement.close();\r\n        String primaryKey = getManager().getPrimaryKey(TABLE_WITH_KEY);\r\n        assertEquals(\"Expected null pkey for table without key\", primaryKey, KEY_FIELD_NAME);\r\n    } catch (SQLException sqlException) {\r\n        LOG.error(StringUtils.stringifyException(sqlException));\r\n        fail(\"Could not create table with primary key: \" + sqlException.toString());\r\n    } finally {\r\n        if (null != conn) {\r\n            try {\r\n                conn.close();\r\n            } catch (SQLException sqlE) {\r\n                LOG.warn(\"Got SQLException during close: \" + sqlE.toString());\r\n            }\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

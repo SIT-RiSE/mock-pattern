@@ -1,0 +1,265 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\consumer\\LocalMessageCacheTest.java",
+  "methodName" : "testNextPullBatchNums",
+  "sourceCode" : "@Test\r\npublic void testNextPullBatchNums() throws Exception {\r\n    assertThat(localMessageCache.nextPullBatchNums()).isEqualTo(512);\r\n    for (int i = 0; i < 513; i++) {\r\n        localMessageCache.submitConsumeRequest(consumeRequest);\r\n    }\r\n    assertThat(localMessageCache.nextPullBatchNums()).isEqualTo(511);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\consumer\\LocalMessageCacheTest.java",
+  "methodName" : "testNextPullOffset",
+  "sourceCode" : "@Test\r\npublic void testNextPullOffset() throws Exception {\r\n    MessageQueue messageQueue = new MessageQueue();\r\n    when(rocketmqPullConsume.fetchConsumeOffset(any(MessageQueue.class), anyBoolean())).thenReturn(123L);\r\n    assertThat(localMessageCache.nextPullOffset(new MessageQueue())).isEqualTo(123L);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\consumer\\LocalMessageCacheTest.java",
+  "methodName" : "testUpdatePullOffset",
+  "sourceCode" : "@Test\r\npublic void testUpdatePullOffset() throws Exception {\r\n    MessageQueue messageQueue = new MessageQueue();\r\n    localMessageCache.updatePullOffset(messageQueue, 124L);\r\n    assertThat(localMessageCache.nextPullOffset(messageQueue)).isEqualTo(124L);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\consumer\\LocalMessageCacheTest.java",
+  "methodName" : "testSubmitConsumeRequest",
+  "sourceCode" : "@Test\r\npublic void testSubmitConsumeRequest() throws Exception {\r\n    byte[] body = new byte[] { '1', '2', '3' };\r\n    MessageExt consumedMsg = new MessageExt();\r\n    consumedMsg.setMsgId(\"NewMsgId\");\r\n    consumedMsg.setBody(body);\r\n    consumedMsg.putUserProperty(NonStandardKeys.MESSAGE_DESTINATION, \"TOPIC\");\r\n    consumedMsg.setTopic(\"HELLO_QUEUE\");\r\n    when(consumeRequest.getMessageExt()).thenReturn(consumedMsg);\r\n    localMessageCache.submitConsumeRequest(consumeRequest);\r\n    assertThat(localMessageCache.poll()).isEqualTo(consumedMsg);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\consumer\\PullConsumerImplTest.java",
+  "methodName" : "testPoll",
+  "sourceCode" : "@Test\r\npublic void testPoll() {\r\n    final byte[] testBody = new byte[] { 'a', 'b' };\r\n    MessageExt consumedMsg = new MessageExt();\r\n    consumedMsg.setMsgId(\"NewMsgId\");\r\n    consumedMsg.setBody(testBody);\r\n    consumedMsg.putUserProperty(NonStandardKeys.MESSAGE_DESTINATION, \"TOPIC\");\r\n    consumedMsg.setTopic(queueName);\r\n    when(localMessageCache.poll()).thenReturn(consumedMsg);\r\n    Message message = consumer.receive();\r\n    assertThat(message.sysHeaders().getString(Message.BuiltinKeys.MESSAGE_ID)).isEqualTo(\"NewMsgId\");\r\n    assertThat(((BytesMessage) message).getBody(byte[].class)).isEqualTo(testBody);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\consumer\\PullConsumerImplTest.java",
+  "methodName" : "testPoll_WithTimeout",
+  "sourceCode" : "@Test\r\npublic void testPoll_WithTimeout() {\r\n    //There is a default timeout value, @see ClientConfig#omsOperationTimeout.\r\n    Message message = consumer.receive();\r\n    assertThat(message).isNull();\r\n    message = consumer.receive(OMS.newKeyValue().put(Message.BuiltinKeys.TIMEOUT, 100));\r\n    assertThat(message).isNull();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\consumer\\PushConsumerImplTest.java",
+  "methodName" : "testConsumeMessage",
+  "sourceCode" : "@Test\r\npublic void testConsumeMessage() {\r\n    final byte[] testBody = new byte[] { 'a', 'b' };\r\n    MessageExt consumedMsg = new MessageExt();\r\n    consumedMsg.setMsgId(\"NewMsgId\");\r\n    consumedMsg.setBody(testBody);\r\n    consumedMsg.putUserProperty(NonStandardKeys.MESSAGE_DESTINATION, \"TOPIC\");\r\n    consumedMsg.setTopic(\"HELLO_QUEUE\");\r\n    consumer.attachQueue(\"HELLO_QUEUE\", new MessageListener() {\r\n\r\n        @Override\r\n        public void onReceived(Message message, Context context) {\r\n            assertThat(message.sysHeaders().getString(Message.BuiltinKeys.MESSAGE_ID)).isEqualTo(\"NewMsgId\");\r\n            assertThat(((BytesMessage) message).getBody(byte[].class)).isEqualTo(testBody);\r\n            context.ack();\r\n        }\r\n    });\r\n    ((MessageListenerConcurrently) rocketmqPushConsumer.getMessageListener()).consumeMessage(Collections.singletonList(consumedMsg), null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\producer\\ProducerImplTest.java",
+  "methodName" : "testSend_OK",
+  "sourceCode" : "@Test\r\npublic void testSend_OK() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {\r\n    SendResult sendResult = new SendResult();\r\n    sendResult.setMsgId(\"TestMsgID\");\r\n    sendResult.setSendStatus(SendStatus.SEND_OK);\r\n    when(rocketmqProducer.send(any(Message.class), anyLong())).thenReturn(sendResult);\r\n    io.openmessaging.producer.SendResult omsResult = producer.send(producer.createBytesMessage(\"HELLO_TOPIC\", new byte[] { 'a' }));\r\n    assertThat(omsResult.messageId()).isEqualTo(\"TestMsgID\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\producer\\ProducerImplTest.java",
+  "methodName" : "testSend_Not_OK",
+  "sourceCode" : "@Test\r\npublic void testSend_Not_OK() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {\r\n    SendResult sendResult = new SendResult();\r\n    sendResult.setSendStatus(SendStatus.FLUSH_DISK_TIMEOUT);\r\n    when(rocketmqProducer.send(any(Message.class), anyLong())).thenReturn(sendResult);\r\n    try {\r\n        producer.send(producer.createBytesMessage(\"HELLO_TOPIC\", new byte[] { 'a' }));\r\n        failBecauseExceptionWasNotThrown(OMSRuntimeException.class);\r\n    } catch (Exception e) {\r\n        assertThat(e).hasMessageContaining(\"Send message to RocketMQ broker failed.\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\producer\\ProducerImplTest.java",
+  "methodName" : "testSend_WithException",
+  "sourceCode" : "@Test\r\npublic void testSend_WithException() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {\r\n    when(rocketmqProducer.send(any(Message.class), anyLong())).thenThrow(MQClientException.class);\r\n    try {\r\n        producer.send(producer.createBytesMessage(\"HELLO_TOPIC\", new byte[] { 'a' }));\r\n        failBecauseExceptionWasNotThrown(OMSRuntimeException.class);\r\n    } catch (Exception e) {\r\n        assertThat(e).hasMessageContaining(\"Send message to RocketMQ broker failed.\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\promise\\DefaultPromiseTest.java",
+  "methodName" : "testIsCancelled",
+  "sourceCode" : "@Test\r\npublic void testIsCancelled() throws Exception {\r\n    assertThat(promise.isCancelled()).isEqualTo(false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\promise\\DefaultPromiseTest.java",
+  "methodName" : "testIsDone",
+  "sourceCode" : "@Test\r\npublic void testIsDone() throws Exception {\r\n    assertThat(promise.isDone()).isEqualTo(false);\r\n    promise.set(\"Done\");\r\n    assertThat(promise.isDone()).isEqualTo(true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\promise\\DefaultPromiseTest.java",
+  "methodName" : "testGet",
+  "sourceCode" : "@Test\r\npublic void testGet() throws Exception {\r\n    promise.set(\"Done\");\r\n    assertThat(promise.get()).isEqualTo(\"Done\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\promise\\DefaultPromiseTest.java",
+  "methodName" : "testGet_WithTimeout",
+  "sourceCode" : "@Test\r\npublic void testGet_WithTimeout() throws Exception {\r\n    try {\r\n        promise.get(100);\r\n        failBecauseExceptionWasNotThrown(OMSRuntimeException.class);\r\n    } catch (OMSRuntimeException e) {\r\n        assertThat(e).hasMessageContaining(\"Get request result is timeout or interrupted\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\promise\\DefaultPromiseTest.java",
+  "methodName" : "testAddListener",
+  "sourceCode" : "@Test\r\npublic void testAddListener() throws Exception {\r\n    promise.addListener(new FutureListener<String>() {\r\n\r\n        @Override\r\n        public void operationComplete(Future<String> future) {\r\n            assertThat(promise.get()).isEqualTo(\"Done\");\r\n        }\r\n    });\r\n    promise.set(\"Done\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\promise\\DefaultPromiseTest.java",
+  "methodName" : "testAddListener_ListenerAfterSet",
+  "sourceCode" : "@Test\r\npublic void testAddListener_ListenerAfterSet() throws Exception {\r\n    promise.set(\"Done\");\r\n    promise.addListener(new FutureListener<String>() {\r\n\r\n        @Override\r\n        public void operationComplete(Future<String> future) {\r\n            assertThat(future.get()).isEqualTo(\"Done\");\r\n        }\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\promise\\DefaultPromiseTest.java",
+  "methodName" : "testAddListener_WithException_ListenerAfterSet",
+  "sourceCode" : "@Test\r\npublic void testAddListener_WithException_ListenerAfterSet() throws Exception {\r\n    final Throwable exception = new OMSRuntimeException(\"-1\", \"Test Error\");\r\n    promise.setFailure(exception);\r\n    promise.addListener(new FutureListener<String>() {\r\n\r\n        @Override\r\n        public void operationComplete(Future<String> future) {\r\n            assertThat(promise.getThrowable()).isEqualTo(exception);\r\n        }\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\promise\\DefaultPromiseTest.java",
+  "methodName" : "testAddListener_WithException",
+  "sourceCode" : "@Test\r\npublic void testAddListener_WithException() throws Exception {\r\n    final Throwable exception = new OMSRuntimeException(\"-1\", \"Test Error\");\r\n    promise.addListener(new FutureListener<String>() {\r\n\r\n        @Override\r\n        public void operationComplete(Future<String> future) {\r\n            assertThat(promise.getThrowable()).isEqualTo(exception);\r\n        }\r\n    });\r\n    promise.setFailure(exception);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\promise\\DefaultPromiseTest.java",
+  "methodName" : "getThrowable",
+  "sourceCode" : "@Test\r\npublic void getThrowable() throws Exception {\r\n    assertThat(promise.getThrowable()).isNull();\r\n    Throwable exception = new OMSRuntimeException(\"-1\", \"Test Error\");\r\n    promise.setFailure(exception);\r\n    assertThat(promise.getThrowable()).isEqualTo(exception);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\utils\\BeanUtilsTest.java",
+  "methodName" : "testPopulate",
+  "sourceCode" : "@Test\r\npublic void testPopulate() {\r\n    CustomizedConfig config = BeanUtils.populate(properties, CustomizedConfig.class);\r\n    //RemotingConfig config = BeanUtils.populate(properties, RemotingConfig.class);\r\n    Assert.assertEquals(config.getRmqMaxRedeliveryTimes(), 120);\r\n    Assert.assertEquals(config.getStringTest(), \"kaka\");\r\n    Assert.assertEquals(config.getRmqConsumerGroup(), \"Default_Consumer_Group\");\r\n    Assert.assertEquals(config.getRmqMessageConsumeTimeout(), 101);\r\n    Assert.assertEquals(config.getLongTest(), 1234567890L);\r\n    Assert.assertEquals(config.getDoubleTest(), 10.234, 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-rocketmq\\src\\test\\java\\rocketmq\\utils\\BeanUtilsTest.java",
+  "methodName" : "testPopulate_ExistObj",
+  "sourceCode" : "@Test\r\npublic void testPopulate_ExistObj() {\r\n    CustomizedConfig config = new CustomizedConfig();\r\n    config.setConsumerId(\"NewConsumerId\");\r\n    Assert.assertEquals(config.getConsumerId(), \"NewConsumerId\");\r\n    config = BeanUtils.populate(properties, config);\r\n    //RemotingConfig config = BeanUtils.populate(properties, RemotingConfig.class);\r\n    Assert.assertEquals(config.getRmqMaxRedeliveryTimes(), 120);\r\n    Assert.assertEquals(config.getStringTest(), \"kaka\");\r\n    Assert.assertEquals(config.getRmqConsumerGroup(), \"Default_Consumer_Group\");\r\n    Assert.assertEquals(config.getRmqMessageConsumeTimeout(), 101);\r\n    Assert.assertEquals(config.getLongTest(), 1234567890L);\r\n    Assert.assertEquals(config.getDoubleTest(), 10.234, 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\protocol\\CmdAsync2ClientTest.java",
+  "methodName" : "test_Cmd_AsyncMessage",
+  "sourceCode" : "@Test\r\npublic void test_Cmd_AsyncMessage() throws Exception {\r\n    client.registerBusiHandler(new ReceiveMsgHook() {\r\n\r\n        @Override\r\n        public void handle(Package msg, ChannelHandlerContext ctx) {\r\n            System.err.println(\"receive response from server:------------------\" + msg.toString());\r\n            if (msg.getHeader().getCommand() == Command.CLIENT_GOODBYE_RESPONSE) {\r\n                Assert.assertTrue(\"HEARTBEAT_RESPONSE\", true);\r\n            }\r\n        }\r\n    });\r\n    Package msg = new Package();\r\n    client.publish(msg, 3000);\r\n    //        Thread.sleep(10000);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\protocol\\CmdAsync2ServerTest.java",
+  "methodName" : "test_Cmd_AsyncMessage2Server",
+  "sourceCode" : "@Test\r\npublic void test_Cmd_AsyncMessage2Server() throws Exception {\r\n    Package msg = MessageUtils.asyncMessage(\"FT0-e-80010000-01-1\", 0);\r\n    Package replyMsg = client.publish(msg, 3000);\r\n    System.err.println(\"Reply Message-----------------------------------------\" + replyMsg.toString());\r\n    if (replyMsg.getHeader().getCommand() != Command.ASYNC_MESSAGE_TO_SERVER_ACK) {\r\n        Assert.assertTrue(\"ASYNC_MESSAGE_TO_SERVER_ACK FAIL\", false);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\protocol\\CmdBroadCast2ClientTest.java",
+  "methodName" : "test_Cmd_broadcast",
+  "sourceCode" : "@Test\r\npublic void test_Cmd_broadcast() throws Exception {\r\n    client.registerBusiHandler(new ReceiveMsgHook() {\r\n\r\n        @Override\r\n        public void handle(Package msg, ChannelHandlerContext ctx) {\r\n            System.err.println(\"receive response from server:------------------\" + msg.toString());\r\n            if (msg.getHeader().getCommand() == Command.BROADCAST_MESSAGE_TO_CLIENT) {\r\n                Assert.assertTrue(\"HEARTBEAT_RESPONSE\", true);\r\n            }\r\n        }\r\n    });\r\n    Package msg = new Package();\r\n    //        client.publish(msg,3000);\r\n    //        Thread.sleep(10000);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\protocol\\CmdBroadCast2ServerTest.java",
+  "methodName" : "test_Cmd_broadcast2Server",
+  "sourceCode" : "@Test\r\npublic void test_Cmd_broadcast2Server() throws Exception {\r\n    Package msg = MessageUtils.broadcastMessage(\"FT0-e-80030000-01-3\", 0);\r\n    Package replyMsg = client.broadcast(msg, 3000);\r\n    System.err.println(\"Reply Message-----------------------------------------\" + replyMsg.toString());\r\n    if (replyMsg.getHeader().getCommand() != Command.BROADCAST_MESSAGE_TO_SERVER_ACK) {\r\n        Assert.assertTrue(\"BROADCAST_MESSAGE_TO_SERVER_ACK FAIL\", false);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\protocol\\CmdClientGoodByTest.java",
+  "methodName" : "test_Cmd_client_goodbye",
+  "sourceCode" : "@Test\r\npublic void test_Cmd_client_goodbye() throws Exception {\r\n    Package replyMsg = client.goodbye();\r\n    System.err.println(\"Reply Message-----------------------------------------\" + replyMsg.toString());\r\n    if (replyMsg.getHeader().getCommand() != Command.CLIENT_GOODBYE_RESPONSE) {\r\n        Assert.assertTrue(\"CLIENT_GOODBYE_RESPONSE FAIL\", false);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\protocol\\CmdHeartbeatTest.java",
+  "methodName" : "test_Cmd_heartbeat",
+  "sourceCode" : "@Test\r\npublic void test_Cmd_heartbeat() throws Exception {\r\n    client.registerBusiHandler(new ReceiveMsgHook() {\r\n\r\n        @Override\r\n        public void handle(Package msg, ChannelHandlerContext ctx) {\r\n            System.err.println(\"receive response from server:------------------\" + msg.toString());\r\n            if (msg.getHeader().getCommand() != Command.HEARTBEAT_RESPONSE) {\r\n                Assert.assertTrue(\"HEARTBEAT_RESPONSE\", false);\r\n            }\r\n        }\r\n    });\r\n    client.heartbeat();\r\n    Thread.sleep(10000);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\protocol\\CmdHelloTest.java",
+  "methodName" : "test_Cmd_Hello",
+  "sourceCode" : "@Test\r\npublic void test_Cmd_Hello() throws Exception {\r\n    Server server = new Server();\r\n    server.startAccessServer();\r\n    //do protocol send/receive\r\n    Thread.sleep(3000);\r\n    server.shutdownAccessServer();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\protocol\\CmdListenTest.java",
+  "methodName" : "test_Cmd_listen",
+  "sourceCode" : "@Test\r\npublic void test_Cmd_listen() throws Exception {\r\n    Package replyMsg = client.listen();\r\n    System.err.println(\"Reply Message-----------------------------------------\" + replyMsg.toString());\r\n    if (replyMsg.getHeader().getCommand() != Command.LISTEN_RESPONSE) {\r\n        Assert.assertTrue(\"SUBSCRIBE_RESPONSE FAIL\", false);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\protocol\\CmdRecommendTest.java",
+  "methodName" : "test_Cmd_Recommend",
+  "sourceCode" : "@Test\r\npublic void test_Cmd_Recommend() throws Exception {\r\n    Package replyMsg = client.askRecommend();\r\n    System.err.println(\"Reply Message-----------------------------------------\" + replyMsg.toString());\r\n    if (replyMsg.getHeader().getCommand() != Command.RECOMMEND_RESPONSE) {\r\n        Assert.assertTrue(\"RECOMMEND_RESPONSE FAIL\", false);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\protocol\\CmdSendRRTest.java",
+  "methodName" : "test_Cmd_RR",
+  "sourceCode" : "@Test\r\npublic void test_Cmd_RR() throws Exception {\r\n    Package msg = MessageUtils.rrMesssage(\"FT0-s-80000000-01-0\", 0);\r\n    Package replyMsg = client.rr(msg, 5000);\r\n    System.err.println(\"收到回复:\" + replyMsg.toString());\r\n    if (replyMsg.getHeader().getCommand() != Command.RESPONSE_TO_CLIENT) {\r\n        Assert.assertTrue(\"RESPONSE_TO_CLIENT FAIL\", false);\r\n    }\r\n    Thread.sleep(1000);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\protocol\\CmdSubscribeTest.java",
+  "methodName" : "test_Cmd_subscribe",
+  "sourceCode" : "@Test\r\npublic void test_Cmd_subscribe() throws Exception {\r\n    Package replyMsg = client.justSubscribe(\"FT0-s-80000000-01-0\");\r\n    System.err.println(\"Reply Message------------------\" + replyMsg.toString());\r\n    if (replyMsg.getHeader().getCommand() != Command.SUBSCRIBE_RESPONSE) {\r\n        Assert.assertTrue(\"SUBSCRIBE_RESPONSE FAIL\", false);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\protocol\\CmdSysLogTest.java",
+  "methodName" : "test_Cmd_syslog",
+  "sourceCode" : "@Test\r\npublic void test_Cmd_syslog() throws Exception {\r\n    client.registerBusiHandler(new ReceiveMsgHook() {\r\n\r\n        @Override\r\n        public void handle(Package msg, ChannelHandlerContext ctx) {\r\n            System.err.println(\"receive response from server:------------------\" + msg.toString());\r\n            Assert.assertTrue(\"receive a error command\", false);\r\n        }\r\n    });\r\n    //        client.sysLog();\r\n    Thread.sleep(1000);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\protocol\\CmdTraceLogTest.java",
+  "methodName" : "test_Cmd_traceLog",
+  "sourceCode" : "@Test\r\npublic void test_Cmd_traceLog() throws Exception {\r\n    client.registerBusiHandler(new ReceiveMsgHook() {\r\n\r\n        @Override\r\n        public void handle(Package msg, ChannelHandlerContext ctx) {\r\n            System.err.println(\"receive response from server:------------------\" + msg.toString());\r\n            Assert.assertTrue(\"receive a error command\", false);\r\n        }\r\n    });\r\n    //        client.traceLog();\r\n    Thread.sleep(1000);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\protocol\\CmdUnSubscribeTest.java",
+  "methodName" : "test_Cmd_unsubscribe",
+  "sourceCode" : "@Test\r\npublic void test_Cmd_unsubscribe() throws Exception {\r\n    Package replyMsg = client.justUnsubscribe(\"FT0-s-80000000-01-0\");\r\n    System.err.println(\"Reply Message-----------------------------------------\" + replyMsg.toString());\r\n    if (replyMsg.getHeader().getCommand() != Command.UNSUBSCRIBE_RESPONSE) {\r\n        Assert.assertTrue(\"UNSUBSCRIBE_RESPONSE FAIL\", false);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\test\\BasicTest.java",
+  "methodName" : "helloTest",
+  "sourceCode" : "@Test\r\npublic void helloTest() throws Exception {\r\n    ProxyClient client = initClient();\r\n    client.heartbeat();\r\n    client.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\test\\BasicTest.java",
+  "methodName" : "heartbeatTest",
+  "sourceCode" : "@Test\r\npublic void heartbeatTest() throws Exception {\r\n    ProxyClient client = initClient();\r\n    client.heartbeat();\r\n    Thread.sleep(4000);\r\n    client.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\test\\BasicTest.java",
+  "methodName" : "goodbyeTest",
+  "sourceCode" : "@Test\r\npublic void goodbyeTest() throws Exception {\r\n    ProxyClient client = initClient();\r\n    client.heartbeat();\r\n    client.goodbye();\r\n    client.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\test\\BasicTest.java",
+  "methodName" : "subscribe",
+  "sourceCode" : "@Test\r\npublic void subscribe() throws Exception {\r\n    ProxyClient client = initClient();\r\n    client.heartbeat();\r\n    client.justSubscribe(\"FT0-s-80010000-01-1\");\r\n    client.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\test\\BasicTest.java",
+  "methodName" : "unsubscribe",
+  "sourceCode" : "@Test\r\npublic void unsubscribe() throws Exception {\r\n    ProxyClient client = initClient();\r\n    client.heartbeat();\r\n    client.justSubscribe(\"FT0-s-80000000-01-0\");\r\n    client.listen();\r\n    client.justUnsubscribe(\"FT0-s-80000000-01-0\");\r\n    client.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\test\\BasicTest.java",
+  "methodName" : "listenTest",
+  "sourceCode" : "@Test\r\npublic void listenTest() throws Exception {\r\n    ProxyClient client = initClient();\r\n    client.heartbeat();\r\n    client.listen();\r\n    client.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\test\\BasicTest.java",
+  "methodName" : "syncMessage",
+  "sourceCode" : "@Test\r\npublic void syncMessage() throws Exception {\r\n    ProxyClient client = initClient();\r\n    client.heartbeat();\r\n    client.justSubscribe(\"FT0-s-80000000-01-0\");\r\n    client.listen();\r\n    for (int i = 0; i < 100; i++) {\r\n        Package rr = client.rr(MessageUtils.rrMesssage(\"FT0-s-80000000-01-0\", i), 3000);\r\n        if (rr.getBody() instanceof AccessMessage) {\r\n            String body = ((AccessMessage) rr.getBody()).getBody();\r\n            System.err.println(\"rrMessage: \" + body + \"             \" + \"rr-reply-------------------------------------------------\" + rr.toString());\r\n        }\r\n    }\r\n    Thread.sleep(100);\r\n    client.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\test\\BasicTest.java",
+  "methodName" : "asyncMessage",
+  "sourceCode" : "@Test\r\npublic void asyncMessage() throws Exception {\r\n    ProxyClient client = initClient();\r\n    client.justSubscribe(\"FT0-e-80010000-01-1\");\r\n    client.heartbeat();\r\n    client.listen();\r\n    client.registerSubBusiHandler(new ReceiveMsgHook() {\r\n\r\n        @Override\r\n        public void handle(Package msg, ChannelHandlerContext ctx) {\r\n            if (msg.getBody() instanceof AccessMessage) {\r\n                String body = ((AccessMessage) msg.getBody()).getBody();\r\n                System.err.println(\"receive message :------\" + body + \"------------------------------------------------\" + msg.toString());\r\n            }\r\n        }\r\n    });\r\n    System.err.println(\"before publish\");\r\n    client.publish(MessageUtils.asyncMessage(\"FT0-e-80010000-01-1\", 0), 3000);\r\n    Thread.sleep(500);\r\n    client.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\test\\BasicTest.java",
+  "methodName" : "broadcastMessage",
+  "sourceCode" : "@Test\r\npublic void broadcastMessage() throws Exception {\r\n    ProxyClient client = initClient();\r\n    client.heartbeat();\r\n    client.justSubscribe(\"FT0-e-80030000-01-3\");\r\n    client.listen();\r\n    client.registerSubBusiHandler(new ReceiveMsgHook() {\r\n\r\n        @Override\r\n        public void handle(Package msg, ChannelHandlerContext ctx) {\r\n            if (msg.getBody() instanceof AccessMessage) {\r\n                String body = ((AccessMessage) msg.getBody()).getBody();\r\n                System.err.println(\"receive message: ------------\" + body + \"-------------------------------\" + msg.toString());\r\n            }\r\n        }\r\n    });\r\n    client.broadcast(MessageUtils.broadcastMessage(\"FT0-e-80030000-01-3\", 0), 3000);\r\n    Thread.sleep(500);\r\n    client.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

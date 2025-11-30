@@ -1,0 +1,487 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\AbstractCipherTest.java",
+  "methodName" : "closeTestNoInit",
+  "sourceCode" : "@Test\r\npublic void closeTestNoInit() throws Exception {\r\n    // This test deliberately does not use try with resources in order to control\r\n    // the sequence of operations exactly\r\n    try (final CryptoCipher enc = getCipher(transformations[0])) {\r\n        // empty\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\AbstractCipherTest.java",
+  "methodName" : "closeTestAfterInit",
+  "sourceCode" : "@Test\r\npublic void closeTestAfterInit() throws Exception {\r\n    // This test deliberately does not use try with resources in order to control\r\n    // the sequence of operations exactly\r\n    try (final CryptoCipher enc = getCipher(transformations[0])) {\r\n        enc.init(Cipher.ENCRYPT_MODE, newSecretKeySpec(), new IvParameterSpec(IV));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\AbstractCipherTest.java",
+  "methodName" : "reInitTest",
+  "sourceCode" : "@Test\r\npublic void reInitTest() throws Exception {\r\n    // This test deliberately does not use try with resources in order to control\r\n    // the sequence of operations exactly\r\n    try (final CryptoCipher enc = getCipher(transformations[0])) {\r\n        enc.init(Cipher.ENCRYPT_MODE, newSecretKeySpec(), new IvParameterSpec(IV));\r\n        enc.init(Cipher.DECRYPT_MODE, newSecretKeySpec(), new IvParameterSpec(IV));\r\n        enc.init(Cipher.ENCRYPT_MODE, newSecretKeySpec(), new IvParameterSpec(IV));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\AbstractCipherTest.java",
+  "methodName" : "reInitAfterClose",
+  "sourceCode" : "@Test\r\npublic void reInitAfterClose() throws Exception {\r\n    // This test deliberately does not use try with resources in order to control\r\n    // the sequence of operations exactly\r\n    try (final CryptoCipher enc = getCipher(transformations[0])) {\r\n        enc.init(Cipher.ENCRYPT_MODE, newSecretKeySpec(), new IvParameterSpec(IV));\r\n        enc.close();\r\n        enc.init(Cipher.DECRYPT_MODE, newSecretKeySpec(), new IvParameterSpec(IV));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\AbstractCipherTest.java",
+  "methodName" : "closeTestRepeat",
+  "sourceCode" : "@Test\r\npublic void closeTestRepeat() throws Exception {\r\n    // This test deliberately does not use try with resources in order to control\r\n    // the sequence of operations exactly\r\n    try (final CryptoCipher enc = getCipher(transformations[0])) {\r\n        enc.close();\r\n        // repeat the close\r\n        enc.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\AbstractCipherTest.java",
+  "methodName" : "cryptoTest",
+  "sourceCode" : "@Test\r\npublic void cryptoTest() throws Exception {\r\n    for (final String tran : transformations) {\r\n        /**\r\n         * uses the small data set in {@link TestData}\r\n         */\r\n        cipherTests = TestData.getTestData(tran);\r\n        assertNotNull(cipherTests, tran);\r\n        for (int i = 0; i != cipherTests.length; i += 5) {\r\n            final byte[] key = DatatypeConverter.parseHexBinary(cipherTests[i + 1]);\r\n            final byte[] iv = DatatypeConverter.parseHexBinary(cipherTests[i + 2]);\r\n            final byte[] inputBytes = DatatypeConverter.parseHexBinary(cipherTests[i + 3]);\r\n            final byte[] outputBytes = DatatypeConverter.parseHexBinary(cipherTests[i + 4]);\r\n            final ByteBuffer inputBuffer = ByteBuffer.allocateDirect(inputBytes.length);\r\n            final ByteBuffer outputBuffer = ByteBuffer.allocateDirect(outputBytes.length);\r\n            inputBuffer.put(inputBytes);\r\n            inputBuffer.flip();\r\n            outputBuffer.put(outputBytes);\r\n            outputBuffer.flip();\r\n            byteBufferTest(tran, key, iv, inputBuffer, outputBuffer);\r\n            byteArrayTest(tran, key, iv, inputBytes, outputBytes);\r\n        }\r\n        /**\r\n         * uses randomly generated big data set\r\n         */\r\n        byteArrayTest(tran, KEY, IV);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\AbstractCipherTest.java",
+  "methodName" : "testNullTransform",
+  "sourceCode" : "@Test\r\npublic void testNullTransform() {\r\n    assertThrows(IllegalArgumentException.class, () -> getCipher(null).close());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\AbstractCipherTest.java",
+  "methodName" : "testInvalidTransform",
+  "sourceCode" : "@Test\r\npublic void testInvalidTransform() {\r\n    assertThrows(IllegalArgumentException.class, () -> getCipher(\"AES/CBR/NoPadding/garbage/garbage\").close());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\AbstractCipherTest.java",
+  "methodName" : "testInvalidKey",
+  "sourceCode" : "@Test\r\npublic void testInvalidKey() throws Exception {\r\n    for (final String transform : transformations) {\r\n        try (final CryptoCipher cipher = getCipher(transform)) {\r\n            assertNotNull(cipher);\r\n            final byte[] invalidKey = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x11 };\r\n            assertThrows(InvalidKeyException.class, () -> cipher.init(OpenSsl.ENCRYPT_MODE, AES.newSecretKeySpec(invalidKey), new IvParameterSpec(IV)));\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\AbstractCipherTest.java",
+  "methodName" : "testInvalidIV",
+  "sourceCode" : "@Test\r\npublic void testInvalidIV() throws Exception {\r\n    for (final String transform : transformations) {\r\n        try (final CryptoCipher cipher = getCipher(transform)) {\r\n            assertNotNull(cipher);\r\n            final byte[] invalidIV = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x11 };\r\n            assertThrows(InvalidAlgorithmParameterException.class, () -> cipher.init(OpenSsl.ENCRYPT_MODE, newSecretKeySpec(), new IvParameterSpec(invalidIV)));\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\AbstractCipherTest.java",
+  "methodName" : "testInvalidIVClass",
+  "sourceCode" : "@Test\r\npublic void testInvalidIVClass() throws Exception {\r\n    for (final String transform : transformations) {\r\n        try (final CryptoCipher cipher = getCipher(transform)) {\r\n            assertNotNull(cipher);\r\n            assertThrows(InvalidAlgorithmParameterException.class, () -> cipher.init(OpenSsl.ENCRYPT_MODE, newSecretKeySpec(), new GCMParameterSpec(IV.length, IV)));\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\CryptoCipherFactoryTest.java",
+  "methodName" : "testDefaultCipher",
+  "sourceCode" : "@Test\r\npublic void testDefaultCipher() throws GeneralSecurityException {\r\n    final CryptoCipher defaultCipher = CryptoCipherFactory.getCryptoCipher(AES.CTR_NO_PADDING);\r\n    final String name = defaultCipher.getClass().getName();\r\n    if (OpenSsl.getLoadingFailureReason() == null) {\r\n        assertEquals(OpenSslCipher.class.getName(), name);\r\n    } else {\r\n        assertEquals(JceCipher.class.getName(), name);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\CryptoCipherFactoryTest.java",
+  "methodName" : "testEmptyCipher",
+  "sourceCode" : "@Test\r\npublic void testEmptyCipher() throws GeneralSecurityException, IOException {\r\n    final Properties properties = new Properties();\r\n    // TODO should this really mean use the default?\r\n    properties.setProperty(CryptoCipherFactory.CLASSES_KEY, \"\");\r\n    try (CryptoCipher defaultCipher = CryptoCipherFactory.getCryptoCipher(AES.CBC_NO_PADDING, properties)) {\r\n        final String name = defaultCipher.getClass().getName();\r\n        if (OpenSsl.getLoadingFailureReason() == null) {\r\n            assertEquals(OpenSslCipher.class.getName(), name);\r\n        } else {\r\n            assertEquals(JceCipher.class.getName(), name);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\CryptoCipherFactoryTest.java",
+  "methodName" : "testInvalidCipher",
+  "sourceCode" : "@Test\r\npublic void testInvalidCipher() {\r\n    final Properties properties = new Properties();\r\n    properties.setProperty(CryptoCipherFactory.CLASSES_KEY, \"InvalidCipherName\");\r\n    assertThrows(GeneralSecurityException.class, () -> CryptoCipherFactory.getCryptoCipher(AES.CBC_NO_PADDING, properties));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\CryptoCipherFactoryTest.java",
+  "methodName" : "testInvalidTransformation",
+  "sourceCode" : "@Test\r\npublic void testInvalidTransformation() {\r\n    final Properties properties = new Properties();\r\n    assertThrows(GeneralSecurityException.class, () -> CryptoCipherFactory.getCryptoCipher(\"AES/Invalid/NoPadding\", properties));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\CryptoCipherFactoryTest.java",
+  "methodName" : "testNoCipher",
+  "sourceCode" : "@Test\r\npublic void testNoCipher() {\r\n    final Properties properties = new Properties();\r\n    // An empty string currently means use the default\r\n    // However the splitter drops empty fields\r\n    properties.setProperty(CryptoCipherFactory.CLASSES_KEY, \",\");\r\n    assertThrows(IllegalArgumentException.class, () -> CryptoCipherFactory.getCryptoCipher(AES.CBC_NO_PADDING, properties));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\CryptoCipherTest.java",
+  "methodName" : "testUpdateAADByteArray",
+  "sourceCode" : "@Test\r\npublic void testUpdateAADByteArray() {\r\n    assertThrows(UnsupportedOperationException.class, () -> new DefaultCryptoCipher().updateAAD((byte[]) null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\CryptoCipherTest.java",
+  "methodName" : "testUpdateAADByteBuffer",
+  "sourceCode" : "@Test\r\npublic void testUpdateAADByteBuffer() {\r\n    assertThrows(UnsupportedOperationException.class, () -> new DefaultCryptoCipher().updateAAD((ByteBuffer) null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\GcmCipherTest.java",
+  "methodName" : "testGcmNistCase2",
+  "sourceCode" : "/**\r\n * NIST AES Test Vectors\r\n * http://csrc.nist.gov/groups/ST/toolkit/BCM/documents/proposedmodes/gcm/gcm-spec.pdf\r\n * @throws Exception Test failure\r\n */\r\n@Test\r\npublic void testGcmNistCase2() throws Exception {\r\n    // key length:          16 bytes\r\n    // plain text length:   16 bytes\r\n    // iv length:           12 bytes\r\n    // aad length:          0 bytes\r\n    final String kHex = \"00000000000000000000000000000000\";\r\n    final String pHex = \"00000000000000000000000000000000\";\r\n    final String ivHex = \"000000000000000000000000\";\r\n    final String aadHex = \"\";\r\n    final String cHex = \"0388dace60b6a392f328c2b971b2fe78\";\r\n    final String tHex = \"ab6e47d42cec13bdf53a67b21257bddf\";\r\n    testGcmEncryption(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n    testGcmDecryption(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n    testGcmByteBuffer(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n    testGcmReturnDataAfterTagVerified(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n    testGcmArbitraryLengthUpdate(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\GcmCipherTest.java",
+  "methodName" : "testGcmNistCase4",
+  "sourceCode" : "@Test\r\npublic void testGcmNistCase4() throws Exception {\r\n    // key length:          16 bytes\r\n    // plain text length:   60 bytes\r\n    // iv length:           12 bytes\r\n    // aad length:          20 bytes\r\n    final String kHex = \"feffe9928665731c6d6a8f9467308308\";\r\n    final String pHex = \"d9313225f88406e5a55909c5aff5269a\" + \"86a7a9531534f7da2e4c303d8a318a72\" + \"1c3c0c95956809532fcf0e2449a6b525\" + \"b16aedf5aa0de657ba637b39\";\r\n    final String ivHex = \"cafebabefacedbaddecaf888\";\r\n    final String aadHex = \"feedfacedeadbeeffeedfacedeadbeef\" + \"abaddad2\";\r\n    final String cHex = \"42831ec2217774244b7221b784d0d49c\" + \"e3aa212f2c02a4e035c17e2329aca12e\" + \"21d514b25466931c7d8f6a5aac84aa05\" + \"1ba30b396a0aac973d58e091\";\r\n    final String tHex = \"5bc94fbc3221a5db94fae95ae7121a47\";\r\n    testGcmEncryption(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n    testGcmDecryption(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n    testGcmByteBuffer(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n    testGcmReturnDataAfterTagVerified(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n    testGcmArbitraryLengthUpdate(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\GcmCipherTest.java",
+  "methodName" : "testGcmNistCase5",
+  "sourceCode" : "@Test\r\npublic void testGcmNistCase5() throws Exception {\r\n    // key length:          16 bytes\r\n    // plain text length:   60 bytes\r\n    // iv length:           8 bytes\r\n    // aad length:          20 bytes\r\n    final String kHex = \"feffe9928665731c6d6a8f9467308308\";\r\n    final String pHex = \"d9313225f88406e5a55909c5aff5269a\" + \"86a7a9531534f7da2e4c303d8a318a72\" + \"1c3c0c95956809532fcf0e2449a6b525\" + \"b16aedf5aa0de657ba637b39\";\r\n    // 64bits < 96bits\r\n    final String ivHex = \"cafebabefacedbad\";\r\n    final String aadHex = \"feedfacedeadbeeffeedfacedeadbeef\" + \"abaddad2\";\r\n    final String cHex = \"61353b4c2806934a777ff51fa22a4755\" + \"699b2a714fcdc6f83766e5f97b6c7423\" + \"73806900e49f24b22b097544d4896b42\" + \"4989b5e1ebac0f07c23f4598\";\r\n    final String tHex = \"3612d2e79e3b0785561be14aaca2fccb\";\r\n    testGcmEncryption(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n    testGcmDecryption(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n    testGcmByteBuffer(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n    testGcmReturnDataAfterTagVerified(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n    testGcmArbitraryLengthUpdate(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\GcmCipherTest.java",
+  "methodName" : "testGcmNistCase6",
+  "sourceCode" : "@Test\r\npublic void testGcmNistCase6() throws Exception {\r\n    // key length:          16 bytes\r\n    // plain text length:   60 bytes\r\n    // iv length:           60 bytes\r\n    // aad length:          20 bytes\r\n    final String kHex = \"feffe9928665731c6d6a8f9467308308\";\r\n    final String pHex = \"d9313225f88406e5a55909c5aff5269a\" + \"86a7a9531534f7da2e4c303d8a318a72\" + \"1c3c0c95956809532fcf0e2449a6b525\" + \"b16aedf5aa0de657ba637b39\";\r\n    final String ivHex = \"9313225df88406e555909c5aff5269aa\" + \"6a7a9538534f7da1e4c303d2a318a728\" + \"c3c0c95156809539fcf0e2429a6b5254\" + // > 96bits\r\n    \"16aedbf5a0de6a57a637b39b\";\r\n    final String aadHex = \"feedfacedeadbeeffeedfacedeadbeef\" + \"abaddad2\";\r\n    final String cHex = \"8ce24998625615b603a033aca13fb894\" + \"be9112a5c3a211a8ba262a3cca7e2ca7\" + \"01e4a9a4fba43c90ccdcb281d48c7c6f\" + \"d62875d2aca417034c34aee5\";\r\n    final String tHex = \"619cc5aefffe0bfa462af43c1699d050\";\r\n    testGcmEncryption(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n    testGcmDecryption(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n    testGcmByteBuffer(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n    testGcmReturnDataAfterTagVerified(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n    testGcmArbitraryLengthUpdate(kHex, pHex, ivHex, aadHex, cHex, tHex);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\GcmCipherTest.java",
+  "methodName" : "testGcmNistCases",
+  "sourceCode" : "@Test\r\npublic void testGcmNistCases() throws Exception {\r\n    for (int i = 0; i < kHex.length; i++) {\r\n        testGcmEncryption(kHex[i], pHex[i], ivHex[i], aadHex[i], cHex[i], tHex[i]);\r\n        testGcmDecryption(kHex[i], pHex[i], ivHex[i], aadHex[i], cHex[i], tHex[i]);\r\n        testGcmByteBuffer(kHex[i], pHex[i], ivHex[i], aadHex[i], cHex[i], tHex[i]);\r\n        testGcmReturnDataAfterTagVerified(kHex[i], pHex[i], ivHex[i], aadHex[i], cHex[i], tHex[i]);\r\n        testGcmArbitraryLengthUpdate(kHex[i], pHex[i], ivHex[i], aadHex[i], cHex[i], tHex[i]);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\GcmCipherTest.java",
+  "methodName" : "testGcmTamperedData",
+  "sourceCode" : "@Test\r\npublic void testGcmTamperedData() throws Exception {\r\n    final Random r = new Random();\r\n    final int textLength = r.nextInt(1024 * 1024);\r\n    final int ivLength = r.nextInt(59) + 1;\r\n    final int keyLength = 16;\r\n    // bits\r\n    final int tagLength = 128;\r\n    final int aadLength = r.nextInt(128);\r\n    final byte[] keyBytes = new byte[keyLength];\r\n    final byte[] plainBytes = new byte[textLength];\r\n    final byte[] ivBytes = new byte[ivLength];\r\n    final byte[] aadBytes = new byte[aadLength];\r\n    r.nextBytes(keyBytes);\r\n    r.nextBytes(plainBytes);\r\n    r.nextBytes(ivBytes);\r\n    r.nextBytes(aadBytes);\r\n    final byte[] encOutput = new byte[plainBytes.length + (tagLength >> 3)];\r\n    final byte[] decOutput = new byte[plainBytes.length];\r\n    try (final CryptoCipher c = Utils.getCipherInstance(transformation, props)) {\r\n        final Key key = AES.newSecretKeySpec(keyBytes);\r\n        final GCMParameterSpec iv = new GCMParameterSpec(tagLength, ivBytes);\r\n        c.init(Cipher.ENCRYPT_MODE, key, iv);\r\n        c.updateAAD(aadBytes);\r\n        c.doFinal(plainBytes, 0, plainBytes.length, encOutput, 0);\r\n    }\r\n    // Tamper the encrypted data.\r\n    encOutput[0] = (byte) (encOutput[0] + 1);\r\n    try (final CryptoCipher c = Utils.getCipherInstance(transformation, props)) {\r\n        final Key key = AES.newSecretKeySpec(keyBytes);\r\n        final GCMParameterSpec iv = new GCMParameterSpec(tagLength, ivBytes);\r\n        c.init(Cipher.DECRYPT_MODE, key, iv);\r\n        c.updateAAD(aadBytes);\r\n        final Exception ex = assertThrows(AEADBadTagException.class, () -> c.doFinal(encOutput, 0, encOutput.length, decOutput, 0));\r\n        assertEquals(ex.getMessage(), \"Tag mismatch!\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\GcmCipherTest.java",
+  "methodName" : "testGMac",
+  "sourceCode" : "@Test\r\npublic void testGMac() throws Exception {\r\n    // for GMAC,  aad is the input data,\r\n    // tag is the digest message\r\n    final Random r = new Random();\r\n    final byte[] keyBytes = new byte[32];\r\n    // no input for GMAC\r\n    final byte[] input = {};\r\n    final byte[] ivBytes = new byte[16];\r\n    // JDK's tag\r\n    final byte[] tag_orig = new byte[16];\r\n    final byte[] tag = new byte[16];\r\n    // aad is the data to be hashed\r\n    final byte[] aad = new byte[r.nextInt() % 1000 + 1000];\r\n    r.nextBytes(keyBytes);\r\n    r.nextBytes(input);\r\n    r.nextBytes(ivBytes);\r\n    r.nextBytes(aad);\r\n    {\r\n        final Cipher c = Cipher.getInstance(transformation);\r\n        final Key key = AES.newSecretKeySpec(keyBytes);\r\n        final GCMParameterSpec iv = new GCMParameterSpec(128, ivBytes);\r\n        c.init(Cipher.ENCRYPT_MODE, key, iv);\r\n        c.updateAAD(aad);\r\n        c.doFinal(input, 0, input.length, tag_orig, 0);\r\n    }\r\n    try (final CryptoCipher c = Utils.getCipherInstance(transformation, props)) {\r\n        final Key key = AES.newSecretKeySpec(keyBytes);\r\n        final GCMParameterSpec iv = new GCMParameterSpec(128, ivBytes);\r\n        c.init(Cipher.ENCRYPT_MODE, key, iv);\r\n        c.updateAAD(aad);\r\n        c.doFinal(input, 0, input.length, tag, 0);\r\n    }\r\n    // tag should be the same as JDK's cipher\r\n    assertArrayEquals(tag_orig, tag);\r\n    // like JDK's decrypt mode. The plaintext+tag is the input for decrypt mode\r\n    // let's verify the add & tag now\r\n    try (final CryptoCipher c = Utils.getCipherInstance(transformation, props)) {\r\n        final Key key = AES.newSecretKeySpec(keyBytes);\r\n        final GCMParameterSpec iv = new GCMParameterSpec(128, ivBytes);\r\n        c.init(Cipher.DECRYPT_MODE, key, iv);\r\n        c.updateAAD(aad);\r\n        c.doFinal(tag, 0, tag.length, input, 0);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\GcmCipherTest.java",
+  "methodName" : "testGMacTamperedData",
+  "sourceCode" : "@Test\r\npublic //(expected = AEADBadTagException.class)\r\nvoid testGMacTamperedData() throws Exception {\r\n    final Random r = new Random();\r\n    final byte[] keyBytes = new byte[32];\r\n    final byte[] input = {};\r\n    final byte[] ivBytes = new byte[16];\r\n    final byte[] tag = new byte[16];\r\n    final byte[] aad = new byte[r.nextInt() % 1000 + 1000];\r\n    r.nextBytes(keyBytes);\r\n    r.nextBytes(input);\r\n    r.nextBytes(ivBytes);\r\n    r.nextBytes(aad);\r\n    try (final CryptoCipher c = Utils.getCipherInstance(transformation, props)) {\r\n        final Key key = AES.newSecretKeySpec(keyBytes);\r\n        final GCMParameterSpec iv = new GCMParameterSpec(128, ivBytes);\r\n        c.init(Cipher.ENCRYPT_MODE, key, iv);\r\n        c.updateAAD(aad);\r\n        c.doFinal(input, 0, input.length, tag, 0);\r\n    }\r\n    // like JDK's decrypt mode. The plaintext+tag is the input for decrypt mode\r\n    try (final CryptoCipher c = Utils.getCipherInstance(transformation, props)) {\r\n        final Key key = AES.newSecretKeySpec(keyBytes);\r\n        final GCMParameterSpec iv = new GCMParameterSpec(128, ivBytes);\r\n        c.init(Cipher.DECRYPT_MODE, key, iv);\r\n        // if the origin data is tampered\r\n        aad[0] = (byte) (aad[0] + 1);\r\n        c.updateAAD(aad);\r\n        final Exception ex = assertThrows(AEADBadTagException.class, () -> c.doFinal(tag, 0, tag.length, input, 0));\r\n        assertEquals(ex.getMessage(), \"Tag mismatch!\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\OpenSslCipherTest.java",
+  "methodName" : "testInvalidPadding",
+  "sourceCode" : "@Test\r\n@Timeout(value = 120000, unit = TimeUnit.MILLISECONDS)\r\npublic void testInvalidPadding() {\r\n    assumeTrue(OpenSsl.getLoadingFailureReason() == null);\r\n    assertThrows(NoSuchPaddingException.class, () -> OpenSsl.getInstance(\"AES/CTR/NoPadding2\"));\r\n}",
+  "annotations" : [ "Test", "Timeout" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\OpenSslCipherTest.java",
+  "methodName" : "testInvalidMode",
+  "sourceCode" : "@Test\r\n@Timeout(value = 120000, unit = TimeUnit.MILLISECONDS)\r\npublic void testInvalidMode() {\r\n    assumeTrue(OpenSsl.getLoadingFailureReason() == null);\r\n    assertThrows(NoSuchAlgorithmException.class, () -> OpenSsl.getInstance(\"AES/CTR2/NoPadding\"));\r\n}",
+  "annotations" : [ "Test", "Timeout" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\OpenSslCipherTest.java",
+  "methodName" : "testUpdateArguments",
+  "sourceCode" : "@Test\r\n@Timeout(value = 120000, unit = TimeUnit.MILLISECONDS)\r\npublic void testUpdateArguments() throws Exception {\r\n    assumeTrue(OpenSsl.getLoadingFailureReason() == null);\r\n    final OpenSsl cipher = OpenSsl.getInstance(AES.CTR_NO_PADDING);\r\n    assertNotNull(cipher);\r\n    cipher.init(OpenSsl.ENCRYPT_MODE, KEY, new IvParameterSpec(IV));\r\n    // Require direct buffers\r\n    ByteBuffer input = ByteBuffer.allocate(1024);\r\n    ByteBuffer output = ByteBuffer.allocate(1024);\r\n    final ByteBuffer finalInput = input;\r\n    final ByteBuffer finalOutput = output;\r\n    Exception ex = assertThrows(IllegalArgumentException.class, () -> cipher.update(finalInput, finalOutput));\r\n    assertTrue(ex.getMessage().contains(\"Direct buffers are required\"));\r\n    // Output buffer length should be sufficient to store output data\r\n    input = ByteBuffer.allocateDirect(1024);\r\n    output = ByteBuffer.allocateDirect(1000);\r\n    final ByteBuffer finalInput1 = input;\r\n    final ByteBuffer finalOutput1 = output;\r\n    ex = assertThrows(ShortBufferException.class, () -> cipher.update(finalInput1, finalOutput1));\r\n    assertTrue(ex.getMessage().contains(\"Output buffer is not sufficient\"));\r\n}",
+  "annotations" : [ "Test", "Timeout" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\OpenSslCipherTest.java",
+  "methodName" : "testDoFinalArguments",
+  "sourceCode" : "@Test\r\n@Timeout(value = 120000, unit = TimeUnit.MILLISECONDS)\r\npublic void testDoFinalArguments() throws Exception {\r\n    assumeTrue(OpenSsl.getLoadingFailureReason() == null);\r\n    final OpenSsl cipher = OpenSsl.getInstance(AES.CTR_NO_PADDING);\r\n    assertNotNull(cipher);\r\n    cipher.init(OpenSsl.ENCRYPT_MODE, KEY, new IvParameterSpec(IV));\r\n    // Require direct buffer\r\n    final ByteBuffer input = ByteBuffer.allocate(1024);\r\n    final ByteBuffer output = ByteBuffer.allocate(1024);\r\n    final Exception ex = assertThrows(IllegalArgumentException.class, () -> cipher.doFinal(input, output));\r\n    assertTrue(ex.getMessage().contains(\"Direct buffer is required\"));\r\n}",
+  "annotations" : [ "Test", "Timeout" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\OpenSslCipherTest.java",
+  "methodName" : "testInvalidKey",
+  "sourceCode" : "@Override\r\n@Test\r\n@Timeout(value = 120000, unit = TimeUnit.MILLISECONDS)\r\npublic void testInvalidKey() throws Exception {\r\n    assumeTrue(OpenSsl.getLoadingFailureReason() == null);\r\n    final OpenSsl cipher = OpenSsl.getInstance(AES.CTR_NO_PADDING);\r\n    assertNotNull(cipher);\r\n    final byte[] invalidKey = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x11 };\r\n    assertThrows(InvalidKeyException.class, () -> cipher.init(OpenSsl.ENCRYPT_MODE, invalidKey, new IvParameterSpec(IV)));\r\n}",
+  "annotations" : [ "Override", "Test", "Timeout" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\OpenSslCipherTest.java",
+  "methodName" : "testInvalidIV",
+  "sourceCode" : "@Override\r\n@Test\r\n@Timeout(value = 120000, unit = TimeUnit.MILLISECONDS)\r\npublic void testInvalidIV() throws Exception {\r\n    assumeTrue(OpenSsl.getLoadingFailureReason() == null);\r\n    final OpenSsl cipher = OpenSsl.getInstance(AES.CTR_NO_PADDING);\r\n    assertNotNull(cipher);\r\n    final byte[] invalidIV = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x11 };\r\n    assertThrows(InvalidAlgorithmParameterException.class, () -> cipher.init(OpenSsl.ENCRYPT_MODE, KEY, new IvParameterSpec(invalidIV)));\r\n}",
+  "annotations" : [ "Override", "Test", "Timeout" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\OpenSslCipherTest.java",
+  "methodName" : "testInvalidIVClass",
+  "sourceCode" : "@Override\r\n@Test\r\n@Timeout(value = 120000, unit = TimeUnit.MILLISECONDS)\r\npublic void testInvalidIVClass() throws Exception {\r\n    final OpenSsl cipher = OpenSsl.getInstance(AES.CTR_NO_PADDING);\r\n    assertNotNull(cipher);\r\n    assertThrows(InvalidAlgorithmParameterException.class, () -> cipher.init(OpenSsl.ENCRYPT_MODE, KEY, new GCMParameterSpec(IV.length, IV)));\r\n}",
+  "annotations" : [ "Override", "Test", "Timeout" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\OpenSslCipherTest.java",
+  "methodName" : "testCipherLifecycle",
+  "sourceCode" : "@Test\r\npublic void testCipherLifecycle() throws Exception {\r\n    try (OpenSslCipher cipher = new OpenSslCipher(new Properties(), AES.CTR_NO_PADDING)) {\r\n        assertThrows(IllegalStateException.class, () -> cipher.update(dummyBuffer(), dummyBuffer()));\r\n        cipher.init(OpenSsl.ENCRYPT_MODE, AES.newSecretKeySpec(KEY), new IvParameterSpec(IV));\r\n        cipher.update(dummyBuffer(), dummyBuffer());\r\n        assertThrows(InvalidKeyException.class, () -> cipher.init(OpenSsl.ENCRYPT_MODE, AES.newSecretKeySpec(new byte[1]), new IvParameterSpec(IV)));\r\n        // Should keep working with previous init parameters.\r\n        cipher.update(dummyBuffer(), dummyBuffer());\r\n        cipher.doFinal(dummyBuffer(), dummyBuffer());\r\n        cipher.close();\r\n        assertThrows(IllegalStateException.class, () -> cipher.update(dummyBuffer(), dummyBuffer()));\r\n        cipher.init(OpenSsl.ENCRYPT_MODE, AES.newSecretKeySpec(KEY), new IvParameterSpec(IV));\r\n        cipher.update(dummyBuffer(), dummyBuffer());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\cipher\\OpenSslCommonModeTest.java",
+  "methodName" : "testUpdateAAD",
+  "sourceCode" : "@Test\r\npublic void testUpdateAAD() {\r\n    assertThrows(UnsupportedOperationException.class, () -> new OpenSslCommonMode(0, 0, 0).updateAAD(null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\CryptoTest.java",
+  "methodName" : "testGetComponentName",
+  "sourceCode" : "/**\r\n * This test may fail unless the code was built by Maven, as it relies on the VERSION file being set up correctly\r\n */\r\n@Test\r\npublic void testGetComponentName() {\r\n    final String version = Crypto.getComponentName();\r\n    assertNotNull(\"Should not be null\", version);\r\n    assertTrue(version.matches(\"^Apache Commons Crypto.*\"), version);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\CryptoTest.java",
+  "methodName" : "testGetComponentVersion",
+  "sourceCode" : "/**\r\n * This test may fail unless the code was built by Maven, as it relies on the VERSION file being set up correctly.\r\n */\r\n@Test\r\npublic void testGetComponentVersion() {\r\n    final String version = Crypto.getComponentVersion();\r\n    assertNotNull(\"Should not be null\", version);\r\n    assertTrue(version.matches(\"^\\\\d+\\\\.\\\\d+.*\"), version);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\CryptoTest.java",
+  "methodName" : "testMain",
+  "sourceCode" : "@Test\r\npublic void testMain() throws Throwable {\r\n    // Check that Crypt.main will actually run tests\r\n    assertTrue(Crypto.isNativeCodeLoaded(), \"Native code loaded OK\");\r\n    // output causes issues for testing\r\n    Crypto.main(new String[] { \"-q\" });\r\n    assertTrue(Crypto.isNativeCodeLoaded(), \"Completed OK\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\CryptoTest.java",
+  "methodName" : "testLoadingError",
+  "sourceCode" : "@Test\r\npublic void testLoadingError() throws Throwable {\r\n    final Throwable loadingError = Crypto.getLoadingError();\r\n    if (loadingError != null) {\r\n        throw loadingError;\r\n    }\r\n    assertTrue(true, \"Completed OK\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\jna\\AbstractCipherJnaStreamTest.java",
+  "methodName" : "testSkip",
+  "sourceCode" : "/**\r\n * Test skip.\r\n */\r\n@Override\r\n@Test\r\n@Timeout(value = 120000, unit = TimeUnit.MILLISECONDS)\r\npublic void testSkip() throws Exception {\r\n    doSkipTest(CIPHER_OPENSSL_JNA, false);\r\n    doSkipTest(CIPHER_OPENSSL_JNA, true);\r\n}",
+  "annotations" : [ "Override", "Test", "Timeout" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\jna\\AbstractCipherJnaStreamTest.java",
+  "methodName" : "testReadWrite",
+  "sourceCode" : "@Override\r\n@Test\r\npublic void testReadWrite() throws Exception {\r\n    doReadWriteTest(0, CIPHER_OPENSSL_JNA, CIPHER_OPENSSL_JNA, iv);\r\n    doReadWriteTest(count, CIPHER_OPENSSL_JNA, CIPHER_OPENSSL_JNA, iv);\r\n    doReadWriteTest(count, AbstractCipherTest.JCE_CIPHER_CLASSNAME, CIPHER_OPENSSL_JNA, iv);\r\n    doReadWriteTest(count, CIPHER_OPENSSL_JNA, AbstractCipherTest.JCE_CIPHER_CLASSNAME, iv);\r\n    // Overflow test, IV: xx xx xx xx xx xx xx xx ff ff ff ff ff ff ff ff\r\n    for (int i = 0; i < 8; i++) {\r\n        iv[8 + i] = (byte) 0xff;\r\n    }\r\n    doReadWriteTest(count, CIPHER_OPENSSL_JNA, CIPHER_OPENSSL_JNA, iv);\r\n    doReadWriteTest(count, AbstractCipherTest.JCE_CIPHER_CLASSNAME, CIPHER_OPENSSL_JNA, iv);\r\n    doReadWriteTest(count, CIPHER_OPENSSL_JNA, AbstractCipherTest.JCE_CIPHER_CLASSNAME, iv);\r\n}",
+  "annotations" : [ "Override", "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\jna\\OpenSslJnaTest.java",
+  "methodName" : "testMain",
+  "sourceCode" : "@Test\r\npublic void testMain() throws Throwable {\r\n    OpenSslJna.main(new String[0]);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\jna\\OpenSslNativeJnaTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test(final TestReporter reporter) {\r\n    if (OpenSslJna.isEnabled()) {\r\n        reporter.publishEntry(String.format(\"JNA loaded OK for lib version 0x%x: \", OpenSslNativeJna.VERSION));\r\n    } else {\r\n        reporter.publishEntry(String.format(\"** ERROR: JNA NOT loaded OK for lib version 0x%x: \", OpenSslNativeJna.VERSION));\r\n    }\r\n    // dummy for now\r\n    assertTrue(true, \"Test OK\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\jna\\PositionedCryptoInputStreamJnaTest.java",
+  "methodName" : "doTest",
+  "sourceCode" : "@Test\r\npublic void doTest() throws Exception {\r\n    testCipher(OpenSslJnaCipher.class.getName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\NativeCodeLoaderTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() {\r\n    assertTrue(NativeCodeLoader.isNativeCodeLoaded(), \"Native (JNI) code loaded successfully\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\NativeCodeLoaderTest.java",
+  "methodName" : "testNativePresent",
+  "sourceCode" : "@Test\r\npublic void testNativePresent() {\r\n    assumeTrue(NativeCodeLoader.isNativeCodeLoaded());\r\n    assertNull(NativeCodeLoader.getLoadingError());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\NativeCodeLoaderTest.java",
+  "methodName" : "testNativeNotPresent",
+  "sourceCode" : "@Test\r\npublic void testNativeNotPresent() {\r\n    assumeTrue(!NativeCodeLoader.isNativeCodeLoaded());\r\n    assertNotNull(NativeCodeLoader.getLoadingError());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\NativeCodeLoaderTest.java",
+  "methodName" : "testCanLoadIfPresent",
+  "sourceCode" : "@Test\r\n@Disabled(\"Causes crash on Ubuntu when compiled with Java 17\")\r\npublic // At this point it is not known where the native stream is written.\r\nvoid testCanLoadIfPresent() {\r\n    assumeTrue(NativeCodeLoader.isNativeCodeLoaded());\r\n    // This will try to reload the library, so should work\r\n    assertNull(NativeCodeLoader.loadLibrary());\r\n}",
+  "annotations" : [ "Test", "Disabled" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\NativeCodeLoaderTest.java",
+  "methodName" : "testUnSuccessfulLoad",
+  "sourceCode" : "@Test\r\n@Disabled(\"Seems to cause issues with other tests on Linux; disable for now\")\r\npublic // or does not work, depending on the order of tests.\r\nvoid testUnSuccessfulLoad() throws Exception {\r\n    final String nameKey = System.getProperty(Crypto.LIB_NAME_KEY);\r\n    final String pathKey = System.getProperty(Crypto.LIB_PATH_KEY);\r\n    // An empty file should cause UnsatisfiedLinkError\r\n    final File empty = File.createTempFile(\"NativeCodeLoaderTest\", \"tmp\");\r\n    try {\r\n        System.setProperty(Crypto.LIB_PATH_KEY, empty.getParent());\r\n        System.setProperty(Crypto.LIB_NAME_KEY, empty.getName());\r\n        final Throwable result = NativeCodeLoader.loadLibrary();\r\n        assertNotNull(result);\r\n        assertTrue(result instanceof UnsatisfiedLinkError);\r\n    } finally {\r\n        empty.delete();\r\n        if (nameKey != null) {\r\n            System.setProperty(Crypto.LIB_NAME_KEY, nameKey);\r\n        }\r\n        if (pathKey != null) {\r\n            System.setProperty(Crypto.LIB_PATH_KEY, pathKey);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test", "Disabled" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\OsInfoTest.java",
+  "methodName" : "testMain",
+  "sourceCode" : "@Test\r\npublic void testMain() {\r\n    OsInfo.main(new String[0]);\r\n    OsInfo.main(new String[] { \"--os\" });\r\n    OsInfo.main(new String[] { \"--arch\" });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\random\\AbstractRandomTest.java",
+  "methodName" : "testRandomBytes",
+  "sourceCode" : "@Test\r\n@Timeout(value = 120000, unit = TimeUnit.MILLISECONDS)\r\npublic void testRandomBytes() throws Exception {\r\n    try (CryptoRandom random = getCryptoRandom()) {\r\n        // len = 16\r\n        checkRandomBytes(random, 16);\r\n        // len = 32\r\n        checkRandomBytes(random, 32);\r\n        // len = 128\r\n        checkRandomBytes(random, 128);\r\n        // len = 256\r\n        checkRandomBytes(random, 256);\r\n    }\r\n}",
+  "annotations" : [ "Test", "Timeout" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\random\\AbstractRandomTest.java",
+  "methodName" : "testRandomBytesMultiThreaded",
+  "sourceCode" : "@Test\r\n@Timeout(value = 120000, unit = TimeUnit.MILLISECONDS)\r\npublic void testRandomBytesMultiThreaded() throws Exception {\r\n    final int threadCount = 100;\r\n    try (final CryptoRandom random = getCryptoRandom()) {\r\n        final List<Thread> threads = new ArrayList<>(threadCount);\r\n        for (int i = 0; i < threadCount; i++) {\r\n            final Thread t = new Thread(() -> {\r\n                checkRandomBytes(random, 10);\r\n                checkRandomBytes(random, 1000);\r\n                checkRandomBytes(random, 100000);\r\n            });\r\n            t.start();\r\n            threads.add(t);\r\n        }\r\n        for (final Thread t : threads) {\r\n            if (!t.getState().equals(State.NEW)) {\r\n                t.join();\r\n            }\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test", "Timeout" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\random\\CryptoRandomFactoryTest.java",
+  "methodName" : "testAbstractRandom",
+  "sourceCode" : "@Test\r\npublic void testAbstractRandom() {\r\n    final Properties properties = new Properties();\r\n    properties.setProperty(CryptoRandomFactory.CLASSES_KEY, AbstractRandom.class.getName());\r\n    final Exception ex = assertThrows(GeneralSecurityException.class, () -> CryptoRandomFactory.getCryptoRandom(properties));\r\n    final String message = ex.getMessage();\r\n    assertTrue(message.contains(\"InstantiationException\"), message);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\random\\CryptoRandomFactoryTest.java",
+  "methodName" : "testDefaultRandom",
+  "sourceCode" : "@Test\r\npublic void testDefaultRandom() throws GeneralSecurityException, IOException {\r\n    final Properties properties = new Properties();\r\n    try (final CryptoRandom random = CryptoRandomFactory.getCryptoRandom(properties)) {\r\n        final String name = random.getClass().getName();\r\n        if (OpenSslCryptoRandom.isNativeCodeEnabled()) {\r\n            assertEquals(OpenSslCryptoRandom.class.getName(), name);\r\n        } else {\r\n            assertEquals(JavaCryptoRandom.class.getName(), name);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\random\\CryptoRandomFactoryTest.java",
+  "methodName" : "testDefaultRandomClass",
+  "sourceCode" : "@Test\r\npublic void testDefaultRandomClass() throws GeneralSecurityException, IOException {\r\n    try (final CryptoRandom random = CryptoRandomFactory.getCryptoRandom()) {\r\n        assertEquals(OpenSslCryptoRandom.class.getName(), random.getClass().getName());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\random\\CryptoRandomFactoryTest.java",
+  "methodName" : "testDummmyRandom",
+  "sourceCode" : "@Test\r\npublic void testDummmyRandom() {\r\n    final Properties properties = new Properties();\r\n    properties.setProperty(CryptoRandomFactory.CLASSES_KEY, NoopRandom.class.getName());\r\n    final Exception ex = assertThrows(GeneralSecurityException.class, () -> CryptoRandomFactory.getCryptoRandom(properties));\r\n    final String message = ex.getMessage();\r\n    assertTrue(message.contains(\"NoSuchMethodException\"), message);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\random\\CryptoRandomFactoryTest.java",
+  "methodName" : "testEmpty",
+  "sourceCode" : "@Test\r\npublic void testEmpty() throws Exception {\r\n    final Properties properties = new Properties();\r\n    properties.setProperty(CryptoRandomFactory.CLASSES_KEY, \"\");\r\n    CryptoRandomFactory.getCryptoRandom(properties).close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\random\\CryptoRandomFactoryTest.java",
+  "methodName" : "testFailingRandom",
+  "sourceCode" : "@Test\r\npublic void testFailingRandom() {\r\n    final Properties properties = new Properties();\r\n    properties.setProperty(CryptoRandomFactory.CLASSES_KEY, FailingRandom.class.getName());\r\n    final Exception ex = assertThrows(GeneralSecurityException.class, () -> CryptoRandomFactory.getCryptoRandom(properties));\r\n    Throwable cause = ex.getCause();\r\n    assertEquals(IllegalArgumentException.class, cause.getClass());\r\n    cause = cause.getCause();\r\n    assertEquals(InvocationTargetException.class, cause.getClass());\r\n    cause = cause.getCause();\r\n    assertEquals(UnsatisfiedLinkError.class, cause.getClass());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\random\\CryptoRandomFactoryTest.java",
+  "methodName" : "testFullClassName",
+  "sourceCode" : "@Test\r\npublic void testFullClassName() throws GeneralSecurityException, IOException {\r\n    final Properties props = new Properties();\r\n    props.setProperty(CryptoRandomFactory.CLASSES_KEY, JavaCryptoRandom.class.getName());\r\n    try (final CryptoRandom random = CryptoRandomFactory.getCryptoRandom(props)) {\r\n        assertEquals(JavaCryptoRandom.class.getName(), random.getClass().getName());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\random\\CryptoRandomFactoryTest.java",
+  "methodName" : "testGetOSRandom",
+  "sourceCode" : "@Test\r\npublic void testGetOSRandom() throws GeneralSecurityException, IOException {\r\n    // Windows does not have a /dev/random device\r\n    assumeTrue(!System.getProperty(\"os.name\").contains(\"Windows\"));\r\n    final Properties properties = new Properties();\r\n    properties.setProperty(CryptoRandomFactory.CLASSES_KEY, CryptoRandomFactory.RandomProvider.OS.getClassName());\r\n    try (final CryptoRandom random = CryptoRandomFactory.getCryptoRandom(properties)) {\r\n        assertEquals(OsCryptoRandom.class.getName(), random.getClass().getName());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\random\\CryptoRandomFactoryTest.java",
+  "methodName" : "testInvalidRandom",
+  "sourceCode" : "@Test\r\npublic void testInvalidRandom() {\r\n    final Properties properties = new Properties();\r\n    properties.setProperty(CryptoRandomFactory.CLASSES_KEY, \"InvalidCipherName\");\r\n    assertThrows(GeneralSecurityException.class, () -> CryptoRandomFactory.getCryptoRandom(properties));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\random\\CryptoRandomFactoryTest.java",
+  "methodName" : "testInvalidRandomClass",
+  "sourceCode" : "@Test\r\npublic void testInvalidRandomClass() throws GeneralSecurityException, IOException {\r\n    final Properties properties = new Properties();\r\n    properties.setProperty(\"org.apache.commons.crypto.cipher\", \"OpenSsl\");\r\n    try (final CryptoRandom random = CryptoRandomFactory.getCryptoRandom(properties)) {\r\n        assertEquals(OpenSslCryptoRandom.class.getName(), random.getClass().getName());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\random\\CryptoRandomFactoryTest.java",
+  "methodName" : "testNoClasses",
+  "sourceCode" : "@Test\r\npublic void testNoClasses() {\r\n    final Properties properties = new Properties();\r\n    // An empty string currently means use the default\r\n    // However the splitter drops empty fields\r\n    properties.setProperty(CryptoRandomFactory.CLASSES_KEY, \",\");\r\n    assertThrows(IllegalArgumentException.class, () -> CryptoRandomFactory.getCryptoRandom(properties));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\random\\CryptoRandomFactoryTest.java",
+  "methodName" : "testNull",
+  "sourceCode" : "@Test\r\npublic void testNull() {\r\n    assertThrows(NullPointerException.class, () -> CryptoRandomFactory.getCryptoRandom(null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\random\\OsCryptoRandomTest.java",
+  "methodName" : "testInvalidRandom",
+  "sourceCode" : "@Test\r\npublic void testInvalidRandom() {\r\n    final Properties props = new Properties();\r\n    props.setProperty(CryptoRandomFactory.CLASSES_KEY, OsCryptoRandom.class.getName());\r\n    // Invalid device\r\n    props.setProperty(CryptoRandomFactory.DEVICE_FILE_PATH_KEY, \"\");\r\n    final Exception e = assertThrows(GeneralSecurityException.class, () -> CryptoRandomFactory.getCryptoRandom(props));\r\n    Throwable cause;\r\n    cause = e.getCause();\r\n    assertEquals(IllegalArgumentException.class, cause.getClass());\r\n    cause = cause.getCause();\r\n    assertEquals(InvocationTargetException.class, cause.getClass());\r\n    cause = cause.getCause();\r\n    assertEquals(IllegalArgumentException.class, cause.getClass());\r\n    cause = cause.getCause();\r\n    assertEquals(FileNotFoundException.class, cause.getClass());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\stream\\AbstractCipherStreamTest.java",
+  "methodName" : "testByteBufferRead",
+  "sourceCode" : "/**\r\n * Test byte buffer read with different buffer size.\r\n */\r\n@Test\r\n@Timeout(value = 120000, unit = TimeUnit.MILLISECONDS)\r\npublic void testByteBufferRead() throws Exception {\r\n    doByteBufferRead(AbstractCipherTest.JCE_CIPHER_CLASSNAME, false);\r\n    doByteBufferRead(AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, false);\r\n    doByteBufferRead(AbstractCipherTest.JCE_CIPHER_CLASSNAME, true);\r\n    doByteBufferRead(AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, true);\r\n}",
+  "annotations" : [ "Test", "Timeout" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\stream\\AbstractCipherStreamTest.java",
+  "methodName" : "testByteBufferWrite",
+  "sourceCode" : "/**\r\n * Test byte buffer write.\r\n */\r\n@Test\r\n@Timeout(value = 120000, unit = TimeUnit.MILLISECONDS)\r\npublic void testByteBufferWrite() throws Exception {\r\n    final ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    doByteBufferWrite(AbstractCipherTest.JCE_CIPHER_CLASSNAME, baos, false);\r\n    doByteBufferWrite(AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, baos, false);\r\n    doByteBufferWrite(AbstractCipherTest.JCE_CIPHER_CLASSNAME, baos, true);\r\n    doByteBufferWrite(AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, baos, true);\r\n}",
+  "annotations" : [ "Test", "Timeout" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\stream\\AbstractCipherStreamTest.java",
+  "methodName" : "testExceptions",
+  "sourceCode" : "@Test\r\n@Timeout(value = 120000, unit = TimeUnit.MILLISECONDS)\r\npublic void testExceptions() throws Exception {\r\n    final ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    doExceptionTest(AbstractCipherTest.JCE_CIPHER_CLASSNAME, baos, false);\r\n    doExceptionTest(AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, baos, false);\r\n    doExceptionTest(AbstractCipherTest.JCE_CIPHER_CLASSNAME, baos, true);\r\n    doExceptionTest(AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, baos, true);\r\n}",
+  "annotations" : [ "Test", "Timeout" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\stream\\AbstractCipherStreamTest.java",
+  "methodName" : "testFieldGetters",
+  "sourceCode" : "@Test\r\n@Timeout(value = 120000, unit = TimeUnit.MILLISECONDS)\r\npublic void testFieldGetters() throws Exception {\r\n    final ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    doFieldGetterTest(AbstractCipherTest.JCE_CIPHER_CLASSNAME, baos, false);\r\n    doFieldGetterTest(AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, baos, false);\r\n    doFieldGetterTest(AbstractCipherTest.JCE_CIPHER_CLASSNAME, baos, true);\r\n    doFieldGetterTest(AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, baos, true);\r\n}",
+  "annotations" : [ "Test", "Timeout" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\stream\\AbstractCipherStreamTest.java",
+  "methodName" : "testReadWrite",
+  "sourceCode" : "@Test\r\npublic void testReadWrite() throws Exception {\r\n    doReadWriteTest(0, AbstractCipherTest.JCE_CIPHER_CLASSNAME, AbstractCipherTest.JCE_CIPHER_CLASSNAME, iv);\r\n    doReadWriteTest(0, AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, iv);\r\n    doReadWriteTest(count, AbstractCipherTest.JCE_CIPHER_CLASSNAME, AbstractCipherTest.JCE_CIPHER_CLASSNAME, iv);\r\n    doReadWriteTest(count, AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, iv);\r\n    doReadWriteTest(count, AbstractCipherTest.JCE_CIPHER_CLASSNAME, AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, iv);\r\n    doReadWriteTest(count, AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, AbstractCipherTest.JCE_CIPHER_CLASSNAME, iv);\r\n    // Overflow test, IV: xx xx xx xx xx xx xx xx ff ff ff ff ff ff ff ff\r\n    for (int i = 0; i < 8; i++) {\r\n        iv[8 + i] = (byte) 0xff;\r\n    }\r\n    doReadWriteTest(count, AbstractCipherTest.JCE_CIPHER_CLASSNAME, AbstractCipherTest.JCE_CIPHER_CLASSNAME, iv);\r\n    doReadWriteTest(count, AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, iv);\r\n    doReadWriteTest(count, AbstractCipherTest.JCE_CIPHER_CLASSNAME, AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, iv);\r\n    doReadWriteTest(count, AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, AbstractCipherTest.JCE_CIPHER_CLASSNAME, iv);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\stream\\AbstractCipherStreamTest.java",
+  "methodName" : "testSkip",
+  "sourceCode" : "/**\r\n * Test skip.\r\n */\r\n@Test\r\n@Timeout(value = 120000, unit = TimeUnit.MILLISECONDS)\r\npublic void testSkip() throws Exception {\r\n    doSkipTest(AbstractCipherTest.JCE_CIPHER_CLASSNAME, false);\r\n    doSkipTest(AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, false);\r\n    doSkipTest(AbstractCipherTest.JCE_CIPHER_CLASSNAME, true);\r\n    doSkipTest(AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, true);\r\n}",
+  "annotations" : [ "Test", "Timeout" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\stream\\CtrCryptoStreamTest.java",
+  "methodName" : "testDecrypt",
+  "sourceCode" : "@Test\r\n@Timeout(value = 120000, unit = TimeUnit.MILLISECONDS)\r\npublic void testDecrypt() throws Exception {\r\n    doDecryptTest(AbstractCipherTest.JCE_CIPHER_CLASSNAME, false);\r\n    doDecryptTest(AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, false);\r\n    doDecryptTest(AbstractCipherTest.JCE_CIPHER_CLASSNAME, true);\r\n    doDecryptTest(AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME, true);\r\n}",
+  "annotations" : [ "Test", "Timeout" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\stream\\input\\ChannelInputTest.java",
+  "methodName" : "testSkipWithSkipBuffer",
+  "sourceCode" : "@Test\r\npublic void testSkipWithSkipBuffer() throws IOException {\r\n    try (final ChannelInput channelInput = new ChannelInput(Channels.newChannel(new ByteArrayInputStream(new byte[10])))) {\r\n        assertEquals(0, channelInput.skip(0));\r\n        assertEquals(0, channelInput.skip(-1));\r\n        assertEquals(1, channelInput.skip(1));\r\n        assertEquals(1, channelInput.skip(1));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\stream\\output\\StreamOutputTest.java",
+  "methodName" : "testGetOut",
+  "sourceCode" : "@Test\r\npublic void testGetOut() throws IOException {\r\n    final ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    try (StreamOutput streamOutput = new StreamOutput(baos, 1024)) {\r\n        assertEquals(baos, streamOutput.getOut());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\stream\\PositionedCryptoInputStreamTest.java",
+  "methodName" : "doTestJCE",
+  "sourceCode" : "@Test\r\npublic void doTestJCE() throws Exception {\r\n    testCipher(AbstractCipherTest.JCE_CIPHER_CLASSNAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\stream\\PositionedCryptoInputStreamTest.java",
+  "methodName" : "doTestJNI",
+  "sourceCode" : "@Test\r\npublic void doTestJNI() throws Exception {\r\n    assumeTrue(Crypto.isNativeCodeLoaded());\r\n    testCipher(AbstractCipherTest.OPENSSL_CIPHER_CLASSNAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\utils\\EnumTest.java",
+  "methodName" : "testCipher",
+  "sourceCode" : "@Test\r\npublic void testCipher() throws Exception {\r\n    for (final CipherProvider value : CryptoCipherFactory.CipherProvider.values()) {\r\n        ReflectionUtils.getClassByName(value.getClassName());\r\n        checkImplClass(value);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\utils\\EnumTest.java",
+  "methodName" : "testRandom",
+  "sourceCode" : "@Test\r\npublic void testRandom() throws Exception {\r\n    for (final RandomProvider value : CryptoRandomFactory.RandomProvider.values()) {\r\n        ReflectionUtils.getClassByName(value.getClassName());\r\n        checkImplClass(value);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\utils\\UtilsTest.java",
+  "methodName" : "testSplitOmitEmptyLine",
+  "sourceCode" : "@Test\r\npublic void testSplitOmitEmptyLine() {\r\n    List<String> clazzNames = Utils.splitClassNames(\"\", \",\");\r\n    assertEquals(Collections.<String>emptyList(), clazzNames);\r\n    clazzNames = Utils.splitClassNames(\"a,b\", \",\");\r\n    assertEquals(Arrays.asList(\"a\", \"b\"), clazzNames);\r\n    clazzNames = Utils.splitClassNames(\"a,b,\", \",\");\r\n    assertEquals(Arrays.asList(\"a\", \"b\"), clazzNames);\r\n    clazzNames = Utils.splitClassNames(\"a, b,\", \",\");\r\n    assertEquals(Arrays.asList(\"a\", \"b\"), clazzNames);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\utils\\UtilsTest.java",
+  "methodName" : "testSplitNull",
+  "sourceCode" : "@Test\r\npublic void testSplitNull() {\r\n    assertEquals(Collections.<String>emptyList(), Utils.splitClassNames(null, \",\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Crypto\\src\\test\\java\\org\\apache\\commons\\crypto\\utils\\UtilsTest.java",
+  "methodName" : "testGetProperties",
+  "sourceCode" : "@Test\r\npublic void testGetProperties() {\r\n    final Properties props = new Properties();\r\n    props.setProperty(\"garbage.in\", \"out\");\r\n    final Properties allprops = Utils.getProperties(props);\r\n    assertEquals(allprops.getProperty(\"garbage.in\"), \"out\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+} ]

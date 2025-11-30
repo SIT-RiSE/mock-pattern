@@ -1,0 +1,505 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestBindSingleton.java",
+  "methodName" : "testSingletonRoundTrip",
+  "sourceCode" : "@Test\r\npublic void testSingletonRoundTrip() throws BindException, InjectionException {\r\n    final ConfigurationBuilder b = Tang.Factory.getTang().newConfigurationBuilder();\r\n    b.bindSingletonImplementation(A.class, B.class);\r\n    final Configuration src = b.build();\r\n    final ConfigurationBuilder dest = Tang.Factory.getTang().newConfigurationBuilder();\r\n    dest.addConfiguration(src.toConfigurationString());\r\n    final Injector i = Tang.Factory.getTang().newInjector(dest.build());\r\n    final A a1 = i.getInstance(A.class);\r\n    final A a2 = i.getInstance(A.class);\r\n    final B b1 = i.getInstance(B.class);\r\n    assertTrue(\"Two singletons should be the same\", a1 == a2);\r\n    assertTrue(\"Both instances should be of class B\", a1 instanceof B);\r\n    assertTrue(\"Both instances should be of class B\", a2 instanceof B);\r\n    assertTrue(\"Singleton and not singleton should not be the same\", a1 != b1);\r\n    final Injector injector2 = Tang.Factory.getTang().newInjector(src);\r\n    final A a3 = injector2.getInstance(A.class);\r\n    assertTrue(\"Two different injectors should return two different singletons\", a3 != a1);\r\n    final Injector injector3 = injector2.createChildInjector();\r\n    final A a4 = injector3.getInstance(A.class);\r\n    assertTrue(\"Child Injectors should return the same singletons as their parents\", a3 == a4);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestBindSingleton.java",
+  "methodName" : "testLateBoundVolatileInstanceWithSingletonX",
+  "sourceCode" : "@Test\r\npublic void testLateBoundVolatileInstanceWithSingletonX() throws BindException, InjectionException {\r\n    Tang tang = Tang.Factory.getTang();\r\n    ConfigurationBuilder cb = tang.newConfigurationBuilder();\r\n    cb.bindSingletonImplementation(LateBoundVolatile.A.class, LateBoundVolatile.B.class);\r\n    final Injector i = tang.newInjector(cb.build());\r\n    i.bindVolatileInstance(LateBoundVolatile.C.class, new LateBoundVolatile.C());\r\n    i.getInstance(LateBoundVolatile.A.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestBindSingleton.java",
+  "methodName" : "testLateBoundVolatileInstanceWithSingletonY",
+  "sourceCode" : "@Test\r\npublic void testLateBoundVolatileInstanceWithSingletonY() throws BindException, InjectionException {\r\n    Tang tang = Tang.Factory.getTang();\r\n    ConfigurationBuilder cb = tang.newConfigurationBuilder();\r\n    cb.bindSingleton(LateBoundVolatile.C.class);\r\n    Injector i = tang.newInjector(cb.build());\r\n    i.bindVolatileInstance(LateBoundVolatile.C.class, new LateBoundVolatile.C());\r\n    i.getInstance(LateBoundVolatile.C.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestBindSingleton.java",
+  "methodName" : "testLateBoundVolatileInstanceWithSingletonZ",
+  "sourceCode" : "@Test\r\npublic void testLateBoundVolatileInstanceWithSingletonZ() throws BindException, InjectionException {\r\n    Tang tang = Tang.Factory.getTang();\r\n    ConfigurationBuilder cb = tang.newConfigurationBuilder();\r\n    cb.bindSingletonImplementation(LateBoundVolatile.B.class, LateBoundVolatile.B.class);\r\n    Injector i = tang.newInjector(cb.build());\r\n    i.bindVolatileInstance(LateBoundVolatile.C.class, new LateBoundVolatile.C());\r\n    i.getInstance(LateBoundVolatile.B.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestBindSingleton.java",
+  "methodName" : "testInbredSingletons",
+  "sourceCode" : "@Test\r\npublic void testInbredSingletons() throws BindException, InjectionException {\r\n    Tang t = Tang.Factory.getTang();\r\n    ConfigurationBuilder b = t.newConfigurationBuilder();\r\n    b.bindSingletonImplementation(InbredSingletons.A.class, InbredSingletons.A.class);\r\n    b.bindSingletonImplementation(InbredSingletons.B.class, InbredSingletons.B.class);\r\n    b.bindSingletonImplementation(InbredSingletons.C.class, InbredSingletons.C.class);\r\n    Injector i = t.newInjector(b.build());\r\n    i.getInstance(InbredSingletons.A.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestBindSingleton.java",
+  "methodName" : "testIncestuousSingletons",
+  "sourceCode" : "@Test\r\npublic void testIncestuousSingletons() throws BindException, InjectionException {\r\n    Tang t = Tang.Factory.getTang();\r\n    ConfigurationBuilder b = t.newConfigurationBuilder();\r\n    b.bindSingletonImplementation(IncestuousSingletons.A.class, IncestuousSingletons.A.class);\r\n    b.bindSingletonImplementation(IncestuousSingletons.B.class, IncestuousSingletons.B.class);\r\n    b.bindSingletonImplementation(IncestuousSingletons.C.class, IncestuousSingletons.C.class);\r\n    Injector i = t.newInjector(b.build());\r\n    i.getInstance(IncestuousSingletons.A.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestBindSingleton.java",
+  "methodName" : "testIncestuousSingletons2",
+  "sourceCode" : "@Test\r\npublic void testIncestuousSingletons2() throws BindException, InjectionException {\r\n    Tang t = Tang.Factory.getTang();\r\n    ConfigurationBuilder b = t.newConfigurationBuilder();\r\n    b.bindSingletonImplementation(IncestuousSingletons.A.class, IncestuousSingletons.A.class);\r\n    b.bindImplementation(IncestuousSingletons.B.class, IncestuousSingletons.BN.class);\r\n    b.bindSingletonImplementation(IncestuousSingletons.C.class, IncestuousSingletons.C.class);\r\n    Injector i = t.newInjector(b.build());\r\n    i.getInstance(IncestuousSingletons.A.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestBindSingleton.java",
+  "methodName" : "testIncestuousInterfaceSingletons",
+  "sourceCode" : "@Test\r\npublic void testIncestuousInterfaceSingletons() throws BindException, InjectionException {\r\n    Tang t = Tang.Factory.getTang();\r\n    ConfigurationBuilder b = t.newConfigurationBuilder();\r\n    b.bindSingletonImplementation(IncestuousInterfaceSingletons.AI.class, IncestuousInterfaceSingletons.A.class);\r\n    b.bindSingletonImplementation(IncestuousInterfaceSingletons.BI.class, IncestuousInterfaceSingletons.BN.class);\r\n    b.bindSingletonImplementation(IncestuousInterfaceSingletons.CI.class, IncestuousInterfaceSingletons.C.class);\r\n    Injector i = t.newInjector(b.build());\r\n    i.getInstance(IncestuousInterfaceSingletons.AI.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestBindSingleton.java",
+  "methodName" : "testIncestuousInterfaceSingletons2",
+  "sourceCode" : "@Test\r\npublic void testIncestuousInterfaceSingletons2() throws BindException, InjectionException {\r\n    Tang t = Tang.Factory.getTang();\r\n    ConfigurationBuilder b = t.newConfigurationBuilder();\r\n    b.bindSingletonImplementation(IncestuousInterfaceSingletons.AI.class, IncestuousInterfaceSingletons.A.class);\r\n    b.bindImplementation(IncestuousInterfaceSingletons.BI.class, IncestuousInterfaceSingletons.B.class);\r\n    // TODO: Should we require bind(A,B), then bind(B,B) if B has subclasses?\r\n    b.bindImplementation(IncestuousInterfaceSingletons.B.class, IncestuousInterfaceSingletons.B.class);\r\n    b.bindSingletonImplementation(IncestuousInterfaceSingletons.CI.class, IncestuousInterfaceSingletons.C.class);\r\n    Injector i = t.newInjector(b.build());\r\n    i.getInstance(IncestuousInterfaceSingletons.AI.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestBindSingleton.java",
+  "methodName" : "testIsBrokenClassInjectable",
+  "sourceCode" : "@Test\r\npublic void testIsBrokenClassInjectable() throws BindException {\r\n    Tang t = Tang.Factory.getTang();\r\n    ConfigurationBuilder b = t.newConfigurationBuilder();\r\n    b.bind(IsBrokenClassInjectable.class, IsBrokenClassInjectable.class);\r\n    Assert.assertTrue(t.newInjector(b.build()).isInjectable(IsBrokenClassInjectable.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestBindSingleton.java",
+  "methodName" : "testIsBrokenSingletonClassInjectable",
+  "sourceCode" : "@Test\r\npublic void testIsBrokenSingletonClassInjectable() throws BindException {\r\n    Tang t = Tang.Factory.getTang();\r\n    ConfigurationBuilder b = t.newConfigurationBuilder();\r\n    b.bindSingletonImplementation(IsBrokenClassInjectable.class, IsBrokenClassInjectable.class);\r\n    Assert.assertTrue(t.newInjector(b.build()).isInjectable(IsBrokenClassInjectable.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestBindSingleton.java",
+  "methodName" : "testBrokenSingletonClassCantInject",
+  "sourceCode" : "@Test(expected = InjectionException.class)\r\npublic void testBrokenSingletonClassCantInject() throws BindException, InjectionException {\r\n    Tang t = Tang.Factory.getTang();\r\n    ConfigurationBuilder b = t.newConfigurationBuilder();\r\n    b.bindSingletonImplementation(IsBrokenClassInjectable.class, IsBrokenClassInjectable.class);\r\n    Assert.assertTrue(t.newInjector(b.build()).isInjectable(IsBrokenClassInjectable.class));\r\n    t.newInjector(b.build()).getInstance(IsBrokenClassInjectable.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestClassLoaders.java",
+  "methodName" : "testOneJar",
+  "sourceCode" : "@Test\r\npublic void testOneJar() throws MalformedURLException, ClassNotFoundException, BindException {\r\n    Tang.Factory.getTang().newConfigurationBuilder(new File(\"../tang-test-jarA/target/tang-test-jarA-1.0-SNAPSHOT.jar\").toURI().toURL()).register(\"com.example.A\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestClassLoaders.java",
+  "methodName" : "testTwoJars",
+  "sourceCode" : "@Test\r\npublic void testTwoJars() throws MalformedURLException, ClassNotFoundException, BindException, InjectionException {\r\n    Tang t = Tang.Factory.getTang();\r\n    ConfigurationBuilder cbA = t.newConfigurationBuilder(new File(\"../tang-test-jarA/target/tang-test-jarA-1.0-SNAPSHOT.jar\").toURI().toURL());\r\n    ConfigurationBuilder cbB = t.newConfigurationBuilder(new File(\"../tang-test-jarB/target/tang-test-jarB-1.0-SNAPSHOT.jar\").toURI().toURL());\r\n    cbA.addConfiguration(cbB.build());\r\n    cbA.register(\"com.example.A\");\r\n    cbA.register(\"com.example.B\");\r\n    t.newInjector(cbA.build());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestClassLoaders.java",
+  "methodName" : "testTwoClasses",
+  "sourceCode" : "@Test\r\npublic void testTwoClasses() throws MalformedURLException, ClassNotFoundException, BindException, InjectionException {\r\n    Tang t = Tang.Factory.getTang();\r\n    ConfigurationBuilder cbA = t.newConfigurationBuilder(new File(\"../tang-test-jarAB/target/tang-test-jarAB-1.0-SNAPSHOT.jar\").toURI().toURL());\r\n    ConfigurationBuilder cbB = t.newConfigurationBuilder(new File(\"../tang-test-jarAB/target/tang-test-jarAB-1.0-SNAPSHOT.jar\").toURI().toURL());\r\n    cbA.addConfiguration(cbB.build());\r\n    cbA.register(\"com.example.A\");\r\n    cbA.register(\"com.example.B\");\r\n    t.newInjector(cbA.build());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestClassLoaders.java",
+  "methodName" : "testTwoChildrenOneJarDifferentTypes",
+  "sourceCode" : "@Test\r\npublic void testTwoChildrenOneJarDifferentTypes() throws MalformedURLException, InjectionException, BindException, ClassNotFoundException {\r\n    Tang t = Tang.Factory.getTang();\r\n    ConfigurationBuilder cbA1 = t.newConfigurationBuilder(new File(\"../tang-test-jarAB/target/tang-test-jarAB-1.0-SNAPSHOT.jar\").toURI().toURL());\r\n    ConfigurationBuilder cbA2 = t.newConfigurationBuilder(new File(\"../tang-test-jarAB/target/tang-test-jarAB-1.0-SNAPSHOT.jar\").toURI().toURL());\r\n    cbA1.register(\"com.example.A\");\r\n    cbA1.bind(\"com.example.A\", \"com.example.B\");\r\n    cbA2.bind(\"com.example.A\", \"com.example.B\");\r\n    Object o = t.newInjector(cbA1.build()).getInstance(\"com.example.A\");\r\n    Object p = t.newInjector(cbA2.build()).getInstance(\"com.example.A\");\r\n    Assert.assertNotSame(o.getClass(), p.getClass());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestConfFileParser.java",
+  "methodName" : "testRoundTrip",
+  "sourceCode" : "@Test\r\npublic void testRoundTrip() throws BindException {\r\n    // TODO: This likely only passes on windows, as it relies on newlines\r\n    // being \\r\\n, and on java.lang.Object having a lower hash code than\r\n    // com.microsoft.tang.TestConfFileParser\r\n    Tang t = Tang.Factory.getTang();\r\n    ConfigurationBuilder cb = t.newConfigurationBuilder();\r\n    String in = \"com.microsoft.tang.TestConfFileParser=com.microsoft.tang.TestConfFileParser\\n\";\r\n    cb.addConfiguration(in);\r\n    String out = cb.build().toConfigurationString();\r\n    Assert.assertEquals(in, out);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestConfFileParser.java",
+  "methodName" : "testBindSingleton",
+  "sourceCode" : "@Test\r\npublic void testBindSingleton() throws BindException {\r\n    // TODO: This likely only passes on windows, as it relies on newlines\r\n    // being \\r\\n, and on java.lang.Object having a lower hash code than\r\n    // com.microsoft.tang.TestConfFileParser\r\n    Tang t = Tang.Factory.getTang();\r\n    ConfigurationBuilder cb = t.newConfigurationBuilder();\r\n    //cb.bindSingletonImplementation(SingleTest.A.class, SingleTest.B.class);\r\n    cb.bindSingleton(SingleTest.A.class);\r\n    cb.bindImplementation(SingleTest.A.class, SingleTest.B.class);\r\n    String out = cb.build().toConfigurationString();\r\n    String in = \"com.microsoft.tang.SingleTest$A=com.microsoft.tang.SingleTest$B\\ncom.microsoft.tang.SingleTest$A=singleton\\n\";\r\n    Assert.assertEquals(in, out);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestNamedParameterRoundTrip.java",
+  "methodName" : "testRoundTrip",
+  "sourceCode" : "@Test\r\npublic void testRoundTrip() throws BindException, InjectionException {\r\n    final int d = 10;\r\n    final double eps = 1e-5;\r\n    final ConfigurationBuilder b = Tang.Factory.getTang().newConfigurationBuilder();\r\n    b.bindNamedParameter(Dimensionality.class, String.valueOf(d));\r\n    b.bindNamedParameter(Eps.class, String.valueOf(eps));\r\n    final Configuration conf = b.build();\r\n    {\r\n        final Injector i = Tang.Factory.getTang().newInjector(conf);\r\n        final int readD = i.getNamedParameter(Dimensionality.class).intValue();\r\n        final double readEps = i.getNamedParameter(Eps.class).doubleValue();\r\n        assertEquals(eps, readEps, 1e-12);\r\n        assertEquals(d, readD);\r\n    }\r\n    {\r\n        ConfigurationBuilder roundTrip = Tang.Factory.getTang().newConfigurationBuilder();\r\n        roundTrip.addConfiguration(conf.toConfigurationString());\r\n        final Injector i = Tang.Factory.getTang().newInjector(roundTrip.build());\r\n        final int readD = i.getNamedParameter(Dimensionality.class).intValue();\r\n        final double readEps = i.getNamedParameter(Eps.class).doubleValue();\r\n        assertEquals(eps, readEps, 1e-12);\r\n        assertEquals(d, readD);\r\n    }\r\n    {\r\n        final Injector parent = Tang.Factory.getTang().newInjector(Tang.Factory.getTang().newConfigurationBuilder().build());\r\n        final Injector i = parent.createChildInjector(conf);\r\n        final int readD = i.getNamedParameter(Dimensionality.class).intValue();\r\n        final double readEps = i.getNamedParameter(Eps.class).doubleValue();\r\n        assertEquals(eps, readEps, 1e-12);\r\n        assertEquals(d, readD);\r\n    }\r\n    {\r\n        final Injector parent = Tang.Factory.getTang().newInjector(Tang.Factory.getTang().newConfigurationBuilder().build());\r\n        final ConfigurationBuilder roundTrip = Tang.Factory.getTang().newConfigurationBuilder();\r\n        roundTrip.addConfiguration(conf.toConfigurationString());\r\n        final Injector i = parent.createChildInjector(roundTrip.build());\r\n        final int readD = i.getNamedParameter(Dimensionality.class).intValue();\r\n        final double readEps = i.getNamedParameter(Eps.class).doubleValue();\r\n        assertEquals(eps, readEps, 1e-12);\r\n        assertEquals(d, readD);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestStaticConfiguration.java",
+  "methodName" : "testCyclicBootStrap",
+  "sourceCode" : "/**\r\n * This unit test tries to crash the JVM by creating a cycle in which the a\r\n * static method body for A calls Class.forName(B), and vice versa.\r\n *\r\n * The injectable constructors are there to get tang to poke around in the\r\n * class (to defeat lazy initialization schemes).\r\n */\r\n@Test\r\npublic void testCyclicBootStrap() {\r\n    @SuppressWarnings(\"unused\")\r\n    StaticConfiguration a = A.conf;\r\n    @SuppressWarnings(\"unused\")\r\n    StaticConfiguration b = B.conf;\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testSingleton",
+  "sourceCode" : "@Test\r\npublic void testSingleton() throws BindException, InjectionException {\r\n    ConfigurationBuilder t = tang.newConfigurationBuilder();\r\n    t.bindSingleton(MustBeSingleton.class);\r\n    t.register(TwoSingletons.class);\r\n    tang.newInjector(t.build()).getInstance(TwoSingletons.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testNotSingleton",
+  "sourceCode" : "@Test(expected = InjectionException.class)\r\npublic void testNotSingleton() throws NameResolutionException, ReflectiveOperationException, BindException, InjectionException {\r\n    ConfigurationBuilder t = tang.newConfigurationBuilder();\r\n    t.register(TwoSingletons.class);\r\n    Injector injector = tang.newInjector(t.build());\r\n    injector.getInstance(TwoSingletons.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testRepeatedAmbiguousArgs",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testRepeatedAmbiguousArgs() throws BindException {\r\n    ConfigurationBuilder t = tang.newConfigurationBuilder();\r\n    t.register(RepeatedAmbiguousArgs.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testRepeatedOKArgs",
+  "sourceCode" : "@Test\r\npublic void testRepeatedOKArgs() throws BindException, InjectionException {\r\n    ConfigurationBuilder t = tang.newConfigurationBuilder();\r\n    t.bindNamedParameter(RepeatedNamedArgs.A.class, \"1\");\r\n    t.bindNamedParameter(RepeatedNamedArgs.B.class, \"2\");\r\n    Injector injector = tang.newInjector(t.build());\r\n    injector.getInstance(RepeatedNamedArgs.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testOneNamedFailArgs",
+  "sourceCode" : "// NamedParameter A has no default_value, so this should throw.\r\n@Test(expected = InjectionException.class)\r\npublic void testOneNamedFailArgs() throws BindException, InjectionException {\r\n    ConfigurationBuilder t = tang.newConfigurationBuilder();\r\n    t.register(OneNamedSingletonArgs.class);\r\n    tang.newInjector(t.build()).getInstance(OneNamedSingletonArgs.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testOneNamedOKArgs",
+  "sourceCode" : "@Test(expected = InjectionException.class)\r\npublic void testOneNamedOKArgs() throws BindException, InjectionException {\r\n    ConfigurationBuilder t = tang.newConfigurationBuilder();\r\n    t.register(OneNamedSingletonArgs.class);\r\n    tang.newInjector(t.build()).getInstance(OneNamedSingletonArgs.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testOneNamedSingletonFailArgs",
+  "sourceCode" : "// NamedParameter A has no default_value, so this should throw\r\n@Test(expected = InjectionException.class)\r\npublic void testOneNamedSingletonFailArgs() throws BindException, InjectionException {\r\n    ConfigurationBuilder t = tang.newConfigurationBuilder();\r\n    t.bindSingleton(MustBeSingleton.class);\r\n    t.register(OneNamedSingletonArgs.class);\r\n    tang.newInjector(t.build()).getInstance(OneNamedSingletonArgs.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testOneNamedSingletonOKArgs",
+  "sourceCode" : "// NamedParameter A get's bound to a volatile, so this should succeed.\r\n@Test\r\npublic void testOneNamedSingletonOKArgs() throws BindException, InjectionException {\r\n    ConfigurationBuilder t = tang.newConfigurationBuilder();\r\n    t.register(OneNamedSingletonArgs.class);\r\n    final Injector i = tang.newInjector(t.build());\r\n    i.bindVolatileParameter(OneNamedSingletonArgs.A.class, i.getInstance(MustBeSingleton.class));\r\n    i.getInstance(OneNamedSingletonArgs.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testRepeatedNamedOKArgs",
+  "sourceCode" : "@Test\r\npublic void testRepeatedNamedOKArgs() throws BindException, InjectionException {\r\n    ConfigurationBuilder t = tang.newConfigurationBuilder();\r\n    t.bindSingleton(MustBeSingleton.class);\r\n    t.register(RepeatedNamedSingletonArgs.class);\r\n    final Injector i = tang.newInjector(t.build());\r\n    i.bindVolatileParameter(RepeatedNamedSingletonArgs.A.class, i.getInstance(MustBeSingleton.class));\r\n    i.bindVolatileParameter(RepeatedNamedSingletonArgs.B.class, i.getInstance(MustBeSingleton.class));\r\n    i.getInstance(RepeatedNamedSingletonArgs.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testRepeatedNamedFailArgs",
+  "sourceCode" : "// Forgot to call bindSingleton\r\n@Test(expected = InjectionException.class)\r\npublic void testRepeatedNamedFailArgs() throws BindException, InjectionException {\r\n    ConfigurationBuilder t = tang.newConfigurationBuilder();\r\n    t.register(RepeatedNamedSingletonArgs.class);\r\n    Injector i = tang.newInjector(t.build());\r\n    i.bindVolatileParameter(RepeatedNamedSingletonArgs.A.class, i.getInstance(MustBeSingleton.class));\r\n    i.bindVolatileParameter(RepeatedNamedSingletonArgs.B.class, i.getInstance(MustBeSingleton.class));\r\n    i.getInstance(RepeatedNamedSingletonArgs.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testStraightforwardBuild",
+  "sourceCode" : "@Test\r\npublic void testStraightforwardBuild() throws BindException, InjectionException {\r\n    ConfigurationBuilder cb = tang.newConfigurationBuilder();\r\n    cb.bind(Interf.class, Impl.class);\r\n    tang.newInjector(cb.build()).getInstance(Interf.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testOneNamedStringArgCantRebind",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testOneNamedStringArgCantRebind() throws BindException, InjectionException {\r\n    ConfigurationBuilder cb = tang.newConfigurationBuilder();\r\n    cb.register(OneNamedStringArg.class);\r\n    OneNamedStringArg a = tang.newInjector(cb.build()).getInstance(OneNamedStringArg.class);\r\n    Assert.assertEquals(\"default\", a.s);\r\n    cb.bindNamedParameter(OneNamedStringArg.A.class, \"not default\");\r\n    Injector i = tang.newInjector(cb.build());\r\n    Assert.assertEquals(\"not default\", i.getInstance(OneNamedStringArg.class).s);\r\n    i.bindVolatileParameter(OneNamedStringArg.A.class, \"volatile\");\r\n    Assert.assertEquals(\"volatile\", i.getInstance(OneNamedStringArg.class).s);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testOneNamedStringArgBind",
+  "sourceCode" : "@Test\r\npublic void testOneNamedStringArgBind() throws BindException, InjectionException {\r\n    ConfigurationBuilder cb = tang.newConfigurationBuilder();\r\n    cb.register(OneNamedStringArg.class);\r\n    OneNamedStringArg a = tang.newInjector(cb.build()).getInstance(OneNamedStringArg.class);\r\n    Assert.assertEquals(\"default\", a.s);\r\n    cb.bindNamedParameter(OneNamedStringArg.A.class, \"not default\");\r\n    Injector i = tang.newInjector(cb.build());\r\n    Assert.assertEquals(\"not default\", i.getInstance(OneNamedStringArg.class).s);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testOneNamedStringArgVolatile",
+  "sourceCode" : "@Test\r\npublic void testOneNamedStringArgVolatile() throws BindException, InjectionException {\r\n    ConfigurationBuilder cb = tang.newConfigurationBuilder();\r\n    cb.register(OneNamedStringArg.class);\r\n    OneNamedStringArg a = tang.newInjector(cb.build()).getInstance(OneNamedStringArg.class);\r\n    Assert.assertEquals(\"default\", a.s);\r\n    Injector i = tang.newInjector(cb.build());\r\n    i.bindVolatileParameter(OneNamedStringArg.A.class, \"volatile\");\r\n    Assert.assertEquals(\"volatile\", i.getInstance(OneNamedStringArg.class).s);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testTwoNamedStringArgsBind",
+  "sourceCode" : "@Test\r\npublic void testTwoNamedStringArgsBind() throws BindException, InjectionException {\r\n    ConfigurationBuilder cb = tang.newConfigurationBuilder();\r\n    cb.register(TwoNamedStringArgs.class);\r\n    TwoNamedStringArgs a = tang.newInjector(cb.build()).getInstance(TwoNamedStringArgs.class);\r\n    Assert.assertEquals(\"defaultA\", a.a);\r\n    Assert.assertEquals(\"defaultB\", a.b);\r\n    cb.bindNamedParameter(TwoNamedStringArgs.A.class, \"not defaultA\");\r\n    cb.bindNamedParameter(TwoNamedStringArgs.B.class, \"not defaultB\");\r\n    Injector i = tang.newInjector(cb.build());\r\n    Assert.assertEquals(\"not defaultA\", i.getInstance(TwoNamedStringArgs.class).a);\r\n    Assert.assertEquals(\"not defaultB\", i.getInstance(TwoNamedStringArgs.class).b);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testTwoNamedStringArgsBindVolatile",
+  "sourceCode" : "@Test\r\npublic void testTwoNamedStringArgsBindVolatile() throws BindException, InjectionException {\r\n    ConfigurationBuilder cb = tang.newConfigurationBuilder();\r\n    cb.register(TwoNamedStringArgs.class);\r\n    TwoNamedStringArgs a = tang.newInjector(cb.build()).getInstance(TwoNamedStringArgs.class);\r\n    Assert.assertEquals(\"defaultA\", a.a);\r\n    Assert.assertEquals(\"defaultB\", a.b);\r\n    final Injector i = tang.newInjector(cb.build());\r\n    i.bindVolatileParameter(TwoNamedStringArgs.A.class, \"not defaultA\");\r\n    i.bindVolatileParameter(TwoNamedStringArgs.B.class, \"not defaultB\");\r\n    Assert.assertEquals(\"not defaultA\", i.getInstance(TwoNamedStringArgs.class).a);\r\n    Assert.assertEquals(\"not defaultB\", i.getInstance(TwoNamedStringArgs.class).b);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testTwoNamedStringArgsReBindVolatileFail",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testTwoNamedStringArgsReBindVolatileFail() throws BindException, InjectionException {\r\n    ConfigurationBuilder cb = tang.newConfigurationBuilder();\r\n    cb.register(TwoNamedStringArgs.class);\r\n    TwoNamedStringArgs a = tang.newInjector(cb.build()).getInstance(TwoNamedStringArgs.class);\r\n    Assert.assertEquals(\"defaultA\", a.a);\r\n    Assert.assertEquals(\"defaultB\", a.b);\r\n    cb.bindNamedParameter(TwoNamedStringArgs.A.class, \"not defaultA\");\r\n    cb.bindNamedParameter(TwoNamedStringArgs.B.class, \"not defaultB\");\r\n    Injector i = tang.newInjector(cb.build());\r\n    i.bindVolatileParameter(TwoNamedStringArgs.A.class, \"not defaultA\");\r\n    i.bindVolatileParameter(TwoNamedStringArgs.B.class, \"not defaultB\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testBextendsAinjectA",
+  "sourceCode" : "@Test\r\npublic void testBextendsAinjectA() throws BindException, InjectionException {\r\n    ConfigurationBuilder cb = tang.newConfigurationBuilder();\r\n    cb.bind(BextendsAinjectA.A.class, BextendsAinjectA.A.class);\r\n    tang.newInjector(cb.build()).getInstance(BextendsAinjectA.A.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testExternalConstructor",
+  "sourceCode" : "@Test\r\npublic void testExternalConstructor() throws BindException, InjectionException {\r\n    ConfigurationBuilder cb = tang.newConfigurationBuilder();\r\n    cb.bindConstructor(ExternalConstructorExample.Legacy.class, ExternalConstructorExample.LegacyWrapper.class);\r\n    Injector i = tang.newInjector(cb.build());\r\n    i.bindVolatileInstance(Integer.class, 42);\r\n    i.bindVolatileInstance(String.class, \"The meaning of life is \");\r\n    ExternalConstructorExample.Legacy l = i.getInstance(ExternalConstructorExample.Legacy.class);\r\n    Assert.assertEquals(new Integer(42), l.x);\r\n    Assert.assertEquals(\"The meaning of life is \", l.y);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testLegacyConstructor",
+  "sourceCode" : "@Test\r\npublic void testLegacyConstructor() throws BindException, InjectionException {\r\n    ConfigurationBuilder cb = tang.newConfigurationBuilder();\r\n    cb.registerLegacyConstructor(LegacyConstructor.class, Integer.class, String.class);\r\n    cb.bind(LegacyConstructor.class, LegacyConstructor.class);\r\n    String confString = cb.build().toConfigurationString();\r\n    ConfigurationBuilder cb2 = tang.newConfigurationBuilder();\r\n    //System.err.println(confString);\r\n    cb2.addConfiguration(confString);\r\n    Injector i = tang.newInjector(cb2.build());\r\n    i.bindVolatileInstance(Integer.class, 42);\r\n    i.bindVolatileInstance(String.class, \"The meaning of life is \");\r\n    LegacyConstructor l = i.getInstance(LegacyConstructor.class);\r\n    Assert.assertEquals(new Integer(42), l.x);\r\n    Assert.assertEquals(\"The meaning of life is \", l.y);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTang.java",
+  "methodName" : "testNamedImpl",
+  "sourceCode" : "@Test\r\npublic void testNamedImpl() throws BindException, InjectionException {\r\n    ConfigurationBuilder cb = tang.newConfigurationBuilder();\r\n    cb.bindNamedParameter(NamedImpl.AImplName.class, NamedImpl.Aimpl.class);\r\n    cb.bindNamedParameter(NamedImpl.BImplName.class, NamedImpl.Bimpl.class);\r\n    Injector i = tang.newInjector(cb.build());\r\n    NamedImpl.Aimpl a1 = (NamedImpl.Aimpl) i.getNamedInstance(NamedImpl.AImplName.class);\r\n    NamedImpl.Aimpl a2 = (NamedImpl.Aimpl) i.getNamedInstance(NamedImpl.AImplName.class);\r\n    NamedImpl.Bimpl b1 = (NamedImpl.Bimpl) i.getNamedInstance(NamedImpl.BImplName.class);\r\n    NamedImpl.Bimpl b2 = (NamedImpl.Bimpl) i.getNamedInstance(NamedImpl.BImplName.class);\r\n    Assert.assertNotSame(a1, a2);\r\n    Assert.assertNotSame(b1, b2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTweetExample.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() throws Exception {\r\n    //    ConfigurationBuilder t = tang.newConfigurationBuilder(TANG_CONF.build());\r\n    //    t.register(Tweeter.class);\r\n    //    t.bindImplementation(TweetFactory.class, MockTweetFactory.class);\r\n    //    t.bindImplementation(SMS.class, MockSMS.class);\r\n    //    t.bindNamedParameter(Tweeter.PhoneNumber.class, new Long(867 - 5309).toString());\r\n    Tweeter tw = (Tweeter) tang.newInjector(TANG_CONF.build()).getInstance(Tweeter.class);\r\n    tw.sendMessage();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testJavaString",
+  "sourceCode" : "@Test\r\npublic void testJavaString() throws NameResolutionException, BindException {\r\n    ns.register(String.class);\r\n    Assert.assertNotNull(ns.getNode(\"java\"));\r\n    Assert.assertNotNull(ns.getNode(\"java.lang\"));\r\n    Assert.assertNotNull(ns.getNode(\"java.lang.String\"));\r\n    Assert.assertNotNull(ns.getNode(String.class));\r\n    try {\r\n        ns.getNode(\"com.microsoft\");\r\n        Assert.fail(\"Didn't get expected exception\");\r\n    } catch (NameResolutionException e) {\r\n    }\r\n    try {\r\n        ns.getNode(this.getClass());\r\n        Assert.fail(\"Didn't get expected exception\");\r\n    } catch (NameResolutionException e) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testSimpleConstructors",
+  "sourceCode" : "@Test\r\npublic void testSimpleConstructors() throws NameResolutionException, BindException {\r\n    ns.register(SimpleConstructors.class);\r\n    Assert.assertNotNull(ns.getNode(SimpleConstructors.class.getName()));\r\n    ClassNode<?> cls = (ClassNode<?>) ns.getNode(SimpleConstructors.class);\r\n    Assert.assertTrue(cls.children.size() == 0);\r\n    ConstructorDef<?>[] def = cls.getInjectableConstructors();\r\n    Assert.assertEquals(3, def.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testNamedParameterConstructors",
+  "sourceCode" : "@Test\r\npublic void testNamedParameterConstructors() throws BindException {\r\n    ns.register(NamedParameterConstructors.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testArray",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testArray() throws BindException {\r\n    ns.register(new String[0].getClass());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testMetadata",
+  "sourceCode" : "@Test\r\npublic void testMetadata() throws NameResolutionException, BindException {\r\n    ns.register(Metadata.class);\r\n    Assert.assertNotNull(ns.getNode(Metadata.class));\r\n    Assert.assertFalse(ns.getNode(\"foo.bar\") instanceof NamedParameterNode);\r\n    Assert.assertTrue(ns.getNode(\"foo.bar.Quuz\") instanceof NamedParameterNode);\r\n    Assert.assertTrue(((ClassNode<?>) ns.getNode(Metadata.class)).getIsPrefixTarget());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testRepeatConstructorArg",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testRepeatConstructorArg() throws BindException {\r\n    ns.register(RepeatConstructorArg.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testRepeatConstructorArgClasses",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testRepeatConstructorArgClasses() throws BindException {\r\n    ns.register(RepeatConstructorArgClasses.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testLeafRepeatedConstructorArgClasses",
+  "sourceCode" : "@Test\r\npublic void testLeafRepeatedConstructorArgClasses() throws BindException {\r\n    ns.register(LeafRepeatedConstructorArgClasses.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testNamedRepeatConstructorArgClasses",
+  "sourceCode" : "@Test\r\npublic void testNamedRepeatConstructorArgClasses() throws BindException {\r\n    ns.register(NamedRepeatConstructorArgClasses.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testResolveDependencies",
+  "sourceCode" : "@Test\r\npublic void testResolveDependencies() throws NameResolutionException, BindException {\r\n    ns.register(SimpleConstructors.class);\r\n    Assert.assertNotNull(ns.getNode(String.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testDocumentedLocalNamedParameter",
+  "sourceCode" : "@Test\r\npublic void testDocumentedLocalNamedParameter() throws BindException {\r\n    ns.register(DocumentedLocalNamedParameter.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testNamedParameterTypeMismatch",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testNamedParameterTypeMismatch() throws BindException {\r\n    ns.register(NamedParameterTypeMismatch.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testInconvenientNamespaceRegistrationOrder",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic // Note: should pass when nested namespaces are working!\r\nvoid testInconvenientNamespaceRegistrationOrder() throws NameResolutionException, BindException {\r\n    ns.register(InconvenientNamespaceRegistrationOrder1.class);\r\n    Assert.assertTrue(ns.getNode(\"a.b\") instanceof NamespaceNode);\r\n    ns.register(InconvenientNamespaceRegistrationOrder2.class);\r\n    Assert.assertTrue(ns.getNode(\"a.b\") instanceof NamespaceNode);\r\n    Assert.assertTrue(ns.getNode(\"a\") instanceof NamespaceNode);\r\n    Assert.assertTrue(ns.getNode(\"a.B\") instanceof NamedParameterNode);\r\n    Assert.assertTrue(ns.getNode(\"a.b.C\") instanceof NamedParameterNode);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testNamespaceNamedParameterAnnotation",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testNamespaceNamedParameterAnnotation() throws BindException {\r\n    ns.register(NamespaceNamedParameterAnnotation.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testNamespaceNamedParameterNoAnnotation",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testNamespaceNamedParameterNoAnnotation() throws BindException {\r\n    ns.register(NamespaceNamedParameterNoAnnotation.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testUnannotatedName",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testUnannotatedName() throws BindException {\r\n    ns.register(UnannotatedName.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testAnnotatedNotName",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testAnnotatedNotName() throws BindException {\r\n    ns.register(AnnotatedNotName.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testAnnotatedNameWrongInterface",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testAnnotatedNameWrongInterface() throws BindException {\r\n    ns.register(AnnotatedNameWrongInterface.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testAnnotatedNameNotGenericInterface",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testAnnotatedNameNotGenericInterface() throws BindException {\r\n    ns.register(AnnotatedNameNotGenericInterface.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testAnnotatedNameMultipleInterfaces",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testAnnotatedNameMultipleInterfaces() throws BindException {\r\n    ns.register(AnnotatedNameMultipleInterfaces.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testUnAnnotatedNameMultipleInterfaces",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testUnAnnotatedNameMultipleInterfaces() throws BindException {\r\n    ns.register(UnAnnotatedNameMultipleInterfaces.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testNameWithConstructor",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testNameWithConstructor() throws BindException {\r\n    ns.register(NameWithConstructor.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testNameWithZeroArgInject",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testNameWithZeroArgInject() throws BindException {\r\n    ns.register(NameWithZeroArgInject.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testGenericTorture1",
+  "sourceCode" : "@Test\r\npublic void testGenericTorture1() throws BindException {\r\n    ns.register(GenericTorture1.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testGenericTorture2",
+  "sourceCode" : "@Test\r\npublic void testGenericTorture2() throws BindException {\r\n    ns.register(GenericTorture2.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testGenericTorture3",
+  "sourceCode" : "@Test\r\npublic void testGenericTorture3() throws BindException {\r\n    ns.register(GenericTorture3.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testGenericTorture4",
+  "sourceCode" : "@Test\r\npublic void testGenericTorture4() throws BindException {\r\n    ns.register(GenericTorture4.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testGenericTorture5",
+  "sourceCode" : "@Test\r\npublic void testGenericTorture5() throws BindException {\r\n    ns.register(GenericTorture5.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testGenericTorture6",
+  "sourceCode" : "@Test\r\npublic void testGenericTorture6() throws BindException {\r\n    ns.register(GenericTorture6.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testGenericTorture7",
+  "sourceCode" : "@Test\r\npublic void testGenericTorture7() throws BindException {\r\n    ns.register(GenericTorture7.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testGenericTorture8",
+  "sourceCode" : "@Test\r\npublic void testGenericTorture8() throws BindException {\r\n    ns.register(GenericTorture8.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testGenericTorture9",
+  "sourceCode" : "@Test\r\npublic void testGenericTorture9() throws BindException {\r\n    ns.register(GenericTorture9.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testInjectNonStaticLocalArgClass",
+  "sourceCode" : "@Test\r\npublic void testInjectNonStaticLocalArgClass() throws BindException {\r\n    ns.register(InjectNonStaticLocalArgClass.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testInjectNonStaticLocalType",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testInjectNonStaticLocalType() throws BindException {\r\n    ns.register(InjectNonStaticLocalType.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testNamespacePointsToPackage",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testNamespacePointsToPackage() throws BindException {\r\n    ns.register(NamespacePointsToPackage.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testOverlappingNamespaces2",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic // implemented.\r\nvoid testOverlappingNamespaces2() throws BindException {\r\n    ns.register(OverlappingNamespaces.class);\r\n    ns.register(OverlappingNamespaces2.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testOverlappingNamespaces2a",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic // implemented.\r\nvoid testOverlappingNamespaces2a() throws BindException {\r\n    ns.register(OverlappingNamespaces2.class);\r\n    ns.register(OverlappingNamespaces.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testOverlappingNamespaces3",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic // implemented.\r\nvoid testOverlappingNamespaces3() throws BindException {\r\n    ns.register(OverlappingNamespaces.class);\r\n    ns.register(OverlappingNamespaces3.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testConflictingShortNames",
+  "sourceCode" : "@Test(expected = BindException.class)\r\npublic void testConflictingShortNames() throws BindException {\r\n    ns.register(ShortNameFooA.class);\r\n    ns.register(ShortNameFooB.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testOKShortNames",
+  "sourceCode" : "@Test\r\npublic void testOKShortNames() throws BindException {\r\n    ns.register(ShortNameFooA.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testRoundTripInnerClassNames",
+  "sourceCode" : "@Test\r\npublic void testRoundTripInnerClassNames() throws BindException, ClassNotFoundException {\r\n    Node n = ns.register(Nested.Inner.class);\r\n    Class.forName(n.getFullName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\REEF\\tang\\src\\test\\java\\com\\microsoft\\tang\\TestTypeHierarchy.java",
+  "methodName" : "testRoundTripAnonInnerClassNames",
+  "sourceCode" : "@Test\r\npublic void testRoundTripAnonInnerClassNames() throws BindException, ClassNotFoundException {\r\n    Node n = ns.register(AnonNested.x.getClass());\r\n    Node m = ns.register(AnonNested.y.getClass());\r\n    Assert.assertNotSame(n.getFullName(), m.getFullName());\r\n    Class<?> c = Class.forName(n.getFullName());\r\n    Class<?> d = Class.forName(m.getFullName());\r\n    Assert.assertNotSame(c, d);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

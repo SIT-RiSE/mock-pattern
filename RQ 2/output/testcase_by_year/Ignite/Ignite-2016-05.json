@@ -1,0 +1,19 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Ignite\\modules\\log4j2\\src\\test\\java\\org\\apache\\ignite\\logger\\log4j2\\GridLog4j2LoggingFileTest.java",
+  "methodName" : "testLog",
+  "sourceCode" : "/**\r\n * Tests log4j logging SPI.\r\n */\r\n@Test\r\npublic void testLog() {\r\n    assert log.isDebugEnabled() == true;\r\n    assert log.isInfoEnabled() == true;\r\n    log.debug(\"This is 'debug' message.\");\r\n    log.info(\"This is 'info' message.\");\r\n    log.warning(\"This is 'warning' message.\");\r\n    log.warning(\"This is 'warning' message.\", new Exception(\"It's a test warning exception\"));\r\n    log.error(\"This is 'error' message.\");\r\n    log.error(\"This is 'error' message.\", new Exception(\"It's a test error exception\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Ignite\\modules\\osgi\\src\\test\\java\\org\\apache\\ignite\\osgi\\IgniteKarafFeaturesInstallationTest.java",
+  "methodName" : "testAllBundlesActiveAndFeaturesInstalled",
+  "sourceCode" : "/**\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testAllBundlesActiveAndFeaturesInstalled() throws Exception {\r\n    // Asssert all bundles except fragments are ACTIVE.\r\n    for (Bundle b : bundleCtx.getBundles()) {\r\n        System.out.println(String.format(\"Checking state of bundle [symbolicName=%s, state=%s]\", b.getSymbolicName(), b.getState()));\r\n        if (b.getHeaders().get(Constants.FRAGMENT_HOST) == null)\r\n            assertTrue(b.getState() == Bundle.ACTIVE);\r\n    }\r\n    // Check that according to the FeaturesService, all Ignite features except ignite-log4j are installed.\r\n    Feature[] features = featuresSvc.getFeatures(IGNITE_FEATURES_NAME_REGEX);\r\n    assertNotNull(features);\r\n    assertEquals(EXPECTED_FEATURES, features.length);\r\n    for (Feature f : features) {\r\n        if (IGNORED_FEATURES.contains(f.getName()))\r\n            continue;\r\n        boolean installed = featuresSvc.isInstalled(f);\r\n        System.out.println(String.format(\"Checking if feature is installed [featureName=%s, installed=%s]\", f.getName(), installed));\r\n        assertTrue(installed);\r\n        assertEquals(PROJECT_VERSION.replaceAll(\"-\", \".\"), f.getVersion().replaceAll(\"-\", \".\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Ignite\\modules\\osgi\\src\\test\\java\\org\\apache\\ignite\\osgi\\IgniteOsgiServiceTest.java",
+  "methodName" : "testServiceExposedAndCallbacksInvoked",
+  "sourceCode" : "/**\r\n * @throws Exception If failed.\r\n */\r\n@Test\r\npublic void testServiceExposedAndCallbacksInvoked() throws Exception {\r\n    assertNotNull(ignite);\r\n    assertEquals(\"testGrid\", ignite.name());\r\n    TestOsgiFlags flags = (TestOsgiFlags) bundleCtx.getService(bundleCtx.getAllServiceReferences(TestOsgiFlags.class.getName(), null)[0]);\r\n    assertNotNull(flags);\r\n    assertEquals(Boolean.TRUE, flags.getOnBeforeStartInvoked());\r\n    assertEquals(Boolean.TRUE, flags.getOnAfterStartInvoked());\r\n    // The bundle is still not stopped, therefore these callbacks cannot be tested.\r\n    assertNull(flags.getOnBeforeStopInvoked());\r\n    assertNull(flags.getOnAfterStopInvoked());\r\n    // No exceptions.\r\n    assertNull(flags.getOnAfterStartThrowable());\r\n    assertNull(flags.getOnAfterStopThrowable());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

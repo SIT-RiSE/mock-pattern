@@ -1,0 +1,409 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\examples\\MainTest.java",
+  "methodName" : "checkExamplesPropertiesIsComplete",
+  "sourceCode" : "@Test\r\npublic void checkExamplesPropertiesIsComplete() throws Exception {\r\n    Properties cp = scanClasses();\r\n    Properties fp = new Properties();\r\n    fp.load(this.getClass().getResourceAsStream(\"examples.properties\"));\r\n    // OK\r\n    @SuppressWarnings(\"unchecked\")\r\n    final Enumeration<String> propertyNames = (Enumeration<String>) cp.propertyNames();\r\n    while (propertyNames.hasMoreElements()) {\r\n        String c = propertyNames.nextElement();\r\n        String fv = fp.getProperty(c);\r\n        final String cv = cp.getProperty(c);\r\n        if (fv == null) {\r\n            System.out.printf(\"%-25s %s - missing from examples.properties%n\", c, cv);\r\n        } else if (!fv.equals(cv)) {\r\n            System.out.printf(\"%-25s %s - expected value %s %n\", c, fv, cv);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\ftp\\parser\\MLSDComparison.java",
+  "methodName" : "testFile",
+  "sourceCode" : "@Test\r\npublic void testFile() throws Exception {\r\n    File path = new File(DownloadListings.DOWNLOAD_DIR);\r\n    FilenameFilter filter = new FilenameFilter() {\r\n\r\n        @Override\r\n        public boolean accept(File dir, String name) {\r\n            return name.endsWith(\"_mlsd.txt\");\r\n        }\r\n    };\r\n    for (File mlsd : path.listFiles(filter)) {\r\n        System.out.println(mlsd);\r\n        InputStream is = new FileInputStream(mlsd);\r\n        FTPListParseEngine engine = new FTPListParseEngine(MLSxEntryParser.getInstance());\r\n        engine.readServerList(is, FTP.DEFAULT_CONTROL_ENCODING);\r\n        FTPFile[] mlsds = engine.getFiles(FTPFileFilters.ALL);\r\n        is.close();\r\n        File list = new File(mlsd.getParentFile(), mlsd.getName().replace(\"_mlsd\", \"_list\"));\r\n        System.out.println(list);\r\n        is = new FileInputStream(list);\r\n        FTPClientConfig cfg = new FTPClientConfig();\r\n        cfg.setServerTimeZoneId(\"GMT\");\r\n        UnixFTPEntryParser parser = new UnixFTPEntryParser(cfg);\r\n        engine = new FTPListParseEngine(parser);\r\n        engine.readServerList(is, FTP.DEFAULT_CONTROL_ENCODING);\r\n        FTPFile[] lists = engine.getFiles(FTPFileFilters.ALL);\r\n        is.close();\r\n        compareSortedLists(mlsds, lists);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\imap\\IMAPTest.java",
+  "methodName" : "checkGenerator",
+  "sourceCode" : "@Test\r\npublic void checkGenerator() {\r\n    // This test assumes:\r\n    // - 26 letters in the generator alphabet\r\n    // - the generator uses a fixed size tag\r\n    IMAP imap = new IMAP();\r\n    String initial = imap.generateCommandID();\r\n    int expected = 1;\r\n    for (int j = 0; j < initial.length(); j++) {\r\n        // letters in alphabet\r\n        expected *= 26;\r\n    }\r\n    int i = 0;\r\n    boolean matched = false;\r\n    while (i <= expected + 10) {\r\n        // don't loop forever, but allow it to pass go!\r\n        i++;\r\n        String s = imap.generateCommandID();\r\n        matched = initial.equals(s);\r\n        if (matched) {\r\n            // we've wrapped around completely\r\n            break;\r\n        }\r\n    }\r\n    Assert.assertEquals(expected, i);\r\n    Assert.assertTrue(\"Expected to see the original value again\", matched);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\io\\ToNetASCIIInputStreamTest.java",
+  "methodName" : "testToNetASCIIInputStream1",
+  "sourceCode" : "@Test\r\npublic void testToNetASCIIInputStream1() throws Exception {\r\n    byteTest(false, \"\", \"\");\r\n    byteTest(false, \"\\r\", \"\\r\");\r\n    byteTest(false, \"a\", \"a\");\r\n    byteTest(false, \"a\\nb\", \"a\\r\\nb\");\r\n    byteTest(false, \"a\\r\\nb\", \"a\\r\\nb\");\r\n    byteTest(false, \"\\n\", \"\\r\\n\");\r\n    byteTest(false, \"Hello\\nWorld\\n\", \"Hello\\r\\nWorld\\r\\n\");\r\n    byteTest(false, \"Hello\\nWorld\\r\\n\", \"Hello\\r\\nWorld\\r\\n\");\r\n    byteTest(false, \"Hello\\nWorld\\n\\r\", \"Hello\\r\\nWorld\\r\\n\\r\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\io\\ToNetASCIIInputStreamTest.java",
+  "methodName" : "testToNetASCIIInputStream_single_bytes",
+  "sourceCode" : "@Test\r\npublic void testToNetASCIIInputStream_single_bytes() throws Exception {\r\n    byteTest(true, \"\", \"\");\r\n    byteTest(true, \"\\r\", \"\\r\");\r\n    byteTest(true, \"\\n\", \"\\r\\n\");\r\n    byteTest(true, \"a\", \"a\");\r\n    byteTest(true, \"a\\nb\", \"a\\r\\nb\");\r\n    byteTest(true, \"a\\r\\nb\", \"a\\r\\nb\");\r\n    byteTest(true, \"Hello\\nWorld\\n\", \"Hello\\r\\nWorld\\r\\n\");\r\n    byteTest(true, \"Hello\\nWorld\\r\\n\", \"Hello\\r\\nWorld\\r\\n\");\r\n    byteTest(true, \"Hello\\nWorld\\n\\r\", \"Hello\\r\\nWorld\\r\\n\\r\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\nntp\\TestThreader.java",
+  "methodName" : "testNullArray",
+  "sourceCode" : "@Test\r\n// test of deprecated method\r\n@SuppressWarnings(\"deprecation\")\r\npublic void testNullArray() {\r\n    // NET-539\r\n    Threader t = new Threader();\r\n    Threadable[] messages = null;\r\n    Assert.assertNull(t.thread(messages));\r\n}",
+  "annotations" : [ "Test", "SuppressWarnings" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\nntp\\TestThreader.java",
+  "methodName" : "testNullList",
+  "sourceCode" : "@Test\r\npublic void testNullList() {\r\n    Threader t = new Threader();\r\n    List<Threadable> messages = null;\r\n    Assert.assertNull(t.thread(messages));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\nntp\\TestThreader.java",
+  "methodName" : "testNullIterable",
+  "sourceCode" : "@Test\r\npublic void testNullIterable() {\r\n    Threader t = new Threader();\r\n    Iterable<Threadable> messages = null;\r\n    Assert.assertNull(t.thread(messages));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\nntp\\TestThreader.java",
+  "methodName" : "testEmptyArray",
+  "sourceCode" : "// test of deprecated method\r\n@SuppressWarnings(\"deprecation\")\r\n@Test\r\npublic void testEmptyArray() {\r\n    // NET-539\r\n    Threader t = new Threader();\r\n    Threadable[] messages = new Threadable[0];\r\n    Assert.assertNull(t.thread(messages));\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\nntp\\TestThreader.java",
+  "methodName" : "testEmptyList",
+  "sourceCode" : "@Test\r\npublic void testEmptyList() {\r\n    // NET-539\r\n    Threader t = new Threader();\r\n    Threadable[] messages = new Threadable[0];\r\n    final List<Threadable> asList = Arrays.asList(messages);\r\n    Assert.assertNull(t.thread(asList));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\nntp\\TestThreader.java",
+  "methodName" : "testEmptyIterable",
+  "sourceCode" : "@Test\r\npublic void testEmptyIterable() {\r\n    // NET-539\r\n    Threader t = new Threader();\r\n    Threadable[] messages = new Threadable[0];\r\n    final Iterable<Threadable> asList = Arrays.asList(messages);\r\n    Assert.assertNull(t.thread(asList));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\ntp\\TestNtpClient.java",
+  "methodName" : "testGetTime",
+  "sourceCode" : "@Test\r\npublic void testGetTime() throws IOException {\r\n    long currentTime = System.currentTimeMillis();\r\n    NTPUDPClient client = new NTPUDPClient();\r\n    // timeout if response takes longer than 2 seconds\r\n    client.setDefaultTimeout(2000);\r\n    try {\r\n        // Java 1.7: use InetAddress.getLoopbackAddress() instead\r\n        InetAddress addr = InetAddress.getByAddress(\"loopback\", new byte[] { 127, 0, 0, 1 });\r\n        TimeInfo timeInfo = client.getTime(addr, server.getPort());\r\n        Assert.assertNotNull(timeInfo);\r\n        Assert.assertTrue(timeInfo.getReturnTime() >= currentTime);\r\n        NtpV3Packet message = timeInfo.getMessage();\r\n        Assert.assertNotNull(message);\r\n        TimeStamp rcvTimeStamp = message.getReceiveTimeStamp();\r\n        TimeStamp xmitTimeStamp = message.getTransmitTimeStamp();\r\n        Assert.assertTrue(xmitTimeStamp.compareTo(rcvTimeStamp) >= 0);\r\n        TimeStamp originateTimeStamp = message.getOriginateTimeStamp();\r\n        Assert.assertNotNull(originateTimeStamp);\r\n        Assert.assertTrue(originateTimeStamp.getTime() >= currentTime);\r\n        Assert.assertEquals(NtpV3Packet.MODE_SERVER, message.getMode());\r\n        // following assertions are specific to the SimpleNTPServer\r\n        TimeStamp referenceTimeStamp = message.getReferenceTimeStamp();\r\n        Assert.assertNotNull(referenceTimeStamp);\r\n        Assert.assertTrue(referenceTimeStamp.getTime() >= currentTime);\r\n        Assert.assertEquals(NtpV3Packet.VERSION_3, message.getVersion());\r\n        Assert.assertEquals(1, message.getStratum());\r\n        Assert.assertEquals(\"LCL\", NtpUtils.getReferenceClock(message));\r\n    } finally {\r\n        client.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\ntp\\TestNtpPacket.java",
+  "methodName" : "testCreate",
+  "sourceCode" : "@Test\r\npublic void testCreate() {\r\n    NtpV3Packet message = new NtpV3Impl();\r\n    // byte 0 [bit numbers 7-6]\r\n    message.setLeapIndicator(0);\r\n    // byte 0 [bit numbers 5-4]\r\n    message.setVersion(NtpV3Packet.VERSION_3);\r\n    // byte 0 [bit numbers 3-0]\r\n    message.setMode(4);\r\n    // byte 1\r\n    message.setStratum(3);\r\n    // byte 2\r\n    message.setPoll(4);\r\n    // byte 3\r\n    message.setPrecision(-17);\r\n    // bytes 4-7\r\n    message.setRootDelay(100);\r\n    // bytes 8-11\r\n    message.setRootDispersion(3382);\r\n    // byte 12-15\r\n    message.setReferenceId(0x81531472);\r\n    message.setReferenceTime(new TimeStamp(0xd552447fec1d6000L));\r\n    message.setOriginateTimeStamp(new TimeStamp(0xd5524718ac49ba5eL));\r\n    message.setReceiveTimeStamp(new TimeStamp(0xd55247194b6d9000L));\r\n    message.setTransmitTime(new TimeStamp(0xd55247194b797000L));\r\n    Assert.assertEquals(-17, message.getPrecision());\r\n    Assert.assertEquals(4, message.getPoll());\r\n    Assert.assertEquals(100, message.getRootDelay());\r\n    Assert.assertEquals(3382, message.getRootDispersion());\r\n    Assert.assertEquals(0x81531472, message.getReferenceId());\r\n    Assert.assertNotNull(message.getReferenceTimeStamp());\r\n    Assert.assertEquals(\"NTP\", message.getType());\r\n    Assert.assertEquals(\"Server\", message.getModeName());\r\n    Assert.assertEquals(\"129.83.20.114\", message.getReferenceIdString());\r\n    Assert.assertEquals(51, message.getRootDispersionInMillis());\r\n    Assert.assertEquals(message.getRootDelay() / 65.536, message.getRootDelayInMillisDouble(), 1e-13);\r\n    // this creates a new datagram\r\n    DatagramPacket dp = message.getDatagramPacket();\r\n    Assert.assertNotNull(dp);\r\n    // fixed 48-byte length\r\n    Assert.assertEquals(48, dp.getLength());\r\n    NtpV3Packet message2 = new NtpV3Impl();\r\n    DatagramPacket dp2 = new DatagramPacket(ntpPacket, ntpPacket.length);\r\n    message2.setDatagramPacket(dp2);\r\n    Assert.assertEquals(message2, message);\r\n    Assert.assertEquals(message2.hashCode(), message.hashCode());\r\n    Assert.assertEquals(message2.toString(), message.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\ntp\\TestNtpPacket.java",
+  "methodName" : "testCreateAndSetByte0",
+  "sourceCode" : "@Test\r\npublic void testCreateAndSetByte0() {\r\n    // LI + VN + Mode all part of first byte -- make sure set order does not matter\r\n    NtpV3Packet message = new NtpV3Impl();\r\n    message.setLeapIndicator(2);\r\n    message.setMode(4);\r\n    message.setVersion(NtpV3Packet.VERSION_3);\r\n    Assert.assertEquals(4, message.getMode());\r\n    Assert.assertEquals(NtpV3Packet.VERSION_3, message.getVersion());\r\n    Assert.assertEquals(2, message.getLeapIndicator());\r\n    message.setLeapIndicator(2);\r\n    message.setVersion(NtpV3Packet.VERSION_3);\r\n    message.setMode(4);\r\n    Assert.assertEquals(4, message.getMode());\r\n    Assert.assertEquals(NtpV3Packet.VERSION_3, message.getVersion());\r\n    Assert.assertEquals(2, message.getLeapIndicator());\r\n    message.setMode(4);\r\n    message.setLeapIndicator(2);\r\n    message.setVersion(NtpV3Packet.VERSION_3);\r\n    Assert.assertEquals(4, message.getMode());\r\n    Assert.assertEquals(NtpV3Packet.VERSION_3, message.getVersion());\r\n    Assert.assertEquals(2, message.getLeapIndicator());\r\n    message.setMode(4);\r\n    message.setVersion(NtpV3Packet.VERSION_3);\r\n    message.setLeapIndicator(2);\r\n    Assert.assertEquals(4, message.getMode());\r\n    Assert.assertEquals(NtpV3Packet.VERSION_3, message.getVersion());\r\n    Assert.assertEquals(2, message.getLeapIndicator());\r\n    message.setVersion(NtpV3Packet.VERSION_3);\r\n    message.setMode(4);\r\n    message.setLeapIndicator(2);\r\n    Assert.assertEquals(4, message.getMode());\r\n    Assert.assertEquals(NtpV3Packet.VERSION_3, message.getVersion());\r\n    Assert.assertEquals(2, message.getLeapIndicator());\r\n    message.setVersion(NtpV3Packet.VERSION_3);\r\n    message.setLeapIndicator(2);\r\n    message.setMode(4);\r\n    Assert.assertEquals(4, message.getMode());\r\n    Assert.assertEquals(NtpV3Packet.VERSION_3, message.getVersion());\r\n    Assert.assertEquals(2, message.getLeapIndicator());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\ntp\\TestNtpPacket.java",
+  "methodName" : "testCreateNtpV4",
+  "sourceCode" : "@Test\r\npublic void testCreateNtpV4() {\r\n    NtpV3Packet message = new NtpV3Impl();\r\n    message.setVersion(NtpV3Packet.VERSION_4);\r\n    message.setStratum(3);\r\n    message.setReferenceId(0x81531472);\r\n    // force hex-string reference id string\r\n    Assert.assertEquals(\"81531472\", message.getReferenceIdString());\r\n    message.setVersion(NtpV3Packet.VERSION_4);\r\n    message.setStratum(1);\r\n    // USNO\r\n    message.setReferenceId(0x55534E4F);\r\n    // force raw-string reference id string\r\n    Assert.assertEquals(\"USNO\", message.getReferenceIdString());\r\n    // GPS\r\n    message.setReferenceId(0x47505300);\r\n    Assert.assertEquals(\"GPS\", message.getReferenceIdString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\ntp\\TestNtpPacket.java",
+  "methodName" : "testCreateFromBytes",
+  "sourceCode" : "@Test\r\npublic void testCreateFromBytes() {\r\n    NtpV3Packet message = new NtpV3Impl();\r\n    DatagramPacket dp = new DatagramPacket(ntpPacket, ntpPacket.length);\r\n    message.setDatagramPacket(dp);\r\n    Assert.assertEquals(4, message.getMode());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\ntp\\TestNtpPacket.java",
+  "methodName" : "testCreateFromBadPacket",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testCreateFromBadPacket() {\r\n    NtpV3Packet message = new NtpV3Impl();\r\n    // drop 4-bytes from packet\r\n    DatagramPacket dp = new DatagramPacket(ntpPacket, ntpPacket.length - 4);\r\n    message.setDatagramPacket(dp);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\ntp\\TestNtpPacket.java",
+  "methodName" : "testCreateFromNullPacket",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testCreateFromNullPacket() {\r\n    NtpV3Packet message = new NtpV3Impl();\r\n    message.setDatagramPacket(null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\ntp\\TestNtpPacket.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "@Test\r\npublic void testEquals() {\r\n    NtpV3Packet message1 = new NtpV3Impl();\r\n    DatagramPacket dp = new DatagramPacket(ntpPacket, ntpPacket.length);\r\n    message1.setDatagramPacket(dp);\r\n    NtpV3Packet message2 = new NtpV3Impl();\r\n    message2.setDatagramPacket(dp);\r\n    Assert.assertEquals(\"hashCode\", message1.hashCode(), message2.hashCode());\r\n    Assert.assertEquals(message1, message2);\r\n    // now change the packet to force equals() => false\r\n    message2.setMode(2);\r\n    Assert.assertTrue(message1.getMode() != message2.getMode());\r\n    Assert.assertFalse(message1.equals(message2));\r\n    NtpV3Packet message3 = null;\r\n    Assert.assertFalse(message1.equals(message3));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\ntp\\TestTimeInfo.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "@Test\r\npublic void testEquals() {\r\n    NtpV3Packet packet = new NtpV3Impl();\r\n    final long returnTime = System.currentTimeMillis();\r\n    TimeInfo info = new TimeInfo(packet, returnTime);\r\n    info.addComment(\"this is a comment\");\r\n    TimeInfo other = new TimeInfo(packet, returnTime);\r\n    other.addComment(\"this is a comment\");\r\n    // fails\r\n    Assert.assertEquals(info, other);\r\n    Assert.assertEquals(info.hashCode(), other.hashCode());\r\n    other.addComment(\"another comment\");\r\n    //Assert.assertFalse(info.equals(other)); // comments not used for equality\r\n    TimeInfo another = new TimeInfo(packet, returnTime, new ArrayList<String>());\r\n    Assert.assertEquals(info, another);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\ntp\\TestTimeInfo.java",
+  "methodName" : "testComputeDetails",
+  "sourceCode" : "@Test\r\npublic void testComputeDetails() {\r\n    // if (origTime > returnTime) // assert destTime >= origTime\r\n    NtpV3Packet packet = new NtpV3Impl();\r\n    long returnTime = System.currentTimeMillis();\r\n    // example\r\n    // returntime=1370571658178\r\n    // origTime=  1370571659178\r\n    // originate time as defined in RFC-1305 (t1)\r\n    packet.setOriginateTimeStamp(TimeStamp.getNtpTime(returnTime + 1000));\r\n    // Receive Time is time request received by server (t2)\r\n    packet.setReceiveTimeStamp(packet.getOriginateTimeStamp());\r\n    // Transmit time is time reply sent by server (t3)\r\n    packet.setTransmitTime(packet.getOriginateTimeStamp());\r\n    packet.setReferenceTime(packet.getOriginateTimeStamp());\r\n    //long origTime = packet.getOriginateTimeStamp().getTime();\r\n    //System.out.println(\"returntime=\" + returnTime);\r\n    //System.out.println(\"origTime=  \" + origTime);\r\n    TimeInfo info = new TimeInfo(packet, returnTime);\r\n    info.computeDetails();\r\n    Assert.assertSame(packet, info.getMessage());\r\n    Assert.assertEquals(returnTime, info.getReturnTime());\r\n    Assert.assertEquals(Long.valueOf(500), info.getOffset());\r\n    Assert.assertEquals(Long.valueOf(-1000), info.getDelay());\r\n    // comments: [Warning: processing time > total network time, Error: OrigTime > DestRcvTime]\r\n    Assert.assertEquals(2, info.getComments().size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\ntp\\TestTimeInfo.java",
+  "methodName" : "testException",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testException() {\r\n    NtpV3Packet packet = null;\r\n    new TimeInfo(packet, 1L);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\ntp\\TestTimeInfo.java",
+  "methodName" : "testAddress",
+  "sourceCode" : "@Test\r\npublic void testAddress() throws UnknownHostException {\r\n    NtpV3Packet packet = new NtpV3Impl();\r\n    TimeInfo info = new TimeInfo(packet, System.currentTimeMillis());\r\n    Assert.assertNull(info.getAddress());\r\n    packet.getDatagramPacket().setAddress(InetAddress.getByAddress(\"loopback\", new byte[] { 127, 0, 0, 1 }));\r\n    Assert.assertNotNull(info.getAddress());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\ntp\\TestTimeInfo.java",
+  "methodName" : "testZeroTime",
+  "sourceCode" : "@Test\r\npublic void testZeroTime() {\r\n    NtpV3Packet packet = new NtpV3Impl();\r\n    TimeInfo info = new TimeInfo(packet, 0);\r\n    info.computeDetails();\r\n    Assert.assertNull(info.getDelay());\r\n    Assert.assertNull(info.getOffset());\r\n    Assert.assertEquals(0L, info.getReturnTime());\r\n    // comments: Error: zero orig time -- cannot compute delay/offset\r\n    final List<String> comments = info.getComments();\r\n    Assert.assertEquals(1, comments.size());\r\n    Assert.assertTrue(comments.get(0).contains(\"zero orig time\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\ntp\\TestTimeInfo.java",
+  "methodName" : "testNotEquals",
+  "sourceCode" : "@Test\r\npublic void testNotEquals() {\r\n    NtpV3Packet packet = new NtpV3Impl();\r\n    long returnTime = System.currentTimeMillis();\r\n    TimeInfo info = new TimeInfo(packet, returnTime);\r\n    // 1. different return time\r\n    NtpV3Packet packet2 = new NtpV3Impl();\r\n    Assert.assertEquals(packet, packet2);\r\n    TimeInfo info2 = new TimeInfo(packet2, returnTime + 1);\r\n    Assert.assertFalse(info.equals(info2));\r\n    // 2. different message / same time\r\n    packet2.setStratum(3);\r\n    packet2.setRootDelay(25);\r\n    TimeInfo info3 = new TimeInfo(packet2, returnTime);\r\n    Assert.assertFalse(info.equals(info3));\r\n    // 3. different class\r\n    Object other = this;\r\n    Assert.assertFalse(info.equals(other));\r\n    // 4. null comparison\r\n    other = null;\r\n    Assert.assertFalse(info.equals(other));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\smtp\\SimpleSMTPHeaderTestCase.java",
+  "methodName" : "testToString",
+  "sourceCode" : "@Test\r\npublic void testToString() {\r\n    assertNotNull(header);\r\n    // Note that the DotTerminatedMessageWriter converts LF to CRLF\r\n    assertEquals(\"From: from@here.invalid\\nTo: to@there.invalid\\nSubject: Test email\\n\\n\", checkDate(header.toString()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\smtp\\SimpleSMTPHeaderTestCase.java",
+  "methodName" : "testToStringNoSubject",
+  "sourceCode" : "@Test\r\npublic void testToStringNoSubject() {\r\n    SimpleSMTPHeader hdr = new SimpleSMTPHeader(\"from@here.invalid\", \"to@there.invalid\", null);\r\n    assertNotNull(hdr);\r\n    // Note that the DotTerminatedMessageWriter converts LF to CRLF\r\n    assertEquals(\"From: from@here.invalid\\nTo: to@there.invalid\\n\\n\", checkDate(hdr.toString()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\smtp\\SimpleSMTPHeaderTestCase.java",
+  "methodName" : "testToStringNoFrom",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testToStringNoFrom() {\r\n    new SimpleSMTPHeader(null, null, null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\smtp\\SimpleSMTPHeaderTestCase.java",
+  "methodName" : "testToStringNoTo",
+  "sourceCode" : "@Test\r\npublic void testToStringNoTo() {\r\n    SimpleSMTPHeader hdr = new SimpleSMTPHeader(\"from@here.invalid\", null, null);\r\n    assertNotNull(hdr);\r\n    // Note that the DotTerminatedMessageWriter converts LF to CRLF\r\n    assertEquals(\"From: from@here.invalid\\n\\n\", checkDate(hdr.toString()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\smtp\\SimpleSMTPHeaderTestCase.java",
+  "methodName" : "testToStringAddHeader",
+  "sourceCode" : "@Test\r\npublic void testToStringAddHeader() {\r\n    SimpleSMTPHeader hdr = new SimpleSMTPHeader(\"from@here.invalid\", null, null);\r\n    assertNotNull(hdr);\r\n    hdr.addHeaderField(\"X-Header1\", \"value 1\");\r\n    hdr.addHeaderField(\"X-Header2\", \"value 2\");\r\n    // Note that the DotTerminatedMessageWriter converts LF to CRLF\r\n    assertEquals(\"X-Header1: value 1\\nX-Header2: value 2\\nFrom: from@here.invalid\\n\\n\", checkDate(hdr.toString()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\smtp\\SimpleSMTPHeaderTestCase.java",
+  "methodName" : "testToStringAddHeaderDate",
+  "sourceCode" : "@Test\r\npublic void testToStringAddHeaderDate() {\r\n    SimpleSMTPHeader hdr = new SimpleSMTPHeader(\"from@here.invalid\", null, null);\r\n    assertNotNull(hdr);\r\n    hdr.addHeaderField(\"Date\", \"dummy date\");\r\n    // does not replace the Date field\r\n    assertEquals(\"Date: dummy date\\nFrom: from@here.invalid\\n\\n\", hdr.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testBase64",
+  "sourceCode" : "@Test\r\npublic void testBase64() {\r\n    Base64 b64 = new Base64();\r\n    assertFalse(b64.isUrlSafe());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testBase64Boolean",
+  "sourceCode" : "@Test\r\npublic void testBase64Boolean() {\r\n    Base64 b64 = new Base64(true);\r\n    assertTrue(b64.isUrlSafe());\r\n    assertTrue(Arrays.equals(new byte[] { '\\r', '\\n' }, b64.getLineSeparator()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testBase64Int",
+  "sourceCode" : "@Test\r\npublic void testBase64Int() {\r\n    Base64 b64;\r\n    b64 = new Base64(8);\r\n    assertFalse(b64.isUrlSafe());\r\n    assertEquals(8, b64.getLineLength());\r\n    b64 = new Base64(11);\r\n    assertEquals(8, b64.getLineLength());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testBase64IntByteArray",
+  "sourceCode" : "@Test\r\npublic void testBase64IntByteArray() {\r\n    Base64 b64;\r\n    b64 = new Base64(8, new byte[] {});\r\n    assertFalse(b64.isUrlSafe());\r\n    assertTrue(Arrays.equals(new byte[] {}, b64.getLineSeparator()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testBase64IntByteArrayBoolean",
+  "sourceCode" : "@Test\r\npublic void testBase64IntByteArrayBoolean() {\r\n    Base64 b64;\r\n    b64 = new Base64(8, new byte[] {}, false);\r\n    assertFalse(b64.isUrlSafe());\r\n    b64 = new Base64(8, new byte[] {}, true);\r\n    assertTrue(b64.isUrlSafe());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testIsBase64",
+  "sourceCode" : "@Test\r\npublic void testIsBase64() {\r\n    assertTrue(Base64.isBase64((byte) 'b'));\r\n    assertFalse(Base64.isBase64((byte) ' '));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testIsArrayByteBase64",
+  "sourceCode" : "@Test\r\npublic void testIsArrayByteBase64() {\r\n    assertTrue(Base64.isArrayByteBase64(new byte[] { 'b', ' ' }));\r\n    assertFalse(Base64.isArrayByteBase64(new byte[] { '?' }));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testEncodeBase64ByteArray",
+  "sourceCode" : "@Test\r\npublic void testEncodeBase64ByteArray() {\r\n    byte[] binaryData = null;\r\n    assertTrue(Arrays.equals(binaryData, Base64.encodeBase64(binaryData)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testEncodeBase64StringByteArray",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testEncodeBase64StringByteArray() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testEncodeBase64StringUnChunked",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testEncodeBase64StringUnChunked() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testEncodeBase64StringByteArrayBoolean",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testEncodeBase64StringByteArrayBoolean() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testEncodeBase64URLSafe",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testEncodeBase64URLSafe() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testEncodeBase64URLSafeString",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testEncodeBase64URLSafeString() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testEncodeBase64Chunked",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testEncodeBase64Chunked() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testDecodeObject",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testDecodeObject() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testDecodeString",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testDecodeString() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testDecodeByteArray",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testDecodeByteArray() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testEncodeBase64ByteArrayBoolean",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testEncodeBase64ByteArrayBoolean() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testEncodeBase64ByteArrayBooleanBoolean",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testEncodeBase64ByteArrayBooleanBoolean() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testEncodeBase64ByteArrayBooleanBooleanInt",
+  "sourceCode" : "@Test\r\npublic void testEncodeBase64ByteArrayBooleanBooleanInt() {\r\n    byte[] binaryData = new byte[] { '1', '2', '3' };\r\n    byte[] encoded;\r\n    encoded = Base64.encodeBase64(binaryData, false, false);\r\n    assertNotNull(encoded);\r\n    assertEquals(4, encoded.length);\r\n    try {\r\n        Base64.encodeBase64(binaryData, false, false, 3);\r\n        fail(\"Expected IllegalArgumentException\");\r\n    } catch (IllegalArgumentException expected) {\r\n        // expected\r\n    }\r\n    // NET-483\r\n    encoded = Base64.encodeBase64(binaryData, false, false, 4);\r\n    assertNotNull(encoded);\r\n    assertEquals(4, encoded.length);\r\n    encoded = Base64.encodeBase64(binaryData, true, false);\r\n    assertNotNull(encoded);\r\n    // always adds trailer\r\n    assertEquals(6, encoded.length);\r\n    try {\r\n        Base64.encodeBase64(binaryData, true, false, 5);\r\n        fail(\"Expected IllegalArgumentException\");\r\n    } catch (IllegalArgumentException expected) {\r\n        // expected\r\n    }\r\n    encoded = Base64.encodeBase64(binaryData, true, false, 6);\r\n    assertNotNull(encoded);\r\n    assertEquals(6, encoded.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testDecodeBase64String",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testDecodeBase64String() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testDecodeBase64ByteArray",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testDecodeBase64ByteArray() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testEncodeObject",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testEncodeObject() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testEncodeToString",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testEncodeToString() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testEncodeByteArray",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testEncodeByteArray() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testDecodeInteger",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testDecodeInteger() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testEncodeInteger",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testEncodeInteger() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\Base64Test.java",
+  "methodName" : "testToIntegerBytes",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testToIntegerBytes() {\r\n    fail(\"Not yet implemented\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\UtilTest.java",
+  "methodName" : "testcloseQuietly",
+  "sourceCode" : "@Test\r\npublic void testcloseQuietly() {\r\n    Util.closeQuietly((Closeable) null);\r\n    Util.closeQuietly((Socket) null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\UtilTest.java",
+  "methodName" : "testReader0",
+  "sourceCode" : "@Test\r\npublic void testReader0() throws Exception {\r\n    long streamSize = 0;\r\n    int bufferSize = 0;\r\n    Util.copyReader(source, dest, bufferSize, streamSize, new CSL(1, 1, streamSize));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\UtilTest.java",
+  "methodName" : "testReader1",
+  "sourceCode" : "@Test\r\npublic void testReader1() throws Exception {\r\n    long streamSize = 0;\r\n    int bufferSize = 1;\r\n    Util.copyReader(source, dest, bufferSize, streamSize, new CSL(1, 1, streamSize));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\UtilTest.java",
+  "methodName" : "testReader_1",
+  "sourceCode" : "@Test\r\npublic void testReader_1() throws Exception {\r\n    long streamSize = 0;\r\n    int bufferSize = -1;\r\n    Util.copyReader(source, dest, bufferSize, streamSize, new CSL(1, 1, streamSize));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\UtilTest.java",
+  "methodName" : "testStream0",
+  "sourceCode" : "@Test\r\npublic void testStream0() throws Exception {\r\n    long streamSize = 0;\r\n    int bufferSize = 0;\r\n    Util.copyStream(src, dst, bufferSize, streamSize, new CSL(1, 1, streamSize));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\UtilTest.java",
+  "methodName" : "testStream1",
+  "sourceCode" : "@Test\r\npublic void testStream1() throws Exception {\r\n    long streamSize = 0;\r\n    int bufferSize = 1;\r\n    Util.copyStream(src, dst, bufferSize, streamSize, new CSL(1, 1, streamSize));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\UtilTest.java",
+  "methodName" : "testStream_1",
+  "sourceCode" : "@Test\r\npublic void testStream_1() throws Exception {\r\n    long streamSize = 0;\r\n    int bufferSize = -1;\r\n    Util.copyStream(src, dst, bufferSize, streamSize, new CSL(1, 1, streamSize));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\UtilTest.java",
+  "methodName" : "testNET550_Reader",
+  "sourceCode" : "@Test\r\npublic void testNET550_Reader() throws Exception {\r\n    // must be multiple of 2\r\n    final char[] buff = new char[] { 'a', 'b', 'c', 'd' };\r\n    final int bufflen = buff.length;\r\n    {\r\n        // Check buffer size 1 processes in chunks of 1\r\n        Reader rdr = new CharArrayReader(buff);\r\n        final CSLtotal listener = new CSLtotal(bufflen, 1);\r\n        // buffer size 1\r\n        Util.copyReader(rdr, dest, 1, 0, listener);\r\n        listener.checkExpected();\r\n    }\r\n    {\r\n        // Check bufsize 2 uses chunks of 2\r\n        Reader rdr = new CharArrayReader(buff);\r\n        final CSLtotal listener = new CSLtotal(bufflen, 2);\r\n        // buffer size 2\r\n        Util.copyReader(rdr, dest, 2, 0, listener);\r\n        listener.checkExpected();\r\n    }\r\n    {\r\n        // Check bigger size reads the lot\r\n        Reader rdr = new CharArrayReader(buff);\r\n        final CSLtotal listener = new CSLtotal(bufflen, bufflen);\r\n        // buffer size 20\r\n        Util.copyReader(rdr, dest, 20, 0, listener);\r\n        listener.checkExpected();\r\n    }\r\n    {\r\n        // Check negative size reads reads full amount\r\n        Reader rdr = new CharArrayReader(buff);\r\n        final CSLtotal listener = new CSLtotal(bufflen, bufflen);\r\n        // buffer size -1\r\n        Util.copyReader(rdr, dest, -1, 0, listener);\r\n        listener.checkExpected();\r\n    }\r\n    {\r\n        // Check zero size reads reads full amount\r\n        Reader rdr = new CharArrayReader(buff);\r\n        final CSLtotal listener = new CSLtotal(bufflen, bufflen);\r\n        // buffer size -1\r\n        Util.copyReader(rdr, dest, 0, 0, listener);\r\n        listener.checkExpected();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-Net\\src\\test\\java\\org\\apache\\commons\\net\\util\\UtilTest.java",
+  "methodName" : "testNET550_Stream",
+  "sourceCode" : "@Test\r\npublic void testNET550_Stream() throws Exception {\r\n    // must be multiple of 2\r\n    final byte[] buff = new byte[] { 'a', 'b', 'c', 'd' };\r\n    final int bufflen = buff.length;\r\n    {\r\n        // Check buffer size 1 processes in chunks of 1\r\n        InputStream is = new ByteArrayInputStream(buff);\r\n        final CSLtotal listener = new CSLtotal(bufflen, 1);\r\n        // buffer size 1\r\n        Util.copyStream(is, dst, 1, 0, listener);\r\n        listener.checkExpected();\r\n    }\r\n    {\r\n        // Check bufsize 2 uses chunks of 2\r\n        InputStream is = new ByteArrayInputStream(buff);\r\n        final CSLtotal listener = new CSLtotal(bufflen, 2);\r\n        // buffer size 2\r\n        Util.copyStream(is, dst, 2, 0, listener);\r\n        listener.checkExpected();\r\n    }\r\n    {\r\n        // Check bigger size reads the lot\r\n        InputStream is = new ByteArrayInputStream(buff);\r\n        final CSLtotal listener = new CSLtotal(bufflen, bufflen);\r\n        // buffer size 20\r\n        Util.copyStream(is, dst, 20, 0, listener);\r\n        listener.checkExpected();\r\n    }\r\n    {\r\n        // Check negative size reads reads full amount\r\n        InputStream is = new ByteArrayInputStream(buff);\r\n        final CSLtotal listener = new CSLtotal(bufflen, bufflen);\r\n        // buffer size -1\r\n        Util.copyStream(is, dst, -1, 0, listener);\r\n        listener.checkExpected();\r\n    }\r\n    {\r\n        // Check zero size reads reads full amount\r\n        InputStream is = new ByteArrayInputStream(buff);\r\n        final CSLtotal listener = new CSLtotal(bufflen, bufflen);\r\n        // buffer size -1\r\n        Util.copyStream(is, dst, 0, 0, listener);\r\n        listener.checkExpected();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

@@ -1,0 +1,118 @@
+[
+  {
+    "rawMockObjectId": 1,
+    "variableName": "registry",
+    "variableType": "SchemaRegistryClient",
+    "isGlobal": true,
+    "mockPatternLevel": 2,
+    "classContext": {
+      "packageName": "io.druid.data.input.avro",
+      "filePath": "C:\\Java_projects\\temp_projects\\Druid\\extensions-core\\avro-extensions\\src\\test\\java\\io\\druid\\data\\input\\avro\\SchemaRegistryBasedAvroBytesDecoderTest.java",
+      "className": "SchemaRegistryBasedAvroBytesDecoderTest"
+    },
+    "statements": [
+      {
+        "code": "SchemaRegistryClient registry;",
+        "line": 49,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "registry = mock(SchemaRegistryClient.class);",
+        "line": 54,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() {\r\n    registry = mock(SchemaRegistryClient.class);\r\n}"
+        }
+      },
+      {
+        "code": "// Given\r\nwhen(registry.getByID(eq(1234))).thenReturn(SomeAvroDatum.getClassSchema());",
+        "line": 61,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testParse",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testParse() throws Exception {\r\n    // Given\r\n    when(registry.getByID(eq(1234))).thenReturn(SomeAvroDatum.getClassSchema());\r\n    GenericRecord someAvroDatum = AvroStreamInputRowParserTest.buildSomeAvroDatum();\r\n    Schema schema = SomeAvroDatum.getClassSchema();\r\n    byte[] bytes = getAvroDatum(schema, someAvroDatum);\r\n    ByteBuffer bb = ByteBuffer.allocate(bytes.length + 5).put((byte) 0).putInt(1234).put(bytes);\r\n    bb.rewind();\r\n    // When\r\n    GenericRecord actual = new SchemaRegistryBasedAvroBytesDecoder(registry).parse(bb);\r\n    // Then\r\n    Assert.assertEquals(someAvroDatum.get(\"id\"), actual.get(\"id\"));\r\n}"
+        }
+      },
+      {
+        "code": "// Given\r\nwhen(registry.getByID(eq(1234))).thenReturn(SomeAvroDatum.getClassSchema());",
+        "line": 77,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testParseCorrupted",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test(expected = ParseException.class)\r\npublic void testParseCorrupted() throws Exception {\r\n    // Given\r\n    when(registry.getByID(eq(1234))).thenReturn(SomeAvroDatum.getClassSchema());\r\n    GenericRecord someAvroDatum = AvroStreamInputRowParserTest.buildSomeAvroDatum();\r\n    Schema schema = SomeAvroDatum.getClassSchema();\r\n    byte[] bytes = getAvroDatum(schema, someAvroDatum);\r\n    ByteBuffer bb = ByteBuffer.allocate(bytes.length + 5).put((byte) 0).putInt(1234).put((bytes), 5, 10);\r\n    // When\r\n    new SchemaRegistryBasedAvroBytesDecoder(registry).parse(bb);\r\n}"
+        }
+      },
+      {
+        "code": "// When\r\nnew SchemaRegistryBasedAvroBytesDecoder(registry).parse(bb);",
+        "line": 83,
+        "type": "REFERENCE",
+        "locate": "Test Case",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testParseCorrupted",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test(expected = ParseException.class)\r\npublic void testParseCorrupted() throws Exception {\r\n    // Given\r\n    when(registry.getByID(eq(1234))).thenReturn(SomeAvroDatum.getClassSchema());\r\n    GenericRecord someAvroDatum = AvroStreamInputRowParserTest.buildSomeAvroDatum();\r\n    Schema schema = SomeAvroDatum.getClassSchema();\r\n    byte[] bytes = getAvroDatum(schema, someAvroDatum);\r\n    ByteBuffer bb = ByteBuffer.allocate(bytes.length + 5).put((byte) 0).putInt(1234).put((bytes), 5, 10);\r\n    // When\r\n    new SchemaRegistryBasedAvroBytesDecoder(registry).parse(bb);\r\n}"
+        }
+      },
+      {
+        "code": "// Given\r\nwhen(registry.getByID(anyInt())).thenThrow(new IOException(\"no pasaran\"));",
+        "line": 90,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testParseWrongId",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test(expected = ParseException.class)\r\npublic void testParseWrongId() throws Exception {\r\n    // Given\r\n    when(registry.getByID(anyInt())).thenThrow(new IOException(\"no pasaran\"));\r\n    GenericRecord someAvroDatum = AvroStreamInputRowParserTest.buildSomeAvroDatum();\r\n    Schema schema = SomeAvroDatum.getClassSchema();\r\n    byte[] bytes = getAvroDatum(schema, someAvroDatum);\r\n    ByteBuffer bb = ByteBuffer.allocate(bytes.length + 5).put((byte) 0).putInt(1234).put(bytes);\r\n    // When\r\n    new SchemaRegistryBasedAvroBytesDecoder(registry).parse(bb);\r\n}"
+        }
+      },
+      {
+        "code": "// When\r\nnew SchemaRegistryBasedAvroBytesDecoder(registry).parse(bb);",
+        "line": 96,
+        "type": "REFERENCE",
+        "locate": "Test Case",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testParseWrongId",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test(expected = ParseException.class)\r\npublic void testParseWrongId() throws Exception {\r\n    // Given\r\n    when(registry.getByID(anyInt())).thenThrow(new IOException(\"no pasaran\"));\r\n    GenericRecord someAvroDatum = AvroStreamInputRowParserTest.buildSomeAvroDatum();\r\n    Schema schema = SomeAvroDatum.getClassSchema();\r\n    byte[] bytes = getAvroDatum(schema, someAvroDatum);\r\n    ByteBuffer bb = ByteBuffer.allocate(bytes.length + 5).put((byte) 0).putInt(1234).put(bytes);\r\n    // When\r\n    new SchemaRegistryBasedAvroBytesDecoder(registry).parse(bb);\r\n}"
+        }
+      }
+    ]
+  }
+]

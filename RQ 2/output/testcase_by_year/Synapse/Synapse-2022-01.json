@@ -1,0 +1,37 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Synapse\\modules\\transports\\core\\nhttp\\src\\test\\java\\org\\apache\\synapse\\transport\\passthru\\util\\RelayUtilsTest.java",
+  "methodName" : "testSOAPBodyIsntFullyReadWhenNotUsingBinaryRelayBuilder",
+  "sourceCode" : "@Test\r\npublic void testSOAPBodyIsntFullyReadWhenNotUsingBinaryRelayBuilder() throws IOException, XMLStreamException {\r\n    SOAPEnvelope envelope = OMXMLBuilderFactory.createSOAPModelBuilder(new StringReader(xml)).getSOAPEnvelope();\r\n    msgCtx.setEnvelope(envelope);\r\n    // Build message when using pass through pipe or binary relay builder\r\n    RelayUtils.buildMessage(msgCtx);\r\n    // Ensure that the payload element is accessible\r\n    assertEquals(payloadQName, msgCtx.getEnvelope().getBody().getFirstElement().getQName());\r\n    // Ensure that the body isn't fully build to support the use of deferred building\r\n    assertFalse(msgCtx.getEnvelope().getBody().isComplete());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Synapse\\modules\\transports\\core\\nhttp\\src\\test\\java\\org\\apache\\synapse\\transport\\passthru\\util\\RelayUtilsTest.java",
+  "methodName" : "testBinaryRelayPayloadExpandsToOriginalPayload",
+  "sourceCode" : "@Test\r\npublic void testBinaryRelayPayloadExpandsToOriginalPayload() throws IOException, XMLStreamException {\r\n    // Transform request soap message into a binary payload\r\n    BinaryRelayBuilder builder = new BinaryRelayBuilder();\r\n    InputStream stream = new ReaderInputStream(new StringReader(xml), UTF8);\r\n    OMElement element = builder.processDocument(stream, \"text/xml\", msgCtx);\r\n    msgCtx.setEnvelope((SOAPEnvelope) element);\r\n    // Build message when using pass through pipe or binary relay builder\r\n    RelayUtils.buildMessage(msgCtx);\r\n    // Ensure that the binary payload is transformed to the appropriate element\r\n    assertEquals(payloadQName, msgCtx.getEnvelope().getBody().getFirstElement().getQName());\r\n    // Ensure that the body isn't fully build to support the use of deferred building\r\n    assertFalse(msgCtx.getEnvelope().getBody().isComplete());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Synapse\\modules\\transports\\core\\nhttp\\src\\test\\java\\org\\apache\\synapse\\transport\\utils\\sslcert\\RevocationVerificationTest.java",
+  "methodName" : "testCRLPathValidation",
+  "sourceCode" : "/**\r\n * Tests CRL Path Validation with the use of a real certificate chain. The verification process\r\n * will make HTTP calls to remote CRL server URLs extracted from the certificates in the\r\n * chain. Usually these certificates will not be revoked. So the path validation must be\r\n * successful to pass the test. In case they are revoked or expired, new certificates should\r\n * be added to the resources directory and Constants should be modified accordingly. See the\r\n * interface TestConstants for expiry dates of the certificates.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\n@Ignore(\"Unit tests with builtin expiration date are bad\")\r\npublic void testCRLPathValidation() throws Exception {\r\n    //Add BouncyCastle as Security Provider.\r\n    Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());\r\n    Utils utils = new Utils();\r\n    X509Certificate[] certificates = utils.getRealCertificateChain();\r\n    crlPathValidation(certificates);\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Synapse\\modules\\transports\\core\\nhttp\\src\\test\\java\\org\\apache\\synapse\\transport\\utils\\sslcert\\RevocationVerificationTest.java",
+  "methodName" : "testCRLPathValidationWithFakeCerts",
+  "sourceCode" : "/**\r\n * Tests CRL path validation with fake certificates. The path validation should fail since\r\n * they are fake and do not contain proper information.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testCRLPathValidationWithFakeCerts() throws Exception {\r\n    //Add BouncyCastle as Security Provider.\r\n    Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());\r\n    Utils utils = new Utils();\r\n    X509Certificate[] fakeCertificates = utils.getFakeCertificateChain();\r\n    Throwable throwable = null;\r\n    try {\r\n        crlPathValidation(fakeCertificates);\r\n    } catch (CertificateVerificationException e) {\r\n        //Path Verification Should fail. So this catch block should be called.\r\n        throwable = e;\r\n    }\r\n    assertNotNull(throwable);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Synapse\\modules\\transports\\core\\nhttp\\src\\test\\java\\org\\apache\\synapse\\transport\\utils\\sslcert\\RevocationVerificationTest.java",
+  "methodName" : "testOCSPPathValidation",
+  "sourceCode" : "/**\r\n * Tests path validation with OCSP. The process makes remote HTTP requests to corresponding\r\n * OCSP servers at the certificate authorities. The path validation must be successful to\r\n * pass the test.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\n@Ignore(\"Unit tests with builtin expiration date are bad\")\r\npublic void testOCSPPathValidation() throws Exception {\r\n    //Add BouncyCastle as Security Provider.\r\n    Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());\r\n    Utils utils = new Utils();\r\n    X509Certificate[] certificates = utils.getRealCertificateChain();\r\n    ocspPathValidation(certificates);\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Synapse\\modules\\transports\\core\\nhttp\\src\\test\\java\\org\\apache\\synapse\\transport\\utils\\sslcert\\RevocationVerificationTest.java",
+  "methodName" : "testOCSPPathValidationWithFakeCerts",
+  "sourceCode" : "/**\r\n * Tests OCSP path validation with a chain of fake certificates. In order to pass the test,\r\n * the path validation should fail since the certificates are fake and do not contain right\r\n * information.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testOCSPPathValidationWithFakeCerts() throws Exception {\r\n    Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());\r\n    Utils utils = new Utils();\r\n    X509Certificate[] fackeCertificates = utils.getFakeCertificateChain();\r\n    Throwable throwable = null;\r\n    try {\r\n        ocspPathValidation(fackeCertificates);\r\n    } catch (CertificateVerificationException e) {\r\n        //Path Verification Should fail. So this catch block should be called.\r\n        throwable = e;\r\n    }\r\n    assertNotNull(throwable);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

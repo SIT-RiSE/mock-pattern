@@ -1,0 +1,341 @@
+[
+  {
+    "rawMockObjectId": 1,
+    "variableName": "mockTripleHandler",
+    "variableType": "TripleHandler",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.any23.extractor",
+      "filePath": "C:\\Java_projects\\temp_projects\\Any23\\core\\src\\test\\java\\org\\apache\\any23\\extractor\\ExtractionResultImplTest.java",
+      "className": "ExtractionResultImplTest"
+    },
+    "statements": [
+      {
+        "code": "private TripleHandler mockTripleHandler;",
+        "line": 50,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "stubbedMethod": "",
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "mockTripleHandler = Mockito.mock(TripleHandler.class);",
+        "line": 55,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "stubbedMethod": "",
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() {\r\n    extractor = new TitleExtractor();\r\n    mockTripleHandler = Mockito.mock(TripleHandler.class);\r\n    extractionResult = new ExtractionResultImpl(new ExtractionContext(\"test-extractor-name\", TEST_IRI), extractor, mockTripleHandler);\r\n}"
+        }
+      },
+      {
+        "code": "mockTripleHandler.close();",
+        "line": 63,
+        "type": "REFERENCE",
+        "locate": "@After",
+        "isMockRelated": false,
+        "isShareable": true,
+        "stubbedMethod": "",
+        "locationContext": {
+          "methodName": "tearDown",
+          "methodAnnotations": [
+            "After"
+          ],
+          "methodRawCode": "@After\r\npublic void tearDown() throws TripleHandlerException {\r\n    extractionResult.close();\r\n    mockTripleHandler.close();\r\n    extractor = null;\r\n    mockTripleHandler = null;\r\n    extractionResult = null;\r\n}"
+        }
+      },
+      {
+        "code": "mockTripleHandler = null;",
+        "line": 65,
+        "type": "ASSIGNMENT",
+        "locate": "@After",
+        "isMockRelated": false,
+        "isShareable": true,
+        "stubbedMethod": "",
+        "locationContext": {
+          "methodName": "tearDown",
+          "methodAnnotations": [
+            "After"
+          ],
+          "methodRawCode": "@After\r\npublic void tearDown() throws TripleHandlerException {\r\n    extractionResult.close();\r\n    mockTripleHandler.close();\r\n    extractor = null;\r\n    mockTripleHandler = null;\r\n    extractionResult = null;\r\n}"
+        }
+      }
+    ],
+    "stubbedInfo": []
+  },
+  {
+    "rawMockObjectId": 2,
+    "variableName": "extractor",
+    "variableType": "Extractor",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.any23.extractor.rdfa",
+      "filePath": "C:\\Java_projects\\temp_projects\\Any23\\core\\src\\test\\java\\org\\apache\\any23\\extractor\\rdfa\\ExtractionExceptionTest.java"
+    },
+    "statements": [
+      {
+        "code": "final Extractor extractor = mock(Extractor.class);",
+        "line": 49,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "stubbedMethod": "",
+        "locationContext": {
+          "methodName": "testPrintStackTrace",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testPrintStackTrace() throws ExtractionException, IOException {\r\n    final String FAKE_EXTRACTOR_NAME = \"fake-extractor-name\";\r\n    final Extractor extractor = mock(Extractor.class);\r\n    final ExtractorDescription ed = mock(ExtractorDescription.class);\r\n    when(ed.getExtractorName()).thenReturn(FAKE_EXTRACTOR_NAME);\r\n    when(extractor.getDescription()).thenReturn(ed);\r\n    final TripleHandler th = mock(TripleHandler.class);\r\n    final ExtractionContext extractionContext = new ExtractionContext(extractor.getDescription().getExtractorName(), SimpleValueFactory.getInstance().createIRI(\"http://fake.document.uri\"));\r\n    final ExtractionResult er = new ExtractionResultImpl(extractionContext, extractor, th);\r\n    er.notifyIssue(IssueReport.IssueLevel.FATAL, \"Fake fatal error.\", 1, 2);\r\n    er.notifyIssue(IssueReport.IssueLevel.ERROR, \"Fake error.\", 3, 4);\r\n    er.notifyIssue(IssueReport.IssueLevel.WARNING, \"Fake warning.\", 5, 6);\r\n    ExtractionException ee = new ExtractionException(\"Fake message.\", new RuntimeException(\"Fake cause\"), er);\r\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    ee.printStackTrace(new PrintWriter(baos, true, StandardCharsets.UTF_8));\r\n    final String bufferContent = baos.toString(StandardCharsets.UTF_8);\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(FAKE_EXTRACTOR_NAME));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"http://fake.document.uri\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(ExtractionContext.ROOT_EXTRACTION_RESULT_ID));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake fatal error.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(1,2)\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake error.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(3,4)\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake warning.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(5,6)\"));\r\n    baos.close();\r\n}"
+        }
+      },
+      {
+        "code": "when(extractor.getDescription()).thenReturn(ed);",
+        "line": 52,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "stubbedMethod": "getDescription",
+        "locationContext": {
+          "methodName": "testPrintStackTrace",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testPrintStackTrace() throws ExtractionException, IOException {\r\n    final String FAKE_EXTRACTOR_NAME = \"fake-extractor-name\";\r\n    final Extractor extractor = mock(Extractor.class);\r\n    final ExtractorDescription ed = mock(ExtractorDescription.class);\r\n    when(ed.getExtractorName()).thenReturn(FAKE_EXTRACTOR_NAME);\r\n    when(extractor.getDescription()).thenReturn(ed);\r\n    final TripleHandler th = mock(TripleHandler.class);\r\n    final ExtractionContext extractionContext = new ExtractionContext(extractor.getDescription().getExtractorName(), SimpleValueFactory.getInstance().createIRI(\"http://fake.document.uri\"));\r\n    final ExtractionResult er = new ExtractionResultImpl(extractionContext, extractor, th);\r\n    er.notifyIssue(IssueReport.IssueLevel.FATAL, \"Fake fatal error.\", 1, 2);\r\n    er.notifyIssue(IssueReport.IssueLevel.ERROR, \"Fake error.\", 3, 4);\r\n    er.notifyIssue(IssueReport.IssueLevel.WARNING, \"Fake warning.\", 5, 6);\r\n    ExtractionException ee = new ExtractionException(\"Fake message.\", new RuntimeException(\"Fake cause\"), er);\r\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    ee.printStackTrace(new PrintWriter(baos, true, StandardCharsets.UTF_8));\r\n    final String bufferContent = baos.toString(StandardCharsets.UTF_8);\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(FAKE_EXTRACTOR_NAME));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"http://fake.document.uri\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(ExtractionContext.ROOT_EXTRACTION_RESULT_ID));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake fatal error.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(1,2)\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake error.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(3,4)\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake warning.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(5,6)\"));\r\n    baos.close();\r\n}"
+        }
+      }
+    ],
+    "stubbedInfo": [
+      "getDescription"
+    ]
+  },
+  {
+    "rawMockObjectId": 3,
+    "variableName": "ed",
+    "variableType": "ExtractorDescription",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.any23.extractor.rdfa",
+      "filePath": "C:\\Java_projects\\temp_projects\\Any23\\core\\src\\test\\java\\org\\apache\\any23\\extractor\\rdfa\\ExtractionExceptionTest.java"
+    },
+    "statements": [
+      {
+        "code": "final ExtractorDescription ed = mock(ExtractorDescription.class);",
+        "line": 50,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "stubbedMethod": "",
+        "locationContext": {
+          "methodName": "testPrintStackTrace",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testPrintStackTrace() throws ExtractionException, IOException {\r\n    final String FAKE_EXTRACTOR_NAME = \"fake-extractor-name\";\r\n    final Extractor extractor = mock(Extractor.class);\r\n    final ExtractorDescription ed = mock(ExtractorDescription.class);\r\n    when(ed.getExtractorName()).thenReturn(FAKE_EXTRACTOR_NAME);\r\n    when(extractor.getDescription()).thenReturn(ed);\r\n    final TripleHandler th = mock(TripleHandler.class);\r\n    final ExtractionContext extractionContext = new ExtractionContext(extractor.getDescription().getExtractorName(), SimpleValueFactory.getInstance().createIRI(\"http://fake.document.uri\"));\r\n    final ExtractionResult er = new ExtractionResultImpl(extractionContext, extractor, th);\r\n    er.notifyIssue(IssueReport.IssueLevel.FATAL, \"Fake fatal error.\", 1, 2);\r\n    er.notifyIssue(IssueReport.IssueLevel.ERROR, \"Fake error.\", 3, 4);\r\n    er.notifyIssue(IssueReport.IssueLevel.WARNING, \"Fake warning.\", 5, 6);\r\n    ExtractionException ee = new ExtractionException(\"Fake message.\", new RuntimeException(\"Fake cause\"), er);\r\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    ee.printStackTrace(new PrintWriter(baos, true, StandardCharsets.UTF_8));\r\n    final String bufferContent = baos.toString(StandardCharsets.UTF_8);\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(FAKE_EXTRACTOR_NAME));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"http://fake.document.uri\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(ExtractionContext.ROOT_EXTRACTION_RESULT_ID));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake fatal error.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(1,2)\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake error.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(3,4)\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake warning.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(5,6)\"));\r\n    baos.close();\r\n}"
+        }
+      },
+      {
+        "code": "when(ed.getExtractorName()).thenReturn(FAKE_EXTRACTOR_NAME);",
+        "line": 51,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "stubbedMethod": "getExtractorName",
+        "locationContext": {
+          "methodName": "testPrintStackTrace",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testPrintStackTrace() throws ExtractionException, IOException {\r\n    final String FAKE_EXTRACTOR_NAME = \"fake-extractor-name\";\r\n    final Extractor extractor = mock(Extractor.class);\r\n    final ExtractorDescription ed = mock(ExtractorDescription.class);\r\n    when(ed.getExtractorName()).thenReturn(FAKE_EXTRACTOR_NAME);\r\n    when(extractor.getDescription()).thenReturn(ed);\r\n    final TripleHandler th = mock(TripleHandler.class);\r\n    final ExtractionContext extractionContext = new ExtractionContext(extractor.getDescription().getExtractorName(), SimpleValueFactory.getInstance().createIRI(\"http://fake.document.uri\"));\r\n    final ExtractionResult er = new ExtractionResultImpl(extractionContext, extractor, th);\r\n    er.notifyIssue(IssueReport.IssueLevel.FATAL, \"Fake fatal error.\", 1, 2);\r\n    er.notifyIssue(IssueReport.IssueLevel.ERROR, \"Fake error.\", 3, 4);\r\n    er.notifyIssue(IssueReport.IssueLevel.WARNING, \"Fake warning.\", 5, 6);\r\n    ExtractionException ee = new ExtractionException(\"Fake message.\", new RuntimeException(\"Fake cause\"), er);\r\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    ee.printStackTrace(new PrintWriter(baos, true, StandardCharsets.UTF_8));\r\n    final String bufferContent = baos.toString(StandardCharsets.UTF_8);\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(FAKE_EXTRACTOR_NAME));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"http://fake.document.uri\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(ExtractionContext.ROOT_EXTRACTION_RESULT_ID));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake fatal error.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(1,2)\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake error.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(3,4)\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake warning.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(5,6)\"));\r\n    baos.close();\r\n}"
+        }
+      },
+      {
+        "code": "when(extractor.getDescription()).thenReturn(ed);",
+        "line": 52,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "stubbedMethod": "getDescription",
+        "locationContext": {
+          "methodName": "testPrintStackTrace",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testPrintStackTrace() throws ExtractionException, IOException {\r\n    final String FAKE_EXTRACTOR_NAME = \"fake-extractor-name\";\r\n    final Extractor extractor = mock(Extractor.class);\r\n    final ExtractorDescription ed = mock(ExtractorDescription.class);\r\n    when(ed.getExtractorName()).thenReturn(FAKE_EXTRACTOR_NAME);\r\n    when(extractor.getDescription()).thenReturn(ed);\r\n    final TripleHandler th = mock(TripleHandler.class);\r\n    final ExtractionContext extractionContext = new ExtractionContext(extractor.getDescription().getExtractorName(), SimpleValueFactory.getInstance().createIRI(\"http://fake.document.uri\"));\r\n    final ExtractionResult er = new ExtractionResultImpl(extractionContext, extractor, th);\r\n    er.notifyIssue(IssueReport.IssueLevel.FATAL, \"Fake fatal error.\", 1, 2);\r\n    er.notifyIssue(IssueReport.IssueLevel.ERROR, \"Fake error.\", 3, 4);\r\n    er.notifyIssue(IssueReport.IssueLevel.WARNING, \"Fake warning.\", 5, 6);\r\n    ExtractionException ee = new ExtractionException(\"Fake message.\", new RuntimeException(\"Fake cause\"), er);\r\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    ee.printStackTrace(new PrintWriter(baos, true, StandardCharsets.UTF_8));\r\n    final String bufferContent = baos.toString(StandardCharsets.UTF_8);\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(FAKE_EXTRACTOR_NAME));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"http://fake.document.uri\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(ExtractionContext.ROOT_EXTRACTION_RESULT_ID));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake fatal error.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(1,2)\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake error.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(3,4)\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake warning.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(5,6)\"));\r\n    baos.close();\r\n}"
+        }
+      }
+    ],
+    "stubbedInfo": [
+      "getExtractorName",
+      "getDescription"
+    ]
+  },
+  {
+    "rawMockObjectId": 4,
+    "variableName": "th",
+    "variableType": "TripleHandler",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.any23.extractor.rdfa",
+      "filePath": "C:\\Java_projects\\temp_projects\\Any23\\core\\src\\test\\java\\org\\apache\\any23\\extractor\\rdfa\\ExtractionExceptionTest.java"
+    },
+    "statements": [
+      {
+        "code": "final TripleHandler th = mock(TripleHandler.class);",
+        "line": 54,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "stubbedMethod": "",
+        "locationContext": {
+          "methodName": "testPrintStackTrace",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testPrintStackTrace() throws ExtractionException, IOException {\r\n    final String FAKE_EXTRACTOR_NAME = \"fake-extractor-name\";\r\n    final Extractor extractor = mock(Extractor.class);\r\n    final ExtractorDescription ed = mock(ExtractorDescription.class);\r\n    when(ed.getExtractorName()).thenReturn(FAKE_EXTRACTOR_NAME);\r\n    when(extractor.getDescription()).thenReturn(ed);\r\n    final TripleHandler th = mock(TripleHandler.class);\r\n    final ExtractionContext extractionContext = new ExtractionContext(extractor.getDescription().getExtractorName(), SimpleValueFactory.getInstance().createIRI(\"http://fake.document.uri\"));\r\n    final ExtractionResult er = new ExtractionResultImpl(extractionContext, extractor, th);\r\n    er.notifyIssue(IssueReport.IssueLevel.FATAL, \"Fake fatal error.\", 1, 2);\r\n    er.notifyIssue(IssueReport.IssueLevel.ERROR, \"Fake error.\", 3, 4);\r\n    er.notifyIssue(IssueReport.IssueLevel.WARNING, \"Fake warning.\", 5, 6);\r\n    ExtractionException ee = new ExtractionException(\"Fake message.\", new RuntimeException(\"Fake cause\"), er);\r\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    ee.printStackTrace(new PrintWriter(baos, true, StandardCharsets.UTF_8));\r\n    final String bufferContent = baos.toString(StandardCharsets.UTF_8);\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(FAKE_EXTRACTOR_NAME));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"http://fake.document.uri\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(ExtractionContext.ROOT_EXTRACTION_RESULT_ID));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake fatal error.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(1,2)\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake error.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(3,4)\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"Fake warning.\"));\r\n    Assert.assertTrue(\"Unexpected message content.\", bufferContent.contains(\"(5,6)\"));\r\n    baos.close();\r\n}"
+        }
+      }
+    ],
+    "stubbedInfo": []
+  },
+  {
+    "rawMockObjectId": 5,
+    "variableName": "extractionResult",
+    "variableType": "ExtractionResult",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.any23.extractor.xpath",
+      "filePath": "C:\\Java_projects\\temp_projects\\Any23\\core\\src\\test\\java\\org\\apache\\any23\\extractor\\xpath\\TemplateXPathExtractorRuleImplTest.java"
+    },
+    "statements": [
+      {
+        "code": "final ExtractionResult extractionResult = mock(ExtractionResult.class);",
+        "line": 135,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "stubbedMethod": "",
+        "locationContext": {
+          "methodName": "testProcess",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testProcess() throws IOException {\r\n    final QuadTemplate template1 = new QuadTemplate(new TemplateSubject(TemplateSubject.Type.URI, \"http://sub1\", false), new TemplatePredicate(\"http://pred1\", false), new TemplateObject(TemplateObject.Type.LITERAL, \"v1\", true), new TemplateGraph(\"http://graph1\", false));\r\n    final QuadTemplate template2 = new QuadTemplate(new TemplateSubject(TemplateSubject.Type.URI, \"http://sub2\", false), new TemplatePredicate(\"v2\", true), new TemplateObject(TemplateObject.Type.URI, \"http://obj2\", false), new TemplateGraph(\"http://graph2\", false));\r\n    xPathExtractionRule.add(new Variable(\"v1\", \"/html/body/div[1]\"));\r\n    xPathExtractionRule.add(new Variable(\"v2\", \"/html/body/div[2]\"));\r\n    xPathExtractionRule.add(template1);\r\n    xPathExtractionRule.add(template2);\r\n    final String documentIRI = \"http://www.page.com/test-uri\";\r\n    final InputStream testData = this.getClass().getResourceAsStream(\"xpathextractor-test.html\");\r\n    final TagSoupParser tagSoupParser = new TagSoupParser(testData, documentIRI);\r\n    final ExtractionResult extractionResult = mock(ExtractionResult.class);\r\n    xPathExtractionRule.process(tagSoupParser.getDOM(), extractionResult);\r\n    verify(extractionResult).writeTriple(SimpleValueFactory.getInstance().createIRI(\"http://sub1\"), SimpleValueFactory.getInstance().createIRI(\"http://pred1\"), SimpleValueFactory.getInstance().createLiteral(\"value1\"), SimpleValueFactory.getInstance().createIRI(\"http://graph1\"));\r\n    verify(extractionResult).writeTriple(SimpleValueFactory.getInstance().createIRI(\"http://sub2\"), SimpleValueFactory.getInstance().createIRI(\"http://test.dom/uri\"), SimpleValueFactory.getInstance().createIRI(\"http://obj2\"), SimpleValueFactory.getInstance().createIRI(\"http://graph2\"));\r\n}"
+        }
+      },
+      {
+        "code": "xPathExtractionRule.process(tagSoupParser.getDOM(), extractionResult);",
+        "line": 136,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "stubbedMethod": "",
+        "locationContext": {
+          "methodName": "testProcess",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testProcess() throws IOException {\r\n    final QuadTemplate template1 = new QuadTemplate(new TemplateSubject(TemplateSubject.Type.URI, \"http://sub1\", false), new TemplatePredicate(\"http://pred1\", false), new TemplateObject(TemplateObject.Type.LITERAL, \"v1\", true), new TemplateGraph(\"http://graph1\", false));\r\n    final QuadTemplate template2 = new QuadTemplate(new TemplateSubject(TemplateSubject.Type.URI, \"http://sub2\", false), new TemplatePredicate(\"v2\", true), new TemplateObject(TemplateObject.Type.URI, \"http://obj2\", false), new TemplateGraph(\"http://graph2\", false));\r\n    xPathExtractionRule.add(new Variable(\"v1\", \"/html/body/div[1]\"));\r\n    xPathExtractionRule.add(new Variable(\"v2\", \"/html/body/div[2]\"));\r\n    xPathExtractionRule.add(template1);\r\n    xPathExtractionRule.add(template2);\r\n    final String documentIRI = \"http://www.page.com/test-uri\";\r\n    final InputStream testData = this.getClass().getResourceAsStream(\"xpathextractor-test.html\");\r\n    final TagSoupParser tagSoupParser = new TagSoupParser(testData, documentIRI);\r\n    final ExtractionResult extractionResult = mock(ExtractionResult.class);\r\n    xPathExtractionRule.process(tagSoupParser.getDOM(), extractionResult);\r\n    verify(extractionResult).writeTriple(SimpleValueFactory.getInstance().createIRI(\"http://sub1\"), SimpleValueFactory.getInstance().createIRI(\"http://pred1\"), SimpleValueFactory.getInstance().createLiteral(\"value1\"), SimpleValueFactory.getInstance().createIRI(\"http://graph1\"));\r\n    verify(extractionResult).writeTriple(SimpleValueFactory.getInstance().createIRI(\"http://sub2\"), SimpleValueFactory.getInstance().createIRI(\"http://test.dom/uri\"), SimpleValueFactory.getInstance().createIRI(\"http://obj2\"), SimpleValueFactory.getInstance().createIRI(\"http://graph2\"));\r\n}"
+        }
+      },
+      {
+        "code": "verify(extractionResult).writeTriple(SimpleValueFactory.getInstance().createIRI(\"http://sub1\"), SimpleValueFactory.getInstance().createIRI(\"http://pred1\"), SimpleValueFactory.getInstance().createLiteral(\"value1\"), SimpleValueFactory.getInstance().createIRI(\"http://graph1\"));",
+        "line": 138,
+        "type": "VERIFICATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "stubbedMethod": "",
+        "locationContext": {
+          "methodName": "testProcess",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testProcess() throws IOException {\r\n    final QuadTemplate template1 = new QuadTemplate(new TemplateSubject(TemplateSubject.Type.URI, \"http://sub1\", false), new TemplatePredicate(\"http://pred1\", false), new TemplateObject(TemplateObject.Type.LITERAL, \"v1\", true), new TemplateGraph(\"http://graph1\", false));\r\n    final QuadTemplate template2 = new QuadTemplate(new TemplateSubject(TemplateSubject.Type.URI, \"http://sub2\", false), new TemplatePredicate(\"v2\", true), new TemplateObject(TemplateObject.Type.URI, \"http://obj2\", false), new TemplateGraph(\"http://graph2\", false));\r\n    xPathExtractionRule.add(new Variable(\"v1\", \"/html/body/div[1]\"));\r\n    xPathExtractionRule.add(new Variable(\"v2\", \"/html/body/div[2]\"));\r\n    xPathExtractionRule.add(template1);\r\n    xPathExtractionRule.add(template2);\r\n    final String documentIRI = \"http://www.page.com/test-uri\";\r\n    final InputStream testData = this.getClass().getResourceAsStream(\"xpathextractor-test.html\");\r\n    final TagSoupParser tagSoupParser = new TagSoupParser(testData, documentIRI);\r\n    final ExtractionResult extractionResult = mock(ExtractionResult.class);\r\n    xPathExtractionRule.process(tagSoupParser.getDOM(), extractionResult);\r\n    verify(extractionResult).writeTriple(SimpleValueFactory.getInstance().createIRI(\"http://sub1\"), SimpleValueFactory.getInstance().createIRI(\"http://pred1\"), SimpleValueFactory.getInstance().createLiteral(\"value1\"), SimpleValueFactory.getInstance().createIRI(\"http://graph1\"));\r\n    verify(extractionResult).writeTriple(SimpleValueFactory.getInstance().createIRI(\"http://sub2\"), SimpleValueFactory.getInstance().createIRI(\"http://test.dom/uri\"), SimpleValueFactory.getInstance().createIRI(\"http://obj2\"), SimpleValueFactory.getInstance().createIRI(\"http://graph2\"));\r\n}"
+        }
+      },
+      {
+        "code": "verify(extractionResult).writeTriple(SimpleValueFactory.getInstance().createIRI(\"http://sub2\"), SimpleValueFactory.getInstance().createIRI(\"http://test.dom/uri\"), SimpleValueFactory.getInstance().createIRI(\"http://obj2\"), SimpleValueFactory.getInstance().createIRI(\"http://graph2\"));",
+        "line": 143,
+        "type": "VERIFICATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "stubbedMethod": "",
+        "locationContext": {
+          "methodName": "testProcess",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testProcess() throws IOException {\r\n    final QuadTemplate template1 = new QuadTemplate(new TemplateSubject(TemplateSubject.Type.URI, \"http://sub1\", false), new TemplatePredicate(\"http://pred1\", false), new TemplateObject(TemplateObject.Type.LITERAL, \"v1\", true), new TemplateGraph(\"http://graph1\", false));\r\n    final QuadTemplate template2 = new QuadTemplate(new TemplateSubject(TemplateSubject.Type.URI, \"http://sub2\", false), new TemplatePredicate(\"v2\", true), new TemplateObject(TemplateObject.Type.URI, \"http://obj2\", false), new TemplateGraph(\"http://graph2\", false));\r\n    xPathExtractionRule.add(new Variable(\"v1\", \"/html/body/div[1]\"));\r\n    xPathExtractionRule.add(new Variable(\"v2\", \"/html/body/div[2]\"));\r\n    xPathExtractionRule.add(template1);\r\n    xPathExtractionRule.add(template2);\r\n    final String documentIRI = \"http://www.page.com/test-uri\";\r\n    final InputStream testData = this.getClass().getResourceAsStream(\"xpathextractor-test.html\");\r\n    final TagSoupParser tagSoupParser = new TagSoupParser(testData, documentIRI);\r\n    final ExtractionResult extractionResult = mock(ExtractionResult.class);\r\n    xPathExtractionRule.process(tagSoupParser.getDOM(), extractionResult);\r\n    verify(extractionResult).writeTriple(SimpleValueFactory.getInstance().createIRI(\"http://sub1\"), SimpleValueFactory.getInstance().createIRI(\"http://pred1\"), SimpleValueFactory.getInstance().createLiteral(\"value1\"), SimpleValueFactory.getInstance().createIRI(\"http://graph1\"));\r\n    verify(extractionResult).writeTriple(SimpleValueFactory.getInstance().createIRI(\"http://sub2\"), SimpleValueFactory.getInstance().createIRI(\"http://test.dom/uri\"), SimpleValueFactory.getInstance().createIRI(\"http://obj2\"), SimpleValueFactory.getInstance().createIRI(\"http://graph2\"));\r\n}"
+        }
+      }
+    ],
+    "stubbedInfo": []
+  },
+  {
+    "rawMockObjectId": 6,
+    "variableName": "mockTripleHandler",
+    "variableType": "TripleHandler",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.any23.filter",
+      "filePath": "C:\\Java_projects\\temp_projects\\Any23\\core\\src\\test\\java\\org\\apache\\any23\\filter\\IgnoreAccidentalRDFaTest.java"
+    },
+    "statements": [
+      {
+        "code": "final TripleHandler mockTripleHandler = mock(TripleHandler.class);",
+        "line": 56,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "stubbedMethod": "",
+        "locationContext": {
+          "methodName": "checkTriple",
+          "methodAnnotations": [],
+          "methodRawCode": "private void checkTriple(String predicate, VerificationMode verificationMode) throws TripleHandlerException {\r\n    final String DOCUMENT_IRI = \"http://an.html.page\";\r\n    final TripleHandler mockTripleHandler = mock(TripleHandler.class);\r\n    final ValueFactory valueFactory = SimpleValueFactory.getInstance();\r\n    ExtractionContext extractionContext = new ExtractionContext(\"test-extractor\", valueFactory.createIRI(DOCUMENT_IRI));\r\n    final IgnoreAccidentalRDFa ignoreAccidentalRDFa = new IgnoreAccidentalRDFa(mockTripleHandler, true);\r\n    ignoreAccidentalRDFa.openContext(extractionContext);\r\n    ignoreAccidentalRDFa.receiveTriple(valueFactory.createIRI(DOCUMENT_IRI), valueFactory.createIRI(predicate), valueFactory.createIRI(\"http://www.myedu.com/modules/20110519065453/profile.css\"), valueFactory.createIRI(DOCUMENT_IRI), extractionContext);\r\n    ignoreAccidentalRDFa.close();\r\n    verify(mockTripleHandler, verificationMode).receiveTriple((Resource) any(), (IRI) any(), (Value) any(), (IRI) any(), (ExtractionContext) any());\r\n}"
+        }
+      },
+      {
+        "code": "verify(mockTripleHandler, verificationMode).receiveTriple((Resource) any(), (IRI) any(), (Value) any(), (IRI) any(), (ExtractionContext) any());",
+        "line": 67,
+        "type": "VERIFICATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "stubbedMethod": "",
+        "locationContext": {
+          "methodName": "checkTriple",
+          "methodAnnotations": [],
+          "methodRawCode": "private void checkTriple(String predicate, VerificationMode verificationMode) throws TripleHandlerException {\r\n    final String DOCUMENT_IRI = \"http://an.html.page\";\r\n    final TripleHandler mockTripleHandler = mock(TripleHandler.class);\r\n    final ValueFactory valueFactory = SimpleValueFactory.getInstance();\r\n    ExtractionContext extractionContext = new ExtractionContext(\"test-extractor\", valueFactory.createIRI(DOCUMENT_IRI));\r\n    final IgnoreAccidentalRDFa ignoreAccidentalRDFa = new IgnoreAccidentalRDFa(mockTripleHandler, true);\r\n    ignoreAccidentalRDFa.openContext(extractionContext);\r\n    ignoreAccidentalRDFa.receiveTriple(valueFactory.createIRI(DOCUMENT_IRI), valueFactory.createIRI(predicate), valueFactory.createIRI(\"http://www.myedu.com/modules/20110519065453/profile.css\"), valueFactory.createIRI(DOCUMENT_IRI), extractionContext);\r\n    ignoreAccidentalRDFa.close();\r\n    verify(mockTripleHandler, verificationMode).receiveTriple((Resource) any(), (IRI) any(), (Value) any(), (IRI) any(), (ExtractionContext) any());\r\n}"
+        }
+      }
+    ],
+    "stubbedInfo": []
+  }
+]

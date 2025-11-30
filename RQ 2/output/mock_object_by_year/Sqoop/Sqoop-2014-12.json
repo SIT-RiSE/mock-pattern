@@ -1,0 +1,241 @@
+[
+  {
+    "rawMockObjectId": 1,
+    "variableName": "context",
+    "variableType": "TaskAttemptContext",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.sqoop.mapreduce.mainframe",
+      "filePath": "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\mapreduce\\mainframe\\TestMainframeDatasetFTPRecordReader.java",
+      "className": "TestMainframeDatasetFTPRecordReader"
+    },
+    "statements": [
+      {
+        "code": "private TaskAttemptContext context;",
+        "line": 65,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "context = mock(TaskAttemptContext.class);",
+        "line": 208,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws IOException {\r\n    mockFTPClient = mock(FTPClient.class);\r\n    MainframeFTPClientUtils.setMockFTPClient(mockFTPClient);\r\n    try {\r\n        when(mockFTPClient.login(\"user\", \"pssword\")).thenReturn(true);\r\n        when(mockFTPClient.logout()).thenReturn(true);\r\n        when(mockFTPClient.isConnected()).thenReturn(true);\r\n        when(mockFTPClient.completePendingCommand()).thenReturn(true);\r\n        when(mockFTPClient.changeWorkingDirectory(anyString())).thenReturn(true);\r\n        when(mockFTPClient.getReplyCode()).thenReturn(200);\r\n        when(mockFTPClient.noop()).thenReturn(200);\r\n        when(mockFTPClient.setFileType(anyInt())).thenReturn(true);\r\n        FTPFile ftpFile1 = new FTPFile();\r\n        ftpFile1.setType(FTPFile.FILE_TYPE);\r\n        ftpFile1.setName(\"test1\");\r\n        FTPFile ftpFile2 = new FTPFile();\r\n        ftpFile2.setType(FTPFile.FILE_TYPE);\r\n        ftpFile2.setName(\"test2\");\r\n        FTPFile[] ftpFiles = { ftpFile1, ftpFile2 };\r\n        when(mockFTPClient.listFiles()).thenReturn(ftpFiles);\r\n        when(mockFTPClient.retrieveFileStream(\"test1\")).thenReturn(new ByteArrayInputStream(\"123\\n456\\n\".getBytes()));\r\n        when(mockFTPClient.retrieveFileStream(\"test2\")).thenReturn(new ByteArrayInputStream(\"789\\n\".getBytes()));\r\n        when(mockFTPClient.retrieveFileStream(\"NotComplete\")).thenReturn(new ByteArrayInputStream(\"NotComplete\\n\".getBytes()));\r\n    } catch (IOException e) {\r\n        fail(\"No IOException should be thrown!\");\r\n    }\r\n    JobConf conf = new JobConf();\r\n    conf.set(DBConfiguration.URL_PROPERTY, \"localhost:\" + \"11111\");\r\n    conf.set(DBConfiguration.USERNAME_PROPERTY, \"user\");\r\n    conf.set(DBConfiguration.PASSWORD_PROPERTY, \"pssword\");\r\n    // set the password in the secure credentials object\r\n    Text PASSWORD_SECRET_KEY = new Text(DBConfiguration.PASSWORD_PROPERTY);\r\n    conf.getCredentials().addSecretKey(PASSWORD_SECRET_KEY, \"pssword\".getBytes());\r\n    conf.setClass(DBConfiguration.INPUT_CLASS_PROPERTY, DummySqoopRecord.class, DBWritable.class);\r\n    Job job = new Job(conf);\r\n    mfDIS = new MainframeDatasetInputSplit();\r\n    mfDIS.addDataset(\"test1\");\r\n    mfDIS.addDataset(\"test2\");\r\n    context = mock(TaskAttemptContext.class);\r\n    when(context.getConfiguration()).thenReturn(job.getConfiguration());\r\n    mfDFTPRR = new MainframeDatasetFTPRecordReader();\r\n}"
+        }
+      },
+      {
+        "code": "when(context.getConfiguration()).thenReturn(job.getConfiguration());",
+        "line": 209,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws IOException {\r\n    mockFTPClient = mock(FTPClient.class);\r\n    MainframeFTPClientUtils.setMockFTPClient(mockFTPClient);\r\n    try {\r\n        when(mockFTPClient.login(\"user\", \"pssword\")).thenReturn(true);\r\n        when(mockFTPClient.logout()).thenReturn(true);\r\n        when(mockFTPClient.isConnected()).thenReturn(true);\r\n        when(mockFTPClient.completePendingCommand()).thenReturn(true);\r\n        when(mockFTPClient.changeWorkingDirectory(anyString())).thenReturn(true);\r\n        when(mockFTPClient.getReplyCode()).thenReturn(200);\r\n        when(mockFTPClient.noop()).thenReturn(200);\r\n        when(mockFTPClient.setFileType(anyInt())).thenReturn(true);\r\n        FTPFile ftpFile1 = new FTPFile();\r\n        ftpFile1.setType(FTPFile.FILE_TYPE);\r\n        ftpFile1.setName(\"test1\");\r\n        FTPFile ftpFile2 = new FTPFile();\r\n        ftpFile2.setType(FTPFile.FILE_TYPE);\r\n        ftpFile2.setName(\"test2\");\r\n        FTPFile[] ftpFiles = { ftpFile1, ftpFile2 };\r\n        when(mockFTPClient.listFiles()).thenReturn(ftpFiles);\r\n        when(mockFTPClient.retrieveFileStream(\"test1\")).thenReturn(new ByteArrayInputStream(\"123\\n456\\n\".getBytes()));\r\n        when(mockFTPClient.retrieveFileStream(\"test2\")).thenReturn(new ByteArrayInputStream(\"789\\n\".getBytes()));\r\n        when(mockFTPClient.retrieveFileStream(\"NotComplete\")).thenReturn(new ByteArrayInputStream(\"NotComplete\\n\".getBytes()));\r\n    } catch (IOException e) {\r\n        fail(\"No IOException should be thrown!\");\r\n    }\r\n    JobConf conf = new JobConf();\r\n    conf.set(DBConfiguration.URL_PROPERTY, \"localhost:\" + \"11111\");\r\n    conf.set(DBConfiguration.USERNAME_PROPERTY, \"user\");\r\n    conf.set(DBConfiguration.PASSWORD_PROPERTY, \"pssword\");\r\n    // set the password in the secure credentials object\r\n    Text PASSWORD_SECRET_KEY = new Text(DBConfiguration.PASSWORD_PROPERTY);\r\n    conf.getCredentials().addSecretKey(PASSWORD_SECRET_KEY, \"pssword\".getBytes());\r\n    conf.setClass(DBConfiguration.INPUT_CLASS_PROPERTY, DummySqoopRecord.class, DBWritable.class);\r\n    Job job = new Job(conf);\r\n    mfDIS = new MainframeDatasetInputSplit();\r\n    mfDIS.addDataset(\"test1\");\r\n    mfDIS.addDataset(\"test2\");\r\n    context = mock(TaskAttemptContext.class);\r\n    when(context.getConfiguration()).thenReturn(job.getConfiguration());\r\n    mfDFTPRR = new MainframeDatasetFTPRecordReader();\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 2,
+    "variableName": "mockFTPClient",
+    "variableType": "FTPClient",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.sqoop.mapreduce.mainframe",
+      "filePath": "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\mapreduce\\mainframe\\TestMainframeDatasetFTPRecordReader.java",
+      "className": "TestMainframeDatasetFTPRecordReader"
+    },
+    "statements": [
+      {
+        "code": "private FTPClient mockFTPClient;",
+        "line": 71,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "mockFTPClient = mock(FTPClient.class);",
+        "line": 162,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws IOException {\r\n    mockFTPClient = mock(FTPClient.class);\r\n    MainframeFTPClientUtils.setMockFTPClient(mockFTPClient);\r\n    try {\r\n        when(mockFTPClient.login(\"user\", \"pssword\")).thenReturn(true);\r\n        when(mockFTPClient.logout()).thenReturn(true);\r\n        when(mockFTPClient.isConnected()).thenReturn(true);\r\n        when(mockFTPClient.completePendingCommand()).thenReturn(true);\r\n        when(mockFTPClient.changeWorkingDirectory(anyString())).thenReturn(true);\r\n        when(mockFTPClient.getReplyCode()).thenReturn(200);\r\n        when(mockFTPClient.noop()).thenReturn(200);\r\n        when(mockFTPClient.setFileType(anyInt())).thenReturn(true);\r\n        FTPFile ftpFile1 = new FTPFile();\r\n        ftpFile1.setType(FTPFile.FILE_TYPE);\r\n        ftpFile1.setName(\"test1\");\r\n        FTPFile ftpFile2 = new FTPFile();\r\n        ftpFile2.setType(FTPFile.FILE_TYPE);\r\n        ftpFile2.setName(\"test2\");\r\n        FTPFile[] ftpFiles = { ftpFile1, ftpFile2 };\r\n        when(mockFTPClient.listFiles()).thenReturn(ftpFiles);\r\n        when(mockFTPClient.retrieveFileStream(\"test1\")).thenReturn(new ByteArrayInputStream(\"123\\n456\\n\".getBytes()));\r\n        when(mockFTPClient.retrieveFileStream(\"test2\")).thenReturn(new ByteArrayInputStream(\"789\\n\".getBytes()));\r\n        when(mockFTPClient.retrieveFileStream(\"NotComplete\")).thenReturn(new ByteArrayInputStream(\"NotComplete\\n\".getBytes()));\r\n    } catch (IOException e) {\r\n        fail(\"No IOException should be thrown!\");\r\n    }\r\n    JobConf conf = new JobConf();\r\n    conf.set(DBConfiguration.URL_PROPERTY, \"localhost:\" + \"11111\");\r\n    conf.set(DBConfiguration.USERNAME_PROPERTY, \"user\");\r\n    conf.set(DBConfiguration.PASSWORD_PROPERTY, \"pssword\");\r\n    // set the password in the secure credentials object\r\n    Text PASSWORD_SECRET_KEY = new Text(DBConfiguration.PASSWORD_PROPERTY);\r\n    conf.getCredentials().addSecretKey(PASSWORD_SECRET_KEY, \"pssword\".getBytes());\r\n    conf.setClass(DBConfiguration.INPUT_CLASS_PROPERTY, DummySqoopRecord.class, DBWritable.class);\r\n    Job job = new Job(conf);\r\n    mfDIS = new MainframeDatasetInputSplit();\r\n    mfDIS.addDataset(\"test1\");\r\n    mfDIS.addDataset(\"test2\");\r\n    context = mock(TaskAttemptContext.class);\r\n    when(context.getConfiguration()).thenReturn(job.getConfiguration());\r\n    mfDFTPRR = new MainframeDatasetFTPRecordReader();\r\n}"
+        }
+      },
+      {
+        "code": "MainframeFTPClientUtils.setMockFTPClient(mockFTPClient);",
+        "line": 163,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws IOException {\r\n    mockFTPClient = mock(FTPClient.class);\r\n    MainframeFTPClientUtils.setMockFTPClient(mockFTPClient);\r\n    try {\r\n        when(mockFTPClient.login(\"user\", \"pssword\")).thenReturn(true);\r\n        when(mockFTPClient.logout()).thenReturn(true);\r\n        when(mockFTPClient.isConnected()).thenReturn(true);\r\n        when(mockFTPClient.completePendingCommand()).thenReturn(true);\r\n        when(mockFTPClient.changeWorkingDirectory(anyString())).thenReturn(true);\r\n        when(mockFTPClient.getReplyCode()).thenReturn(200);\r\n        when(mockFTPClient.noop()).thenReturn(200);\r\n        when(mockFTPClient.setFileType(anyInt())).thenReturn(true);\r\n        FTPFile ftpFile1 = new FTPFile();\r\n        ftpFile1.setType(FTPFile.FILE_TYPE);\r\n        ftpFile1.setName(\"test1\");\r\n        FTPFile ftpFile2 = new FTPFile();\r\n        ftpFile2.setType(FTPFile.FILE_TYPE);\r\n        ftpFile2.setName(\"test2\");\r\n        FTPFile[] ftpFiles = { ftpFile1, ftpFile2 };\r\n        when(mockFTPClient.listFiles()).thenReturn(ftpFiles);\r\n        when(mockFTPClient.retrieveFileStream(\"test1\")).thenReturn(new ByteArrayInputStream(\"123\\n456\\n\".getBytes()));\r\n        when(mockFTPClient.retrieveFileStream(\"test2\")).thenReturn(new ByteArrayInputStream(\"789\\n\".getBytes()));\r\n        when(mockFTPClient.retrieveFileStream(\"NotComplete\")).thenReturn(new ByteArrayInputStream(\"NotComplete\\n\".getBytes()));\r\n    } catch (IOException e) {\r\n        fail(\"No IOException should be thrown!\");\r\n    }\r\n    JobConf conf = new JobConf();\r\n    conf.set(DBConfiguration.URL_PROPERTY, \"localhost:\" + \"11111\");\r\n    conf.set(DBConfiguration.USERNAME_PROPERTY, \"user\");\r\n    conf.set(DBConfiguration.PASSWORD_PROPERTY, \"pssword\");\r\n    // set the password in the secure credentials object\r\n    Text PASSWORD_SECRET_KEY = new Text(DBConfiguration.PASSWORD_PROPERTY);\r\n    conf.getCredentials().addSecretKey(PASSWORD_SECRET_KEY, \"pssword\".getBytes());\r\n    conf.setClass(DBConfiguration.INPUT_CLASS_PROPERTY, DummySqoopRecord.class, DBWritable.class);\r\n    Job job = new Job(conf);\r\n    mfDIS = new MainframeDatasetInputSplit();\r\n    mfDIS.addDataset(\"test1\");\r\n    mfDIS.addDataset(\"test2\");\r\n    context = mock(TaskAttemptContext.class);\r\n    when(context.getConfiguration()).thenReturn(job.getConfiguration());\r\n    mfDFTPRR = new MainframeDatasetFTPRecordReader();\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 3,
+    "variableName": "mockFTPClient",
+    "variableType": "FTPClient",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.sqoop.mapreduce.mainframe",
+      "filePath": "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\mapreduce\\mainframe\\TestMainframeDatasetInputFormat.java",
+      "className": "TestMainframeDatasetInputFormat"
+    },
+    "statements": [
+      {
+        "code": "private FTPClient mockFTPClient;",
+        "line": 50,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "mockFTPClient = mock(FTPClient.class);",
+        "line": 55,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() {\r\n    format = new MainframeDatasetInputFormat<SqoopRecord>();\r\n    mockFTPClient = mock(FTPClient.class);\r\n    MainframeFTPClientUtils.setMockFTPClient(mockFTPClient);\r\n    try {\r\n        when(mockFTPClient.login(\"user\", \"pssword\")).thenReturn(true);\r\n        when(mockFTPClient.logout()).thenReturn(true);\r\n        when(mockFTPClient.isConnected()).thenReturn(true);\r\n        when(mockFTPClient.completePendingCommand()).thenReturn(true);\r\n        when(mockFTPClient.changeWorkingDirectory(anyString())).thenReturn(true);\r\n        when(mockFTPClient.getReplyCode()).thenReturn(200);\r\n        when(mockFTPClient.getReplyString()).thenReturn(\"\");\r\n        when(mockFTPClient.noop()).thenReturn(200);\r\n        when(mockFTPClient.setFileType(anyInt())).thenReturn(true);\r\n        FTPFile ftpFile1 = new FTPFile();\r\n        ftpFile1.setType(FTPFile.FILE_TYPE);\r\n        ftpFile1.setName(\"test1\");\r\n        FTPFile ftpFile2 = new FTPFile();\r\n        ftpFile2.setType(FTPFile.FILE_TYPE);\r\n        ftpFile2.setName(\"test2\");\r\n        FTPFile[] ftpFiles = { ftpFile1, ftpFile2 };\r\n        when(mockFTPClient.listFiles()).thenReturn(ftpFiles);\r\n    } catch (IOException e) {\r\n        fail(\"No IOException should be thrown!\");\r\n    }\r\n}"
+        }
+      },
+      {
+        "code": "MainframeFTPClientUtils.setMockFTPClient(mockFTPClient);",
+        "line": 56,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() {\r\n    format = new MainframeDatasetInputFormat<SqoopRecord>();\r\n    mockFTPClient = mock(FTPClient.class);\r\n    MainframeFTPClientUtils.setMockFTPClient(mockFTPClient);\r\n    try {\r\n        when(mockFTPClient.login(\"user\", \"pssword\")).thenReturn(true);\r\n        when(mockFTPClient.logout()).thenReturn(true);\r\n        when(mockFTPClient.isConnected()).thenReturn(true);\r\n        when(mockFTPClient.completePendingCommand()).thenReturn(true);\r\n        when(mockFTPClient.changeWorkingDirectory(anyString())).thenReturn(true);\r\n        when(mockFTPClient.getReplyCode()).thenReturn(200);\r\n        when(mockFTPClient.getReplyString()).thenReturn(\"\");\r\n        when(mockFTPClient.noop()).thenReturn(200);\r\n        when(mockFTPClient.setFileType(anyInt())).thenReturn(true);\r\n        FTPFile ftpFile1 = new FTPFile();\r\n        ftpFile1.setType(FTPFile.FILE_TYPE);\r\n        ftpFile1.setName(\"test1\");\r\n        FTPFile ftpFile2 = new FTPFile();\r\n        ftpFile2.setType(FTPFile.FILE_TYPE);\r\n        ftpFile2.setName(\"test2\");\r\n        FTPFile[] ftpFiles = { ftpFile1, ftpFile2 };\r\n        when(mockFTPClient.listFiles()).thenReturn(ftpFiles);\r\n    } catch (IOException e) {\r\n        fail(\"No IOException should be thrown!\");\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 4,
+    "variableName": "mockFTPClient",
+    "variableType": "FTPClient",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.sqoop.util",
+      "filePath": "C:\\Java_projects\\temp_projects\\Sqoop\\src\\test\\org\\apache\\sqoop\\util\\TestMainframeFTPClientUtils.java",
+      "className": "TestMainframeFTPClientUtils"
+    },
+    "statements": [
+      {
+        "code": "private FTPClient mockFTPClient;",
+        "line": 41,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "mockFTPClient = mock(FTPClient.class);",
+        "line": 46,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() {\r\n    conf = new JobConf();\r\n    mockFTPClient = mock(FTPClient.class);\r\n    when(mockFTPClient.getReplyString()).thenReturn(\"\");\r\n    MainframeFTPClientUtils.setMockFTPClient(mockFTPClient);\r\n}"
+        }
+      },
+      {
+        "code": "when(mockFTPClient.getReplyString()).thenReturn(\"\");",
+        "line": 47,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() {\r\n    conf = new JobConf();\r\n    mockFTPClient = mock(FTPClient.class);\r\n    when(mockFTPClient.getReplyString()).thenReturn(\"\");\r\n    MainframeFTPClientUtils.setMockFTPClient(mockFTPClient);\r\n}"
+        }
+      },
+      {
+        "code": "MainframeFTPClientUtils.setMockFTPClient(mockFTPClient);",
+        "line": 48,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() {\r\n    conf = new JobConf();\r\n    mockFTPClient = mock(FTPClient.class);\r\n    when(mockFTPClient.getReplyString()).thenReturn(\"\");\r\n    MainframeFTPClientUtils.setMockFTPClient(mockFTPClient);\r\n}"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,109 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\DestroyClusterCommandTest.java",
+  "methodName" : "testNoArgs",
+  "sourceCode" : "@Test\r\npublic void testNoArgs() throws Exception {\r\n    DestroyClusterCommand command = new DestroyClusterCommand();\r\n    int rc = command.run(null, null, err, Collections.<String>emptyList());\r\n    assertThat(rc, is(-1));\r\n    assertThat(errBytes.toString(), containsUsageString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\DestroyClusterCommandTest.java",
+  "methodName" : "testAllOptions",
+  "sourceCode" : "@Test\r\npublic void testAllOptions() throws Exception {\r\n    ServiceFactory factory = mock(ServiceFactory.class);\r\n    Service service = mock(Service.class);\r\n    when(factory.create((String) any())).thenReturn(service);\r\n    DestroyClusterCommand command = new DestroyClusterCommand(factory);\r\n    int rc = command.run(null, out, null, Lists.newArrayList(\"--cloud-provider\", \"rackspace\", \"--cloud-identity\", \"myusername\", \"--cloud-credential\", \"mypassword\", \"--secret-key-file\", \"secret-key\", \"test-service\", \"test-cluster\"));\r\n    assertThat(rc, is(0));\r\n    ClusterSpec expectedClusterSpec = new ClusterSpec();\r\n    expectedClusterSpec.setProvider(\"rackspace\");\r\n    expectedClusterSpec.setIdentity(\"myusername\");\r\n    expectedClusterSpec.setCredential(\"mypassword\");\r\n    expectedClusterSpec.setClusterName(\"test-cluster\");\r\n    expectedClusterSpec.setSecretKeyFile(\"secret-key\");\r\n    verify(factory).create(\"test-service\");\r\n    verify(service).destroyCluster(expectedClusterSpec);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\LaunchClusterCommandTest.java",
+  "methodName" : "testNoArgs",
+  "sourceCode" : "@Test\r\npublic void testNoArgs() throws Exception {\r\n    LaunchClusterCommand command = new LaunchClusterCommand();\r\n    int rc = command.run(null, null, err, Collections.<String>emptyList());\r\n    assertThat(rc, is(-1));\r\n    assertThat(errBytes.toString(), containsUsageString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\LaunchClusterCommandTest.java",
+  "methodName" : "testMissingNumberAndRoles",
+  "sourceCode" : "@Test\r\npublic void testMissingNumberAndRoles() throws Exception {\r\n    LaunchClusterCommand command = new LaunchClusterCommand();\r\n    int rc = command.run(null, null, err, Lists.newArrayList(\"test-service\", \"test-cluster\"));\r\n    assertThat(rc, is(-1));\r\n    assertThat(errBytes.toString(), containsUsageString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\LaunchClusterCommandTest.java",
+  "methodName" : "testMissingRoles",
+  "sourceCode" : "@Test\r\npublic void testMissingRoles() throws Exception {\r\n    LaunchClusterCommand command = new LaunchClusterCommand();\r\n    int rc = command.run(null, null, err, Lists.newArrayList(\"test-service\", \"test-cluster\", \"1\", \"role1+role2\", \"2\"));\r\n    assertThat(rc, is(-1));\r\n    assertThat(errBytes.toString(), containsUsageString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\LaunchClusterCommandTest.java",
+  "methodName" : "testAllOptions",
+  "sourceCode" : "@Test\r\npublic void testAllOptions() throws Exception {\r\n    ServiceFactory factory = mock(ServiceFactory.class);\r\n    Service service = mock(Service.class);\r\n    Cluster cluster = mock(Cluster.class);\r\n    when(factory.create((String) any())).thenReturn(service);\r\n    when(service.launchCluster((ClusterSpec) any())).thenReturn(cluster);\r\n    LaunchClusterCommand command = new LaunchClusterCommand(factory);\r\n    int rc = command.run(null, out, null, Lists.newArrayList(\"--cloud-provider\", \"rackspace\", \"--cloud-identity\", \"myusername\", \"--cloud-credential\", \"mypassword\", \"--secret-key-file\", \"secret-key\", \"test-service\", \"test-cluster\", \"1\", \"role1+role2\", \"2\", \"role3\"));\r\n    assertThat(rc, is(0));\r\n    ClusterSpec expectedClusterSpec = new ClusterSpec(new ClusterSpec.InstanceTemplate(1, Sets.newHashSet(\"role1\", \"role2\")), new ClusterSpec.InstanceTemplate(2, Sets.newHashSet(\"role3\")));\r\n    expectedClusterSpec.setProvider(\"rackspace\");\r\n    expectedClusterSpec.setIdentity(\"myusername\");\r\n    expectedClusterSpec.setCredential(\"mypassword\");\r\n    expectedClusterSpec.setClusterName(\"test-cluster\");\r\n    expectedClusterSpec.setSecretKeyFile(\"secret-key\");\r\n    verify(factory).create(\"test-service\");\r\n    verify(service).launchCluster(expectedClusterSpec);\r\n    assertThat(outBytes.toString(), containsString(\"Started cluster of 0 instances\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\MainTest.java",
+  "methodName" : "testNoArgs",
+  "sourceCode" : "@Test\r\npublic void testNoArgs() throws Exception {\r\n    Main main = new Main(new TestCommand());\r\n    ByteArrayOutputStream bytes = new ByteArrayOutputStream();\r\n    PrintStream out = new PrintStream(bytes);\r\n    int rc = main.run(null, out, null, Collections.<String>emptyList());\r\n    assertThat(rc, is(-1));\r\n    assertThat(bytes.toString(), containsString(\"Usage: whirr COMMAND\"));\r\n    assertThat(bytes.toString(), containsString(\"test-command  test description\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\MainTest.java",
+  "methodName" : "testCommand",
+  "sourceCode" : "@Test\r\npublic void testCommand() throws Exception {\r\n    Command command = mock(Command.class);\r\n    when(command.getName()).thenReturn(\"mock-command\");\r\n    Main main = new Main(command);\r\n    main.run(null, null, null, Lists.newArrayList(\"mock-command\", \"arg1\", \"arg2\"));\r\n    verify(command).run(null, null, null, Lists.newArrayList(\"arg1\", \"arg2\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\RunUrlBuilderTest.java",
+  "methodName" : "testOnePath",
+  "sourceCode" : "@Test\r\npublic void testOnePath() throws MalformedURLException {\r\n    assertThat(runUrls(\"/a/b\"), containsString(\"runurl http://whirr.s3.amazonaws.com/a/b\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\RunUrlBuilderTest.java",
+  "methodName" : "testTwoPaths",
+  "sourceCode" : "@SuppressWarnings(\"unchecked\")\r\n@Test\r\npublic void testTwoPaths() throws MalformedURLException {\r\n    assertThat(runUrls(\"/a/b\", \"/c/d\"), allOf(containsString(\"runurl http://whirr.s3.amazonaws.com/a/b\"), containsString(\"runurl http://whirr.s3.amazonaws.com/c/d\")));\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\RunUrlBuilderTest.java",
+  "methodName" : "testAbsolutePath",
+  "sourceCode" : "@Test\r\npublic void testAbsolutePath() throws MalformedURLException {\r\n    assertThat(runUrls(\"http://example.org/a/b\"), containsString(\"runurl http://example.org/a/b\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\RunUrlBuilderTest.java",
+  "methodName" : "testSystemOverrideOfRunUrlBaseNoSlash",
+  "sourceCode" : "@Test\r\npublic void testSystemOverrideOfRunUrlBaseNoSlash() throws MalformedURLException {\r\n    String prev = System.setProperty(WHIRR_RUNURL_BASE, \"http://example.org\");\r\n    assertThat(runUrls(\"/a/b\"), containsString(\"runurl http://example.org/a/b\"));\r\n    if (prev == null) {\r\n        System.clearProperty(WHIRR_RUNURL_BASE);\r\n    } else {\r\n        System.setProperty(WHIRR_RUNURL_BASE, prev);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\RunUrlBuilderTest.java",
+  "methodName" : "testSystemOverrideOfRunUrlBaseWithSlash",
+  "sourceCode" : "@Test\r\npublic void testSystemOverrideOfRunUrlBaseWithSlash() throws MalformedURLException {\r\n    String prev = System.setProperty(WHIRR_RUNURL_BASE, \"http://example.org/\");\r\n    assertThat(runUrls(\"/a/b\"), containsString(\"runurl http://example.org/a/b\"));\r\n    if (prev == null) {\r\n        System.clearProperty(WHIRR_RUNURL_BASE);\r\n    } else {\r\n        System.setProperty(WHIRR_RUNURL_BASE, prev);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\ServiceFactoryTest.java",
+  "methodName" : "testServiceFactoryIsCreatedFromWhirrProperties",
+  "sourceCode" : "@Test\r\npublic void testServiceFactoryIsCreatedFromWhirrProperties() throws IOException {\r\n    ServiceFactory factory = new ServiceFactory();\r\n    Service service = factory.create(\"test-service\");\r\n    assertThat(service, instanceOf(TestService.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\cassandra\\src\\test\\java\\org\\apache\\whirr\\service\\cassandra\\CassandraServiceTest.java",
+  "methodName" : "testGetSeeds",
+  "sourceCode" : "@Test()\r\npublic void testGetSeeds() {\r\n    List<NodeMetadata> nodes = new ArrayList<NodeMetadata>();\r\n    nodes.add(getNodeMetadata(\"1\"));\r\n    CassandraService s = new CassandraService();\r\n    // check that the one node is returned\r\n    List<NodeMetadata> seeds1 = s.getSeeds(nodes);\r\n    assertEquals(1, seeds1.size());\r\n    assertEquals(getNodeMetadata(\"1\"), seeds1.get(0));\r\n    // couple of more nodes, should get two seeds\r\n    for (int i = 1; i < 10; i++) {\r\n        nodes.add(getNodeMetadata(Integer.toString(i)));\r\n    }\r\n    List<NodeMetadata> seeds2 = s.getSeeds(nodes);\r\n    assertEquals(2, seeds2.size());\r\n    assertEquals(getNodeMetadata(\"1\"), seeds2.get(0));\r\n    assertEquals(getNodeMetadata(\"2\"), seeds2.get(1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\cassandra\\src\\test\\java\\org\\apache\\whirr\\service\\cassandra\\integration\\CassandraServiceTest.java",
+  "methodName" : "testInstances",
+  "sourceCode" : "@Test\r\npublic void testInstances() throws Exception {\r\n    Set<String> endPoints = new HashSet<String>();\r\n    for (Instance instance : cluster.getInstances()) {\r\n        TSocket socket = new TSocket(instance.getPublicAddress().getHostAddress(), CassandraService.CLIENT_PORT);\r\n        socket.open();\r\n        TBinaryProtocol protocol = new TBinaryProtocol(socket);\r\n        Cassandra.Client client = new Cassandra.Client(protocol);\r\n        List<TokenRange> tr = client.describe_ring(KEYSPACE);\r\n        for (TokenRange tokenRange : tr) {\r\n            endPoints.addAll(tokenRange.endpoints);\r\n        }\r\n        socket.close();\r\n    }\r\n    for (Instance instance : cluster.getInstances()) {\r\n        String address = instance.getPrivateAddress().getHostAddress();\r\n        assertTrue(address + \" not in cluster!\", endPoints.remove(address));\r\n    }\r\n    assertTrue(\"Unknown node returned: \" + endPoints.toString(), endPoints.isEmpty());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\hadoop\\src\\test\\java\\org\\apache\\whirr\\service\\hadoop\\integration\\HadoopServiceTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() throws Exception {\r\n    Configuration conf = getConfiguration();\r\n    JobConf job = new JobConf(conf, HadoopServiceTest.class);\r\n    JobClient client = new JobClient(job);\r\n    waitForTaskTrackers(client);\r\n    FileSystem fs = FileSystem.get(conf);\r\n    OutputStream os = fs.create(new Path(\"input\"));\r\n    Writer wr = new OutputStreamWriter(os);\r\n    wr.write(\"b a\\n\");\r\n    wr.close();\r\n    job.setMapperClass(TokenCountMapper.class);\r\n    job.setReducerClass(LongSumReducer.class);\r\n    job.setOutputKeyClass(Text.class);\r\n    job.setOutputValueClass(LongWritable.class);\r\n    FileInputFormat.setInputPaths(job, new Path(\"input\"));\r\n    FileOutputFormat.setOutputPath(job, new Path(\"output\"));\r\n    JobClient.runJob(job);\r\n    FSDataInputStream in = fs.open(new Path(\"output/part-00000\"));\r\n    BufferedReader reader = new BufferedReader(new InputStreamReader(in));\r\n    assertEquals(\"a\\t1\", reader.readLine());\r\n    assertEquals(\"b\\t1\", reader.readLine());\r\n    assertNull(reader.readLine());\r\n    reader.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\zookeeper\\src\\test\\java\\org\\apache\\whirr\\service\\zookeeper\\integration\\ZooKeeperServiceTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() throws Exception {\r\n    class ConnectionWatcher implements Watcher {\r\n\r\n        private ZooKeeper zk;\r\n\r\n        private CountDownLatch latch = new CountDownLatch(1);\r\n\r\n        public void connect(String hosts) throws IOException, InterruptedException {\r\n            zk = new ZooKeeper(hosts, 5000, this);\r\n            latch.await();\r\n        }\r\n\r\n        public ZooKeeper getZooKeeper() {\r\n            return zk;\r\n        }\r\n\r\n        @Override\r\n        public void process(WatchedEvent event) {\r\n            if (event.getState() == KeeperState.SyncConnected) {\r\n                latch.countDown();\r\n            }\r\n        }\r\n\r\n        public void close() throws InterruptedException {\r\n            if (zk != null) {\r\n                zk.close();\r\n            }\r\n        }\r\n    }\r\n    String path = \"/data\";\r\n    String data = \"Hello\";\r\n    ConnectionWatcher watcher = new ConnectionWatcher();\r\n    watcher.connect(cluster.getHosts());\r\n    watcher.getZooKeeper().create(path, data.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);\r\n    watcher.close();\r\n    watcher = new ConnectionWatcher();\r\n    watcher.connect(cluster.getHosts());\r\n    byte[] actualData = watcher.getZooKeeper().getData(path, false, null);\r\n    assertEquals(data, new String(actualData));\r\n    watcher.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

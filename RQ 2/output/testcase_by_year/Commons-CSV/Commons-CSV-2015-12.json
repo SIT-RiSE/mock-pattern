@@ -1,0 +1,1327 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\AssertionsTest.java",
+  "methodName" : "testNotNull",
+  "sourceCode" : "@Test\r\npublic void testNotNull() throws Exception {\r\n    Assertions.notNull(new Object(), \"object\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\AssertionsTest.java",
+  "methodName" : "testNotNullNull",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testNotNullNull() throws Exception {\r\n    Assertions.notNull(null, \"object\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFileParserTest.java",
+  "methodName" : "testCSVFile",
+  "sourceCode" : "@Test\r\npublic void testCSVFile() throws Exception {\r\n    String line = readTestData();\r\n    assertNotNull(\"file must contain config line\", line);\r\n    final String[] split = line.split(\" \");\r\n    assertTrue(testName + \" require 1 param\", split.length >= 1);\r\n    // first line starts with csv data file name\r\n    CSVFormat format = CSVFormat.newFormat(',').withQuote('\"');\r\n    boolean checkComments = false;\r\n    for (int i = 1; i < split.length; i++) {\r\n        final String option = split[i];\r\n        final String[] option_parts = option.split(\"=\", 2);\r\n        if (\"IgnoreEmpty\".equalsIgnoreCase(option_parts[0])) {\r\n            format = format.withIgnoreEmptyLines(Boolean.parseBoolean(option_parts[1]));\r\n        } else if (\"IgnoreSpaces\".equalsIgnoreCase(option_parts[0])) {\r\n            format = format.withIgnoreSurroundingSpaces(Boolean.parseBoolean(option_parts[1]));\r\n        } else if (\"CommentStart\".equalsIgnoreCase(option_parts[0])) {\r\n            format = format.withCommentMarker(option_parts[1].charAt(0));\r\n        } else if (\"CheckComments\".equalsIgnoreCase(option_parts[0])) {\r\n            checkComments = true;\r\n        } else {\r\n            fail(testName + \" unexpected option: \" + option);\r\n        }\r\n    }\r\n    // get string version of format\r\n    line = readTestData();\r\n    assertEquals(testName + \" Expected format \", line, format.toString());\r\n    // Now parse the file and compare against the expected results\r\n    // We use a buffered reader internally so no need to create one here.\r\n    final CSVParser parser = CSVParser.parse(new File(BASE, split[0]), Charset.defaultCharset(), format);\r\n    for (final CSVRecord record : parser) {\r\n        String parsed = Arrays.toString(record.values());\r\n        if (checkComments) {\r\n            final String comment = record.getComment().replace(\"\\n\", \"\\\\n\");\r\n            if (comment != null) {\r\n                parsed += \"#\" + comment;\r\n            }\r\n        }\r\n        final int count = record.size();\r\n        assertEquals(testName, readTestData(), count + \":\" + parsed);\r\n    }\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFileParserTest.java",
+  "methodName" : "testCSVUrl",
+  "sourceCode" : "@Test\r\npublic void testCSVUrl() throws Exception {\r\n    String line = readTestData();\r\n    assertNotNull(\"file must contain config line\", line);\r\n    final String[] split = line.split(\" \");\r\n    assertTrue(testName + \" require 1 param\", split.length >= 1);\r\n    // first line starts with csv data file name\r\n    CSVFormat format = CSVFormat.newFormat(',').withQuote('\"');\r\n    boolean checkComments = false;\r\n    for (int i = 1; i < split.length; i++) {\r\n        final String option = split[i];\r\n        final String[] option_parts = option.split(\"=\", 2);\r\n        if (\"IgnoreEmpty\".equalsIgnoreCase(option_parts[0])) {\r\n            format = format.withIgnoreEmptyLines(Boolean.parseBoolean(option_parts[1]));\r\n        } else if (\"IgnoreSpaces\".equalsIgnoreCase(option_parts[0])) {\r\n            format = format.withIgnoreSurroundingSpaces(Boolean.parseBoolean(option_parts[1]));\r\n        } else if (\"CommentStart\".equalsIgnoreCase(option_parts[0])) {\r\n            format = format.withCommentMarker(option_parts[1].charAt(0));\r\n        } else if (\"CheckComments\".equalsIgnoreCase(option_parts[0])) {\r\n            checkComments = true;\r\n        } else {\r\n            fail(testName + \" unexpected option: \" + option);\r\n        }\r\n    }\r\n    // get string version of format\r\n    line = readTestData();\r\n    assertEquals(testName + \" Expected format \", line, format.toString());\r\n    // Now parse the file and compare against the expected results\r\n    final URL resource = ClassLoader.getSystemResource(\"CSVFileParser/\" + split[0]);\r\n    final CSVParser parser = CSVParser.parse(resource, Charset.forName(\"UTF-8\"), format);\r\n    for (final CSVRecord record : parser) {\r\n        String parsed = Arrays.toString(record.values());\r\n        if (checkComments) {\r\n            final String comment = record.getComment().replace(\"\\n\", \"\\\\n\");\r\n            if (comment != null) {\r\n                parsed += \"#\" + comment;\r\n            }\r\n        }\r\n        final int count = record.size();\r\n        assertEquals(testName, readTestData(), count + \":\" + parsed);\r\n    }\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test", "RunWith(Parameterized.class)" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatPredefinedTest.java",
+  "methodName" : "testDefault",
+  "sourceCode" : "@Test\r\npublic void testDefault() {\r\n    test(CSVFormat.DEFAULT, \"Default\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatPredefinedTest.java",
+  "methodName" : "testExcel",
+  "sourceCode" : "@Test\r\npublic void testExcel() {\r\n    test(CSVFormat.EXCEL, \"Excel\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatPredefinedTest.java",
+  "methodName" : "testMySQL",
+  "sourceCode" : "@Test\r\npublic void testMySQL() {\r\n    test(CSVFormat.MYSQL, \"MySQL\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatPredefinedTest.java",
+  "methodName" : "testRFC4180",
+  "sourceCode" : "@Test\r\npublic void testRFC4180() {\r\n    test(CSVFormat.RFC4180, \"RFC4180\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatPredefinedTest.java",
+  "methodName" : "testTDF",
+  "sourceCode" : "@Test\r\npublic void testTDF() {\r\n    test(CSVFormat.TDF, \"TDF\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testDelimiterSameAsCommentStartThrowsException",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testDelimiterSameAsCommentStartThrowsException() {\r\n    CSVFormat.DEFAULT.withDelimiter('!').withCommentMarker('!');\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testDelimiterSameAsEscapeThrowsException",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testDelimiterSameAsEscapeThrowsException() {\r\n    CSVFormat.DEFAULT.withDelimiter('!').withEscape('!');\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testDuplicateHeaderElements",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testDuplicateHeaderElements() {\r\n    CSVFormat.DEFAULT.withHeader(\"A\", \"A\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "@Test\r\npublic void testEquals() {\r\n    final CSVFormat right = CSVFormat.DEFAULT;\r\n    final CSVFormat left = copy(right);\r\n    assertFalse(right.equals(null));\r\n    assertFalse(right.equals(\"A String Instance\"));\r\n    assertEquals(right, right);\r\n    assertEquals(right, left);\r\n    assertEquals(left, right);\r\n    assertEquals(right.hashCode(), right.hashCode());\r\n    assertEquals(right.hashCode(), left.hashCode());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testEqualsCommentStart",
+  "sourceCode" : "@Test\r\npublic void testEqualsCommentStart() {\r\n    final CSVFormat right = CSVFormat.newFormat('\\'').withQuote('\"').withCommentMarker('#').withQuoteMode(QuoteMode.ALL);\r\n    final CSVFormat left = right.withCommentMarker('!');\r\n    assertNotEquals(right, left);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testEqualsDelimiter",
+  "sourceCode" : "@Test\r\npublic void testEqualsDelimiter() {\r\n    final CSVFormat right = CSVFormat.newFormat('!');\r\n    final CSVFormat left = CSVFormat.newFormat('?');\r\n    assertNotEquals(right, left);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testEqualsEscape",
+  "sourceCode" : "@Test\r\npublic void testEqualsEscape() {\r\n    final CSVFormat right = CSVFormat.newFormat('\\'').withQuote('\"').withCommentMarker('#').withEscape('+').withQuoteMode(QuoteMode.ALL);\r\n    final CSVFormat left = right.withEscape('!');\r\n    assertNotEquals(right, left);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testEqualsHeader",
+  "sourceCode" : "@Test\r\npublic void testEqualsHeader() {\r\n    final CSVFormat right = CSVFormat.newFormat('\\'').withRecordSeparator(CR).withCommentMarker('#').withEscape('+').withHeader(\"One\", \"Two\", \"Three\").withIgnoreEmptyLines().withIgnoreSurroundingSpaces().withQuote('\"').withQuoteMode(QuoteMode.ALL);\r\n    final CSVFormat left = right.withHeader(\"Three\", \"Two\", \"One\");\r\n    assertNotEquals(right, left);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testEqualsIgnoreEmptyLines",
+  "sourceCode" : "@Test\r\npublic void testEqualsIgnoreEmptyLines() {\r\n    final CSVFormat right = CSVFormat.newFormat('\\'').withCommentMarker('#').withEscape('+').withIgnoreEmptyLines().withIgnoreSurroundingSpaces().withQuote('\"').withQuoteMode(QuoteMode.ALL);\r\n    final CSVFormat left = right.withIgnoreEmptyLines(false);\r\n    assertNotEquals(right, left);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testEqualsIgnoreSurroundingSpaces",
+  "sourceCode" : "@Test\r\npublic void testEqualsIgnoreSurroundingSpaces() {\r\n    final CSVFormat right = CSVFormat.newFormat('\\'').withCommentMarker('#').withEscape('+').withIgnoreSurroundingSpaces().withQuote('\"').withQuoteMode(QuoteMode.ALL);\r\n    final CSVFormat left = right.withIgnoreSurroundingSpaces(false);\r\n    assertNotEquals(right, left);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testEqualsQuoteChar",
+  "sourceCode" : "@Test\r\npublic void testEqualsQuoteChar() {\r\n    final CSVFormat right = CSVFormat.newFormat('\\'').withQuote('\"');\r\n    final CSVFormat left = right.withQuote('!');\r\n    assertNotEquals(right, left);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testEqualsQuotePolicy",
+  "sourceCode" : "@Test\r\npublic void testEqualsQuotePolicy() {\r\n    final CSVFormat right = CSVFormat.newFormat('\\'').withQuote('\"').withQuoteMode(QuoteMode.ALL);\r\n    final CSVFormat left = right.withQuoteMode(QuoteMode.MINIMAL);\r\n    assertNotEquals(right, left);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testEqualsRecordSeparator",
+  "sourceCode" : "@Test\r\npublic void testEqualsRecordSeparator() {\r\n    final CSVFormat right = CSVFormat.newFormat('\\'').withRecordSeparator(CR).withCommentMarker('#').withEscape('+').withIgnoreEmptyLines().withIgnoreSurroundingSpaces().withQuote('\"').withQuoteMode(QuoteMode.ALL);\r\n    final CSVFormat left = right.withRecordSeparator(LF);\r\n    assertNotEquals(right, left);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testEqualsNullString",
+  "sourceCode" : "@Test\r\npublic void testEqualsNullString() {\r\n    final CSVFormat right = CSVFormat.newFormat('\\'').withRecordSeparator(CR).withCommentMarker('#').withEscape('+').withIgnoreEmptyLines().withIgnoreSurroundingSpaces().withQuote('\"').withQuoteMode(QuoteMode.ALL).withNullString(\"null\");\r\n    final CSVFormat left = right.withNullString(\"---\");\r\n    assertNotEquals(right, left);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testEqualsSkipHeaderRecord",
+  "sourceCode" : "@Test\r\npublic void testEqualsSkipHeaderRecord() {\r\n    final CSVFormat right = CSVFormat.newFormat('\\'').withRecordSeparator(CR).withCommentMarker('#').withEscape('+').withIgnoreEmptyLines().withIgnoreSurroundingSpaces().withQuote('\"').withQuoteMode(QuoteMode.ALL).withNullString(\"null\").withSkipHeaderRecord();\r\n    final CSVFormat left = right.withSkipHeaderRecord(false);\r\n    assertNotEquals(right, left);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testEscapeSameAsCommentStartThrowsException",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testEscapeSameAsCommentStartThrowsException() {\r\n    CSVFormat.DEFAULT.withEscape('!').withCommentMarker('!');\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testEscapeSameAsCommentStartThrowsExceptionForWrapperType",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testEscapeSameAsCommentStartThrowsExceptionForWrapperType() {\r\n    // Cannot assume that callers won't use different Character objects\r\n    CSVFormat.DEFAULT.withEscape(new Character('!')).withCommentMarker(new Character('!'));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testFormat",
+  "sourceCode" : "@Test\r\npublic void testFormat() {\r\n    final CSVFormat format = CSVFormat.DEFAULT;\r\n    assertEquals(\"\", format.format());\r\n    assertEquals(\"a,b,c\", format.format(\"a\", \"b\", \"c\"));\r\n    assertEquals(\"\\\"x,y\\\",z\", format.format(\"x,y\", \"z\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testGetHeader",
+  "sourceCode" : "@Test\r\npublic void testGetHeader() throws Exception {\r\n    final String[] header = new String[] { \"one\", \"two\", \"three\" };\r\n    final CSVFormat formatWithHeader = CSVFormat.DEFAULT.withHeader(header);\r\n    // getHeader() makes a copy of the header array.\r\n    final String[] headerCopy = formatWithHeader.getHeader();\r\n    headerCopy[0] = \"A\";\r\n    headerCopy[1] = \"B\";\r\n    headerCopy[2] = \"C\";\r\n    assertFalse(Arrays.equals(formatWithHeader.getHeader(), headerCopy));\r\n    assertNotSame(formatWithHeader.getHeader(), headerCopy);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testNullRecordSeparatorCsv106",
+  "sourceCode" : "@Test\r\npublic void testNullRecordSeparatorCsv106() {\r\n    final CSVFormat format = CSVFormat.newFormat(';').withSkipHeaderRecord().withHeader(\"H1\", \"H2\");\r\n    final String formatStr = format.format(\"A\", \"B\");\r\n    assertNotNull(formatStr);\r\n    assertFalse(formatStr.endsWith(\"null\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testQuoteCharSameAsCommentStartThrowsException",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testQuoteCharSameAsCommentStartThrowsException() {\r\n    CSVFormat.DEFAULT.withQuote('!').withCommentMarker('!');\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testQuoteCharSameAsCommentStartThrowsExceptionForWrapperType",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testQuoteCharSameAsCommentStartThrowsExceptionForWrapperType() {\r\n    // Cannot assume that callers won't use different Character objects\r\n    CSVFormat.DEFAULT.withQuote(new Character('!')).withCommentMarker('!');\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testQuoteCharSameAsDelimiterThrowsException",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testQuoteCharSameAsDelimiterThrowsException() {\r\n    CSVFormat.DEFAULT.withQuote('!').withDelimiter('!');\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testQuotePolicyNoneWithoutEscapeThrowsException",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testQuotePolicyNoneWithoutEscapeThrowsException() {\r\n    CSVFormat.newFormat('!').withQuoteMode(QuoteMode.NONE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testRFC4180",
+  "sourceCode" : "@Test\r\npublic void testRFC4180() {\r\n    assertEquals(null, RFC4180.getCommentMarker());\r\n    assertEquals(',', RFC4180.getDelimiter());\r\n    assertEquals(null, RFC4180.getEscapeCharacter());\r\n    assertFalse(RFC4180.getIgnoreEmptyLines());\r\n    assertEquals(Character.valueOf('\"'), RFC4180.getQuoteCharacter());\r\n    assertEquals(null, RFC4180.getQuoteMode());\r\n    assertEquals(\"\\r\\n\", RFC4180.getRecordSeparator());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testSerialization",
+  "sourceCode" : "// no need to worry about boxing here\r\n@SuppressWarnings(\"boxing\")\r\n@Test\r\npublic void testSerialization() throws Exception {\r\n    final ByteArrayOutputStream out = new ByteArrayOutputStream();\r\n    final ObjectOutputStream oos = new ObjectOutputStream(out);\r\n    oos.writeObject(CSVFormat.DEFAULT);\r\n    oos.flush();\r\n    oos.close();\r\n    final ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(out.toByteArray()));\r\n    final CSVFormat format = (CSVFormat) in.readObject();\r\n    assertNotNull(format);\r\n    assertEquals(\"delimiter\", CSVFormat.DEFAULT.getDelimiter(), format.getDelimiter());\r\n    assertEquals(\"encapsulator\", CSVFormat.DEFAULT.getQuoteCharacter(), format.getQuoteCharacter());\r\n    assertEquals(\"comment start\", CSVFormat.DEFAULT.getCommentMarker(), format.getCommentMarker());\r\n    assertEquals(\"record separator\", CSVFormat.DEFAULT.getRecordSeparator(), format.getRecordSeparator());\r\n    assertEquals(\"escape\", CSVFormat.DEFAULT.getEscapeCharacter(), format.getEscapeCharacter());\r\n    assertEquals(\"trim\", CSVFormat.DEFAULT.getIgnoreSurroundingSpaces(), format.getIgnoreSurroundingSpaces());\r\n    assertEquals(\"empty lines\", CSVFormat.DEFAULT.getIgnoreEmptyLines(), format.getIgnoreEmptyLines());\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testWithCommentStart",
+  "sourceCode" : "@Test\r\npublic void testWithCommentStart() throws Exception {\r\n    final CSVFormat formatWithCommentStart = CSVFormat.DEFAULT.withCommentMarker('#');\r\n    assertEquals(Character.valueOf('#'), formatWithCommentStart.getCommentMarker());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testWithCommentStartCRThrowsException",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testWithCommentStartCRThrowsException() {\r\n    CSVFormat.DEFAULT.withCommentMarker(CR);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testWithDelimiter",
+  "sourceCode" : "@Test\r\npublic void testWithDelimiter() throws Exception {\r\n    final CSVFormat formatWithDelimiter = CSVFormat.DEFAULT.withDelimiter('!');\r\n    assertEquals('!', formatWithDelimiter.getDelimiter());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testWithDelimiterLFThrowsException",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testWithDelimiterLFThrowsException() {\r\n    CSVFormat.DEFAULT.withDelimiter(LF);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testWithEscape",
+  "sourceCode" : "@Test\r\npublic void testWithEscape() throws Exception {\r\n    final CSVFormat formatWithEscape = CSVFormat.DEFAULT.withEscape('&');\r\n    assertEquals(Character.valueOf('&'), formatWithEscape.getEscapeCharacter());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testWithEscapeCRThrowsExceptions",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testWithEscapeCRThrowsExceptions() {\r\n    CSVFormat.DEFAULT.withEscape(CR);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testWithHeader",
+  "sourceCode" : "@Test\r\npublic void testWithHeader() throws Exception {\r\n    final String[] header = new String[] { \"one\", \"two\", \"three\" };\r\n    // withHeader() makes a copy of the header array.\r\n    final CSVFormat formatWithHeader = CSVFormat.DEFAULT.withHeader(header);\r\n    assertArrayEquals(header, formatWithHeader.getHeader());\r\n    assertNotSame(header, formatWithHeader.getHeader());\r\n    header[0] = \"A\";\r\n    header[1] = \"B\";\r\n    header[2] = \"C\";\r\n    assertFalse(Arrays.equals(formatWithHeader.getHeader(), header));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testJiraCsv154_withCommentMarker",
+  "sourceCode" : "@Test\r\npublic void testJiraCsv154_withCommentMarker() throws IOException {\r\n    final String comment = \"This is a header comment\";\r\n    CSVFormat format = CSVFormat.EXCEL.withHeader(\"H1\", \"H2\").withCommentMarker('#').withHeaderComments(comment);\r\n    StringBuilder out = new StringBuilder();\r\n    final CSVPrinter printer = format.print(out);\r\n    printer.print(\"A\");\r\n    printer.print(\"B\");\r\n    printer.close();\r\n    String s = out.toString();\r\n    Assert.assertTrue(s, s.contains(comment));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testJiraCsv154_withHeaderComments",
+  "sourceCode" : "@Test\r\npublic void testJiraCsv154_withHeaderComments() throws IOException {\r\n    final String comment = \"This is a header comment\";\r\n    CSVFormat format = CSVFormat.EXCEL.withHeader(\"H1\", \"H2\").withHeaderComments(comment).withCommentMarker('#');\r\n    StringBuilder out = new StringBuilder();\r\n    final CSVPrinter printer = format.print(out);\r\n    printer.print(\"A\");\r\n    printer.print(\"B\");\r\n    printer.close();\r\n    String s = out.toString();\r\n    Assert.assertTrue(s, s.contains(comment));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testWithIgnoreEmptyLines",
+  "sourceCode" : "@Test\r\npublic void testWithIgnoreEmptyLines() throws Exception {\r\n    assertFalse(CSVFormat.DEFAULT.withIgnoreEmptyLines(false).getIgnoreEmptyLines());\r\n    assertTrue(CSVFormat.DEFAULT.withIgnoreEmptyLines().getIgnoreEmptyLines());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testWithIgnoreSurround",
+  "sourceCode" : "@Test\r\npublic void testWithIgnoreSurround() throws Exception {\r\n    assertFalse(CSVFormat.DEFAULT.withIgnoreSurroundingSpaces(false).getIgnoreSurroundingSpaces());\r\n    assertTrue(CSVFormat.DEFAULT.withIgnoreSurroundingSpaces().getIgnoreSurroundingSpaces());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testWithNullString",
+  "sourceCode" : "@Test\r\npublic void testWithNullString() throws Exception {\r\n    final CSVFormat formatWithNullString = CSVFormat.DEFAULT.withNullString(\"null\");\r\n    assertEquals(\"null\", formatWithNullString.getNullString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testWithQuoteChar",
+  "sourceCode" : "@Test\r\npublic void testWithQuoteChar() throws Exception {\r\n    final CSVFormat formatWithQuoteChar = CSVFormat.DEFAULT.withQuote('\"');\r\n    assertEquals(Character.valueOf('\"'), formatWithQuoteChar.getQuoteCharacter());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testWithQuoteLFThrowsException",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testWithQuoteLFThrowsException() {\r\n    CSVFormat.DEFAULT.withQuote(LF);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testWithQuotePolicy",
+  "sourceCode" : "@Test\r\npublic void testWithQuotePolicy() throws Exception {\r\n    final CSVFormat formatWithQuotePolicy = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.ALL);\r\n    assertEquals(QuoteMode.ALL, formatWithQuotePolicy.getQuoteMode());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testWithRecordSeparatorCR",
+  "sourceCode" : "@Test\r\npublic void testWithRecordSeparatorCR() throws Exception {\r\n    final CSVFormat formatWithRecordSeparator = CSVFormat.DEFAULT.withRecordSeparator(CR);\r\n    assertEquals(String.valueOf(CR), formatWithRecordSeparator.getRecordSeparator());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testWithRecordSeparatorLF",
+  "sourceCode" : "@Test\r\npublic void testWithRecordSeparatorLF() throws Exception {\r\n    final CSVFormat formatWithRecordSeparator = CSVFormat.DEFAULT.withRecordSeparator(LF);\r\n    assertEquals(String.valueOf(LF), formatWithRecordSeparator.getRecordSeparator());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVFormatTest.java",
+  "methodName" : "testWithRecordSeparatorCRLF",
+  "sourceCode" : "@Test\r\npublic void testWithRecordSeparatorCRLF() throws Exception {\r\n    final CSVFormat formatWithRecordSeparator = CSVFormat.DEFAULT.withRecordSeparator(CRLF);\r\n    assertEquals(CRLF, formatWithRecordSeparator.getRecordSeparator());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testBackslashEscaping",
+  "sourceCode" : "@Test\r\npublic void testBackslashEscaping() throws IOException {\r\n    // To avoid confusion over the need for escaping chars in java code,\r\n    // We will test with a forward slash as the escape char, and a single\r\n    // quote as the encapsulator.\r\n    final String code = // 0\r\n    \"one,two,three\\n\" + // 1) empty encapsulators\r\n    \"'',''\\n\" + // 2) single encapsulators\r\n    \"/',/'\\n\" + // 3) single encapsulators encapsulated via escape\r\n    \"'/'','/''\\n\" + // 4) single encapsulators encapsulated via doubling\r\n    \"'''',''''\\n\" + // 5) separator escaped\r\n    \"/,,/,\\n\" + // 6) escape escaped\r\n    \"//,//\\n\" + // 7) escape escaped in encapsulation\r\n    \"'//','//'\\n\" + // don't eat spaces\r\n    \"   8   ,   \\\"quoted \\\"\\\" /\\\" // string\\\"   \\n\" + // escaped newline\r\n    \"9,   /\\n   \\n\" + \"\";\r\n    final String[][] res = { // 0\r\n    { \"one\", \"two\", \"three\" }, // 1\r\n    { \"\", \"\" }, // 2\r\n    { \"'\", \"'\" }, // 3\r\n    { \"'\", \"'\" }, // 4\r\n    { \"'\", \"'\" }, // 5\r\n    { \",\", \",\" }, // 6\r\n    { \"/\", \"/\" }, // 7\r\n    { \"/\", \"/\" }, { \"   8   \", \"   \\\"quoted \\\"\\\" /\\\" / string\\\"   \" }, { \"9\", \"   \\n   \" } };\r\n    final CSVFormat format = CSVFormat.newFormat(',').withQuote('\\'').withRecordSeparator(CRLF).withEscape('/').withIgnoreEmptyLines();\r\n    final CSVParser parser = CSVParser.parse(code, format);\r\n    final List<CSVRecord> records = parser.getRecords();\r\n    assertTrue(records.size() > 0);\r\n    Utils.compare(\"Records do not match expected result\", res, records);\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testBackslashEscaping2",
+  "sourceCode" : "@Test\r\npublic void testBackslashEscaping2() throws IOException {\r\n    // To avoid confusion over the need for escaping chars in java code,\r\n    // We will test with a forward slash as the escape char, and a single\r\n    // quote as the encapsulator.\r\n    final String code = // 1)\r\n    \"\" + \" , , \\n\" + // 2)\r\n    \" \\t ,  , \\n\" + // 3)\r\n    \" // , /, , /,\\n\" + \"\";\r\n    final String[][] res = { // 1\r\n    { \" \", \" \", \" \" }, // 2\r\n    { \" \\t \", \"  \", \" \" }, // 3\r\n    { \" / \", \" , \", \" ,\" } };\r\n    final CSVFormat format = CSVFormat.newFormat(',').withRecordSeparator(CRLF).withEscape('/').withIgnoreEmptyLines();\r\n    final CSVParser parser = CSVParser.parse(code, format);\r\n    final List<CSVRecord> records = parser.getRecords();\r\n    assertTrue(records.size() > 0);\r\n    Utils.compare(\"\", res, records);\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testBackslashEscapingOld",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testBackslashEscapingOld() throws IOException {\r\n    final String code = \"one,two,three\\n\" + \"on\\\\\\\"e,two\\n\" + \"on\\\"e,two\\n\" + \"one,\\\"tw\\\\\\\"o\\\"\\n\" + \"one,\\\"t\\\\,wo\\\"\\n\" + \"one,two,\\\"th,ree\\\"\\n\" + \"\\\"a\\\\\\\\\\\"\\n\" + \"a\\\\,b\\n\" + \"\\\"a\\\\\\\\,b\\\"\";\r\n    final String[][] res = { { \"one\", \"two\", \"three\" }, { \"on\\\\\\\"e\", \"two\" }, { \"on\\\"e\", \"two\" }, // backslash in quotes only escapes a delimiter (\",\")\r\n    { \"one\", \"tw\\\"o\" }, // backslash in quotes only escapes a delimiter (\",\")\r\n    { \"one\", \"t\\\\,wo\" }, // backslash in quotes only escapes a delimiter (\",\")\r\n    { \"one\", \"two\", \"th,ree\" }, // backslash in quotes only escapes a delimiter (\",\")\r\n    { \"a\\\\\\\\\" }, // a backslash must be returnd\r\n    { \"a\\\\\", \"b\" }, // backslash in quotes only escapes a delimiter (\",\")\r\n    { \"a\\\\\\\\,b\" } };\r\n    final CSVParser parser = CSVParser.parse(code, CSVFormat.DEFAULT);\r\n    final List<CSVRecord> records = parser.getRecords();\r\n    assertEquals(res.length, records.size());\r\n    assertTrue(records.size() > 0);\r\n    for (int i = 0; i < res.length; i++) {\r\n        assertArrayEquals(res[i], records.get(i).values());\r\n    }\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testBOM",
+  "sourceCode" : "@Test\r\n@Ignore(\"CSV-107\")\r\npublic void testBOM() throws IOException {\r\n    final URL url = ClassLoader.getSystemClassLoader().getResource(\"CSVFileParser/bom.csv\");\r\n    final CSVParser parser = CSVParser.parse(url, Charset.forName(\"UTF-8\"), CSVFormat.EXCEL.withHeader());\r\n    try {\r\n        for (final CSVRecord record : parser) {\r\n            final String string = record.get(\"Date\");\r\n            Assert.assertNotNull(string);\r\n            // System.out.println(\"date: \" + record.get(\"Date\"));\r\n        }\r\n    } finally {\r\n        parser.close();\r\n    }\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testBOMInputStream",
+  "sourceCode" : "@Test\r\npublic void testBOMInputStream() throws IOException {\r\n    final URL url = ClassLoader.getSystemClassLoader().getResource(\"CSVFileParser/bom.csv\");\r\n    final Reader reader = new InputStreamReader(new BOMInputStream(url.openStream()), \"UTF-8\");\r\n    final CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL.withHeader());\r\n    try {\r\n        for (final CSVRecord record : parser) {\r\n            final String string = record.get(\"Date\");\r\n            Assert.assertNotNull(string);\r\n            // System.out.println(\"date: \" + record.get(\"Date\"));\r\n        }\r\n    } finally {\r\n        parser.close();\r\n        reader.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testCarriageReturnEndings",
+  "sourceCode" : "@Test\r\npublic void testCarriageReturnEndings() throws IOException {\r\n    final String code = \"foo\\rbaar,\\rhello,world\\r,kanu\";\r\n    final CSVParser parser = CSVParser.parse(code, CSVFormat.DEFAULT);\r\n    final List<CSVRecord> records = parser.getRecords();\r\n    assertEquals(4, records.size());\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testCarriageReturnLineFeedEndings",
+  "sourceCode" : "@Test\r\npublic void testCarriageReturnLineFeedEndings() throws IOException {\r\n    final String code = \"foo\\r\\nbaar,\\r\\nhello,world\\r\\n,kanu\";\r\n    final CSVParser parser = CSVParser.parse(code, CSVFormat.DEFAULT);\r\n    final List<CSVRecord> records = parser.getRecords();\r\n    assertEquals(4, records.size());\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testClose",
+  "sourceCode" : "@Test(expected = NoSuchElementException.class)\r\npublic void testClose() throws Exception {\r\n    final Reader in = new StringReader(\"# comment\\na,b,c\\n1,2,3\\nx,y,z\");\r\n    final CSVParser parser = CSVFormat.DEFAULT.withCommentMarker('#').withHeader().parse(in);\r\n    final Iterator<CSVRecord> records = parser.iterator();\r\n    assertTrue(records.hasNext());\r\n    parser.close();\r\n    assertFalse(records.hasNext());\r\n    records.next();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testCSV57",
+  "sourceCode" : "@Test\r\npublic void testCSV57() throws Exception {\r\n    final CSVParser parser = CSVParser.parse(\"\", CSVFormat.DEFAULT);\r\n    final List<CSVRecord> list = parser.getRecords();\r\n    assertNotNull(list);\r\n    assertEquals(0, list.size());\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testDefaultFormat",
+  "sourceCode" : "@Test\r\npublic void testDefaultFormat() throws IOException {\r\n    final String code = // 1)\r\n    \"\" + \"a,b#\\n\" + // 2)\r\n    \"\\\"\\n\\\",\\\" \\\",#\\n\" + // 3)\r\n    \"#,\\\"\\\"\\n\" + // 4)\r\n    \"# Final comment\\n\";\r\n    final String[][] res = { { \"a\", \"b#\" }, { \"\\n\", \" \", \"#\" }, { \"#\", \"\" }, { \"# Final comment\" } };\r\n    CSVFormat format = CSVFormat.DEFAULT;\r\n    assertFalse(format.isCommentMarkerSet());\r\n    CSVParser parser = CSVParser.parse(code, format);\r\n    List<CSVRecord> records = parser.getRecords();\r\n    assertTrue(records.size() > 0);\r\n    Utils.compare(\"Failed to parse without comments\", res, records);\r\n    final String[][] res_comments = { { \"a\", \"b#\" }, { \"\\n\", \" \", \"#\" } };\r\n    format = CSVFormat.DEFAULT.withCommentMarker('#');\r\n    parser.close();\r\n    parser = CSVParser.parse(code, format);\r\n    records = parser.getRecords();\r\n    Utils.compare(\"Failed to parse with comments\", res_comments, records);\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testEmptyFile",
+  "sourceCode" : "@Test\r\npublic void testEmptyFile() throws Exception {\r\n    final CSVParser parser = CSVParser.parse(\"\", CSVFormat.DEFAULT);\r\n    assertNull(parser.nextRecord());\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testEmptyLineBehaviourCSV",
+  "sourceCode" : "@Test\r\npublic void testEmptyLineBehaviourCSV() throws Exception {\r\n    final String[] codes = { \"hello,\\r\\n\\r\\n\\r\\n\", \"hello,\\n\\n\\n\", \"hello,\\\"\\\"\\r\\n\\r\\n\\r\\n\", \"hello,\\\"\\\"\\n\\n\\n\" };\r\n    final String[][] res = { // CSV format ignores empty lines\r\n    { \"hello\", \"\" } };\r\n    for (final String code : codes) {\r\n        final CSVParser parser = CSVParser.parse(code, CSVFormat.DEFAULT);\r\n        final List<CSVRecord> records = parser.getRecords();\r\n        assertEquals(res.length, records.size());\r\n        assertTrue(records.size() > 0);\r\n        for (int i = 0; i < res.length; i++) {\r\n            assertArrayEquals(res[i], records.get(i).values());\r\n        }\r\n        parser.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testEmptyLineBehaviourExcel",
+  "sourceCode" : "@Test\r\npublic void testEmptyLineBehaviourExcel() throws Exception {\r\n    final String[] codes = { \"hello,\\r\\n\\r\\n\\r\\n\", \"hello,\\n\\n\\n\", \"hello,\\\"\\\"\\r\\n\\r\\n\\r\\n\", \"hello,\\\"\\\"\\n\\n\\n\" };\r\n    final String[][] res = { // Excel format does not ignore empty lines\r\n    { \"hello\", \"\" }, // Excel format does not ignore empty lines\r\n    { \"\" }, { \"\" } };\r\n    for (final String code : codes) {\r\n        final CSVParser parser = CSVParser.parse(code, CSVFormat.EXCEL);\r\n        final List<CSVRecord> records = parser.getRecords();\r\n        assertEquals(res.length, records.size());\r\n        assertTrue(records.size() > 0);\r\n        for (int i = 0; i < res.length; i++) {\r\n            assertArrayEquals(res[i], records.get(i).values());\r\n        }\r\n        parser.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testStartWithEmptyLinesThenHeaders",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testStartWithEmptyLinesThenHeaders() throws Exception {\r\n    final String[] codes = { \"\\r\\n\\r\\n\\r\\nhello,\\r\\n\\r\\n\\r\\n\", \"hello,\\n\\n\\n\", \"hello,\\\"\\\"\\r\\n\\r\\n\\r\\n\", \"hello,\\\"\\\"\\n\\n\\n\" };\r\n    final String[][] res = { // Excel format does not ignore empty lines\r\n    { \"hello\", \"\" }, // Excel format does not ignore empty lines\r\n    { \"\" }, { \"\" } };\r\n    for (final String code : codes) {\r\n        final CSVParser parser = CSVParser.parse(code, CSVFormat.EXCEL);\r\n        final List<CSVRecord> records = parser.getRecords();\r\n        assertEquals(res.length, records.size());\r\n        assertTrue(records.size() > 0);\r\n        for (int i = 0; i < res.length; i++) {\r\n            assertArrayEquals(res[i], records.get(i).values());\r\n        }\r\n        parser.close();\r\n    }\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testEndOfFileBehaviorCSV",
+  "sourceCode" : "@Test\r\npublic void testEndOfFileBehaviorCSV() throws Exception {\r\n    final String[] codes = { \"hello,\\r\\n\\r\\nworld,\\r\\n\", \"hello,\\r\\n\\r\\nworld,\", \"hello,\\r\\n\\r\\nworld,\\\"\\\"\\r\\n\", \"hello,\\r\\n\\r\\nworld,\\\"\\\"\", \"hello,\\r\\n\\r\\nworld,\\n\", \"hello,\\r\\n\\r\\nworld,\", \"hello,\\r\\n\\r\\nworld,\\\"\\\"\\n\", \"hello,\\r\\n\\r\\nworld,\\\"\\\"\" };\r\n    final String[][] res = { // CSV format ignores empty lines\r\n    { \"hello\", \"\" }, { \"world\", \"\" } };\r\n    for (final String code : codes) {\r\n        final CSVParser parser = CSVParser.parse(code, CSVFormat.DEFAULT);\r\n        final List<CSVRecord> records = parser.getRecords();\r\n        assertEquals(res.length, records.size());\r\n        assertTrue(records.size() > 0);\r\n        for (int i = 0; i < res.length; i++) {\r\n            assertArrayEquals(res[i], records.get(i).values());\r\n        }\r\n        parser.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testEndOfFileBehaviourExcel",
+  "sourceCode" : "@Test\r\npublic void testEndOfFileBehaviourExcel() throws Exception {\r\n    final String[] codes = { \"hello,\\r\\n\\r\\nworld,\\r\\n\", \"hello,\\r\\n\\r\\nworld,\", \"hello,\\r\\n\\r\\nworld,\\\"\\\"\\r\\n\", \"hello,\\r\\n\\r\\nworld,\\\"\\\"\", \"hello,\\r\\n\\r\\nworld,\\n\", \"hello,\\r\\n\\r\\nworld,\", \"hello,\\r\\n\\r\\nworld,\\\"\\\"\\n\", \"hello,\\r\\n\\r\\nworld,\\\"\\\"\" };\r\n    final String[][] res = { // Excel format does not ignore empty lines\r\n    { \"hello\", \"\" }, // Excel format does not ignore empty lines\r\n    { \"\" }, { \"world\", \"\" } };\r\n    for (final String code : codes) {\r\n        final CSVParser parser = CSVParser.parse(code, CSVFormat.EXCEL);\r\n        final List<CSVRecord> records = parser.getRecords();\r\n        assertEquals(res.length, records.size());\r\n        assertTrue(records.size() > 0);\r\n        for (int i = 0; i < res.length; i++) {\r\n            assertArrayEquals(res[i], records.get(i).values());\r\n        }\r\n        parser.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testExcelFormat1",
+  "sourceCode" : "@Test\r\npublic void testExcelFormat1() throws IOException {\r\n    final String code = \"value1,value2,value3,value4\\r\\na,b,c,d\\r\\n  x,,,\" + \"\\r\\n\\r\\n\\\"\\\"\\\"hello\\\"\\\"\\\",\\\"  \\\"\\\"world\\\"\\\"\\\",\\\"abc\\ndef\\\",\\r\\n\";\r\n    final String[][] res = { { \"value1\", \"value2\", \"value3\", \"value4\" }, { \"a\", \"b\", \"c\", \"d\" }, { \"  x\", \"\", \"\", \"\" }, { \"\" }, { \"\\\"hello\\\"\", \"  \\\"world\\\"\", \"abc\\ndef\", \"\" } };\r\n    final CSVParser parser = CSVParser.parse(code, CSVFormat.EXCEL);\r\n    final List<CSVRecord> records = parser.getRecords();\r\n    assertEquals(res.length, records.size());\r\n    assertTrue(records.size() > 0);\r\n    for (int i = 0; i < res.length; i++) {\r\n        assertArrayEquals(res[i], records.get(i).values());\r\n    }\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testExcelFormat2",
+  "sourceCode" : "@Test\r\npublic void testExcelFormat2() throws Exception {\r\n    final String code = \"foo,baar\\r\\n\\r\\nhello,\\r\\n\\r\\nworld,\\r\\n\";\r\n    final String[][] res = { { \"foo\", \"baar\" }, { \"\" }, { \"hello\", \"\" }, { \"\" }, { \"world\", \"\" } };\r\n    final CSVParser parser = CSVParser.parse(code, CSVFormat.EXCEL);\r\n    final List<CSVRecord> records = parser.getRecords();\r\n    assertEquals(res.length, records.size());\r\n    assertTrue(records.size() > 0);\r\n    for (int i = 0; i < res.length; i++) {\r\n        assertArrayEquals(res[i], records.get(i).values());\r\n    }\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testExcelHeaderCountLessThanData",
+  "sourceCode" : "/**\r\n * Tests an exported Excel worksheet with a header row and rows that have more columns than the headers\r\n */\r\n@Test\r\npublic void testExcelHeaderCountLessThanData() throws Exception {\r\n    final String code = \"A,B,C,,\\r\\na,b,c,d,e\\r\\n\";\r\n    final CSVParser parser = CSVParser.parse(code, CSVFormat.EXCEL.withHeader());\r\n    try {\r\n        for (final CSVRecord record : parser.getRecords()) {\r\n            Assert.assertEquals(\"a\", record.get(\"A\"));\r\n            Assert.assertEquals(\"b\", record.get(\"B\"));\r\n            Assert.assertEquals(\"c\", record.get(\"C\"));\r\n        }\r\n    } finally {\r\n        parser.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testForEach",
+  "sourceCode" : "@Test\r\npublic void testForEach() throws Exception {\r\n    final List<CSVRecord> records = new ArrayList<CSVRecord>();\r\n    final Reader in = new StringReader(\"a,b,c\\n1,2,3\\nx,y,z\");\r\n    for (final CSVRecord record : CSVFormat.DEFAULT.parse(in)) {\r\n        records.add(record);\r\n    }\r\n    assertEquals(3, records.size());\r\n    assertArrayEquals(new String[] { \"a\", \"b\", \"c\" }, records.get(0).values());\r\n    assertArrayEquals(new String[] { \"1\", \"2\", \"3\" }, records.get(1).values());\r\n    assertArrayEquals(new String[] { \"x\", \"y\", \"z\" }, records.get(2).values());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testGetHeaderMap",
+  "sourceCode" : "@Test\r\npublic void testGetHeaderMap() throws Exception {\r\n    final CSVParser parser = CSVParser.parse(\"a,b,c\\n1,2,3\\nx,y,z\", CSVFormat.DEFAULT.withHeader(\"A\", \"B\", \"C\"));\r\n    final Map<String, Integer> headerMap = parser.getHeaderMap();\r\n    final Iterator<String> columnNames = headerMap.keySet().iterator();\r\n    // Headers are iterated in column order.\r\n    Assert.assertEquals(\"A\", columnNames.next());\r\n    Assert.assertEquals(\"B\", columnNames.next());\r\n    Assert.assertEquals(\"C\", columnNames.next());\r\n    final Iterator<CSVRecord> records = parser.iterator();\r\n    // Parse to make sure getHeaderMap did not have a side-effect.\r\n    for (int i = 0; i < 3; i++) {\r\n        assertTrue(records.hasNext());\r\n        final CSVRecord record = records.next();\r\n        assertEquals(record.get(0), record.get(\"A\"));\r\n        assertEquals(record.get(1), record.get(\"B\"));\r\n        assertEquals(record.get(2), record.get(\"C\"));\r\n    }\r\n    assertFalse(records.hasNext());\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testDuplicateHeaders",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testDuplicateHeaders() throws Exception {\r\n    CSVParser.parse(\"a,b,a\\n1,2,3\\nx,y,z\", CSVFormat.DEFAULT.withHeader(new String[] {}));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testGetLine",
+  "sourceCode" : "@Test\r\npublic void testGetLine() throws IOException {\r\n    final CSVParser parser = CSVParser.parse(CSV_INPUT, CSVFormat.DEFAULT.withIgnoreSurroundingSpaces());\r\n    for (final String[] re : RESULT) {\r\n        assertArrayEquals(re, parser.nextRecord().values());\r\n    }\r\n    assertNull(parser.nextRecord());\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testGetLineNumberWithCR",
+  "sourceCode" : "@Test\r\npublic void testGetLineNumberWithCR() throws Exception {\r\n    this.validateLineNumbers(String.valueOf(CR));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testGetLineNumberWithCRLF",
+  "sourceCode" : "@Test\r\npublic void testGetLineNumberWithCRLF() throws Exception {\r\n    this.validateLineNumbers(CRLF);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testGetLineNumberWithLF",
+  "sourceCode" : "@Test\r\npublic void testGetLineNumberWithLF() throws Exception {\r\n    this.validateLineNumbers(String.valueOf(LF));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testGetRecordPositionWithCRLF",
+  "sourceCode" : "@Test\r\npublic void testGetRecordPositionWithCRLF() throws Exception {\r\n    this.validateRecordPosition(CRLF);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testGetRecordPositionWithLF",
+  "sourceCode" : "@Test\r\npublic void testGetRecordPositionWithLF() throws Exception {\r\n    this.validateRecordPosition(String.valueOf(LF));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testGetOneLine",
+  "sourceCode" : "@Test\r\npublic void testGetOneLine() throws IOException {\r\n    final CSVParser parser = CSVParser.parse(CSV_INPUT_1, CSVFormat.DEFAULT);\r\n    final CSVRecord record = parser.getRecords().get(0);\r\n    assertArrayEquals(RESULT[0], record.values());\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testGetOneLineOneParser",
+  "sourceCode" : "/**\r\n * Tests reusing a parser to process new string records one at a time as they are being discovered. See [CSV-110].\r\n *\r\n * @throws IOException\r\n */\r\n@Test\r\npublic void testGetOneLineOneParser() throws IOException {\r\n    final PipedWriter writer = new PipedWriter();\r\n    final PipedReader reader = new PipedReader(writer);\r\n    final CSVFormat format = CSVFormat.DEFAULT;\r\n    final CSVParser parser = new CSVParser(reader, format);\r\n    try {\r\n        writer.append(CSV_INPUT_1);\r\n        writer.append(format.getRecordSeparator());\r\n        final CSVRecord record1 = parser.nextRecord();\r\n        assertArrayEquals(RESULT[0], record1.values());\r\n        writer.append(CSV_INPUT_2);\r\n        writer.append(format.getRecordSeparator());\r\n        final CSVRecord record2 = parser.nextRecord();\r\n        assertArrayEquals(RESULT[1], record2.values());\r\n    } finally {\r\n        parser.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testGetRecordNumberWithCR",
+  "sourceCode" : "@Test\r\npublic void testGetRecordNumberWithCR() throws Exception {\r\n    this.validateRecordNumbers(String.valueOf(CR));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testGetRecordNumberWithCRLF",
+  "sourceCode" : "@Test\r\npublic void testGetRecordNumberWithCRLF() throws Exception {\r\n    this.validateRecordNumbers(CRLF);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testGetRecordNumberWithLF",
+  "sourceCode" : "@Test\r\npublic void testGetRecordNumberWithLF() throws Exception {\r\n    this.validateRecordNumbers(String.valueOf(LF));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testGetRecords",
+  "sourceCode" : "@Test\r\npublic void testGetRecords() throws IOException {\r\n    final CSVParser parser = CSVParser.parse(CSV_INPUT, CSVFormat.DEFAULT.withIgnoreSurroundingSpaces());\r\n    final List<CSVRecord> records = parser.getRecords();\r\n    assertEquals(RESULT.length, records.size());\r\n    assertTrue(records.size() > 0);\r\n    for (int i = 0; i < RESULT.length; i++) {\r\n        assertArrayEquals(RESULT[i], records.get(i).values());\r\n    }\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testGetRecordWithMultiLineValues",
+  "sourceCode" : "@Test\r\npublic void testGetRecordWithMultiLineValues() throws Exception {\r\n    final CSVParser parser = CSVParser.parse(\"\\\"a\\r\\n1\\\",\\\"a\\r\\n2\\\"\" + CRLF + \"\\\"b\\r\\n1\\\",\\\"b\\r\\n2\\\"\" + CRLF + \"\\\"c\\r\\n1\\\",\\\"c\\r\\n2\\\"\", CSVFormat.DEFAULT.withRecordSeparator(CRLF));\r\n    CSVRecord record;\r\n    assertEquals(0, parser.getRecordNumber());\r\n    assertEquals(0, parser.getCurrentLineNumber());\r\n    assertNotNull(record = parser.nextRecord());\r\n    assertEquals(3, parser.getCurrentLineNumber());\r\n    assertEquals(1, record.getRecordNumber());\r\n    assertEquals(1, parser.getRecordNumber());\r\n    assertNotNull(record = parser.nextRecord());\r\n    assertEquals(6, parser.getCurrentLineNumber());\r\n    assertEquals(2, record.getRecordNumber());\r\n    assertEquals(2, parser.getRecordNumber());\r\n    assertNotNull(record = parser.nextRecord());\r\n    assertEquals(8, parser.getCurrentLineNumber());\r\n    assertEquals(3, record.getRecordNumber());\r\n    assertEquals(3, parser.getRecordNumber());\r\n    assertNull(record = parser.nextRecord());\r\n    assertEquals(8, parser.getCurrentLineNumber());\r\n    assertEquals(3, parser.getRecordNumber());\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testHeader",
+  "sourceCode" : "@Test\r\npublic void testHeader() throws Exception {\r\n    final Reader in = new StringReader(\"a,b,c\\n1,2,3\\nx,y,z\");\r\n    final Iterator<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(in).iterator();\r\n    for (int i = 0; i < 2; i++) {\r\n        assertTrue(records.hasNext());\r\n        final CSVRecord record = records.next();\r\n        assertEquals(record.get(0), record.get(\"a\"));\r\n        assertEquals(record.get(1), record.get(\"b\"));\r\n        assertEquals(record.get(2), record.get(\"c\"));\r\n    }\r\n    assertFalse(records.hasNext());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testHeaderMissing",
+  "sourceCode" : "@Test\r\npublic void testHeaderMissing() throws Exception {\r\n    final Reader in = new StringReader(\"a,,c\\n1,2,3\\nx,y,z\");\r\n    final Iterator<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(in).iterator();\r\n    for (int i = 0; i < 2; i++) {\r\n        assertTrue(records.hasNext());\r\n        final CSVRecord record = records.next();\r\n        assertEquals(record.get(0), record.get(\"a\"));\r\n        assertEquals(record.get(2), record.get(\"c\"));\r\n    }\r\n    assertFalse(records.hasNext());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testHeadersMissingException",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testHeadersMissingException() throws Exception {\r\n    final Reader in = new StringReader(\"a,,c,,d\\n1,2,3,4\\nx,y,z,zz\");\r\n    CSVFormat.DEFAULT.withHeader().parse(in).iterator();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testHeadersMissing",
+  "sourceCode" : "@Test\r\npublic void testHeadersMissing() throws Exception {\r\n    final Reader in = new StringReader(\"a,,c,,d\\n1,2,3,4\\nx,y,z,zz\");\r\n    CSVFormat.DEFAULT.withHeader().withAllowMissingColumnNames().parse(in).iterator();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testHeaderMissingWithNull",
+  "sourceCode" : "@Test\r\npublic void testHeaderMissingWithNull() throws Exception {\r\n    final Reader in = new StringReader(\"a,,c,,d\\n1,2,3,4\\nx,y,z,zz\");\r\n    CSVFormat.DEFAULT.withHeader().withNullString(\"\").withAllowMissingColumnNames().parse(in).iterator();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testHeaderComment",
+  "sourceCode" : "@Test\r\npublic void testHeaderComment() throws Exception {\r\n    final Reader in = new StringReader(\"# comment\\na,b,c\\n1,2,3\\nx,y,z\");\r\n    final Iterator<CSVRecord> records = CSVFormat.DEFAULT.withCommentMarker('#').withHeader().parse(in).iterator();\r\n    for (int i = 0; i < 2; i++) {\r\n        assertTrue(records.hasNext());\r\n        final CSVRecord record = records.next();\r\n        assertEquals(record.get(0), record.get(\"a\"));\r\n        assertEquals(record.get(1), record.get(\"b\"));\r\n        assertEquals(record.get(2), record.get(\"c\"));\r\n    }\r\n    assertFalse(records.hasNext());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testIgnoreEmptyLines",
+  "sourceCode" : "@Test\r\npublic void testIgnoreEmptyLines() throws IOException {\r\n    final String code = \"\\nfoo,baar\\n\\r\\n,\\n\\n,world\\r\\n\\n\";\r\n    // String code = \"world\\r\\n\\n\";\r\n    // String code = \"foo;baar\\r\\n\\r\\nhello;\\r\\n\\r\\nworld;\\r\\n\";\r\n    final CSVParser parser = CSVParser.parse(code, CSVFormat.DEFAULT);\r\n    final List<CSVRecord> records = parser.getRecords();\r\n    assertEquals(3, records.size());\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testInvalidFormat",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testInvalidFormat() throws Exception {\r\n    final CSVFormat invalidFormat = CSVFormat.DEFAULT.withDelimiter(CR);\r\n    new CSVParser(null, invalidFormat).close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testIterator",
+  "sourceCode" : "@Test\r\npublic void testIterator() throws Exception {\r\n    final Reader in = new StringReader(\"a,b,c\\n1,2,3\\nx,y,z\");\r\n    final Iterator<CSVRecord> iterator = CSVFormat.DEFAULT.parse(in).iterator();\r\n    assertTrue(iterator.hasNext());\r\n    try {\r\n        iterator.remove();\r\n        fail(\"expected UnsupportedOperationException\");\r\n    } catch (final UnsupportedOperationException expected) {\r\n        // expected\r\n    }\r\n    assertArrayEquals(new String[] { \"a\", \"b\", \"c\" }, iterator.next().values());\r\n    assertArrayEquals(new String[] { \"1\", \"2\", \"3\" }, iterator.next().values());\r\n    assertTrue(iterator.hasNext());\r\n    assertTrue(iterator.hasNext());\r\n    assertTrue(iterator.hasNext());\r\n    assertArrayEquals(new String[] { \"x\", \"y\", \"z\" }, iterator.next().values());\r\n    assertFalse(iterator.hasNext());\r\n    try {\r\n        iterator.next();\r\n        fail(\"NoSuchElementException expected\");\r\n    } catch (final NoSuchElementException e) {\r\n        // expected\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testLineFeedEndings",
+  "sourceCode" : "@Test\r\npublic void testLineFeedEndings() throws IOException {\r\n    final String code = \"foo\\nbaar,\\nhello,world\\n,kanu\";\r\n    final CSVParser parser = CSVParser.parse(code, CSVFormat.DEFAULT);\r\n    final List<CSVRecord> records = parser.getRecords();\r\n    assertEquals(4, records.size());\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testMappedButNotSetAsOutlook2007ContactExport",
+  "sourceCode" : "@Test\r\npublic void testMappedButNotSetAsOutlook2007ContactExport() throws Exception {\r\n    final Reader in = new StringReader(\"a,b,c\\n1,2\\nx,y,z\");\r\n    final Iterator<CSVRecord> records = CSVFormat.DEFAULT.withHeader(\"A\", \"B\", \"C\").withSkipHeaderRecord().parse(in).iterator();\r\n    CSVRecord record;\r\n    // 1st record\r\n    record = records.next();\r\n    assertTrue(record.isMapped(\"A\"));\r\n    assertTrue(record.isMapped(\"B\"));\r\n    assertTrue(record.isMapped(\"C\"));\r\n    assertTrue(record.isSet(\"A\"));\r\n    assertTrue(record.isSet(\"B\"));\r\n    assertFalse(record.isSet(\"C\"));\r\n    assertEquals(\"1\", record.get(\"A\"));\r\n    assertEquals(\"2\", record.get(\"B\"));\r\n    assertFalse(record.isConsistent());\r\n    // 2nd record\r\n    record = records.next();\r\n    assertTrue(record.isMapped(\"A\"));\r\n    assertTrue(record.isMapped(\"B\"));\r\n    assertTrue(record.isMapped(\"C\"));\r\n    assertTrue(record.isSet(\"A\"));\r\n    assertTrue(record.isSet(\"B\"));\r\n    assertTrue(record.isSet(\"C\"));\r\n    assertEquals(\"x\", record.get(\"A\"));\r\n    assertEquals(\"y\", record.get(\"B\"));\r\n    assertEquals(\"z\", record.get(\"C\"));\r\n    assertTrue(record.isConsistent());\r\n    assertFalse(records.hasNext());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testMultipleIterators",
+  "sourceCode" : "@Test\r\npublic // TODO this may lead to strange behavior, throw an exception if iterator() has already been called?\r\nvoid testMultipleIterators() throws Exception {\r\n    final CSVParser parser = CSVParser.parse(\"a,b,c\" + CR + \"d,e,f\", CSVFormat.DEFAULT);\r\n    final Iterator<CSVRecord> itr1 = parser.iterator();\r\n    final Iterator<CSVRecord> itr2 = parser.iterator();\r\n    final CSVRecord first = itr1.next();\r\n    assertEquals(\"a\", first.get(0));\r\n    assertEquals(\"b\", first.get(1));\r\n    assertEquals(\"c\", first.get(2));\r\n    final CSVRecord second = itr2.next();\r\n    assertEquals(\"d\", second.get(0));\r\n    assertEquals(\"e\", second.get(1));\r\n    assertEquals(\"f\", second.get(2));\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testNewCSVParserNullReaderFormat",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testNewCSVParserNullReaderFormat() throws Exception {\r\n    new CSVParser(null, CSVFormat.DEFAULT).close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testNewCSVParserReaderNullFormat",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testNewCSVParserReaderNullFormat() throws Exception {\r\n    new CSVParser(new StringReader(\"\"), null).close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testNoHeaderMap",
+  "sourceCode" : "@Test\r\npublic void testNoHeaderMap() throws Exception {\r\n    final CSVParser parser = CSVParser.parse(\"a,b,c\\n1,2,3\\nx,y,z\", CSVFormat.DEFAULT);\r\n    Assert.assertNull(parser.getHeaderMap());\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testParseFileNullFormat",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testParseFileNullFormat() throws Exception {\r\n    CSVParser.parse(new File(\"\"), Charset.defaultCharset(), null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testParseNullFileFormat",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testParseNullFileFormat() throws Exception {\r\n    CSVParser.parse((File) null, Charset.defaultCharset(), CSVFormat.DEFAULT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testParseNullStringFormat",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testParseNullStringFormat() throws Exception {\r\n    CSVParser.parse((String) null, CSVFormat.DEFAULT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testParseNullUrlCharsetFormat",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testParseNullUrlCharsetFormat() throws Exception {\r\n    CSVParser.parse((File) null, Charset.defaultCharset(), CSVFormat.DEFAULT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testParserUrlNullCharsetFormat",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testParserUrlNullCharsetFormat() throws Exception {\r\n    final CSVParser parser = CSVParser.parse(new URL(\"http://commons.apache.org\"), null, CSVFormat.DEFAULT);\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testParseStringNullFormat",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testParseStringNullFormat() throws Exception {\r\n    CSVParser.parse(\"csv data\", null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testParseUrlCharsetNullFormat",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testParseUrlCharsetNullFormat() throws Exception {\r\n    final CSVParser parser = CSVParser.parse(new URL(\"http://commons.apache.org\"), Charset.defaultCharset(), null);\r\n    parser.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testProvidedHeader",
+  "sourceCode" : "@Test\r\npublic void testProvidedHeader() throws Exception {\r\n    final Reader in = new StringReader(\"a,b,c\\n1,2,3\\nx,y,z\");\r\n    final Iterator<CSVRecord> records = CSVFormat.DEFAULT.withHeader(\"A\", \"B\", \"C\").parse(in).iterator();\r\n    for (int i = 0; i < 3; i++) {\r\n        assertTrue(records.hasNext());\r\n        final CSVRecord record = records.next();\r\n        assertTrue(record.isMapped(\"A\"));\r\n        assertTrue(record.isMapped(\"B\"));\r\n        assertTrue(record.isMapped(\"C\"));\r\n        assertFalse(record.isMapped(\"NOT MAPPED\"));\r\n        assertEquals(record.get(0), record.get(\"A\"));\r\n        assertEquals(record.get(1), record.get(\"B\"));\r\n        assertEquals(record.get(2), record.get(\"C\"));\r\n    }\r\n    assertFalse(records.hasNext());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testProvidedHeaderAuto",
+  "sourceCode" : "@Test\r\npublic void testProvidedHeaderAuto() throws Exception {\r\n    final Reader in = new StringReader(\"a,b,c\\n1,2,3\\nx,y,z\");\r\n    final Iterator<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(in).iterator();\r\n    for (int i = 0; i < 2; i++) {\r\n        assertTrue(records.hasNext());\r\n        final CSVRecord record = records.next();\r\n        assertTrue(record.isMapped(\"a\"));\r\n        assertTrue(record.isMapped(\"b\"));\r\n        assertTrue(record.isMapped(\"c\"));\r\n        assertFalse(record.isMapped(\"NOT MAPPED\"));\r\n        assertEquals(record.get(0), record.get(\"a\"));\r\n        assertEquals(record.get(1), record.get(\"b\"));\r\n        assertEquals(record.get(2), record.get(\"c\"));\r\n    }\r\n    assertFalse(records.hasNext());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testRoundtrip",
+  "sourceCode" : "@Test\r\npublic void testRoundtrip() throws Exception {\r\n    final StringWriter out = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT);\r\n    final String input = \"a,b,c\\r\\n1,2,3\\r\\nx,y,z\\r\\n\";\r\n    for (final CSVRecord record : CSVParser.parse(input, CSVFormat.DEFAULT)) {\r\n        printer.printRecord(record);\r\n    }\r\n    assertEquals(input, out.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testSkipAutoHeader",
+  "sourceCode" : "@Test\r\npublic void testSkipAutoHeader() throws Exception {\r\n    final Reader in = new StringReader(\"a,b,c\\n1,2,3\\nx,y,z\");\r\n    final Iterator<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(in).iterator();\r\n    final CSVRecord record = records.next();\r\n    assertEquals(\"1\", record.get(\"a\"));\r\n    assertEquals(\"2\", record.get(\"b\"));\r\n    assertEquals(\"3\", record.get(\"c\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testSkipSetHeader",
+  "sourceCode" : "@Test\r\npublic void testSkipSetHeader() throws Exception {\r\n    final Reader in = new StringReader(\"a,b,c\\n1,2,3\\nx,y,z\");\r\n    final Iterator<CSVRecord> records = CSVFormat.DEFAULT.withHeader(\"a\", \"b\", \"c\").withSkipHeaderRecord().parse(in).iterator();\r\n    final CSVRecord record = records.next();\r\n    assertEquals(\"1\", record.get(\"a\"));\r\n    assertEquals(\"2\", record.get(\"b\"));\r\n    assertEquals(\"3\", record.get(\"c\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testSkipSetAltHeaders",
+  "sourceCode" : "@Test\r\npublic void testSkipSetAltHeaders() throws Exception {\r\n    final Reader in = new StringReader(\"a,b,c\\n1,2,3\\nx,y,z\");\r\n    final Iterator<CSVRecord> records = CSVFormat.DEFAULT.withHeader(\"X\", \"Y\", \"Z\").withSkipHeaderRecord().parse(in).iterator();\r\n    final CSVRecord record = records.next();\r\n    assertEquals(\"1\", record.get(\"X\"));\r\n    assertEquals(\"2\", record.get(\"Y\"));\r\n    assertEquals(\"3\", record.get(\"Z\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testSkipHeaderOverrideDuplicateHeaders",
+  "sourceCode" : "@Test\r\npublic void testSkipHeaderOverrideDuplicateHeaders() throws Exception {\r\n    final Reader in = new StringReader(\"a,a,a\\n1,2,3\\nx,y,z\");\r\n    final Iterator<CSVRecord> records = CSVFormat.DEFAULT.withHeader(\"X\", \"Y\", \"Z\").withSkipHeaderRecord().parse(in).iterator();\r\n    final CSVRecord record = records.next();\r\n    assertEquals(\"1\", record.get(\"X\"));\r\n    assertEquals(\"2\", record.get(\"Y\"));\r\n    assertEquals(\"3\", record.get(\"Z\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVParserTest.java",
+  "methodName" : "testIgnoreCaseHeaderMapping",
+  "sourceCode" : "@Test\r\npublic void testIgnoreCaseHeaderMapping() throws Exception {\r\n    final Reader in = new StringReader(\"1,2,3\");\r\n    final Iterator<CSVRecord> records = CSVFormat.DEFAULT.withHeader(\"One\", \"TWO\", \"three\").withIgnoreHeaderCase().parse(in).iterator();\r\n    final CSVRecord record = records.next();\r\n    assertEquals(\"1\", record.get(\"one\"));\r\n    assertEquals(\"2\", record.get(\"two\"));\r\n    assertEquals(\"3\", record.get(\"THREE\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testDisabledComment",
+  "sourceCode" : "@Test\r\npublic void testDisabledComment() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT);\r\n    printer.printComment(\"This is a comment\");\r\n    assertEquals(\"\", sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testExcelPrintAllArrayOfArrays",
+  "sourceCode" : "@Test\r\npublic void testExcelPrintAllArrayOfArrays() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.EXCEL);\r\n    printer.printRecords((Object[]) new String[][] { { \"r1c1\", \"r1c2\" }, { \"r2c1\", \"r2c2\" } });\r\n    assertEquals(\"r1c1,r1c2\" + recordSeparator + \"r2c1,r2c2\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testExcelPrintAllArrayOfLists",
+  "sourceCode" : "@Test\r\npublic void testExcelPrintAllArrayOfLists() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.EXCEL);\r\n    printer.printRecords((Object[]) new List[] { Arrays.asList(\"r1c1\", \"r1c2\"), Arrays.asList(\"r2c1\", \"r2c2\") });\r\n    assertEquals(\"r1c1,r1c2\" + recordSeparator + \"r2c1,r2c2\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testExcelPrintAllIterableOfArrays",
+  "sourceCode" : "@Test\r\npublic void testExcelPrintAllIterableOfArrays() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.EXCEL);\r\n    printer.printRecords(Arrays.asList(new String[][] { { \"r1c1\", \"r1c2\" }, { \"r2c1\", \"r2c2\" } }));\r\n    assertEquals(\"r1c1,r1c2\" + recordSeparator + \"r2c1,r2c2\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testExcelPrintAllIterableOfLists",
+  "sourceCode" : "@Test\r\npublic void testExcelPrintAllIterableOfLists() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.EXCEL);\r\n    printer.printRecords(Arrays.asList(new List[] { Arrays.asList(\"r1c1\", \"r1c2\"), Arrays.asList(\"r2c1\", \"r2c2\") }));\r\n    assertEquals(\"r1c1,r1c2\" + recordSeparator + \"r2c1,r2c2\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testExcelPrinter1",
+  "sourceCode" : "@Test\r\npublic void testExcelPrinter1() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.EXCEL);\r\n    printer.printRecord(\"a\", \"b\");\r\n    assertEquals(\"a,b\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testExcelPrinter2",
+  "sourceCode" : "@Test\r\npublic void testExcelPrinter2() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.EXCEL);\r\n    printer.printRecord(\"a,b\", \"b\");\r\n    assertEquals(\"\\\"a,b\\\",b\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testJdbcPrinter",
+  "sourceCode" : "@Test\r\npublic void testJdbcPrinter() throws IOException, ClassNotFoundException, SQLException {\r\n    final StringWriter sw = new StringWriter();\r\n    final Connection connection = geH2Connection();\r\n    try {\r\n        setUpTable(connection);\r\n        final Statement stmt = connection.createStatement();\r\n        final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT);\r\n        printer.printRecords(stmt.executeQuery(\"select ID, NAME from TEST\"));\r\n        assertEquals(\"1,r1\" + recordSeparator + \"2,r2\" + recordSeparator, sw.toString());\r\n        printer.close();\r\n    } finally {\r\n        connection.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testJdbcPrinterWithResultSet",
+  "sourceCode" : "@Test\r\npublic void testJdbcPrinterWithResultSet() throws IOException, ClassNotFoundException, SQLException {\r\n    final StringWriter sw = new StringWriter();\r\n    Class.forName(\"org.h2.Driver\");\r\n    final Connection connection = geH2Connection();\r\n    try {\r\n        setUpTable(connection);\r\n        @SuppressWarnings(\"resource\")\r\n        final Statement // Closed when the connection is closed.\r\n        stmt = connection.createStatement();\r\n        @SuppressWarnings(\"resource\")\r\n        final ResultSet // Closed when the connection is closed.\r\n        resultSet = stmt.executeQuery(\"select ID, NAME from TEST\");\r\n        final CSVPrinter printer = CSVFormat.DEFAULT.withHeader(resultSet).print(sw);\r\n        printer.printRecords(resultSet);\r\n        assertEquals(\"ID,NAME\" + recordSeparator + \"1,r1\" + recordSeparator + \"2,r2\" + recordSeparator, sw.toString());\r\n        printer.close();\r\n    } finally {\r\n        connection.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testJdbcPrinterWithResultSetMetaData",
+  "sourceCode" : "@Test\r\npublic void testJdbcPrinterWithResultSetMetaData() throws IOException, ClassNotFoundException, SQLException {\r\n    final StringWriter sw = new StringWriter();\r\n    Class.forName(\"org.h2.Driver\");\r\n    final Connection connection = geH2Connection();\r\n    try {\r\n        setUpTable(connection);\r\n        @SuppressWarnings(\"resource\")\r\n        final Statement // Closed when the connection is closed.\r\n        stmt = connection.createStatement();\r\n        @SuppressWarnings(\"resource\")\r\n        final ResultSet // Closed when the connection is closed.\r\n        resultSet = stmt.executeQuery(\"select ID, NAME from TEST\");\r\n        final CSVPrinter printer = CSVFormat.DEFAULT.withHeader(resultSet.getMetaData()).print(sw);\r\n        printer.printRecords(resultSet);\r\n        assertEquals(\"ID,NAME\" + recordSeparator + \"1,r1\" + recordSeparator + \"2,r2\" + recordSeparator, sw.toString());\r\n        printer.close();\r\n    } finally {\r\n        connection.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testMultiLineComment",
+  "sourceCode" : "@Test\r\npublic void testMultiLineComment() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withCommentMarker('#'));\r\n    printer.printComment(\"This is a comment\\non multiple lines\");\r\n    assertEquals(\"# This is a comment\" + recordSeparator + \"# on multiple lines\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testPrinter1",
+  "sourceCode" : "@Test\r\npublic void testPrinter1() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT);\r\n    printer.printRecord(\"a\", \"b\");\r\n    assertEquals(\"a,b\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testPrinter2",
+  "sourceCode" : "@Test\r\npublic void testPrinter2() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT);\r\n    printer.printRecord(\"a,b\", \"b\");\r\n    assertEquals(\"\\\"a,b\\\",b\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testPrinter3",
+  "sourceCode" : "@Test\r\npublic void testPrinter3() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT);\r\n    printer.printRecord(\"a, b\", \"b \");\r\n    assertEquals(\"\\\"a, b\\\",\\\"b \\\"\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testPrinter4",
+  "sourceCode" : "@Test\r\npublic void testPrinter4() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT);\r\n    printer.printRecord(\"a\", \"b\\\"c\");\r\n    assertEquals(\"a,\\\"b\\\"\\\"c\\\"\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testPrinter5",
+  "sourceCode" : "@Test\r\npublic void testPrinter5() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT);\r\n    printer.printRecord(\"a\", \"b\\nc\");\r\n    assertEquals(\"a,\\\"b\\nc\\\"\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testPrinter6",
+  "sourceCode" : "@Test\r\npublic void testPrinter6() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT);\r\n    printer.printRecord(\"a\", \"b\\r\\nc\");\r\n    assertEquals(\"a,\\\"b\\r\\nc\\\"\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testPrinter7",
+  "sourceCode" : "@Test\r\npublic void testPrinter7() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT);\r\n    printer.printRecord(\"a\", \"b\\\\c\");\r\n    assertEquals(\"a,b\\\\c\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testPrint",
+  "sourceCode" : "@Test\r\npublic void testPrint() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = CSVFormat.DEFAULT.print(sw);\r\n    printer.printRecord(\"a\", \"b\\\\c\");\r\n    assertEquals(\"a,b\\\\c\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testPrintNullValues",
+  "sourceCode" : "@Test\r\npublic void testPrintNullValues() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT);\r\n    printer.printRecord(\"a\", null, \"b\");\r\n    assertEquals(\"a,,b\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testPrintCustomNullValues",
+  "sourceCode" : "@Test\r\npublic void testPrintCustomNullValues() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withNullString(\"NULL\"));\r\n    printer.printRecord(\"a\", null, \"b\");\r\n    assertEquals(\"a,NULL,b\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testParseCustomNullValues",
+  "sourceCode" : "@Test\r\npublic void testParseCustomNullValues() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVFormat format = CSVFormat.DEFAULT.withNullString(\"NULL\");\r\n    final CSVPrinter printer = new CSVPrinter(sw, format);\r\n    printer.printRecord(\"a\", null, \"b\");\r\n    printer.close();\r\n    final String csvString = sw.toString();\r\n    assertEquals(\"a,NULL,b\" + recordSeparator, csvString);\r\n    final Iterable<CSVRecord> iterable = format.parse(new StringReader(csvString));\r\n    final Iterator<CSVRecord> iterator = iterable.iterator();\r\n    final CSVRecord record = iterator.next();\r\n    assertEquals(\"a\", record.get(0));\r\n    assertEquals(null, record.get(1));\r\n    assertEquals(\"b\", record.get(2));\r\n    assertFalse(iterator.hasNext());\r\n    ((CSVParser) iterable).close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testQuoteAll",
+  "sourceCode" : "@Test\r\npublic void testQuoteAll() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withQuoteMode(QuoteMode.ALL));\r\n    printer.printRecord(\"a\", \"b\\nc\", \"d\");\r\n    assertEquals(\"\\\"a\\\",\\\"b\\nc\\\",\\\"d\\\"\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testQuoteNonNumeric",
+  "sourceCode" : "@Test\r\npublic void testQuoteNonNumeric() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withQuoteMode(QuoteMode.NON_NUMERIC));\r\n    printer.printRecord(\"a\", \"b\\nc\", Integer.valueOf(1));\r\n    assertEquals(\"\\\"a\\\",\\\"b\\nc\\\",1\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testRandom",
+  "sourceCode" : "@Test\r\npublic void testRandom() throws Exception {\r\n    final int iter = 10000;\r\n    doRandom(CSVFormat.DEFAULT, iter);\r\n    doRandom(CSVFormat.EXCEL, iter);\r\n    doRandom(CSVFormat.MYSQL, iter);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testPlainQuoted",
+  "sourceCode" : "@Test\r\npublic void testPlainQuoted() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withQuote('\\''));\r\n    printer.print(\"abc\");\r\n    assertEquals(\"abc\", sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testSingleLineComment",
+  "sourceCode" : "@Test\r\npublic void testSingleLineComment() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withCommentMarker('#'));\r\n    printer.printComment(\"This is a comment\");\r\n    assertEquals(\"# This is a comment\" + recordSeparator, sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testSingleQuoteQuoted",
+  "sourceCode" : "@Test\r\npublic void testSingleQuoteQuoted() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withQuote('\\''));\r\n    printer.print(\"a'b'c\");\r\n    printer.print(\"xyz\");\r\n    assertEquals(\"'a''b''c',xyz\", sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testDelimeterQuoted",
+  "sourceCode" : "@Test\r\npublic void testDelimeterQuoted() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withQuote('\\''));\r\n    printer.print(\"a,b,c\");\r\n    printer.print(\"xyz\");\r\n    assertEquals(\"'a,b,c',xyz\", sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testDelimeterQuoteNONE",
+  "sourceCode" : "@Test\r\npublic void testDelimeterQuoteNONE() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVFormat format = CSVFormat.DEFAULT.withEscape('!').withQuoteMode(QuoteMode.NONE);\r\n    final CSVPrinter printer = new CSVPrinter(sw, format);\r\n    printer.print(\"a,b,c\");\r\n    printer.print(\"xyz\");\r\n    assertEquals(\"a!,b!,c,xyz\", sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testEOLQuoted",
+  "sourceCode" : "@Test\r\npublic void testEOLQuoted() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withQuote('\\''));\r\n    printer.print(\"a\\rb\\nc\");\r\n    printer.print(\"x\\by\\fz\");\r\n    assertEquals(\"'a\\rb\\nc',x\\by\\fz\", sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testPlainEscaped",
+  "sourceCode" : "@Test\r\npublic void testPlainEscaped() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withQuote(null).withEscape('!'));\r\n    printer.print(\"abc\");\r\n    printer.print(\"xyz\");\r\n    assertEquals(\"abc,xyz\", sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testDelimiterEscaped",
+  "sourceCode" : "@Test\r\npublic void testDelimiterEscaped() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withEscape('!').withQuote(null));\r\n    printer.print(\"a,b,c\");\r\n    printer.print(\"xyz\");\r\n    assertEquals(\"a!,b!,c,xyz\", sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testEOLEscaped",
+  "sourceCode" : "@Test\r\npublic void testEOLEscaped() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withQuote(null).withEscape('!'));\r\n    printer.print(\"a\\rb\\nc\");\r\n    printer.print(\"x\\fy\\bz\");\r\n    assertEquals(\"a!rb!nc,x\\fy\\bz\", sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testPlainPlain",
+  "sourceCode" : "@Test\r\npublic void testPlainPlain() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withQuote(null));\r\n    printer.print(\"abc\");\r\n    printer.print(\"xyz\");\r\n    assertEquals(\"abc,xyz\", sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testDelimiterPlain",
+  "sourceCode" : "@Test\r\npublic void testDelimiterPlain() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withQuote(null));\r\n    printer.print(\"a,b,c\");\r\n    printer.print(\"xyz\");\r\n    assertEquals(\"a,b,c,xyz\", sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testHeader",
+  "sourceCode" : "@Test\r\npublic void testHeader() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withQuote(null).withHeader(\"C1\", \"C2\", \"C3\"));\r\n    printer.printRecord(\"a\", \"b\", \"c\");\r\n    printer.printRecord(\"x\", \"y\", \"z\");\r\n    assertEquals(\"C1,C2,C3\\r\\na,b,c\\r\\nx,y,z\\r\\n\", sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testHeaderNotSet",
+  "sourceCode" : "@Test\r\npublic void testHeaderNotSet() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withQuote(null));\r\n    printer.printRecord(\"a\", \"b\", \"c\");\r\n    printer.printRecord(\"x\", \"y\", \"z\");\r\n    assertEquals(\"a,b,c\\r\\nx,y,z\\r\\n\", sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testSkipHeaderRecordTrue",
+  "sourceCode" : "@Test\r\npublic void testSkipHeaderRecordTrue() throws IOException {\r\n    // functionally identical to testHeaderNotSet, used to test CSV-153\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withQuote(null).withHeader(\"C1\", \"C2\", \"C3\").withSkipHeaderRecord(true));\r\n    printer.printRecord(\"a\", \"b\", \"c\");\r\n    printer.printRecord(\"x\", \"y\", \"z\");\r\n    assertEquals(\"a,b,c\\r\\nx,y,z\\r\\n\", sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testSkipHeaderRecordFalse",
+  "sourceCode" : "@Test\r\npublic void testSkipHeaderRecordFalse() throws IOException {\r\n    // functionally identical to testHeader, used to test CSV-153\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withQuote(null).withHeader(\"C1\", \"C2\", \"C3\").withSkipHeaderRecord(false));\r\n    printer.printRecord(\"a\", \"b\", \"c\");\r\n    printer.printRecord(\"x\", \"y\", \"z\");\r\n    assertEquals(\"C1,C2,C3\\r\\na,b,c\\r\\nx,y,z\\r\\n\", sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testHeaderCommentExcel",
+  "sourceCode" : "@Test\r\npublic void testHeaderCommentExcel() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final Date now = new Date();\r\n    final CSVFormat format = CSVFormat.EXCEL;\r\n    final CSVPrinter csvPrinter = printWithHeaderComments(sw, now, format);\r\n    assertEquals(\"# Generated by Apache Commons CSV 1.1\\r\\n# \" + now + \"\\r\\nCol1,Col2\\r\\nA,B\\r\\nC,D\\r\\n\", sw.toString());\r\n    csvPrinter.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testHeaderCommentTdf",
+  "sourceCode" : "@Test\r\npublic void testHeaderCommentTdf() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final Date now = new Date();\r\n    final CSVFormat format = CSVFormat.TDF;\r\n    final CSVPrinter csvPrinter = printWithHeaderComments(sw, now, format);\r\n    assertEquals(\"# Generated by Apache Commons CSV 1.1\\r\\n# \" + now + \"\\r\\nCol1\\tCol2\\r\\nA\\tB\\r\\nC\\tD\\r\\n\", sw.toString());\r\n    csvPrinter.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testEOLPlain",
+  "sourceCode" : "@Test\r\npublic void testEOLPlain() throws IOException {\r\n    final StringWriter sw = new StringWriter();\r\n    final CSVPrinter printer = new CSVPrinter(sw, CSVFormat.DEFAULT.withQuote(null));\r\n    printer.print(\"a\\rb\\nc\");\r\n    printer.print(\"x\\fy\\bz\");\r\n    assertEquals(\"a\\rb\\nc,x\\fy\\bz\", sw.toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testInvalidFormat",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testInvalidFormat() throws Exception {\r\n    final CSVFormat invalidFormat = CSVFormat.DEFAULT.withDelimiter(CR);\r\n    new CSVPrinter(new StringWriter(), invalidFormat).close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testNewCSVPrinterNullAppendableFormat",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testNewCSVPrinterNullAppendableFormat() throws Exception {\r\n    new CSVPrinter(null, CSVFormat.DEFAULT).close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVPrinterTest.java",
+  "methodName" : "testNewCsvPrinterAppendableNullFormat",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testNewCsvPrinterAppendableNullFormat() throws Exception {\r\n    new CSVPrinter(new StringWriter(), null).close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVRecordTest.java",
+  "methodName" : "testGetInt",
+  "sourceCode" : "@Test\r\npublic void testGetInt() {\r\n    assertEquals(values[0], record.get(0));\r\n    assertEquals(values[1], record.get(1));\r\n    assertEquals(values[2], record.get(2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVRecordTest.java",
+  "methodName" : "testGetString",
+  "sourceCode" : "@Test\r\npublic void testGetString() {\r\n    assertEquals(values[0], recordWithHeader.get(\"first\"));\r\n    assertEquals(values[1], recordWithHeader.get(\"second\"));\r\n    assertEquals(values[2], recordWithHeader.get(\"third\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVRecordTest.java",
+  "methodName" : "testGetStringInconsistentRecord",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testGetStringInconsistentRecord() {\r\n    header.put(\"fourth\", Integer.valueOf(4));\r\n    recordWithHeader.get(\"fourth\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVRecordTest.java",
+  "methodName" : "testGetStringNoHeader",
+  "sourceCode" : "@Test(expected = IllegalStateException.class)\r\npublic void testGetStringNoHeader() {\r\n    record.get(\"first\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVRecordTest.java",
+  "methodName" : "testGetUnmappedEnum",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testGetUnmappedEnum() {\r\n    assertNull(recordWithHeader.get(EnumFixture.UNKNOWN_COLUMN));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVRecordTest.java",
+  "methodName" : "testGetUnmappedName",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testGetUnmappedName() {\r\n    assertNull(recordWithHeader.get(\"fourth\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVRecordTest.java",
+  "methodName" : "testGetUnmappedNegativeInt",
+  "sourceCode" : "@Test(expected = ArrayIndexOutOfBoundsException.class)\r\npublic void testGetUnmappedNegativeInt() {\r\n    assertNull(recordWithHeader.get(Integer.MIN_VALUE));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVRecordTest.java",
+  "methodName" : "testGetUnmappedPositiveInt",
+  "sourceCode" : "@Test(expected = ArrayIndexOutOfBoundsException.class)\r\npublic void testGetUnmappedPositiveInt() {\r\n    assertNull(recordWithHeader.get(Integer.MAX_VALUE));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVRecordTest.java",
+  "methodName" : "testIsConsistent",
+  "sourceCode" : "@Test\r\npublic void testIsConsistent() {\r\n    assertTrue(record.isConsistent());\r\n    assertTrue(recordWithHeader.isConsistent());\r\n    header.put(\"fourth\", Integer.valueOf(4));\r\n    assertFalse(recordWithHeader.isConsistent());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVRecordTest.java",
+  "methodName" : "testIsMapped",
+  "sourceCode" : "@Test\r\npublic void testIsMapped() {\r\n    assertFalse(record.isMapped(\"first\"));\r\n    assertTrue(recordWithHeader.isMapped(\"first\"));\r\n    assertFalse(recordWithHeader.isMapped(\"fourth\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVRecordTest.java",
+  "methodName" : "testIsSet",
+  "sourceCode" : "@Test\r\npublic void testIsSet() {\r\n    assertFalse(record.isSet(\"first\"));\r\n    assertTrue(recordWithHeader.isSet(\"first\"));\r\n    assertFalse(recordWithHeader.isSet(\"fourth\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVRecordTest.java",
+  "methodName" : "testIterator",
+  "sourceCode" : "@Test\r\npublic void testIterator() {\r\n    int i = 0;\r\n    for (final String value : record) {\r\n        assertEquals(values[i], value);\r\n        i++;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVRecordTest.java",
+  "methodName" : "testPutInMap",
+  "sourceCode" : "@Test\r\npublic void testPutInMap() {\r\n    final Map<String, String> map = new ConcurrentHashMap<String, String>();\r\n    this.recordWithHeader.putIn(map);\r\n    this.validateMap(map, false);\r\n    // Test that we can compile with assigment to the same map as the param.\r\n    final TreeMap<String, String> map2 = recordWithHeader.putIn(new TreeMap<String, String>());\r\n    this.validateMap(map2, false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVRecordTest.java",
+  "methodName" : "testRemoveAndAddColumns",
+  "sourceCode" : "@Test\r\npublic void testRemoveAndAddColumns() throws IOException {\r\n    // do:\r\n    final CSVPrinter printer = new CSVPrinter(new StringBuilder(), CSVFormat.DEFAULT);\r\n    final Map<String, String> map = recordWithHeader.toMap();\r\n    map.remove(\"OldColumn\");\r\n    map.put(\"ZColumn\", \"NewValue\");\r\n    // check:\r\n    final ArrayList<String> list = new ArrayList<String>(map.values());\r\n    Collections.sort(list);\r\n    printer.printRecord(list);\r\n    Assert.assertEquals(\"A,B,C,NewValue\" + CSVFormat.DEFAULT.getRecordSeparator(), printer.getOut().toString());\r\n    printer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVRecordTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    final Map<String, String> map = this.recordWithHeader.toMap();\r\n    this.validateMap(map, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVRecordTest.java",
+  "methodName" : "testToMapWithShortRecord",
+  "sourceCode" : "@Test\r\npublic void testToMapWithShortRecord() throws Exception {\r\n    final CSVParser parser = CSVParser.parse(\"a,b\", CSVFormat.DEFAULT.withHeader(\"A\", \"B\", \"C\"));\r\n    final CSVRecord shortRec = parser.iterator().next();\r\n    shortRec.toMap();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\CSVRecordTest.java",
+  "methodName" : "testToMapWithNoHeader",
+  "sourceCode" : "@Test\r\npublic void testToMapWithNoHeader() throws Exception {\r\n    final CSVParser parser = CSVParser.parse(\"a,b\", CSVFormat.newFormat(','));\r\n    final CSVRecord shortRec = parser.iterator().next();\r\n    final Map<String, String> map = shortRec.toMap();\r\n    assertNotNull(\"Map is not null.\", map);\r\n    assertTrue(\"Map is empty.\", map.isEmpty());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\ExtendedBufferedReaderTest.java",
+  "methodName" : "testEmptyInput",
+  "sourceCode" : "@Test\r\npublic void testEmptyInput() throws Exception {\r\n    final ExtendedBufferedReader br = getBufferedReader(\"\");\r\n    assertEquals(END_OF_STREAM, br.read());\r\n    assertEquals(END_OF_STREAM, br.lookAhead());\r\n    assertEquals(END_OF_STREAM, br.getLastChar());\r\n    assertNull(br.readLine());\r\n    assertEquals(0, br.read(new char[10], 0, 0));\r\n    br.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\ExtendedBufferedReaderTest.java",
+  "methodName" : "testReadLookahead1",
+  "sourceCode" : "@Test\r\npublic void testReadLookahead1() throws Exception {\r\n    final ExtendedBufferedReader br = getBufferedReader(\"1\\n2\\r3\\n\");\r\n    assertEquals(0, br.getCurrentLineNumber());\r\n    assertEquals('1', br.lookAhead());\r\n    assertEquals(UNDEFINED, br.getLastChar());\r\n    assertEquals(0, br.getCurrentLineNumber());\r\n    // Start line 1\r\n    assertEquals('1', br.read());\r\n    assertEquals('1', br.getLastChar());\r\n    assertEquals(1, br.getCurrentLineNumber());\r\n    assertEquals('\\n', br.lookAhead());\r\n    assertEquals(1, br.getCurrentLineNumber());\r\n    assertEquals('1', br.getLastChar());\r\n    assertEquals('\\n', br.read());\r\n    assertEquals(1, br.getCurrentLineNumber());\r\n    assertEquals('\\n', br.getLastChar());\r\n    assertEquals(1, br.getCurrentLineNumber());\r\n    assertEquals('2', br.lookAhead());\r\n    assertEquals(1, br.getCurrentLineNumber());\r\n    assertEquals('\\n', br.getLastChar());\r\n    assertEquals(1, br.getCurrentLineNumber());\r\n    // Start line 2\r\n    assertEquals('2', br.read());\r\n    assertEquals(2, br.getCurrentLineNumber());\r\n    assertEquals('2', br.getLastChar());\r\n    assertEquals('\\r', br.lookAhead());\r\n    assertEquals(2, br.getCurrentLineNumber());\r\n    assertEquals('2', br.getLastChar());\r\n    assertEquals('\\r', br.read());\r\n    assertEquals('\\r', br.getLastChar());\r\n    assertEquals(2, br.getCurrentLineNumber());\r\n    assertEquals('3', br.lookAhead());\r\n    assertEquals('\\r', br.getLastChar());\r\n    // Start line 3\r\n    assertEquals('3', br.read());\r\n    assertEquals('3', br.getLastChar());\r\n    assertEquals(3, br.getCurrentLineNumber());\r\n    assertEquals('\\n', br.lookAhead());\r\n    assertEquals(3, br.getCurrentLineNumber());\r\n    assertEquals('3', br.getLastChar());\r\n    assertEquals('\\n', br.read());\r\n    assertEquals(3, br.getCurrentLineNumber());\r\n    assertEquals('\\n', br.getLastChar());\r\n    assertEquals(3, br.getCurrentLineNumber());\r\n    assertEquals(END_OF_STREAM, br.lookAhead());\r\n    assertEquals('\\n', br.getLastChar());\r\n    assertEquals(END_OF_STREAM, br.read());\r\n    assertEquals(END_OF_STREAM, br.getLastChar());\r\n    assertEquals(END_OF_STREAM, br.read());\r\n    assertEquals(END_OF_STREAM, br.lookAhead());\r\n    assertEquals(3, br.getCurrentLineNumber());\r\n    br.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\ExtendedBufferedReaderTest.java",
+  "methodName" : "testReadLookahead2",
+  "sourceCode" : "@Test\r\npublic void testReadLookahead2() throws Exception {\r\n    final char[] ref = new char[5];\r\n    final char[] res = new char[5];\r\n    final ExtendedBufferedReader br = getBufferedReader(\"abcdefg\");\r\n    ref[0] = 'a';\r\n    ref[1] = 'b';\r\n    ref[2] = 'c';\r\n    assertEquals(3, br.read(res, 0, 3));\r\n    assertArrayEquals(ref, res);\r\n    assertEquals('c', br.getLastChar());\r\n    assertEquals('d', br.lookAhead());\r\n    ref[4] = 'd';\r\n    assertEquals(1, br.read(res, 4, 1));\r\n    assertArrayEquals(ref, res);\r\n    assertEquals('d', br.getLastChar());\r\n    br.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\ExtendedBufferedReaderTest.java",
+  "methodName" : "testReadLine",
+  "sourceCode" : "@Test\r\npublic void testReadLine() throws Exception {\r\n    ExtendedBufferedReader br = getBufferedReader(\"\");\r\n    assertNull(br.readLine());\r\n    br.close();\r\n    br = getBufferedReader(\"\\n\");\r\n    assertEquals(\"\", br.readLine());\r\n    assertNull(br.readLine());\r\n    br.close();\r\n    br = getBufferedReader(\"foo\\n\\nhello\");\r\n    assertEquals(0, br.getCurrentLineNumber());\r\n    assertEquals(\"foo\", br.readLine());\r\n    assertEquals(1, br.getCurrentLineNumber());\r\n    assertEquals(\"\", br.readLine());\r\n    assertEquals(2, br.getCurrentLineNumber());\r\n    assertEquals(\"hello\", br.readLine());\r\n    assertEquals(3, br.getCurrentLineNumber());\r\n    assertNull(br.readLine());\r\n    assertEquals(3, br.getCurrentLineNumber());\r\n    br.close();\r\n    br = getBufferedReader(\"foo\\n\\nhello\");\r\n    assertEquals('f', br.read());\r\n    assertEquals('o', br.lookAhead());\r\n    assertEquals(\"oo\", br.readLine());\r\n    assertEquals(1, br.getCurrentLineNumber());\r\n    assertEquals('\\n', br.lookAhead());\r\n    assertEquals(\"\", br.readLine());\r\n    assertEquals(2, br.getCurrentLineNumber());\r\n    assertEquals('h', br.lookAhead());\r\n    assertEquals(\"hello\", br.readLine());\r\n    assertNull(br.readLine());\r\n    assertEquals(3, br.getCurrentLineNumber());\r\n    br.close();\r\n    br = getBufferedReader(\"foo\\rbaar\\r\\nfoo\");\r\n    assertEquals(\"foo\", br.readLine());\r\n    assertEquals('b', br.lookAhead());\r\n    assertEquals(\"baar\", br.readLine());\r\n    assertEquals('f', br.lookAhead());\r\n    assertEquals(\"foo\", br.readLine());\r\n    assertNull(br.readLine());\r\n    br.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\ExtendedBufferedReaderTest.java",
+  "methodName" : "testReadChar",
+  "sourceCode" : "/*\r\n     * Test to illustrate  https://issues.apache.org/jira/browse/CSV-75\r\n     *\r\n     */\r\n@Test\r\npublic void testReadChar() throws Exception {\r\n    // easier to read the string below\r\n    final String LF = \"\\n\";\r\n    // easier to read the string below\r\n    final String CR = \"\\r\";\r\n    // easier to read the string below\r\n    final String CRLF = CR + LF;\r\n    // easier to read the string below\r\n    final String LFCR = LF + CR;\r\n    final String test = \"a\" + LF + \"b\" + CR + \"c\" + LF + LF + \"d\" + CR + CR + \"e\" + LFCR + \"f \" + CRLF;\r\n    //                EOL        eol        EOL  EOL        eol  eol        EOL+CR        EOL\r\n    final int EOLeolct = 9;\r\n    ExtendedBufferedReader br;\r\n    br = getBufferedReader(test);\r\n    assertEquals(0, br.getCurrentLineNumber());\r\n    while (br.readLine() != null) {\r\n        // consume all\r\n    }\r\n    assertEquals(EOLeolct, br.getCurrentLineNumber());\r\n    br.close();\r\n    br = getBufferedReader(test);\r\n    assertEquals(0, br.getCurrentLineNumber());\r\n    while (br.read() != -1) {\r\n        // consume all\r\n    }\r\n    assertEquals(EOLeolct, br.getCurrentLineNumber());\r\n    br.close();\r\n    br = getBufferedReader(test);\r\n    assertEquals(0, br.getCurrentLineNumber());\r\n    final char[] buff = new char[10];\r\n    while (br.read(buff, 0, 3) != -1) {\r\n        // consume all\r\n    }\r\n    assertEquals(EOLeolct, br.getCurrentLineNumber());\r\n    br.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\FercGovTest.java",
+  "methodName" : "testContractFile",
+  "sourceCode" : "@Test\r\npublic void testContractFile() throws IOException {\r\n    final URL contractData = ClassLoader.getSystemClassLoader().getResource(\"ferc.gov/contract.txt\");\r\n    final CSVParser parser = CSVParser.parse(contractData, US_ASCII, CSVFormat.DEFAULT.withHeader());\r\n    try {\r\n        final List<CSVRecord> records = parser.getRecords();\r\n        CSVRecord record = records.get(0);\r\n        Assert.assertEquals(22, records.size());\r\n        // first record\r\n        Assert.assertEquals(\"C71\", record.get(ContractColumnNames.contract_id));\r\n        Assert.assertEquals(\"The Electric Company\", record.get(ContractColumnNames.seller_company_name));\r\n        Assert.assertEquals(\"ES\", record.get(ContractColumnNames.time_zone));\r\n        // last record\r\n        record = records.get(records.size() - 1);\r\n        // first record\r\n        Assert.assertEquals(\"C78\", record.get(ContractColumnNames.contract_id));\r\n        Assert.assertEquals(\"The Electric Company\", record.get(ContractColumnNames.seller_company_name));\r\n        Assert.assertEquals(\"EP\", record.get(ContractColumnNames.time_zone));\r\n    } finally {\r\n        parser.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\FercGovTest.java",
+  "methodName" : "testTransactionFile",
+  "sourceCode" : "@Test\r\npublic void testTransactionFile() throws IOException {\r\n    final URL transactionData = ClassLoader.getSystemClassLoader().getResource(\"ferc.gov/transaction.txt\");\r\n    final CSVParser parser = CSVParser.parse(transactionData, US_ASCII, CSVFormat.DEFAULT.withHeader());\r\n    try {\r\n        final List<CSVRecord> records = parser.getRecords();\r\n        Assert.assertEquals(24, records.size());\r\n        CSVRecord record = records.get(0);\r\n        // first record\r\n        Assert.assertEquals(\"T1\", record.get(\"transaction_unique_identifier\"));\r\n        Assert.assertEquals(\"The Electric Company\", record.get(\"seller_company_name\"));\r\n        Assert.assertEquals(\"880386\", record.get(\"transaction_charge\"));\r\n        // last record\r\n        record = records.get(records.size() - 1);\r\n        Assert.assertEquals(\"T15\", record.get(\"transaction_unique_identifier\"));\r\n        Assert.assertEquals(\"The Electric Company\", record.get(\"seller_company_name\"));\r\n        Assert.assertEquals(\"1800\", record.get(\"transaction_charge\"));\r\n    } finally {\r\n        parser.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\JiraCsv167Test.java",
+  "methodName" : "parse",
+  "sourceCode" : "@Test\r\n@Ignore(\"Fails\")\r\npublic void parse() throws IOException {\r\n    File csvData = new File(\"src/test/resources/csv-167/sample1.csv\");\r\n    CSVFormat format = CSVFormat.DEFAULT;\r\n    //\r\n    format = format.withAllowMissingColumnNames(false);\r\n    format = format.withCommentMarker('#');\r\n    format = format.withDelimiter(',');\r\n    format = format.withEscape('\\\\');\r\n    format = format.withHeader(\"author\", \"title\", \"publishDate\");\r\n    format = format.withHeaderComments(\"headerComment\");\r\n    format = format.withNullString(\"NULL\");\r\n    format = format.withIgnoreEmptyLines(true);\r\n    format = format.withIgnoreSurroundingSpaces(true);\r\n    format = format.withQuote('\"');\r\n    format = format.withQuoteMode(QuoteMode.ALL);\r\n    format = format.withRecordSeparator('\\n');\r\n    format = format.withSkipHeaderRecord(false);\r\n    //\r\n    CSVParser parser = CSVParser.parse(csvData, Charset.defaultCharset(), format);\r\n    int comments = 0;\r\n    int records = 0;\r\n    for (CSVRecord csvRecord : parser) {\r\n        if (csvRecord.isComment()) {\r\n            comments++;\r\n        } else {\r\n            records++;\r\n            // System.out.println(\"[\" + csvRecord.toString() + \"]\");\r\n        }\r\n    }\r\n    // Comment lines are concatenated, in this example 4 lines become 2 comments.\r\n    Assert.assertEquals(2, comments);\r\n    Assert.assertEquals(3, records);\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testSurroundingSpacesAreDeleted",
+  "sourceCode" : "@Test\r\npublic void testSurroundingSpacesAreDeleted() throws IOException {\r\n    final String code = \"noSpaces,  leadingSpaces,trailingSpaces  ,  surroundingSpaces  ,  ,,\";\r\n    final Lexer parser = getLexer(code, CSVFormat.DEFAULT.withIgnoreSurroundingSpaces());\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"noSpaces\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"leadingSpaces\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"trailingSpaces\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"surroundingSpaces\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EOF, \"\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testSurroundingTabsAreDeleted",
+  "sourceCode" : "@Test\r\npublic void testSurroundingTabsAreDeleted() throws IOException {\r\n    final String code = \"noTabs,\\tleadingTab,trailingTab\\t,\\tsurroundingTabs\\t,\\t\\t,,\";\r\n    final Lexer parser = getLexer(code, CSVFormat.DEFAULT.withIgnoreSurroundingSpaces());\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"noTabs\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"leadingTab\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"trailingTab\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"surroundingTabs\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EOF, \"\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testIgnoreEmptyLines",
+  "sourceCode" : "@Test\r\npublic void testIgnoreEmptyLines() throws IOException {\r\n    final String code = \"first,line,\\n\" + \"\\n\" + \"\\n\" + \"second,line\\n\" + \"\\n\" + \"\\n\" + \"third line \\n\" + \"\\n\" + \"\\n\" + \"last, line \\n\" + \"\\n\" + \"\\n\" + \"\\n\";\r\n    final CSVFormat format = CSVFormat.DEFAULT.withIgnoreEmptyLines();\r\n    final Lexer parser = getLexer(code, format);\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"first\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"line\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"second\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"line\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"third line \"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"last\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \" line \"));\r\n    assertThat(parser.nextToken(new Token()), matches(EOF, \"\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EOF, \"\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testComments",
+  "sourceCode" : "@Test\r\npublic void testComments() throws IOException {\r\n    final String code = \"first,line,\\n\" + \"second,line,tokenWith#no-comment\\n\" + \"# comment line \\n\" + \"third,line,#no-comment\\n\" + \"# penultimate comment\\n\" + \"# Final comment\\n\";\r\n    final CSVFormat format = CSVFormat.DEFAULT.withCommentMarker('#');\r\n    final Lexer parser = getLexer(code, format);\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"first\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"line\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"second\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"line\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"tokenWith#no-comment\"));\r\n    assertThat(parser.nextToken(new Token()), matches(COMMENT, \"comment line\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"third\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"line\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"#no-comment\"));\r\n    assertThat(parser.nextToken(new Token()), matches(COMMENT, \"penultimate comment\"));\r\n    assertThat(parser.nextToken(new Token()), matches(COMMENT, \"Final comment\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EOF, \"\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EOF, \"\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testCommentsAndEmptyLines",
+  "sourceCode" : "@Test\r\npublic void testCommentsAndEmptyLines() throws IOException {\r\n    final String code = // 1\r\n    \"1,2,3,\\n\" + // 1b\r\n    \"\\n\" + // 1c\r\n    \"\\n\" + // 2\r\n    \"a,b x,c#no-comment\\n\" + // 3\r\n    \"#foo\\n\" + // 4\r\n    \"\\n\" + // 4b\r\n    \"\\n\" + // 5\r\n    \"d,e,#no-comment\\n\" + // 5b\r\n    \"\\n\" + // 5c\r\n    \"\\n\" + // 6\r\n    \"# penultimate comment\\n\" + // 6b\r\n    \"\\n\" + // 6c\r\n    \"\\n\" + // 7\r\n    \"# Final comment\\n\";\r\n    final CSVFormat format = CSVFormat.DEFAULT.withCommentMarker('#').withIgnoreEmptyLines(false);\r\n    assertFalse(\"Should not ignore empty lines\", format.getIgnoreEmptyLines());\r\n    final Lexer parser = getLexer(code, format);\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"1\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"2\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"3\"));\r\n    // 1\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"\"));\r\n    // 1b\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"\"));\r\n    // 1c\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"a\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"b x\"));\r\n    // 2\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"c#no-comment\"));\r\n    // 3\r\n    assertThat(parser.nextToken(new Token()), matches(COMMENT, \"foo\"));\r\n    // 4\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"\"));\r\n    // 4b\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"d\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"e\"));\r\n    // 5\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"#no-comment\"));\r\n    // 5b\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"\"));\r\n    // 5c\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"\"));\r\n    // 6\r\n    assertThat(parser.nextToken(new Token()), matches(COMMENT, \"penultimate comment\"));\r\n    // 6b\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"\"));\r\n    // 6c\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"\"));\r\n    // 7\r\n    assertThat(parser.nextToken(new Token()), matches(COMMENT, \"Final comment\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EOF, \"\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EOF, \"\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testBackslashWithoutEscaping",
+  "sourceCode" : "// simple token with escaping not enabled\r\n@Test\r\npublic void testBackslashWithoutEscaping() throws IOException {\r\n    /* file: a,\\,,b\r\n        *       \\,,\r\n        */\r\n    final String code = \"a,\\\\,,b\\\\\\n\\\\,,\";\r\n    final CSVFormat format = CSVFormat.DEFAULT;\r\n    assertFalse(format.isEscapeCharacterSet());\r\n    final Lexer parser = getLexer(code, format);\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"a\"));\r\n    // an unquoted single backslash is not an escape char\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"\\\\\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"b\\\\\"));\r\n    // an unquoted single backslash is not an escape char\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"\\\\\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EOF, \"\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testBackslashWithEscaping",
+  "sourceCode" : "// simple token with escaping enabled\r\n@Test\r\npublic void testBackslashWithEscaping() throws IOException {\r\n    /* file: a,\\,,b\r\n        *       \\,,\r\n        */\r\n    final String code = \"a,\\\\,,b\\\\\\\\\\n\\\\,,\\\\\\nc,d\\\\\\r\\ne\";\r\n    final CSVFormat format = formatWithEscaping.withIgnoreEmptyLines(false);\r\n    assertTrue(format.isEscapeCharacterSet());\r\n    final Lexer parser = getLexer(code, format);\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"a\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \",\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"b\\\\\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \",\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"\\nc\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"d\\r\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EOF, \"e\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testNextToken4",
+  "sourceCode" : "// encapsulator tokenizer (single line)\r\n@Test\r\npublic void testNextToken4() throws IOException {\r\n    /* file:  a,\"foo\",b\r\n        *        a,   \" foo\",b\r\n        *        a,\"foo \"   ,b     // whitespace after closing encapsulator\r\n        *        a,  \" foo \" ,b\r\n        */\r\n    final String code = \"a,\\\"foo\\\",b\\na,   \\\" foo\\\",b\\na,\\\"foo \\\"  ,b\\na,  \\\" foo \\\"  ,b\";\r\n    final Lexer parser = getLexer(code, CSVFormat.DEFAULT.withIgnoreSurroundingSpaces());\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"a\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"foo\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"b\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"a\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \" foo\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"b\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"a\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"foo \"));\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"b\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"a\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \" foo \"));\r\n    //      assertTokenEquals(EORECORD, \"b\", parser.nextToken(new Token()));\r\n    assertThat(parser.nextToken(new Token()), matches(EOF, \"b\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testNextToken5",
+  "sourceCode" : "// encapsulator tokenizer (multi line, delimiter in string)\r\n@Test\r\npublic void testNextToken5() throws IOException {\r\n    final String code = \"a,\\\"foo\\n\\\",b\\n\\\"foo\\n  baar ,,,\\\"\\n\\\"\\n\\t \\n\\\"\";\r\n    final Lexer parser = getLexer(code, CSVFormat.DEFAULT);\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"a\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"foo\\n\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"b\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"foo\\n  baar ,,,\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EOF, \"\\n\\t \\n\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testNextToken6",
+  "sourceCode" : "// change delimiters, comment, encapsulater\r\n@Test\r\npublic void testNextToken6() throws IOException {\r\n    /* file: a;'b and \\' more\r\n        *       '\r\n        *       !comment;;;;\r\n        *       ;;\r\n        */\r\n    final String code = \"a;'b and '' more\\n'\\n!comment;;;;\\n;;\";\r\n    final CSVFormat format = CSVFormat.DEFAULT.withQuote('\\'').withCommentMarker('!').withDelimiter(';');\r\n    final Lexer parser = getLexer(code, format);\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"a\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EORECORD, \"b and ' more\\n\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testDelimiterIsWhitespace",
+  "sourceCode" : "// From CSV-1\r\n@Test\r\npublic void testDelimiterIsWhitespace() throws IOException {\r\n    final String code = \"one\\ttwo\\t\\tfour \\t five\\t six\";\r\n    final Lexer parser = getLexer(code, CSVFormat.TDF);\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"one\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"two\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"four\"));\r\n    assertThat(parser.nextToken(new Token()), matches(TOKEN, \"five\"));\r\n    assertThat(parser.nextToken(new Token()), matches(EOF, \"six\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testEscapedCR",
+  "sourceCode" : "@Test\r\npublic void testEscapedCR() throws Exception {\r\n    final Lexer lexer = getLexer(\"character\\\\\" + CR + \"Escaped\", formatWithEscaping);\r\n    assertThat(lexer.nextToken(new Token()), hasContent(\"character\" + CR + \"Escaped\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testCR",
+  "sourceCode" : "@Test\r\npublic void testCR() throws Exception {\r\n    final Lexer lexer = getLexer(\"character\" + CR + \"NotEscaped\", formatWithEscaping);\r\n    assertThat(lexer.nextToken(new Token()), hasContent(\"character\"));\r\n    assertThat(lexer.nextToken(new Token()), hasContent(\"NotEscaped\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testEscapedLF",
+  "sourceCode" : "@Test\r\npublic void testEscapedLF() throws Exception {\r\n    final Lexer lexer = getLexer(\"character\\\\\" + LF + \"Escaped\", formatWithEscaping);\r\n    assertThat(lexer.nextToken(new Token()), hasContent(\"character\" + LF + \"Escaped\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testLF",
+  "sourceCode" : "@Test\r\npublic void testLF() throws Exception {\r\n    final Lexer lexer = getLexer(\"character\" + LF + \"NotEscaped\", formatWithEscaping);\r\n    assertThat(lexer.nextToken(new Token()), hasContent(\"character\"));\r\n    assertThat(lexer.nextToken(new Token()), hasContent(\"NotEscaped\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testEscapedTab",
+  "sourceCode" : "// TODO is this correct? Do we expect <esc>TAB to be unescaped?\r\n@Test\r\npublic void testEscapedTab() throws Exception {\r\n    final Lexer lexer = getLexer(\"character\\\\\" + TAB + \"Escaped\", formatWithEscaping);\r\n    assertThat(lexer.nextToken(new Token()), hasContent(\"character\" + TAB + \"Escaped\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testTab",
+  "sourceCode" : "@Test\r\npublic void testTab() throws Exception {\r\n    final Lexer lexer = getLexer(\"character\" + TAB + \"NotEscaped\", formatWithEscaping);\r\n    assertThat(lexer.nextToken(new Token()), hasContent(\"character\" + TAB + \"NotEscaped\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testEscapedBackspace",
+  "sourceCode" : "// TODO is this correct? Do we expect <esc>BACKSPACE to be unescaped?\r\n@Test\r\npublic void testEscapedBackspace() throws Exception {\r\n    final Lexer lexer = getLexer(\"character\\\\\" + BACKSPACE + \"Escaped\", formatWithEscaping);\r\n    assertThat(lexer.nextToken(new Token()), hasContent(\"character\" + BACKSPACE + \"Escaped\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testBackspace",
+  "sourceCode" : "@Test\r\npublic void testBackspace() throws Exception {\r\n    final Lexer lexer = getLexer(\"character\" + BACKSPACE + \"NotEscaped\", formatWithEscaping);\r\n    assertThat(lexer.nextToken(new Token()), hasContent(\"character\" + BACKSPACE + \"NotEscaped\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testEscapedFF",
+  "sourceCode" : "// TODO is this correct? Do we expect <esc>FF to be unescaped?\r\n@Test\r\npublic void testEscapedFF() throws Exception {\r\n    final Lexer lexer = getLexer(\"character\\\\\" + FF + \"Escaped\", formatWithEscaping);\r\n    assertThat(lexer.nextToken(new Token()), hasContent(\"character\" + FF + \"Escaped\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testFF",
+  "sourceCode" : "@Test\r\npublic void testFF() throws Exception {\r\n    final Lexer lexer = getLexer(\"character\" + FF + \"NotEscaped\", formatWithEscaping);\r\n    assertThat(lexer.nextToken(new Token()), hasContent(\"character\" + FF + \"NotEscaped\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testEscapedMySqlNullValue",
+  "sourceCode" : "@Test\r\npublic void testEscapedMySqlNullValue() throws Exception {\r\n    // MySQL uses \\N to symbolize null values. We have to restore this\r\n    final Lexer lexer = getLexer(\"character\\\\NEscaped\", formatWithEscaping);\r\n    assertThat(lexer.nextToken(new Token()), hasContent(\"character\\\\NEscaped\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testEscapedCharacter",
+  "sourceCode" : "@Test\r\npublic void testEscapedCharacter() throws Exception {\r\n    final Lexer lexer = getLexer(\"character\\\\aEscaped\", formatWithEscaping);\r\n    assertThat(lexer.nextToken(new Token()), hasContent(\"character\\\\aEscaped\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testEscapedControlCharacter",
+  "sourceCode" : "@Test\r\npublic void testEscapedControlCharacter() throws Exception {\r\n    // we are explicitly using an escape different from \\ here\r\n    final Lexer lexer = getLexer(\"character!rEscaped\", CSVFormat.DEFAULT.withEscape('!'));\r\n    assertThat(lexer.nextToken(new Token()), hasContent(\"character\" + CR + \"Escaped\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testEscapedControlCharacter2",
+  "sourceCode" : "@Test\r\npublic void testEscapedControlCharacter2() throws Exception {\r\n    final Lexer lexer = getLexer(\"character\\\\rEscaped\", CSVFormat.DEFAULT.withEscape('\\\\'));\r\n    assertThat(lexer.nextToken(new Token()), hasContent(\"character\" + CR + \"Escaped\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\LexerTest.java",
+  "methodName" : "testEscapingAtEOF",
+  "sourceCode" : "@Test(expected = IOException.class)\r\npublic void testEscapingAtEOF() throws Exception {\r\n    final String code = \"escaping at EOF is evil\\\\\";\r\n    final Lexer lexer = getLexer(code, formatWithEscaping);\r\n    lexer.nextToken(new Token());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\perf\\PerformanceTest.java",
+  "methodName" : "testParseBigFileRepeat",
+  "sourceCode" : "@Test\r\npublic void testParseBigFileRepeat() throws Exception {\r\n    long bestTime = Long.MAX_VALUE;\r\n    for (int i = 0; i < this.max; i++) {\r\n        bestTime = Math.min(this.testParseBigFile(false), bestTime);\r\n    }\r\n    this.println(String.format(\"Best time out of %,d is %,d milliseconds.\", this.max, bestTime));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\perf\\PerformanceTest.java",
+  "methodName" : "testReadBigFile",
+  "sourceCode" : "@Test\r\npublic void testReadBigFile() throws Exception {\r\n    long bestTime = Long.MAX_VALUE;\r\n    for (int i = 0; i < this.max; i++) {\r\n        final BufferedReader in = this.getBufferedReader();\r\n        final long startMillis = System.currentTimeMillis();\r\n        long count = 0;\r\n        try {\r\n            count = this.readAll(in);\r\n        } finally {\r\n            in.close();\r\n        }\r\n        final long totalMillis = System.currentTimeMillis() - startMillis;\r\n        bestTime = Math.min(totalMillis, bestTime);\r\n        this.println(String.format(\"File read in %,d milliseconds: %,d lines.\", totalMillis, count));\r\n    }\r\n    this.println(String.format(\"Best time out of %,d is %,d milliseconds.\", this.max, bestTime));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\TokenMatchersTest.java",
+  "methodName" : "testHasType",
+  "sourceCode" : "@Test\r\npublic void testHasType() {\r\n    assertFalse(hasType(Token.Type.COMMENT).matches(token));\r\n    assertFalse(hasType(Token.Type.EOF).matches(token));\r\n    assertFalse(hasType(Token.Type.EORECORD).matches(token));\r\n    assertTrue(hasType(Token.Type.TOKEN).matches(token));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\TokenMatchersTest.java",
+  "methodName" : "testHasContent",
+  "sourceCode" : "@Test\r\npublic void testHasContent() {\r\n    assertFalse(hasContent(\"This is not the token's content\").matches(token));\r\n    assertTrue(hasContent(\"content\").matches(token));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\TokenMatchersTest.java",
+  "methodName" : "testIsReady",
+  "sourceCode" : "@Test\r\npublic void testIsReady() {\r\n    assertTrue(isReady().matches(token));\r\n    token.isReady = false;\r\n    assertFalse(isReady().matches(token));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-CSV\\src\\test\\java\\org\\apache\\commons\\csv\\TokenMatchersTest.java",
+  "methodName" : "testMatches",
+  "sourceCode" : "@Test\r\npublic void testMatches() {\r\n    assertTrue(matches(Token.Type.TOKEN, \"content\").matches(token));\r\n    assertFalse(matches(Token.Type.EOF, \"content\").matches(token));\r\n    assertFalse(matches(Token.Type.TOKEN, \"not the content\").matches(token));\r\n    assertFalse(matches(Token.Type.EORECORD, \"not the content\").matches(token));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

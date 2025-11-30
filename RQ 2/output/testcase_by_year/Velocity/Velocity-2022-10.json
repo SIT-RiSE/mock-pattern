@@ -1,0 +1,49 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Velocity\\spring-velocity-support\\src\\test\\java\\org\\apache\\velocity\\spring\\test\\VelocityEngineFactoryBeanTests.java",
+  "methodName" : "velocityFactoryBeanWithConfigLocation",
+  "sourceCode" : "@Test\r\npublic void velocityFactoryBeanWithConfigLocation() throws Exception {\r\n    vefb.setConfigLocation(new ClassPathResource(\"velocity.properties\"));\r\n    vefb.afterPropertiesSet();\r\n    VelocityEngine engine = vefb.getObject();\r\n    assertEquals(\"bean config location failed\", \"bar\", engine.getProperty(\"foo\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Velocity\\spring-velocity-support\\src\\test\\java\\org\\apache\\velocity\\spring\\test\\VelocityEngineFactoryBeanTests.java",
+  "methodName" : "velocityFactoryBeanWithResourceLoaderPath",
+  "sourceCode" : "@Test\r\npublic void velocityFactoryBeanWithResourceLoaderPath() throws Exception {\r\n    vefb.setResourceLoaderPath(\"file:\" + resourcesPath);\r\n    vefb.afterPropertiesSet();\r\n    VelocityEngine engine = vefb.getObject();\r\n    Map<String, Object> model = new HashMap<String, Object>();\r\n    model.put(\"foo\", \"bar\");\r\n    String merged = VelocityEngineUtils.mergeTemplateIntoString(engine, \"simple.vm\", \"utf-8\", model).trim();\r\n    assertEquals(\"resource loader failed\", \"foo=bar\", merged);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Velocity\\spring-velocity-support\\src\\test\\java\\org\\apache\\velocity\\spring\\test\\VelocityEngineFactoryBeanTests.java",
+  "methodName" : "velocityConfigurationAsBean",
+  "sourceCode" : "// SPR-12448\r\n@Test\r\npublic void velocityConfigurationAsBean() {\r\n    DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();\r\n    RootBeanDefinition loaderDef = new RootBeanDefinition(SpringResourceLoader.class);\r\n    loaderDef.getConstructorArgumentValues().addGenericArgumentValue(new DefaultResourceLoader());\r\n    loaderDef.getConstructorArgumentValues().addGenericArgumentValue(\"/freemarker\");\r\n    // RootBeanDefinition configDef = new RootBeanDefinition(Configuration.class);\r\n    //configDef.getPropertyValues().add(\"templateLoader\", loaderDef);\r\n    //beanFactory.registerBeanDefinition(\"freeMarkerConfig\", configDef);\r\n    // assertThat(beanFactory.getBean(Configuration.class)).isNotNull();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Velocity\\spring-velocity-support\\src\\test\\java\\org\\apache\\velocity\\spring\\test\\VelocityEngineFactoryTests.java",
+  "methodName" : "testCreateEngineDefaultFileLoader",
+  "sourceCode" : "@Test\r\npublic void testCreateEngineDefaultFileLoader() throws Exception {\r\n    VelocityEngineFactory factory = new VelocityEngineFactory();\r\n    // defaults to target/test-classes file resource loading\r\n    factory.setResourceLoaderPath(\".\");\r\n    VelocityEngine engine = factory.createVelocityEngine();\r\n    Map<String, Object> model = new HashMap<String, Object>();\r\n    model.put(\"foo\", \"bar\");\r\n    String merged = VelocityEngineUtils.mergeTemplateIntoString(engine, \"simple.vm\", \"utf-8\", model).trim();\r\n    assertEquals(\"file loader failed\", \"foo=bar\", merged);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Velocity\\spring-velocity-support\\src\\test\\java\\org\\apache\\velocity\\spring\\test\\VelocityEngineFactoryTests.java",
+  "methodName" : "testCreateEngineDefaultClasspathLoader",
+  "sourceCode" : "@Test\r\npublic void testCreateEngineDefaultClasspathLoader() throws Exception {\r\n    VelocityEngineFactory factory = new VelocityEngineFactory();\r\n    // defaults to classpath resource loading\r\n    factory.setResourceLoaderPath(\"/\");\r\n    VelocityEngine engine = factory.createVelocityEngine();\r\n    Map<String, Object> model = new HashMap<String, Object>();\r\n    model.put(\"foo\", \"bar\");\r\n    String merged = VelocityEngineUtils.mergeTemplateIntoString(engine, \"simple.vm\", \"utf-8\", model).trim();\r\n    assertEquals(\"classpath loader failed\", \"foo=bar\", merged);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Velocity\\spring-velocity-support\\src\\test\\java\\org\\apache\\velocity\\spring\\test\\VelocityEngineFactoryTests.java",
+  "methodName" : "testCreateEngineCustomConfig",
+  "sourceCode" : "@Test\r\npublic void testCreateEngineCustomConfig() throws Exception {\r\n    VelocityEngineFactory factory = new VelocityEngineFactory();\r\n    factory.setResourceLoaderPath(\".\");\r\n    factory.setConfigLocation(new ClassPathResource(\"/velocity.properties\"));\r\n    VelocityEngine engine = factory.createVelocityEngine();\r\n    assertEquals(\"custom config failed\", \"bar\", engine.getProperty(\"foo\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Velocity\\velocity-custom-parser-example\\src\\test\\java\\org\\apache\\velocity\\runtime\\parser\\CustomParserTestCase.java",
+  "methodName" : "testMarkdownTemplate",
+  "sourceCode" : "@Test\r\npublic void testMarkdownTemplate() throws Exception {\r\n    VelocityContext ctx = new VelocityContext();\r\n    ctx.put(\"some\", \"value\");\r\n    Template tmpl = engine.getTemplate(\"test.md\", \"UTF-8\");\r\n    String resultFile = RESULTS_DIR + File.separator + \"test.md\";\r\n    String referenceFile = REFERENCE_DIR + File.separator + \"test.md\";\r\n    new File(resultFile).getParentFile().mkdirs();\r\n    FileWriter writer = new FileWriter(resultFile);\r\n    tmpl.merge(ctx, writer);\r\n    writer.flush();\r\n    writer.close();\r\n    String result = IOUtils.toString(new FileInputStream(resultFile), StandardCharsets.UTF_8);\r\n    String reference = IOUtils.toString(new FileInputStream(referenceFile), StandardCharsets.UTF_8);\r\n    assertEquals(reference, result);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Velocity\\velocity-engine-core\\src\\test\\java\\org\\apache\\velocity\\runtime\\RuntimeInstanceTest.java",
+  "methodName" : "givenOverridenInputEncoding_whenInitializing_defaultEncodingIsOverridden",
+  "sourceCode" : "@Test\r\npublic void givenOverridenInputEncoding_whenInitializing_defaultEncodingIsOverridden() {\r\n    RuntimeInstance instance = new RuntimeInstance();\r\n    MockResourceManager manager = new MockResourceManager();\r\n    String value = \"testDummyEncoding\";\r\n    instance.addProperty(RuntimeConstants.INPUT_ENCODING, value);\r\n    instance.addProperty(RuntimeConstants.RESOURCE_MANAGER_INSTANCE, manager);\r\n    instance.init();\r\n    instance.getTemplate(\"some template\");\r\n    assertEquals(value, manager.encoding);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

@@ -1,0 +1,907 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\DestroyClusterCommandTest.java",
+  "methodName" : "testInsufficientOptions",
+  "sourceCode" : "@Test\r\npublic void testInsufficientOptions() throws Exception {\r\n    DestroyClusterCommand command = new DestroyClusterCommand();\r\n    int rc = command.run(null, null, err, Collections.<String>emptyList());\r\n    assertThat(rc, is(-1));\r\n    assertThat(errBytes.toString(), containsString(\"Option 'cluster-name' not set\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\DestroyClusterCommandTest.java",
+  "methodName" : "testAllOptions",
+  "sourceCode" : "@Test\r\npublic void testAllOptions() throws Exception {\r\n    ClusterControllerFactory factory = mock(ClusterControllerFactory.class);\r\n    ClusterController controller = mock(ClusterController.class);\r\n    when(factory.create((String) any())).thenReturn(controller);\r\n    DestroyClusterCommand command = new DestroyClusterCommand(factory);\r\n    Map<String, File> keys = KeyPair.generateTemporaryFiles();\r\n    int rc = command.run(null, out, null, Lists.newArrayList(\"--instance-templates\", \"1 noop\", \"--service-name\", \"test-service\", \"--cluster-name\", \"test-cluster\", \"--provider\", \"rackspace\", \"--identity\", \"myusername\", \"--credential\", \"mypassword\", \"--private-key-file\", keys.get(\"private\").getAbsolutePath(), \"--version\", \"version-string\"));\r\n    assertThat(rc, is(0));\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.addProperty(\"whirr.version\", \"version-string\");\r\n    conf.addProperty(\"whirr.instance-templates\", \"1 noop\");\r\n    ClusterSpec expectedClusterSpec = ClusterSpec.withTemporaryKeys(conf);\r\n    expectedClusterSpec.setServiceName(\"test-service\");\r\n    expectedClusterSpec.setProvider(\"rackspace\");\r\n    expectedClusterSpec.setIdentity(\"myusername\");\r\n    expectedClusterSpec.setCredential(\"mypassword\");\r\n    expectedClusterSpec.setClusterName(\"test-cluster\");\r\n    expectedClusterSpec.setPrivateKey(keys.get(\"private\"));\r\n    expectedClusterSpec.setPublicKey(keys.get(\"public\"));\r\n    verify(factory).create(\"test-service\");\r\n    verify(controller).destroyCluster(expectedClusterSpec);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\DestroyInstanceCommandTest.java",
+  "methodName" : "testInstanceIdMandatory",
+  "sourceCode" : "@Test\r\npublic void testInstanceIdMandatory() throws Exception {\r\n    DestroyInstanceCommand command = new DestroyInstanceCommand();\r\n    int rc = command.run(null, out, err, Collections.<String>emptyList());\r\n    assertThat(rc, is(-1));\r\n    String errOutput = errBytes.toString();\r\n    assertThat(errOutput, containsString(\"--instance-id is a mandatory argument\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\DestroyInstanceCommandTest.java",
+  "methodName" : "testDestroyInstanceById",
+  "sourceCode" : "@Test\r\npublic void testDestroyInstanceById() throws Exception {\r\n    ClusterControllerFactory factory = mock(ClusterControllerFactory.class);\r\n    ClusterController controller = mock(ClusterController.class);\r\n    when(factory.create((String) any())).thenReturn(controller);\r\n    DestroyInstanceCommand command = new DestroyInstanceCommand(factory);\r\n    Map<String, File> keys = KeyPair.generateTemporaryFiles();\r\n    int rc = command.run(null, out, null, Lists.newArrayList(\"--instance-templates\", \"1 noop\", \"--instance-id\", \"region/instanceid\", \"--service-name\", \"test-service\", \"--cluster-name\", \"test-cluster\", \"--provider\", \"rackspace\", \"--identity\", \"myusername\", \"--credential\", \"mypassword\", \"--private-key-file\", keys.get(\"private\").getAbsolutePath(), \"--version\", \"version-string\"));\r\n    assertThat(rc, is(0));\r\n    verify(controller).destroyInstance((ClusterSpec) any(), eq(\"region/instanceid\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\LaunchClusterCommandTest.java",
+  "methodName" : "testInsufficientArgs",
+  "sourceCode" : "@Test\r\npublic void testInsufficientArgs() throws Exception {\r\n    LaunchClusterCommand command = new LaunchClusterCommand();\r\n    int rc = command.run(null, null, err, Collections.<String>emptyList());\r\n    assertThat(rc, is(-1));\r\n    assertThat(errBytes.toString(), containsString(\"Option 'cluster-name' not set.\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\LaunchClusterCommandTest.java",
+  "methodName" : "testAllOptions",
+  "sourceCode" : "@Test\r\npublic void testAllOptions() throws Exception {\r\n    ClusterControllerFactory factory = mock(ClusterControllerFactory.class);\r\n    ClusterController controller = mock(ClusterController.class);\r\n    Cluster cluster = mock(Cluster.class);\r\n    when(factory.create((String) any())).thenReturn(controller);\r\n    when(controller.launchCluster((ClusterSpec) any())).thenReturn(cluster);\r\n    LaunchClusterCommand command = new LaunchClusterCommand(factory);\r\n    Map<String, File> keys = KeyPair.generateTemporaryFiles();\r\n    int rc = command.run(null, out, null, Lists.newArrayList(\"--service-name\", \"test-service\", \"--cluster-name\", \"test-cluster\", \"--instance-templates\", \"1 role1+role2,2 role3\", \"--provider\", \"rackspace\", \"--identity\", \"myusername\", \"--credential\", \"mypassword\", \"--private-key-file\", keys.get(\"private\").getAbsolutePath(), \"--version\", \"version-string\"));\r\n    assertThat(rc, is(0));\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.addProperty(\"whirr.version\", \"version-string\");\r\n    ClusterSpec expectedClusterSpec = ClusterSpec.withTemporaryKeys(conf);\r\n    expectedClusterSpec.setInstanceTemplates(Lists.newArrayList(InstanceTemplate.builder().numberOfInstance(1).roles(\"role1\", \"role2\").build(), InstanceTemplate.builder().numberOfInstance(2).roles(\"role3\").build()));\r\n    expectedClusterSpec.setServiceName(\"test-service\");\r\n    expectedClusterSpec.setProvider(\"rackspace\");\r\n    expectedClusterSpec.setIdentity(\"myusername\");\r\n    expectedClusterSpec.setCredential(\"mypassword\");\r\n    expectedClusterSpec.setClusterName(\"test-cluster\");\r\n    expectedClusterSpec.setPrivateKey(keys.get(\"private\"));\r\n    expectedClusterSpec.setPublicKey(keys.get(\"public\"));\r\n    verify(factory).create(\"test-service\");\r\n    verify(controller).launchCluster(expectedClusterSpec);\r\n    assertThat(outBytes.toString(), containsString(\"Started cluster of 0 instances\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\LaunchClusterCommandTest.java",
+  "methodName" : "testMaxPercentFailure",
+  "sourceCode" : "@Test\r\npublic void testMaxPercentFailure() throws Exception {\r\n    ClusterControllerFactory factory = mock(ClusterControllerFactory.class);\r\n    ClusterController controller = mock(ClusterController.class);\r\n    Cluster cluster = mock(Cluster.class);\r\n    when(factory.create((String) any())).thenReturn(controller);\r\n    when(controller.launchCluster((ClusterSpec) any())).thenReturn(cluster);\r\n    LaunchClusterCommand command = new LaunchClusterCommand(factory);\r\n    Map<String, File> keys = KeyPair.generateTemporaryFiles();\r\n    int rc = command.run(null, out, null, Lists.newArrayList(\"--service-name\", \"hadoop\", \"--cluster-name\", \"test-cluster\", \"--instance-templates\", \"1 hadoop-namenode+hadoop-jobtracker,3 hadoop-datanode+hadoop-tasktracker\", \"--instance-templates-max-percent-failures\", \"60 hadoop-datanode+hadoop-tasktracker\", \"--provider\", \"aws-ec2\", \"--identity\", \"myusername\", \"--credential\", \"mypassword\", \"--private-key-file\", keys.get(\"private\").getAbsolutePath(), \"--version\", \"version-string\"));\r\n    assertThat(rc, is(0));\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.addProperty(\"whirr.version\", \"version-string\");\r\n    conf.addProperty(\"whirr.instance-templates-max-percent-failure\", \"60 hadoop-datanode+hadoop-tasktracker\");\r\n    ClusterSpec expectedClusterSpec = ClusterSpec.withTemporaryKeys(conf);\r\n    expectedClusterSpec.setInstanceTemplates(Lists.newArrayList(InstanceTemplate.builder().numberOfInstance(1).minNumberOfInstances(1).roles(\"hadoop-namenode\", \"hadoop-jobtracker\").build(), InstanceTemplate.builder().numberOfInstance(3).minNumberOfInstances(2).roles(\"hadoop-datanode\", \"hadoop-tasktracker\").build()));\r\n    expectedClusterSpec.setServiceName(\"hadoop\");\r\n    expectedClusterSpec.setProvider(\"aws-ec2\");\r\n    expectedClusterSpec.setIdentity(\"myusername\");\r\n    expectedClusterSpec.setCredential(\"mypassword\");\r\n    expectedClusterSpec.setClusterName(\"test-cluster\");\r\n    expectedClusterSpec.setPrivateKey(keys.get(\"private\"));\r\n    expectedClusterSpec.setPublicKey(keys.get(\"public\"));\r\n    verify(factory).create(\"hadoop\");\r\n    verify(controller).launchCluster(expectedClusterSpec);\r\n    assertThat(outBytes.toString(), containsString(\"Started cluster of 0 instances\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\LaunchClusterCommandTest.java",
+  "methodName" : "testLaunchClusterUsingDryRun",
+  "sourceCode" : "@Test\r\npublic void testLaunchClusterUsingDryRun() throws Exception {\r\n    DryRunModule.resetDryRun();\r\n    ClusterControllerFactory factory = new ClusterControllerFactory();\r\n    LaunchClusterCommand launchCluster = new LaunchClusterCommand(factory);\r\n    int rc = launchCluster.run(null, out, err, ImmutableList.of(\"--cluster-name\", \"test-cluster-launch\", \"--state-store\", \"none\", \"--instance-templates\", \"1 zookeeper+cassandra, 1 zookeeper+elasticsearch\", \"--provider\", \"stub\", \"--identity\", \"dummy\"));\r\n    MatcherAssert.assertThat(rc, is(0));\r\n    assertExecutedPhases(DryRunModule.DryRun.INSTANCE, \"setup\", \"configure\", \"start\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\ListClusterCommandTest.java",
+  "methodName" : "testInsufficientOptions",
+  "sourceCode" : "@Test\r\npublic void testInsufficientOptions() throws Exception {\r\n    ListClusterCommand command = new ListClusterCommand();\r\n    int rc = command.run(null, null, err, Collections.<String>emptyList());\r\n    assertThat(rc, is(-1));\r\n    assertThat(errBytes.toString(), containsString(\"Option 'cluster-name' not set.\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\ListClusterCommandTest.java",
+  "methodName" : "testAllOptions",
+  "sourceCode" : "@Test\r\npublic void testAllOptions() throws Exception {\r\n    ClusterControllerFactory factory = mock(ClusterControllerFactory.class);\r\n    ClusterController controller = mock(ClusterController.class);\r\n    when(factory.create((String) any())).thenReturn(controller);\r\n    NodeMetadata node1 = new NodeMetadataBuilder().name(\"name1\").ids(\"id1\").location(new LocationBuilder().scope(LocationScope.PROVIDER).id(\"location-id1\").description(\"location-desc1\").build()).imageId(\"image-id\").state(NodeState.RUNNING).publicAddresses(Lists.newArrayList(\"127.0.0.1\")).privateAddresses(Lists.newArrayList(\"127.0.0.1\")).build();\r\n    NodeMetadata node2 = new NodeMetadataBuilder().name(\"name2\").ids(\"id2\").location(new LocationBuilder().scope(LocationScope.PROVIDER).id(\"location-id2\").description(\"location-desc2\").build()).imageId(\"image-id\").state(NodeState.RUNNING).publicAddresses(Lists.newArrayList(\"127.0.0.2\")).privateAddresses(Lists.newArrayList(\"127.0.0.2\")).build();\r\n    when(controller.getNodes((ClusterSpec) any())).thenReturn((Set) Sets.newLinkedHashSet(Lists.newArrayList(node1, node2)));\r\n    when(controller.getInstances((ClusterSpec) any(), (ClusterStateStore) any())).thenCallRealMethod();\r\n    ClusterStateStore memStore = new MemoryClusterStateStore();\r\n    memStore.save(createTestCluster(new String[] { \"id1\", \"id2\" }, new String[] { \"role1\", \"role2\" }));\r\n    ClusterStateStoreFactory stateStoreFactory = mock(ClusterStateStoreFactory.class);\r\n    when(stateStoreFactory.create((ClusterSpec) any())).thenReturn(memStore);\r\n    ListClusterCommand command = new ListClusterCommand(factory, stateStoreFactory);\r\n    Map<String, File> keys = KeyPair.generateTemporaryFiles();\r\n    int rc = command.run(null, out, null, Lists.newArrayList(\"--instance-templates\", \"1 noop\", \"--service-name\", \"test-service\", \"--cluster-name\", \"test-cluster\", \"--identity\", \"myusername\", \"--private-key-file\", keys.get(\"private\").getAbsolutePath()));\r\n    assertThat(rc, is(0));\r\n    assertThat(outBytes.toString(), is(\"id1\\timage-id\\t127.0.0.1\\t127.0.0.1\\tRUNNING\\tlocation-id1\\trole1\\n\" + \"id2\\timage-id\\t127.0.0.2\\t127.0.0.2\\tRUNNING\\tlocation-id2\\trole2\\n\"));\r\n    verify(factory).create(\"test-service\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\RunScriptCommandTest.java",
+  "methodName" : "testScriptPathIsMandatory",
+  "sourceCode" : "@Test\r\npublic void testScriptPathIsMandatory() throws Exception {\r\n    RunScriptCommand command = new RunScriptCommand();\r\n    int rc = command.run(null, out, err, Lists.<String>newArrayList());\r\n    assertThat(rc, is(-1));\r\n    assertThat(errBytes.toString(), containsString(\"Please specify a script file to be executed.\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\RunScriptCommandTest.java",
+  "methodName" : "testRunScriptByInstanceId",
+  "sourceCode" : "@Test\r\npublic void testRunScriptByInstanceId() throws Exception {\r\n    ClusterControllerFactory factory = mock(ClusterControllerFactory.class);\r\n    ClusterController controller = mock(ClusterController.class);\r\n    when(factory.create((String) any())).thenReturn(controller);\r\n    RunScriptCommand command = new RunScriptCommand(factory);\r\n    Map<String, File> keys = KeyPair.generateTemporaryFiles();\r\n    int rc = command.run(null, out, System.err, Lists.newArrayList(\"--script\", \"/dev/null\", \"--instance-templates\", \"1 noop\", \"--instances\", \"A,B\", \"--cluster-name\", \"test-cluster\", \"--provider\", \"provider\", \"--identity\", \"myusername\", \"--credential\", \"mypassword\", \"--private-key-file\", keys.get(\"private\").getAbsolutePath()));\r\n    assertThat(rc, is(0));\r\n    ArgumentCaptor<Predicate> predicate = ArgumentCaptor.forClass(Predicate.class);\r\n    verify(controller).runScriptOnNodesMatching((ClusterSpec) any(), predicate.capture(), (Statement) any());\r\n    // check predicate equality by using the object string representation\r\n    Predicate<NodeMetadata> expected = Predicates.and(Predicates.<NodeMetadata>alwaysTrue(), withIds(\"A\", \"B\"));\r\n    assertThat(predicate.getValue().toString(), is(expected.toString()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\RunScriptCommandTest.java",
+  "methodName" : "testRunScriptByRole",
+  "sourceCode" : "@Test\r\npublic void testRunScriptByRole() throws Exception {\r\n    ClusterControllerFactory factory = mock(ClusterControllerFactory.class);\r\n    ClusterController controller = mock(ClusterController.class);\r\n    when(factory.create((String) any())).thenReturn(controller);\r\n    ClusterStateStore memStore = new MemoryClusterStateStore();\r\n    memStore.save(createTestCluster(new String[] { \"reg/A\", \"reg/B\" }, new String[] { \"A\", \"B\" }));\r\n    ClusterStateStoreFactory stateStoreFactory = mock(ClusterStateStoreFactory.class);\r\n    when(stateStoreFactory.create((ClusterSpec) any())).thenReturn(memStore);\r\n    RunScriptCommand command = new RunScriptCommand(factory, stateStoreFactory);\r\n    Map<String, File> keys = KeyPair.generateTemporaryFiles();\r\n    int rc = command.run(null, out, System.err, Lists.newArrayList(\"--instance-templates\", \"1 noop\", \"--script\", \"/dev/null\", \"--roles\", \"A\", \"--cluster-name\", \"test-cluster\", \"--provider\", \"provider\", \"--identity\", \"myusername\", \"--credential\", \"mypassword\", \"--private-key-file\", keys.get(\"private\").getAbsolutePath()));\r\n    assertThat(rc, is(0));\r\n    ArgumentCaptor<Predicate> predicate = ArgumentCaptor.forClass(Predicate.class);\r\n    verify(controller).runScriptOnNodesMatching((ClusterSpec) any(), predicate.capture(), (Statement) any());\r\n    // check predicate equality by using the object string representation\r\n    Predicate<NodeMetadata> expected = Predicates.and(Predicates.<NodeMetadata>alwaysTrue(), withIds(\"reg/A\"));\r\n    assertThat(predicate.getValue().toString(), is(expected.toString()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\command\\VersionCommandTest.java",
+  "methodName" : "testOverrides",
+  "sourceCode" : "@Test\r\npublic void testOverrides() throws Exception {\r\n    VersionCommand command = new VersionCommand();\r\n    int rc = command.run(null, out, null, Collections.<String>emptyList());\r\n    assertThat(rc, is(0));\r\n    assertThat(outBytes.toString(), startsWith(\"Apache Whirr \"));\r\n    assertThat(outBytes.toString(), containsString(\"jclouds\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\MainTest.java",
+  "methodName" : "testNoArgs",
+  "sourceCode" : "@Test\r\npublic void testNoArgs() throws Exception {\r\n    Main main = new Main(new TestCommand());\r\n    ByteArrayOutputStream bytes = new ByteArrayOutputStream();\r\n    PrintStream out = new PrintStream(bytes);\r\n    int rc = main.run(null, out, null, Collections.<String>emptyList());\r\n    assertThat(rc, is(-1));\r\n    assertThat(bytes.toString(), containsString(\"Usage: whirr COMMAND\"));\r\n    assertThat(bytes.toString(), containsString(\"test-command  test description\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\MainTest.java",
+  "methodName" : "testUnrecognizedCommand",
+  "sourceCode" : "@Test\r\npublic void testUnrecognizedCommand() throws Exception {\r\n    Main main = new Main(new TestCommand());\r\n    ByteArrayOutputStream bytes = new ByteArrayOutputStream();\r\n    PrintStream err = new PrintStream(bytes);\r\n    int rc = main.run(null, null, err, Lists.newArrayList(\"bogus-command\"));\r\n    assertThat(rc, is(-1));\r\n    assertThat(bytes.toString(), containsString(\"Unrecognized command 'bogus-command'\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\cli\\src\\test\\java\\org\\apache\\whirr\\cli\\MainTest.java",
+  "methodName" : "testCommand",
+  "sourceCode" : "@Test\r\npublic void testCommand() throws Exception {\r\n    Command command = mock(Command.class);\r\n    when(command.getName()).thenReturn(\"mock-command\");\r\n    Main main = new Main(command);\r\n    main.run(null, null, null, Lists.newArrayList(\"mock-command\", \"arg1\", \"arg2\"));\r\n    verify(command).run(null, null, null, Lists.newArrayList(\"arg1\", \"arg2\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\actions\\BootstrapClusterActionTest.java",
+  "methodName" : "testDoActionRetriesSucceed",
+  "sourceCode" : "@SuppressWarnings(\"unchecked\")\r\n@Test\r\npublic void testDoActionRetriesSucceed() throws Exception {\r\n    CompositeConfiguration config = new CompositeConfiguration();\r\n    if (System.getProperty(\"config\") != null) {\r\n        config.addConfiguration(new PropertiesConfiguration(System.getProperty(\"config\")));\r\n    }\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.addProperty(\"whirr.service-name\", \"test-service\");\r\n    conf.addProperty(\"whirr.cluster-name\", \"test-cluster\");\r\n    conf.addProperty(\"whirr.instance-templates\", \"1 hadoop-namenode+hadoop-jobtracker,4 hadoop-datanode+hadoop-tasktracker\");\r\n    conf.addProperty(\"whirr.instance-templates-max-percent-failures\", \"60 hadoop-datanode+hadoop-tasktracker\");\r\n    conf.addProperty(\"whirr.provider\", \"ec2\");\r\n    config.addConfiguration(conf);\r\n    ClusterSpec clusterSpec = ClusterSpec.withTemporaryKeys(conf);\r\n    Set<String> jtnn = new HashSet<String>();\r\n    jtnn.add(\"hadoop-jobtracker\");\r\n    jtnn.add(\"hadoop-namenode\");\r\n    Set<String> dntt = new HashSet<String>();\r\n    dntt.add(\"hadoop-datanode\");\r\n    dntt.add(\"hadoop-tasktracker\");\r\n    TestNodeStarterFactory nodeStarterFactory = null;\r\n    ClusterActionHandler handler = mock(ClusterActionHandler.class);\r\n    Map<String, ClusterActionHandler> handlerMap = Maps.newHashMap();\r\n    handlerMap.put(\"hadoop-jobtracker\", handler);\r\n    handlerMap.put(\"hadoop-namenode\", handler);\r\n    handlerMap.put(\"hadoop-datanode\", handler);\r\n    handlerMap.put(\"hadoop-tasktracker\", handler);\r\n    Function<ClusterSpec, ComputeServiceContext> getCompute = mock(Function.class);\r\n    ComputeServiceContext serviceContext = mock(ComputeServiceContext.class);\r\n    ComputeService computeService = mock(ComputeService.class);\r\n    TemplateBuilder templateBuilder = mock(TemplateBuilder.class);\r\n    Template template = mock(Template.class);\r\n    when(getCompute.apply(clusterSpec)).thenReturn(serviceContext);\r\n    when(serviceContext.getComputeService()).thenReturn(computeService);\r\n    when(computeService.templateBuilder()).thenReturn(templateBuilder);\r\n    when(templateBuilder.options((TemplateOptions) any())).thenReturn(templateBuilder);\r\n    when(templateBuilder.build()).thenReturn(template);\r\n    // here is a scenario when jt+nn fails once, then the retry is successful\r\n    // and from the dn+tt one node fails, then the retry is successful\r\n    Map<Set<String>, Stack<Integer>> reaction = Maps.newHashMap();\r\n    Stack<Integer> jtnnStack = new Stack<Integer>();\r\n    // then ok\r\n    jtnnStack.push(1);\r\n    // initially fail\r\n    jtnnStack.push(0);\r\n    reaction.put(jtnn, jtnnStack);\r\n    Stack<Integer> ddttStack = new Stack<Integer>();\r\n    // 3 from 4, just enough\r\n    ddttStack.push(3);\r\n    reaction.put(dntt, ddttStack);\r\n    nodeStarterFactory = new TestNodeStarterFactory(reaction);\r\n    BootstrapClusterAction bootstrapper = new BootstrapClusterAction(getCompute, handlerMap, nodeStarterFactory);\r\n    bootstrapper.execute(clusterSpec, null);\r\n    if (nodeStarterFactory != null) {\r\n        nodeStarterFactory.validateCompletion();\r\n    }\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\actions\\BootstrapClusterActionTest.java",
+  "methodName" : "testDoActionRetriesExceeds",
+  "sourceCode" : "@SuppressWarnings(\"unchecked\")\r\n@Test(expected = IOException.class)\r\npublic void testDoActionRetriesExceeds() throws Exception {\r\n    CompositeConfiguration config = new CompositeConfiguration();\r\n    if (System.getProperty(\"config\") != null) {\r\n        config.addConfiguration(new PropertiesConfiguration(System.getProperty(\"config\")));\r\n    }\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.addProperty(\"whirr.service-name\", \"test-service\");\r\n    conf.addProperty(\"whirr.cluster-name\", \"test-cluster\");\r\n    conf.addProperty(\"whirr.instance-templates\", \"1 hadoop-namenode+hadoop-jobtracker,4 hadoop-datanode+hadoop-tasktracker\");\r\n    conf.addProperty(\"whirr.instance-templates-max-percent-failures\", \"60 hadoop-datanode+hadoop-tasktracker\");\r\n    conf.addProperty(\"whirr.provider\", \"ec2\");\r\n    config.addConfiguration(conf);\r\n    ClusterSpec clusterSpec = ClusterSpec.withTemporaryKeys(conf);\r\n    Set<String> jtnn = new HashSet<String>();\r\n    jtnn.add(\"hadoop-jobtracker\");\r\n    jtnn.add(\"hadoop-namenode\");\r\n    Set<String> dntt = new HashSet<String>();\r\n    dntt.add(\"hadoop-datanode\");\r\n    dntt.add(\"hadoop-tasktracker\");\r\n    TestNodeStarterFactory nodeStarterFactory = null;\r\n    ClusterActionHandler handler = mock(ClusterActionHandler.class);\r\n    Map<String, ClusterActionHandler> handlerMap = Maps.newHashMap();\r\n    handlerMap.put(\"hadoop-jobtracker\", handler);\r\n    handlerMap.put(\"hadoop-namenode\", handler);\r\n    handlerMap.put(\"hadoop-datanode\", handler);\r\n    handlerMap.put(\"hadoop-tasktracker\", handler);\r\n    Function<ClusterSpec, ComputeServiceContext> getCompute = mock(Function.class);\r\n    ComputeServiceContext serviceContext = mock(ComputeServiceContext.class);\r\n    ComputeService computeService = mock(ComputeService.class);\r\n    TemplateBuilder templateBuilder = mock(TemplateBuilder.class);\r\n    Template template = mock(Template.class);\r\n    when(getCompute.apply(clusterSpec)).thenReturn(serviceContext);\r\n    when(serviceContext.getComputeService()).thenReturn(computeService);\r\n    when(computeService.templateBuilder()).thenReturn(templateBuilder);\r\n    when(templateBuilder.options((TemplateOptions) any())).thenReturn(templateBuilder);\r\n    when(templateBuilder.build()).thenReturn(template);\r\n    // here is a scenario when jt+nn does not fail\r\n    // but the dn+tt one node fails 3, then in the retry fails 2\r\n    // at the end result, the cluster will fail, throwing IOException\r\n    Map<Set<String>, Stack<Integer>> reaction = Maps.newHashMap();\r\n    Stack<Integer> jtnnStack = new Stack<Integer>();\r\n    jtnnStack.push(new Integer(1));\r\n    reaction.put(jtnn, jtnnStack);\r\n    Stack<Integer> ddttStack = new Stack<Integer>();\r\n    // 1 from 4, retryRequired\r\n    ddttStack.push(new Integer(1));\r\n    // 1 from 4, still retryRequired\r\n    ddttStack.push(new Integer(1));\r\n    reaction.put(dntt, ddttStack);\r\n    nodeStarterFactory = new TestNodeStarterFactory(reaction);\r\n    BootstrapClusterAction bootstrapper = new BootstrapClusterAction(getCompute, handlerMap, nodeStarterFactory);\r\n    // this should file with too many retries\r\n    bootstrapper.execute(clusterSpec, null);\r\n    if (nodeStarterFactory != null) {\r\n        nodeStarterFactory.validateCompletion();\r\n    }\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\actions\\BootstrapClusterActionTest.java",
+  "methodName" : "testSubroleInvoked",
+  "sourceCode" : "@Test\r\n@SuppressWarnings(\"unchecked\")\r\npublic void testSubroleInvoked() throws Exception {\r\n    CompositeConfiguration config = new CompositeConfiguration();\r\n    if (System.getProperty(\"config\") != null) {\r\n        config.addConfiguration(new PropertiesConfiguration(System.getProperty(\"config\")));\r\n    }\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.addProperty(\"whirr.service-name\", \"test-service\");\r\n    conf.addProperty(\"whirr.cluster-name\", \"test-cluster\");\r\n    conf.addProperty(\"whirr.instance-templates\", \"1 puppet:module::manifest+something-else\");\r\n    conf.addProperty(\"whirr.provider\", \"ec2\");\r\n    config.addConfiguration(conf);\r\n    ClusterSpec clusterSpec = ClusterSpec.withTemporaryKeys(conf);\r\n    Set<String> nn = new HashSet<String>();\r\n    nn.add(\"puppet:module::manifest\");\r\n    nn.add(\"something-else\");\r\n    TestNodeStarterFactory nodeStarterFactory = null;\r\n    ClusterActionHandlerFactory puppetHandlerFactory = mock(ClusterActionHandlerFactory.class);\r\n    ClusterActionHandler handler = mock(ClusterActionHandler.class);\r\n    when(puppetHandlerFactory.getRolePrefix()).thenReturn(\"puppet:\");\r\n    when(puppetHandlerFactory.create(\"module::manifest\")).thenReturn(handler);\r\n    when(handler.getRole()).thenReturn(\"something-else\");\r\n    Map<String, ClusterActionHandler> handlerMap = new HandlerMapFactory().create(ImmutableSet.of(puppetHandlerFactory), ImmutableSet.of(handler));\r\n    Function<ClusterSpec, ComputeServiceContext> getCompute = mock(Function.class);\r\n    ComputeServiceContext serviceContext = mock(ComputeServiceContext.class);\r\n    ComputeService computeService = mock(ComputeService.class);\r\n    TemplateBuilder templateBuilder = mock(TemplateBuilder.class);\r\n    Template template = mock(Template.class);\r\n    when(getCompute.apply(clusterSpec)).thenReturn(serviceContext);\r\n    when(serviceContext.getComputeService()).thenReturn(computeService);\r\n    when(computeService.templateBuilder()).thenReturn(templateBuilder);\r\n    when(templateBuilder.options((TemplateOptions) any())).thenReturn(templateBuilder);\r\n    when(templateBuilder.build()).thenReturn(template);\r\n    Map<Set<String>, Stack<Integer>> reaction = Maps.newHashMap();\r\n    Stack<Integer> nnStack = new Stack<Integer>();\r\n    nnStack.push(new Integer(1));\r\n    reaction.put(nn, nnStack);\r\n    nodeStarterFactory = new TestNodeStarterFactory(reaction);\r\n    BootstrapClusterAction bootstrapper = new BootstrapClusterAction(getCompute, handlerMap, nodeStarterFactory);\r\n    bootstrapper.execute(clusterSpec, null);\r\n    if (nodeStarterFactory != null) {\r\n        nodeStarterFactory.validateCompletion();\r\n    }\r\n}",
+  "annotations" : [ "Test", "SuppressWarnings" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\actions\\BootstrapClusterActionTest.java",
+  "methodName" : "testSubroleNotSupported",
+  "sourceCode" : "@SuppressWarnings(\"unchecked\")\r\n@Test(expected = IllegalArgumentException.class)\r\npublic /**\r\n * test is the same as previous (SubroleInvoked) except it knows puppet, not puppet:, as the role;\r\n * the colon in the role def'n is the indication it accepts subroles,\r\n * so this should throw IllegalArgument when we refer to puppet:module...\r\n */\r\nvoid testSubroleNotSupported() throws Exception {\r\n    CompositeConfiguration config = new CompositeConfiguration();\r\n    if (System.getProperty(\"config\") != null) {\r\n        config.addConfiguration(new PropertiesConfiguration(System.getProperty(\"config\")));\r\n    }\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.addProperty(\"whirr.service-name\", \"test-service\");\r\n    conf.addProperty(\"whirr.cluster-name\", \"test-cluster\");\r\n    conf.addProperty(\"whirr.instance-templates\", \"1 puppet:module::manifest+something-else\");\r\n    conf.addProperty(\"whirr.provider\", \"ec2\");\r\n    config.addConfiguration(conf);\r\n    ClusterSpec clusterSpec = ClusterSpec.withTemporaryKeys(conf);\r\n    Set<String> nn = new HashSet<String>();\r\n    nn.add(\"puppet:module::manifest\");\r\n    nn.add(\"something-else\");\r\n    TestNodeStarterFactory nodeStarterFactory = null;\r\n    ClusterActionHandlerFactory puppetHandlerFactory = mock(ClusterActionHandlerFactory.class);\r\n    ClusterActionHandler handler = mock(ClusterActionHandler.class);\r\n    when(puppetHandlerFactory.getRolePrefix()).thenReturn(\"puppet\");\r\n    when(handler.getRole()).thenReturn(\"something-else\");\r\n    Map<String, ClusterActionHandler> handlerMap = new HandlerMapFactory().create(ImmutableSet.of(puppetHandlerFactory), ImmutableSet.of(handler));\r\n    Function<ClusterSpec, ComputeServiceContext> getCompute = mock(Function.class);\r\n    ComputeServiceContext serviceContext = mock(ComputeServiceContext.class);\r\n    ComputeService computeService = mock(ComputeService.class);\r\n    TemplateBuilder templateBuilder = mock(TemplateBuilder.class);\r\n    Template template = mock(Template.class);\r\n    when(getCompute.apply(clusterSpec)).thenReturn(serviceContext);\r\n    when(serviceContext.getComputeService()).thenReturn(computeService);\r\n    when(computeService.templateBuilder()).thenReturn(templateBuilder);\r\n    when(templateBuilder.options((TemplateOptions) any())).thenReturn(templateBuilder);\r\n    when(templateBuilder.build()).thenReturn(template);\r\n    Map<Set<String>, Stack<Integer>> reaction = Maps.newHashMap();\r\n    Stack<Integer> nnStack = new Stack<Integer>();\r\n    nnStack.push(1);\r\n    reaction.put(nn, nnStack);\r\n    nodeStarterFactory = new TestNodeStarterFactory(reaction);\r\n    BootstrapClusterAction bootstrapper = new BootstrapClusterAction(getCompute, handlerMap, nodeStarterFactory);\r\n    bootstrapper.execute(clusterSpec, null);\r\n    if (nodeStarterFactory != null) {\r\n        nodeStarterFactory.validateCompletion();\r\n    }\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\actions\\integration\\PhaseExecutionBarrierTest.java",
+  "methodName" : "testNoRemoteExecutionOverlap",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void testNoRemoteExecutionOverlap() throws Exception {\r\n    ClusterSpec spec = getTestClusterSpec();\r\n    ClusterController controller = (new ClusterControllerFactory()).create(spec.getServiceName());\r\n    try {\r\n        controller.launchCluster(spec);\r\n        Map<? extends NodeMetadata, ExecResponse> responseMap = controller.runScriptOnNodesMatching(spec, Predicates.<NodeMetadata>alwaysTrue(), exec(\"cat /tmp/bootstrap-start /tmp/bootstrap-end /tmp/configure-start\"));\r\n        ExecResponse response = Iterables.get(responseMap.values(), 0);\r\n        LOG.info(\"Got response: {}\", response);\r\n        String[] parts = Strings.split(response.getOutput(), '\\n');\r\n        int bootstrapStart = parseInt(deleteWhitespace(parts[0]));\r\n        int bootstrapEnd = parseInt(deleteWhitespace(parts[1]));\r\n        int configureStart = parseInt(deleteWhitespace(parts[2]));\r\n        assertTrue(bootstrapStart < bootstrapEnd);\r\n        assertTrue(bootstrapEnd < configureStart);\r\n    } finally {\r\n        controller.destroyCluster(spec);\r\n    }\r\n    assertNoOverlapOnLocalMachine();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\actions\\ScriptBasedClusterActionTest.java",
+  "methodName" : "testActionIsExecutedOnAllRelevantNodes",
+  "sourceCode" : "@Test\r\npublic void testActionIsExecutedOnAllRelevantNodes() throws Exception {\r\n    T action = newClusterActionInstance(EMPTYSET, EMPTYSET);\r\n    action.execute(clusterSpec, cluster);\r\n    List<RunScriptOnNode> executions = DryRunModule.getDryRun().getTotallyOrderedExecutions();\r\n    // only 2 out of 3 because one instance has only noop\r\n    assertThat(executions.size(), is(2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\actions\\ScriptBasedClusterActionTest.java",
+  "methodName" : "testFilterScriptExecutionByRole",
+  "sourceCode" : "@Test\r\npublic void testFilterScriptExecutionByRole() throws Exception {\r\n    String instanceId = getInstaceForRole(cluster, \"noop2\").getId();\r\n    T action = newClusterActionInstance(ImmutableSet.of(\"noop2\"), EMPTYSET);\r\n    action.execute(clusterSpec, cluster);\r\n    List<RunScriptOnNode> executions = DryRunModule.getDryRun().getTotallyOrderedExecutions();\r\n    assertThat(executions.size(), is(1));\r\n    assertHasRole(executions.get(0), cluster, \"noop2\");\r\n    assertEquals(executions.get(0).getNode().getId(), instanceId);\r\n    assertAnyStatementContains(DryRun.INSTANCE, \"noop2-\" + getActionName());\r\n    assertNoStatementContains(DryRun.INSTANCE, \"noop1-\" + getActionName(), \"noop3-\" + getActionName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\actions\\ScriptBasedClusterActionTest.java",
+  "methodName" : "testFilterScriptExecutionByInstanceId",
+  "sourceCode" : "@Test\r\npublic void testFilterScriptExecutionByInstanceId() throws Exception {\r\n    String instanceId = getInstaceForRole(cluster, \"noop3\").getId();\r\n    T action = newClusterActionInstance(EMPTYSET, newHashSet(instanceId));\r\n    action.execute(clusterSpec, cluster);\r\n    List<RunScriptOnNode> executions = DryRunModule.getDryRun().getTotallyOrderedExecutions();\r\n    assertThat(executions.size(), is(1));\r\n    assertHasRole(executions.get(0), cluster, \"noop3\");\r\n    assertEquals(executions.get(0).getNode().getId(), instanceId);\r\n    assertAnyStatementContains(DryRun.INSTANCE, \"noop1-\" + getActionName(), \"noop3-\" + getActionName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\actions\\ScriptBasedClusterActionTest.java",
+  "methodName" : "testFilterScriptExecutionByRoleAndInstanceId",
+  "sourceCode" : "@Test\r\npublic void testFilterScriptExecutionByRoleAndInstanceId() throws Exception {\r\n    String instanceId = getInstaceForRole(cluster, \"noop1\").getId();\r\n    T action = newClusterActionInstance(newHashSet(\"noop1\"), newHashSet(instanceId));\r\n    action.execute(clusterSpec, cluster);\r\n    List<RunScriptOnNode> executions = DryRunModule.getDryRun().getTotallyOrderedExecutions();\r\n    assertThat(executions.size(), is(1));\r\n    assertHasRole(executions.get(0), cluster, \"noop1\");\r\n    assertEquals(executions.get(0).getNode().getId(), instanceId);\r\n    assertAnyStatementContains(DryRun.INSTANCE, \"noop1-\" + getActionName());\r\n    assertNoStatementContains(DryRun.INSTANCE, \"noop2-\" + getActionName(), \"noop3-\" + getActionName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\actions\\ScriptBasedClusterActionTest.java",
+  "methodName" : "testNoScriptExecutionsForNoop",
+  "sourceCode" : "@Test\r\npublic void testNoScriptExecutionsForNoop() throws Exception {\r\n    T action = newClusterActionInstance(ImmutableSet.of(\"noop\"), EMPTYSET);\r\n    action.execute(clusterSpec, cluster);\r\n    List<RunScriptOnNode> executions = DryRunModule.getDryRun().getTotallyOrderedExecutions();\r\n    // empty because noop does not emit any statements\r\n    assertThat(executions.size(), is(0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterControllerFactoryTest.java",
+  "methodName" : "testServiceFactoryIsCreatedFromWhirrProperties",
+  "sourceCode" : "@Test\r\npublic void testServiceFactoryIsCreatedFromWhirrProperties() throws IOException {\r\n    ClusterControllerFactory factory = new ClusterControllerFactory();\r\n    ClusterController controller = factory.create(\"test-service\");\r\n    assertThat(controller, instanceOf(TestClusterController.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterControllerFactoryTest.java",
+  "methodName" : "testServiceFactoryWithNullServiceName",
+  "sourceCode" : "@Test\r\npublic void testServiceFactoryWithNullServiceName() throws IOException {\r\n    ClusterControllerFactory factory = new ClusterControllerFactory();\r\n    ClusterController controller = factory.create(null);\r\n    assertThat(controller, instanceOf(ClusterController.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testDefaultsAreSet",
+  "sourceCode" : "@Test\r\npublic void testDefaultsAreSet() throws ConfigurationException, JSchException, IOException {\r\n    ClusterSpec spec = ClusterSpec.withTemporaryKeys();\r\n    assertThat(spec.getClusterUser(), is(System.getProperty(\"user.name\")));\r\n    assertThat(spec.getMaxStartupRetries(), is(1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testDefaultsCanBeOverridden",
+  "sourceCode" : "@Test\r\npublic void testDefaultsCanBeOverridden() throws ConfigurationException, JSchException, IOException {\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.setProperty(ClusterSpec.Property.RUN_URL_BASE.getConfigName(), \"http://example.org\");\r\n    ClusterSpec spec = ClusterSpec.withNoDefaults(conf);\r\n    assertThat(spec.getRunUrlBase(), is(\"http://example.org\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testGetConfigurationForKeysWithPrefix",
+  "sourceCode" : "@Test\r\npublic void testGetConfigurationForKeysWithPrefix() throws ConfigurationException, JSchException, IOException {\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.setProperty(\"a.b\", 1);\r\n    conf.setProperty(\"b.a\", 2);\r\n    conf.setProperty(\"a.c\", 3);\r\n    ClusterSpec spec = ClusterSpec.withNoDefaults(conf);\r\n    Configuration prefixConf = spec.getConfigurationForKeysWithPrefix(\"a\");\r\n    List<String> prefixKeys = Lists.newArrayList();\r\n    Iterators.addAll(prefixKeys, prefixConf.getKeys());\r\n    assertThat(prefixKeys.size(), is(2));\r\n    assertThat(prefixKeys.get(0), is(\"a.b\"));\r\n    assertThat(prefixKeys.get(1), is(\"a.c\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testEnvVariableInterpolation",
+  "sourceCode" : "@Test\r\npublic void testEnvVariableInterpolation() {\r\n    Map<String, String> envMap = System.getenv();\r\n    assertThat(envMap.isEmpty(), is(false));\r\n    String undefinedEnvVar = \"UNDEFINED_ENV_VAR\";\r\n    assertThat(envMap.containsKey(undefinedEnvVar), is(false));\r\n    Entry<String, String> firstEntry = Iterables.get(envMap.entrySet(), 0);\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.setProperty(\"a\", String.format(\"${env:%s}\", firstEntry.getKey()));\r\n    conf.setProperty(\"b\", String.format(\"${env:%s}\", undefinedEnvVar));\r\n    assertThat(conf.getString(\"a\"), is(firstEntry.getValue()));\r\n    assertThat(conf.getString(\"b\"), is(String.format(\"${env:%s}\", undefinedEnvVar)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testDefaultPublicKey",
+  "sourceCode" : "@Test\r\npublic void testDefaultPublicKey() throws ConfigurationException, JSchException, IOException {\r\n    Map<String, File> keys = KeyPair.generateTemporaryFiles();\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.setProperty(\"whirr.private-key-file\", keys.get(\"private\").getAbsolutePath());\r\n    // If no public-key-file is specified it should append .pub to the private-key-file\r\n    ClusterSpec spec = ClusterSpec.withNoDefaults(conf);\r\n    Assert.assertEquals(IOUtils.toString(new FileReader(keys.get(\"public\"))), spec.getPublicKey());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testDummyPrivateKey",
+  "sourceCode" : "@Test(expected = ConfigurationException.class)\r\npublic void testDummyPrivateKey() throws JSchException, IOException, ConfigurationException {\r\n    File privateKeyFile = File.createTempFile(\"private\", \"key\");\r\n    privateKeyFile.deleteOnExit();\r\n    Files.write((\"-----BEGIN RSA PRIVATE KEY-----\\n\" + \"DUMMY FILE\\n\" + \"-----END RSA PRIVATE KEY-----\").getBytes(), privateKeyFile);\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.setProperty(\"whirr.private-key-file\", privateKeyFile.getAbsolutePath());\r\n    ClusterSpec.withNoDefaults(conf);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testEncryptedPrivateKey",
+  "sourceCode" : "@Test(expected = ConfigurationException.class)\r\npublic void testEncryptedPrivateKey() throws JSchException, IOException, ConfigurationException {\r\n    File privateKey = KeyPair.generateTemporaryFiles(\"dummy\").get(\"private\");\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.setProperty(\"whirr.private-key-file\", privateKey.getAbsolutePath());\r\n    ClusterSpec.withNoDefaults(conf);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testMissingPrivateKey",
+  "sourceCode" : "@Test(expected = ConfigurationException.class)\r\npublic void testMissingPrivateKey() throws ConfigurationException {\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.setProperty(\"whirr.private-key-file\", \"/dummy/path/that/does/not/exists\");\r\n    ClusterSpec.withNoDefaults(conf);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testMissingPublicKey",
+  "sourceCode" : "@Test(expected = ConfigurationException.class)\r\npublic void testMissingPublicKey() throws JSchException, IOException, ConfigurationException {\r\n    File privateKey = KeyPair.generateTemporaryFiles().get(\"private\");\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.setProperty(\"whirr.private-key-file\", privateKey.getAbsolutePath());\r\n    conf.setProperty(\"whirr.public-key-file\", \"/dummy/path/that/does/not/exists\");\r\n    ClusterSpec.withNoDefaults(conf);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testBrokenPublicKey",
+  "sourceCode" : "@Test(expected = ConfigurationException.class)\r\npublic void testBrokenPublicKey() throws IOException, JSchException, ConfigurationException {\r\n    File privateKey = KeyPair.generateTemporaryFiles().get(\"private\");\r\n    File publicKey = File.createTempFile(\"public\", \"key\");\r\n    publicKey.deleteOnExit();\r\n    Files.write(\"ssh-rsa BROKEN PUBLIC KEY\".getBytes(), publicKey);\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.setProperty(\"whirr.private-key-file\", privateKey.getAbsolutePath());\r\n    conf.setProperty(\"whirr.public-key-file\", publicKey.getAbsolutePath());\r\n    ClusterSpec.withNoDefaults(conf);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testNotSameKeyPair",
+  "sourceCode" : "@Test(expected = ConfigurationException.class)\r\npublic void testNotSameKeyPair() throws JSchException, IOException, ConfigurationException {\r\n    Map<String, File> first = KeyPair.generateTemporaryFiles();\r\n    Map<String, File> second = KeyPair.generateTemporaryFiles();\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.setProperty(\"whirr.private-key-file\", first.get(\"private\").getAbsolutePath());\r\n    conf.setProperty(\"whirr.public-key-file\", second.get(\"public\").getAbsolutePath());\r\n    ClusterSpec.withNoDefaults(conf);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testMissingCommaInInstanceTemplates",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testMissingCommaInInstanceTemplates() throws Exception {\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.setProperty(ClusterSpec.Property.INSTANCE_TEMPLATES.getConfigName(), // missing comma\r\n    \"1 a+b 2 c+d\");\r\n    ClusterSpec.withTemporaryKeys(conf);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testRoleMayNotContainSpaces",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testRoleMayNotContainSpaces() {\r\n    InstanceTemplate.builder().numberOfInstance(1).minNumberOfInstances(1).roles(\"a b\").build();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testIllegalArgumentExceptionOnInstancesTemplates",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testIllegalArgumentExceptionOnInstancesTemplates() throws Exception {\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.addProperty(\"whirr.instance-templates\", \"1 hadoop-namenode+hadoop-jobtracker,3 hadoop-datanode+hadoop-tasktracker\");\r\n    conf.addProperty(\"whirr.instance-templates-max-percent-failures\", \"60 % hadoop-datanode+hadoop-tasktracker\");\r\n    ClusterSpec expectedClusterSpec = ClusterSpec.withNoDefaults(conf);\r\n    List<InstanceTemplate> templates = expectedClusterSpec.getInstanceTemplates();\r\n    InstanceTemplate t1 = templates.get(0);\r\n    assertThat(t1.getMinNumberOfInstances(), is(1));\r\n    InstanceTemplate t2 = templates.get(1);\r\n    assertThat(t2.getMinNumberOfInstances(), is(2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testNumberFormatExceptionOnInstancesTemplates",
+  "sourceCode" : "@Test(expected = NumberFormatException.class)\r\npublic void testNumberFormatExceptionOnInstancesTemplates() throws Exception {\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.addProperty(\"whirr.instance-templates\", \"1 hadoop-namenode+hadoop-jobtracker,3 hadoop-datanode+hadoop-tasktracker\");\r\n    conf.addProperty(\"whirr.instance-templates-max-percent-failures\", \"60% hadoop-datanode+hadoop-tasktracker\");\r\n    ClusterSpec expectedClusterSpec = ClusterSpec.withNoDefaults(conf);\r\n    List<InstanceTemplate> templates = expectedClusterSpec.getInstanceTemplates();\r\n    InstanceTemplate t1 = templates.get(0);\r\n    assertThat(t1.getMinNumberOfInstances(), is(1));\r\n    InstanceTemplate t2 = templates.get(1);\r\n    assertThat(t2.getMinNumberOfInstances(), is(2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testNumberOfInstancesPerTemplate",
+  "sourceCode" : "@Test\r\npublic void testNumberOfInstancesPerTemplate() throws Exception {\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.addProperty(\"whirr.instance-templates\", \"1 hadoop-namenode+hadoop-jobtracker,3 hadoop-datanode+hadoop-tasktracker\");\r\n    conf.addProperty(\"whirr.instance-templates-max-percent-failures\", \"100 hadoop-namenode+hadoop-jobtracker,60 hadoop-datanode+hadoop-tasktracker\");\r\n    ClusterSpec expectedClusterSpec = ClusterSpec.withNoDefaults(conf);\r\n    List<InstanceTemplate> templates = expectedClusterSpec.getInstanceTemplates();\r\n    InstanceTemplate t1 = templates.get(0);\r\n    assertThat(t1.getMinNumberOfInstances(), is(1));\r\n    InstanceTemplate t2 = templates.get(1);\r\n    assertThat(t2.getMinNumberOfInstances(), is(2));\r\n    conf.setProperty(\"whirr.instance-templates-max-percent-failures\", \"60 hadoop-datanode+hadoop-tasktracker\");\r\n    expectedClusterSpec = ClusterSpec.withNoDefaults(conf);\r\n    templates = expectedClusterSpec.getInstanceTemplates();\r\n    t1 = templates.get(0);\r\n    assertThat(t1.getMinNumberOfInstances(), is(1));\r\n    t2 = templates.get(1);\r\n    assertThat(t2.getMinNumberOfInstances(), is(2));\r\n    conf.addProperty(\"whirr.instance-templates-minumum-number-of-instances\", \"1 hadoop-datanode+hadoop-tasktracker\");\r\n    expectedClusterSpec = ClusterSpec.withNoDefaults(conf);\r\n    templates = expectedClusterSpec.getInstanceTemplates();\r\n    t1 = templates.get(0);\r\n    assertThat(t1.getMinNumberOfInstances(), is(1));\r\n    t2 = templates.get(1);\r\n    assertThat(t2.getMinNumberOfInstances(), is(2));\r\n    conf.setProperty(\"whirr.instance-templates-minimum-number-of-instances\", \"3 hadoop-datanode+hadoop-tasktracker\");\r\n    expectedClusterSpec = ClusterSpec.withNoDefaults(conf);\r\n    templates = expectedClusterSpec.getInstanceTemplates();\r\n    t1 = templates.get(0);\r\n    assertThat(t1.getMinNumberOfInstances(), is(1));\r\n    t2 = templates.get(1);\r\n    assertThat(t2.getMinNumberOfInstances(), is(3));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testClusterUserShouldBeCurrentUser",
+  "sourceCode" : "@Test\r\npublic void testClusterUserShouldBeCurrentUser() throws Exception {\r\n    ClusterSpec spec = ClusterSpec.withTemporaryKeys();\r\n    assertThat(spec.getClusterUser(), is(System.getProperty(\"user.name\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testDefaultBlobStoreforComputeProvider",
+  "sourceCode" : "@Test\r\npublic void testDefaultBlobStoreforComputeProvider() throws Exception {\r\n    for (String pair : new String[] { \"ec2:aws-s3\", \"aws-ec2:aws-s3\", \"cloudservers:cloudfiles-us\", \"cloudservers-us:cloudfiles-us\", \"cloudservers-uk:cloudfiles-uk\" }) {\r\n        String[] parts = pair.split(\":\");\r\n        Configuration config = new PropertiesConfiguration();\r\n        config.addProperty(\"whirr.provider\", parts[0]);\r\n        ClusterSpec spec = ClusterSpec.withTemporaryKeys(config);\r\n        assertThat(spec.getBlobStoreProvider(), is(parts[1]));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testApplySubroleAliases",
+  "sourceCode" : "@Test\r\npublic void testApplySubroleAliases() throws ConfigurationException {\r\n    CompositeConfiguration c = new CompositeConfiguration();\r\n    Configuration config = new PropertiesConfiguration();\r\n    config.addProperty(\"whirr.instance-templates\", \"1 puppet:somepup::pet+something-else, 1 something-else-only\");\r\n    c.addConfiguration(config);\r\n    InstanceTemplate template = InstanceTemplate.parse(c).get(0);\r\n    Set<String> expected = Sets.newLinkedHashSet(Arrays.asList(new String[] { \"puppet:somepup::pet\", \"something-else\" }));\r\n    assertThat(template.getRoles(), is(expected));\r\n    InstanceTemplate template2 = InstanceTemplate.parse(c).get(1);\r\n    Set<String> expected2 = Sets.newLinkedHashSet(Arrays.asList(new String[] { \"something-else-only\" }));\r\n    assertThat(template2.getRoles(), is(expected2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testCopySpec",
+  "sourceCode" : "@Test\r\npublic void testCopySpec() throws Exception {\r\n    ClusterSpec spec = ClusterSpec.withTemporaryKeys(new PropertiesConfiguration(\"whirr-core-test.properties\"));\r\n    spec.setLocationId(\"random-location\");\r\n    /* check the copy is the same as the original */\r\n    assertThat(spec.copy(), is(spec));\r\n    assertThat(spec.copy().hashCode(), is(spec.hashCode()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testFirewallRules",
+  "sourceCode" : "@Test\r\npublic void testFirewallRules() throws Exception {\r\n    PropertiesConfiguration conf = new PropertiesConfiguration(\"whirr-core-test.properties\");\r\n    conf.setProperty(\"whirr.firewall-rules\", \"8000,8001\");\r\n    conf.setProperty(\"whirr.firewall-rules.serviceA\", \"9000,9001\");\r\n    ClusterSpec spec = ClusterSpec.withTemporaryKeys(conf);\r\n    Map<String, List<String>> firewallRules = spec.getFirewallRules();\r\n    assertThat(firewallRules.get(null).equals(Lists.<String>newArrayList(\"8000\", \"8001\")), is(true));\r\n    assertThat(firewallRules.get(\"serviceA\").equals(Lists.<String>newArrayList(\"9000\", \"9001\")), is(true));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testHardwareIdPerInstanceTemplate",
+  "sourceCode" : "@Test\r\npublic void testHardwareIdPerInstanceTemplate() throws Exception {\r\n    PropertiesConfiguration conf = new PropertiesConfiguration(\"whirr-core-test.properties\");\r\n    conf.setProperty(\"whirr.instance-templates\", \"2 noop, 1 role1+role2, 1 role1, 3 spots\");\r\n    conf.setProperty(\"whirr.hardware-id\", \"c1.xlarge\");\r\n    conf.setProperty(\"whirr.templates.noop.hardware-id\", \"m1.large\");\r\n    conf.setProperty(\"whirr.templates.role1+role2.hardware-id\", \"t1.micro\");\r\n    conf.setProperty(\"whirr.templates.role1+role2.image-id\", \"us-east-1/ami-123324\");\r\n    conf.setProperty(\"whirr.templates.spots.aws-ec2-spot-price\", 0.5f);\r\n    ClusterSpec spec = ClusterSpec.withTemporaryKeys(conf);\r\n    List<InstanceTemplate> templates = spec.getInstanceTemplates();\r\n    InstanceTemplate noops = get(templates, 0);\r\n    assert noops.getRoles().contains(\"noop\");\r\n    assertEquals(noops.getHardwareId(), \"m1.large\");\r\n    assertEquals(noops.getImageId(), null);\r\n    InstanceTemplate second = get(templates, 1);\r\n    assertEquals(second.getHardwareId(), \"t1.micro\");\r\n    assertEquals(second.getImageId(), \"us-east-1/ami-123324\");\r\n    InstanceTemplate third = get(templates, 2);\r\n    assertEquals(third.getHardwareId(), null);\r\n    assertEquals(third.getImageId(), null);\r\n    InstanceTemplate spots = get(templates, 3);\r\n    assertEquals(spots.getAwsEc2SpotPrice(), 0.5f, 0.001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterSpecTest.java",
+  "methodName" : "testInstanceTemplateNotFoundForHardwareId",
+  "sourceCode" : "@Test(expected = ConfigurationException.class)\r\npublic void testInstanceTemplateNotFoundForHardwareId() throws Exception {\r\n    PropertiesConfiguration conf = new PropertiesConfiguration(\"whirr-core-test.properties\");\r\n    conf.setProperty(\"whirr.instance-templates\", \"1 role1+role2\");\r\n    conf.setProperty(\"whirr.templates.role1.hardware-id\", \"m1.large\");\r\n    ClusterSpec.withTemporaryKeys(conf);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterTest.java",
+  "methodName" : "remoteInstanceById",
+  "sourceCode" : "@Test\r\npublic void remoteInstanceById() {\r\n    cluster.removeInstancesMatching(withIds(\"id-0\"));\r\n    try {\r\n        cluster.getInstanceMatching(withIds(\"id-0\"));\r\n        fail(\"Element not remnoved\");\r\n    } catch (NoSuchElementException e) {\r\n        /* exception thrown as expected */\r\n    }\r\n    assertThat(cluster.getInstances().size(), is(NUMBER_OF_INSTANCES - 1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterTest.java",
+  "methodName" : "getInstanceById",
+  "sourceCode" : "@Test\r\npublic void getInstanceById() {\r\n    Cluster.Instance instance = cluster.getInstanceMatching(withIds(\"id-0\"));\r\n    assertThat(instance.getRoles().contains(\"role-0\"), is(true));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\ClusterTest.java",
+  "methodName" : "getInstanceByRole",
+  "sourceCode" : "@Test\r\npublic void getInstanceByRole() {\r\n    Cluster.Instance instance = cluster.getInstanceMatching(role(\"role-0\"));\r\n    assertThat(instance.getId(), is(\"id-0\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\command\\AbstractClusterCommandTest.java",
+  "methodName" : "testOverrides",
+  "sourceCode" : "@Test\r\npublic void testOverrides() throws Exception {\r\n    AbstractClusterCommand clusterCommand = new AbstractClusterCommand(\"name\", \"description\", new ClusterControllerFactory()) {\r\n\r\n        @Override\r\n        public int run(InputStream in, PrintStream out, PrintStream err, List<String> args) throws Exception {\r\n            return 0;\r\n        }\r\n    };\r\n    Map<String, File> keys = KeyPair.generateTemporaryFiles();\r\n    OptionSet optionSet = clusterCommand.parser.parse(\"--service-name\", \"overridden-test-service\", \"--config\", \"whirr-override-test.properties\", \"--private-key-file\", keys.get(\"private\").getAbsolutePath());\r\n    ClusterSpec clusterSpec = clusterCommand.getClusterSpec(optionSet);\r\n    assertThat(clusterSpec.getServiceName(), is(\"overridden-test-service\"));\r\n    assertThat(clusterSpec.getClusterName(), is(\"test-cluster\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\compute\\BootstrapTemplateTest.java",
+  "methodName" : "testSetGlobalSpotPrice",
+  "sourceCode" : "@Test\r\npublic void testSetGlobalSpotPrice() throws Exception {\r\n    ClusterSpec clusterSpec = buildClusterSpecWith(ImmutableMap.of(\"whirr.instance-templates\", \"1 role1\", \"whirr.aws-ec2-spot-price\", \"0.3\"));\r\n    assertSpotPriceIs(clusterSpec, \"role1\", 0.3f);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\compute\\BootstrapTemplateTest.java",
+  "methodName" : "testOverrideSpotPrice",
+  "sourceCode" : "@Test\r\npublic void testOverrideSpotPrice() throws Exception {\r\n    ClusterSpec clusterSpec = buildClusterSpecWith(ImmutableMap.of(\"whirr.instance-templates\", \"1 role1\", \"whirr.aws-ec2-spot-price\", \"0.1\", \"whirr.templates.role1.aws-ec2-spot-price\", \"0.3\"));\r\n    assertSpotPriceIs(clusterSpec, \"role1\", 0.3f);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\compute\\BootstrapTemplateTest.java",
+  "methodName" : "testDifferentPrices",
+  "sourceCode" : "@Test\r\npublic void testDifferentPrices() throws Exception {\r\n    ClusterSpec clusterSpec = buildClusterSpecWith(ImmutableMap.of(\"whirr.instance-templates\", \"1 role1, 1 role2\", \"whirr.aws-ec2-spot-price\", \"0.1\", \"whirr.templates.role2.aws-ec2-spot-price\", \"0.3\"));\r\n    assertSpotPriceIs(clusterSpec, \"role1\", 0.1f);\r\n    assertSpotPriceIs(clusterSpec, \"role2\", 0.3f);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\net\\integration\\FastDnsResolverTest.java",
+  "methodName" : "testResolveAddress",
+  "sourceCode" : "/**\r\n * Try the reverse DNS name resolver on all IPv4 interfaces\r\n *\r\n * @throws IOException\r\n */\r\n@Test\r\npublic void testResolveAddress() throws IOException {\r\n    long start, end;\r\n    Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();\r\n    while (en.hasMoreElements()) {\r\n        NetworkInterface netint = en.nextElement();\r\n        Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();\r\n        for (InetAddress inetAddress : Collections.list(inetAddresses)) {\r\n            if (inetAddress instanceof Inet4Address) {\r\n                /* We know that java.net.InetAddress's getHostName takes > 4.5s if\r\n            there is no reverse address assigned to it. FastDnsResolver should\r\n            resolve any address in less than 5 seconds or return the IP */\r\n                start = currentTimeMillis();\r\n                String reverse = getDnsResolver().apply(inetAddress.getHostAddress());\r\n                end = currentTimeMillis();\r\n                assertTrue(\"resolveAddress takes \" + (end - start) + \" millis, it should be \" + \"shorter than 5 seconds\", (end - start) < 5500);\r\n                checkResponse(reverse, netint, inetAddress);\r\n            }\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\DryRunModuleTest.java",
+  "methodName" : "testExecuteOnlyBootstrapForNoop",
+  "sourceCode" : "@Test\r\npublic void testExecuteOnlyBootstrapForNoop() throws Exception {\r\n    CompositeConfiguration config = new CompositeConfiguration();\r\n    config.setProperty(\"whirr.provider\", \"stub\");\r\n    config.setProperty(\"whirr.cluster-name\", \"stub-test\");\r\n    config.setProperty(\"whirr.instance-templates\", \"1 noop\");\r\n    config.setProperty(\"whirr.state-store\", \"memory\");\r\n    ClusterSpec clusterSpec = ClusterSpec.withTemporaryKeys(config);\r\n    ClusterController controller = new ClusterController();\r\n    controller.launchCluster(clusterSpec);\r\n    controller.destroyCluster(clusterSpec);\r\n    DryRun dryRun = DryRunModule.getDryRun();\r\n    ListMultimap<NodeMetadata, RunScriptOnNode> perNodeExecutions = dryRun.getExecutions();\r\n    for (Entry<NodeMetadata, Collection<RunScriptOnNode>> entry : perNodeExecutions.asMap().entrySet()) {\r\n        assertSame(\"An incorrect number of scripts was executed in the node\", entry.getValue().size(), 1);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\DryRunModuleTest.java",
+  "methodName" : "testNoInitScriptsAfterConfigurationStartedAndNoConfigScriptsAfterDestroy",
+  "sourceCode" : "/**\r\n * Simple test that tests dry run module and at the same time enforces clear\r\n * separation of script execution phases.\r\n */\r\n@Test\r\npublic void testNoInitScriptsAfterConfigurationStartedAndNoConfigScriptsAfterDestroy() throws ConfigurationException, JSchException, IOException, InterruptedException {\r\n    final List<String> expectedExecutionOrder = ImmutableList.of(\"setup\", \"configure\", \"start\", \"destroy\");\r\n    CompositeConfiguration config = new CompositeConfiguration();\r\n    config.setProperty(\"whirr.provider\", \"stub\");\r\n    config.setProperty(\"whirr.cluster-name\", \"stub-test\");\r\n    config.setProperty(\"whirr.instance-templates\", \"10 noop+noop3,10 noop2+noop,10 noop3+noop2\");\r\n    config.setProperty(\"whirr.state-store\", \"memory\");\r\n    ClusterSpec clusterSpec = ClusterSpec.withTemporaryKeys(config);\r\n    ClusterController controller = new ClusterController();\r\n    controller.launchCluster(clusterSpec);\r\n    controller.destroyCluster(clusterSpec);\r\n    DryRun dryRun = DryRunModule.getDryRun();\r\n    ListMultimap<NodeMetadata, RunScriptOnNode> perNodeExecutions = dryRun.getExecutions();\r\n    List<RunScriptOnNode> totalExecutions = dryRun.getTotallyOrderedExecutions();\r\n    // Assert that all nodes executed all three phases and in the right order\r\n    for (Entry<NodeMetadata, Collection<RunScriptOnNode>> entry : perNodeExecutions.asMap().entrySet()) {\r\n        assertSame(\"An incorrect number of scripts was executed in the node\", entry.getValue().size(), expectedExecutionOrder.size());\r\n        List<RunScriptOnNode> asList = (List<RunScriptOnNode>) entry.getValue();\r\n        int count = 0;\r\n        for (String phase : expectedExecutionOrder) {\r\n            assertTrue(\"The '\" + phase + \"' script was executed in the wrong order\", getScriptName(asList.get(count)).startsWith(phase));\r\n            count += 1;\r\n        }\r\n    }\r\n    // This tests the barrier by making sure that once a configure\r\n    // script is executed no more setup scripts are executed\r\n    Stack<String> executedPhases = new Stack<String>();\r\n    for (RunScriptOnNode script : totalExecutions) {\r\n        String[] parts = getScriptName(script).split(\"-\");\r\n        if ((!executedPhases.empty() && !executedPhases.peek().equals(parts[0])) || executedPhases.empty()) {\r\n            executedPhases.push(parts[0]);\r\n        }\r\n    }\r\n    // Assert that all scripts executed in the right order with no overlaps\r\n    assertEquals(expectedExecutionOrder.size(), executedPhases.size());\r\n    for (String phaseName : Lists.reverse(expectedExecutionOrder)) {\r\n        assertEquals(executedPhases.pop(), phaseName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\jclouds\\integration\\FirewallManagerTest.java",
+  "methodName" : "testFirewallAuthorizationIsIdempotent",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void testFirewallAuthorizationIsIdempotent() throws IOException {\r\n    if (context.getProviderSpecificContext().getApi() instanceof EC2Client) {\r\n        EC2Client ec2Client = EC2Client.class.cast(context.getProviderSpecificContext().getApi());\r\n        String groupName = \"jclouds#\" + clusterSpec.getClusterName() + \"#\" + region;\r\n        ec2Client.getSecurityGroupServices().createSecurityGroupInRegion(region, groupName, \"group description\");\r\n        try {\r\n            manager.addRule(Rule.create().destination(instances).port(23344));\r\n            /* The second call should not throw an exception. */\r\n            manager.addRule(Rule.create().destination(instances).port(23344));\r\n        } finally {\r\n            ec2Client.getSecurityGroupServices().deleteSecurityGroupInRegion(region, groupName);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\jclouds\\RunUrlStatementTest.java",
+  "methodName" : "testBaseWithTrailingSlash",
+  "sourceCode" : "@Test\r\npublic void testBaseWithTrailingSlash() throws IOException {\r\n    assertThat(new RunUrlStatement(false, \"http://example.org/\", \"a/b\").render(OsFamily.UNIX), is(\"runurl http://example.org/a/b\" + NL));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\jclouds\\RunUrlStatementTest.java",
+  "methodName" : "testWithArgs",
+  "sourceCode" : "@Test\r\npublic void testWithArgs() throws IOException {\r\n    assertThat(new RunUrlStatement(false, \"http://example.org/\", \"a/b\", \"x\", \"y\").render(OsFamily.UNIX), is(\"runurl http://example.org/a/b x y\" + NL));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\jclouds\\RunUrlStatementTest.java",
+  "methodName" : "testBaseWithoutTrailingSlash",
+  "sourceCode" : "@Test\r\npublic void testBaseWithoutTrailingSlash() throws IOException {\r\n    assertThat(new RunUrlStatement(false, \"http://example.org\", \"a/b\").render(OsFamily.UNIX), is(\"runurl http://example.org/a/b\" + NL));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\jclouds\\RunUrlStatementTest.java",
+  "methodName" : "testAbsolutePath",
+  "sourceCode" : "@Test\r\npublic void testAbsolutePath() throws IOException {\r\n    assertThat(new RunUrlStatement(false, \"http://example.org/\", \"http://example2.org/a/b\").render(OsFamily.UNIX), is(\"runurl http://example2.org/a/b\" + NL));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\jclouds\\RunUrlStatementTest.java",
+  "methodName" : "testCheckUrlExists",
+  "sourceCode" : "@Test\r\npublic void testCheckUrlExists() throws IOException {\r\n    RunUrlStatement.checkUrlExists(new URL(\"http://whirr.s3.amazonaws.com/\"), \"Exists\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\jclouds\\RunUrlStatementTest.java",
+  "methodName" : "testCheckUrlDoesNotExist",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testCheckUrlDoesNotExist() throws IOException {\r\n    RunUrlStatement.checkUrlExists(new URL(\"http://whirr.s3.amazonaws.com/non-existent\"), \"Doesn't exist\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\jclouds\\StatementBuilderTest.java",
+  "methodName" : "testDeduplication",
+  "sourceCode" : "@Test\r\npublic void testDeduplication() throws Exception {\r\n    ClusterSpec clusterSpec = ClusterSpec.withTemporaryKeys();\r\n    clusterSpec.setClusterName(\"test-cluster\");\r\n    clusterSpec.setProvider(\"test-provider\");\r\n    StatementBuilder builder = new StatementBuilder();\r\n    builder.addStatement(new RunUrlStatement(false, \"http://example.org/\", \"a/b\", \"c\"));\r\n    builder.addStatement(new RunUrlStatement(false, \"http://example.org/\", \"d/e\", \"f\"));\r\n    builder.addStatement(new RunUrlStatement(false, \"http://example.org/\", \"a/b\", \"c\"));\r\n    String script = builder.build(clusterSpec).render(OsFamily.UNIX);\r\n    int first = script.indexOf(\"runurl http://example.org/a/b c\");\r\n    assertThat(first, greaterThan(-1));\r\n    int second = script.indexOf(\"runurl http://example.org/a/b c\", first + 1);\r\n    assertThat(\"No second occurrence\", second, is(-1));\r\n    assertThat(script, containsString(\"runurl http://example.org/d/e f\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\jclouds\\StatementBuilderTest.java",
+  "methodName" : "testExplicitExports",
+  "sourceCode" : "@Test\r\npublic void testExplicitExports() throws Exception {\r\n    ClusterSpec clusterSpec = ClusterSpec.withTemporaryKeys();\r\n    clusterSpec.setClusterName(\"test-cluster\");\r\n    clusterSpec.setProvider(\"test-provider\");\r\n    StatementBuilder builder = new StatementBuilder();\r\n    builder.addExport(\"fooBar\", \"my_value\");\r\n    builder.addStatement(Statements.exec(\"echo $FOO_BAR\"));\r\n    String script = builder.build(clusterSpec).render(OsFamily.UNIX);\r\n    assertThat(script, containsString(\"export FOO_BAR=\"));\r\n    assertThat(script, containsString(\"my_value\"));\r\n    assertThat(script, containsString(\"echo $FOO_BAR\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\jclouds\\StatementBuilderTest.java",
+  "methodName" : "testClusterSpecExports",
+  "sourceCode" : "@Test\r\npublic void testClusterSpecExports() throws Exception {\r\n    PropertiesConfiguration conf = new PropertiesConfiguration();\r\n    conf.addProperty(\"ignored\", \"ignored_value\");\r\n    conf.addProperty(\"whirr.env.fooBar\", \"my_value\");\r\n    ClusterSpec clusterSpec = ClusterSpec.withTemporaryKeys(conf);\r\n    clusterSpec.setClusterName(\"test-cluster\");\r\n    clusterSpec.setProvider(\"test-provider\");\r\n    StatementBuilder builder = new StatementBuilder();\r\n    builder.addStatement(Statements.exec(\"echo $FOO_BAR\"));\r\n    String script = builder.build(clusterSpec).render(OsFamily.UNIX);\r\n    assertThat(script, containsString(\"export FOO_BAR=\"));\r\n    assertThat(script, containsString(\"my_value\"));\r\n    assertThat(script, containsString(\"echo $FOO_BAR\"));\r\n    assertThat(script, not(containsString(\"ignored\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\TemplateBuilderStrategyTest.java",
+  "methodName" : "testImageIdIsPassedThrough",
+  "sourceCode" : "@Test\r\npublic void testImageIdIsPassedThrough() {\r\n    spec.setImageId(\"my-image-id\");\r\n    TemplateBuilder builder = mock(TemplateBuilder.class);\r\n    strategy.configureTemplateBuilder(spec, builder, instanceTemplate);\r\n    verify(builder).imageId(\"my-image-id\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\TemplateBuilderStrategyTest.java",
+  "methodName" : "testHardwareIdIsPassedThrough",
+  "sourceCode" : "@Test\r\npublic void testHardwareIdIsPassedThrough() {\r\n    spec.setHardwareId(\"my-hardware-id\");\r\n    TemplateBuilder builder = mock(TemplateBuilder.class);\r\n    strategy.configureTemplateBuilder(spec, builder, instanceTemplate);\r\n    verify(builder).hardwareId(\"my-hardware-id\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\TemplateBuilderStrategyTest.java",
+  "methodName" : "testLocationIdIsPassedThrough",
+  "sourceCode" : "@Test\r\npublic void testLocationIdIsPassedThrough() {\r\n    spec.setLocationId(\"my-location-id\");\r\n    TemplateBuilder builder = mock(TemplateBuilder.class);\r\n    strategy.configureTemplateBuilder(spec, builder, instanceTemplate);\r\n    verify(builder).locationId(\"my-location-id\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\TemplateBuilderStrategyTest.java",
+  "methodName" : "testOverrideHardwareId",
+  "sourceCode" : "@Test\r\npublic void testOverrideHardwareId() {\r\n    spec.setHardwareId(\"m1.large\");\r\n    spec.setImageId(\"us-east-1/ami-333\");\r\n    when(instanceTemplate.getHardwareId()).thenReturn(\"t1.micro\");\r\n    TemplateBuilder builder = mock(TemplateBuilder.class);\r\n    strategy.configureTemplateBuilder(spec, builder, instanceTemplate);\r\n    verify(builder).hardwareId(\"t1.micro\");\r\n    verify(builder).imageId(\"us-east-1/ami-333\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\TemplateBuilderStrategyTest.java",
+  "methodName" : "testOverrideImageId",
+  "sourceCode" : "@Test\r\npublic void testOverrideImageId() {\r\n    spec.setHardwareId(\"m1.large\");\r\n    spec.setImageId(\"us-east-1/ami-333\");\r\n    when(instanceTemplate.getImageId()).thenReturn(\"us-east-1/ami-111\");\r\n    TemplateBuilder builder = mock(TemplateBuilder.class);\r\n    strategy.configureTemplateBuilder(spec, builder, instanceTemplate);\r\n    verify(builder).hardwareId(\"m1.large\");\r\n    verify(builder).imageId(\"us-east-1/ami-111\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\service\\TemplateBuilderStrategyTest.java",
+  "methodName" : "testOverrideOnlyHardwareForInstanceTemplate",
+  "sourceCode" : "@Test\r\npublic void testOverrideOnlyHardwareForInstanceTemplate() {\r\n    when(instanceTemplate.getHardwareId()).thenReturn(\"t1.micro\");\r\n    TemplateBuilder builder = mock(TemplateBuilder.class);\r\n    strategy.configureTemplateBuilder(spec, builder, instanceTemplate);\r\n    verify(builder).hardwareId(\"t1.micro\");\r\n    verify(builder).osFamily(OsFamily.UBUNTU);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\state\\integration\\BlobClusterStateStoreTest.java",
+  "methodName" : "testStoreAndLoadState",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void testStoreAndLoadState() throws Exception {\r\n    ClusterSpec spec = getTestClusterSpec();\r\n    BlobStoreContext context = BlobStoreContextBuilder.build(spec);\r\n    String container = generateRandomContainerName(context);\r\n    try {\r\n        spec.setStateStore(\"blob\");\r\n        spec.setStateStoreContainer(container);\r\n        Cluster expected = createTestCluster(new String[] { \"region/id1\", \"region/id2\" }, new String[] { \"role1\", \"role2\" });\r\n        BlobClusterStateStore store = new BlobClusterStateStore(spec);\r\n        store.save(expected);\r\n        /* load and check the stored state */\r\n        Cluster stored = store.load();\r\n        Cluster.Instance first = Iterables.getFirst(stored.getInstances(), null);\r\n        assertNotNull(first);\r\n        assertThat(first.getId(), is(\"region/id1\"));\r\n        assertThat(first.getRoles().contains(\"role1\"), is(true));\r\n        assertThat(stored.getInstances().size(), is(2));\r\n        /* destroy stored state and check it no longer exists */\r\n        store.destroy();\r\n        expected = store.load();\r\n        assertNull(expected);\r\n    } finally {\r\n        LOG.info(\"Removing temporary container '{}'\", container);\r\n        context.getBlobStore().deleteContainer(container);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\state\\integration\\BlobClusterStateStoreTest.java",
+  "methodName" : "testInvalidContainerName",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class, timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void testInvalidContainerName() throws Exception {\r\n    ClusterSpec spec = getTestClusterSpec();\r\n    /* underscores are not allowed and it should throw exception */\r\n    spec.setStateStoreContainer(\"whirr_test\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\util\\integration\\BlobCacheTest.java",
+  "methodName" : "testUploadSmallFileToBlobCache",
+  "sourceCode" : "@Test\r\npublic void testUploadSmallFileToBlobCache() throws Exception {\r\n    testBlobCacheUpload(\"dummy small content\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\util\\integration\\BlobCacheTest.java",
+  "methodName" : "testUploadLargeFileToBlobCache",
+  "sourceCode" : "@Test\r\npublic void testUploadLargeFileToBlobCache() throws Exception {\r\n    testBlobCacheUpload(RandomStringUtils.randomAlphanumeric(1024 * 1024));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\util\\integration\\BlobCacheTest.java",
+  "methodName" : "testUploadInEUS3Region",
+  "sourceCode" : "@Test\r\npublic void testUploadInEUS3Region() throws Exception {\r\n    ClusterSpec spec = getTestClusterSpec();\r\n    if (\"aws-ec2\".equals(spec.getProvider())) {\r\n        // Configuration workaround need until the following issue is fixed\r\n        // http://code.google.com/p/jclouds/issues/detail?id=656\r\n        spec.setBlobStoreLocationId(\"EU\");\r\n        spec.getConfiguration().setProperty(\"jclouds.aws-s3.endpoint\", \"https://s3-eu-west-1.amazonaws.com\");\r\n        testBlobCacheUpload(RandomStringUtils.randomAlphanumeric(1024 * 1024), spec);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\util\\integration\\BlobCacheTest.java",
+  "methodName" : "testSelectBestLocation",
+  "sourceCode" : "@Test\r\npublic void testSelectBestLocation() throws Exception {\r\n    ClusterSpec spec = getTestClusterSpec();\r\n    if (!spec.getProvider().equals(\"aws\") && !spec.getProvider().equals(\"aws-ec2\")) {\r\n        // this test can be executed only on amazon but the internal\r\n        return;\r\n        // location selection mechanism should work for any cloud provider\r\n    }\r\n    spec.setLocationId(\"eu-west-1\");\r\n    BlobCache cache = BlobCache.getInstance(ComputeCache.INSTANCE, spec);\r\n    assertThat(cache.getLocation().getId(), is(\"EU\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\util\\integration\\BlobCacheTest.java",
+  "methodName" : "testSpecifyCacheContainerInConfig",
+  "sourceCode" : "@Test\r\npublic void testSpecifyCacheContainerInConfig() throws Exception {\r\n    ClusterSpec spec = getTestClusterSpec();\r\n    BlobStoreContext context = BlobStoreContextBuilder.build(spec);\r\n    String container = generateRandomContainerName(context);\r\n    LOG.info(\"Created temporary container '{}'\", container);\r\n    try {\r\n        spec.setBlobStoreCacheContainer(container);\r\n        BlobCache cache = BlobCache.getInstance(ComputeCache.INSTANCE, spec);\r\n        assertThat(cache.getContainer(), is(container));\r\n        cache.dropAndClose();\r\n        assertThat(context.getBlobStore().containerExists(container), is(true));\r\n    } finally {\r\n        LOG.info(\"Removing temporary container '{}'\", container);\r\n        context.getBlobStore().deleteContainer(container);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\util\\KeyPairTest.java",
+  "methodName" : "testNotFromSamePair",
+  "sourceCode" : "@Test\r\npublic void testNotFromSamePair() throws JSchException, IOException {\r\n    Map<String, File> keys = generateTemporaryFiles();\r\n    assertThat(sameKeyPair(keys.get(\"private\"), keys.get(\"public\")), is(true));\r\n    Map<String, File> other = generateTemporaryFiles();\r\n    assertThat(sameKeyPair(other.get(\"private\"), other.get(\"public\")), is(true));\r\n    assertThat(sameKeyPair(keys.get(\"private\"), other.get(\"public\")), is(false));\r\n    assertThat(sameKeyPair(other.get(\"private\"), keys.get(\"public\")), is(false));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\util\\KeyPairTest.java",
+  "methodName" : "testGenerate",
+  "sourceCode" : "@Test\r\npublic void testGenerate() throws JSchException {\r\n    Map<String, String> pair = generate();\r\n    assertThat(pair.get(\"public\"), containsString(\"ssh-rsa \"));\r\n    assertThat(pair.get(\"private\"), containsString(\"-----BEGIN RSA PRIVATE KEY-----\\n\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\core\\src\\test\\java\\org\\apache\\whirr\\util\\UtilsTest.java",
+  "methodName" : "testPrintAccess",
+  "sourceCode" : "@Test\r\npublic void testPrintAccess() {\r\n    final Instance instance = mock(Instance.class);\r\n    when(instance.getPublicIp()).thenReturn(\"test-public-ip\");\r\n    Cluster cluster = mock(Cluster.class);\r\n    when(cluster.getInstances()).thenReturn(new HashSet<Cluster.Instance>() {\r\n\r\n        {\r\n            add(instance);\r\n        }\r\n    });\r\n    ClusterSpec spec = mock(ClusterSpec.class);\r\n    when(spec.getClusterUser()).thenReturn(\"test-identity\");\r\n    when(spec.getPrivateKeyFile()).thenReturn(new File(\"/test/key/path\"));\r\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    PrintStream ps = new PrintStream(baos);\r\n    Utils.printSSHConnectionDetails(ps, spec, cluster, 20);\r\n    assertEquals(\"The ssh command did not match\", EXPECTED_SSH_COMMAND, new String(baos.toByteArray()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\platforms\\karaf\\itests\\src\\test\\java\\org\\apache\\whirr\\karaf\\itest\\WhirrInstallationTest.java",
+  "methodName" : "testInstallation",
+  "sourceCode" : "@Test\r\npublic void testInstallation() throws InterruptedException {\r\n    //Install Whirr and check if it has been properly installed.\r\n    installWhirr();\r\n    System.err.println(executeCommand(\"osgi:list\"));\r\n    Bundle commandsBundle = getInstalledBundle(\"org.apache.whirr.karaf.commands\");\r\n    Assert.assertEquals(\"Expected bundle to be started\", Bundle.ACTIVE, commandsBundle.getState());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\platforms\\karaf\\itests\\src\\test\\java\\org\\apache\\whirr\\karaf\\itest\\WhirrServicesTest.java",
+  "methodName" : "testServices",
+  "sourceCode" : "@Test\r\npublic void testServices() throws InterruptedException {\r\n    //Install Whirr\r\n    installWhirr();\r\n    System.err.println(executeCommand(\"osgi:list\"));\r\n    //Install all services\r\n    executeCommand(\"features:install whirr-cassandra\");\r\n    executeCommand(\"features:install whirr-chef\");\r\n    executeCommand(\"features:install whirr-elasticsearch\");\r\n    executeCommand(\"features:install whirr-ganglia\");\r\n    executeCommand(\"features:install whirr-hadoop\");\r\n    executeCommand(\"features:install whirr-hama\");\r\n    executeCommand(\"features:install whirr-hbase\");\r\n    executeCommand(\"features:install whirr-puppet\");\r\n    executeCommand(\"features:install whirr-mahout\");\r\n    //executeCommand(\"features:install whirr-voldemort\");\r\n    executeCommand(\"features:install whirr-zookeeper\");\r\n    System.err.println(executeCommand(\"osgi:list\"));\r\n    //Test that services properly register to OSGi service registry.\r\n    ClusterController clusterController = getOsgiService(ClusterController.class, \"(name=default)\", SERVICE_TIMEOUT);\r\n    Map<String, ClusterActionHandler> actionHandlerMap = clusterController.getHandlerMapFactory().create();\r\n    Assert.assertNotNull(clusterController);\r\n    testService(actionHandlerMap, \"cassandra\");\r\n    testService(actionHandlerMap, \"chef\");\r\n    testService(actionHandlerMap, \"elasticsearch\");\r\n    testService(actionHandlerMap, \"ganglia-monitor\", \"ganglia-metad\");\r\n    testService(actionHandlerMap, \"hadoop-namenode\", \"hadoop-datanode\", \"hadoop-jobtracker\", \"hadoop-tasktracker\");\r\n    testService(actionHandlerMap, \"hama-master\", \"hama-groomserver\");\r\n    testService(actionHandlerMap, \"hbase-master\", \"hbase-regionserver\", \"hbase-restserver\", \"hbase-avroserver\", \"hbase-thriftserver\");\r\n    testService(actionHandlerMap, \"puppet-install\");\r\n    testService(actionHandlerMap, \"mahout-client\");\r\n    //testService(actionHandlerMap,\"voldemort\");\r\n    testService(actionHandlerMap, \"zookeeper\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\cassandra\\src\\test\\java\\org\\apache\\whirr\\service\\cassandra\\CassandraClusterActionHandlerTest.java",
+  "methodName" : "testGetSeeds",
+  "sourceCode" : "@Test()\r\npublic void testGetSeeds() throws UnknownHostException {\r\n    Instance one = getInstance(\"1\");\r\n    Instance two = getInstance(\"2\");\r\n    Set<Instance> instances = Sets.newLinkedHashSet();\r\n    instances.add(one);\r\n    CassandraClusterActionHandler handler = new CassandraClusterActionHandler();\r\n    // check that the one node is returned\r\n    List<Instance> seeds1 = handler.getSeeds(instances);\r\n    assertEquals(1, seeds1.size());\r\n    assertEquals(one, seeds1.get(0));\r\n    // add more nodes, should get two seeds\r\n    instances.add(two);\r\n    for (int i = 3; i < 10; i++) {\r\n        instances.add(getInstance(Integer.toString(i)));\r\n    }\r\n    List<Instance> seeds2 = handler.getSeeds(instances);\r\n    assertEquals(2, seeds2.size());\r\n    assertEquals(one, seeds2.get(0));\r\n    assertEquals(two, seeds2.get(1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\cassandra\\src\\test\\java\\org\\apache\\whirr\\service\\cassandra\\CassandraClusterActionHandlerTest.java",
+  "methodName" : "testComputeInitialTokens",
+  "sourceCode" : "@Test\r\npublic void testComputeInitialTokens() {\r\n    List<String> result = new CassandraClusterActionHandler().computeInitialTokens(5);\r\n    assertEquals(result, ImmutableList.of(\"0\", \"34028236692093846346337460743176821145\", \"68056473384187692692674921486353642290\", \"102084710076281539039012382229530463435\", \"136112946768375385385349842972707284580\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\cassandra\\src\\test\\java\\org\\apache\\whirr\\service\\cassandra\\integration\\CassandraServiceTest.java",
+  "methodName" : "testInstances",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void testInstances() throws Exception {\r\n    Set<String> endPoints = Sets.newLinkedHashSet();\r\n    for (Instance instance : cluster.getInstances()) {\r\n        Cassandra.Client client = client(instance);\r\n        Map<String, List<String>> tr = client.describe_schema_versions();\r\n        for (List<String> version : tr.values()) {\r\n            endPoints.addAll(version);\r\n        }\r\n        client.getOutputProtocol().getTransport().close();\r\n    }\r\n    LOG.info(\"List of endpoints: \" + endPoints);\r\n    for (Instance instance : cluster.getInstances()) {\r\n        String address = instance.getPrivateAddress().getHostAddress();\r\n        assertTrue(address + \" not in cluster!\", endPoints.remove(address));\r\n    }\r\n    assertTrue(\"Unknown node returned: \" + endPoints.toString(), endPoints.isEmpty());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\cdh\\src\\test\\java\\org\\apache\\whirr\\service\\cdh\\integration\\CdhHadoopServiceTest.java",
+  "methodName" : "testVersion",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void testVersion() throws Exception {\r\n    Statement checkVersion = Statements.exec(\"ls /etc/alternatives/hadoop-lib\");\r\n    Map<? extends NodeMetadata, ExecResponse> responses = controller.runScriptOnNodesMatching(clusterSpec, ALL, checkVersion);\r\n    printResponses(checkVersion, responses);\r\n    assertResponsesContain(responses, checkVersion, \"cdh3u2\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\cdh\\src\\test\\java\\org\\apache\\whirr\\service\\cdh\\integration\\CdhHadoopServiceTest.java",
+  "methodName" : "testJobExecution",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void testJobExecution() throws Exception {\r\n    Configuration conf = getConfiguration();\r\n    JobConf job = new JobConf(conf, CdhHadoopServiceTest.class);\r\n    JobClient client = new JobClient(job);\r\n    waitForTaskTrackers(client);\r\n    checkHadoop(conf, client, job);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\cdh\\src\\test\\java\\org\\apache\\whirr\\service\\cdh\\integration\\CdhHBaseServiceTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void test() throws Exception {\r\n    ArrayList<ColumnDescriptor> columns = new ArrayList<ColumnDescriptor>();\r\n    ColumnDescriptor cd = new ColumnDescriptor();\r\n    cd.name = FAMILY1;\r\n    columns.add(cd);\r\n    cd = new ColumnDescriptor();\r\n    cd.name = FAMILY2;\r\n    columns.add(cd);\r\n    Hbase.Client client = controller.getThriftClient();\r\n    client.createTable(TABLE, columns);\r\n    ArrayList<Mutation> mutations = new ArrayList<Mutation>();\r\n    mutations.add(new Mutation(false, COLUMN, VALUE));\r\n    client.mutateRow(TABLE, ROW, mutations);\r\n    int scan1 = client.scannerOpen(TABLE, FIRST, Lists.newArrayList(FAMILY1));\r\n    List<TRowResult> rows = client.scannerGet(scan1);\r\n    assertThat(rows.size(), is(1));\r\n    assertThat(Bytes.toString(rows.get(0).getRow()), is(\"testRow\"));\r\n    assertTrue(\"No more rows\", client.scannerGet(scan1).isEmpty());\r\n    client.scannerClose(scan1);\r\n    int scan2 = client.scannerOpen(TABLE, FIRST, Lists.newArrayList(FAMILY2));\r\n    assertTrue(\"No more rows\", client.scannerGet(scan2).isEmpty());\r\n    client.scannerClose(scan2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\cdh\\src\\test\\java\\org\\apache\\whirr\\service\\cdh\\integration\\CdhZooKeeperServiceTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void test() throws Exception {\r\n    class ConnectionWatcher implements Watcher {\r\n\r\n        private ZooKeeper zk;\r\n\r\n        private CountDownLatch latch = new CountDownLatch(1);\r\n\r\n        public void connect(String hosts) throws IOException, InterruptedException {\r\n            zk = new ZooKeeper(hosts, 5000, this);\r\n            latch.await();\r\n        }\r\n\r\n        public ZooKeeper getZooKeeper() {\r\n            return zk;\r\n        }\r\n\r\n        @Override\r\n        public void process(WatchedEvent event) {\r\n            if (event.getState() == KeeperState.SyncConnected) {\r\n                latch.countDown();\r\n            }\r\n        }\r\n\r\n        public void close() throws InterruptedException {\r\n            if (zk != null) {\r\n                zk.close();\r\n            }\r\n        }\r\n    }\r\n    String path = \"/data\";\r\n    String data = \"Hello\";\r\n    ConnectionWatcher watcher = new ConnectionWatcher();\r\n    watcher.connect(hosts);\r\n    watcher.getZooKeeper().create(path, data.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);\r\n    watcher.close();\r\n    watcher = new ConnectionWatcher();\r\n    watcher.connect(hosts);\r\n    byte[] actualData = watcher.getZooKeeper().getData(path, false, null);\r\n    assertEquals(data, new String(actualData));\r\n    watcher.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\chef\\src\\test\\java\\org\\apache\\whirr\\service\\chef\\ChefServiceDryRunTest.java",
+  "methodName" : "testChefOnly",
+  "sourceCode" : "/**\r\n * Tests that a simple recipe (the default recipe in a cookbook without any\r\n * configuration parameters) is correctly loaded and executed.\r\n */\r\n@Test\r\npublic void testChefOnly() throws Exception {\r\n    launchWithConfig(chefOnly);\r\n    assertInstallFunctionsWereExecuted(DryRun.INSTANCE);\r\n    assertNoEntryForPhase(DryRun.INSTANCE, \"configure\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\chef\\src\\test\\java\\org\\apache\\whirr\\service\\chef\\ChefServiceDryRunTest.java",
+  "methodName" : "testChefWithDefaultRecipe",
+  "sourceCode" : "/**\r\n * Tests that a simple recipe (the default recipe in a cookbook without any\r\n * configuration parameters) is correctly loaded and executed.\r\n */\r\n@Test\r\npublic void testChefWithDefaultRecipe() throws Exception {\r\n    launchWithConfig(cookbookWithDefaultRecipe);\r\n    assertInstallFunctionsWereExecuted(DryRun.INSTANCE);\r\n    // chef execution with a default cookbook recipe should contain a\r\n    // particular string\r\n    assertScriptPredicateOnPhase(DryRun.INSTANCE, \"configure\", new Predicate<String>() {\r\n\r\n        @Override\r\n        public boolean apply(String input) {\r\n            return input.contains(\"chef-solo -j /tmp/java::default\");\r\n        }\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\chef\\src\\test\\java\\org\\apache\\whirr\\service\\chef\\ChefServiceDryRunTest.java",
+  "methodName" : "testChefWithAttributes",
+  "sourceCode" : "/**\r\n * Tests that a simple recipe (the default recipe in a cookbook without any\r\n * configuration parameters) is correctly loaded and executed.\r\n */\r\n@Test\r\npublic void testChefWithAttributes() throws Exception {\r\n    launchWithConfig(cookbookWithSpecificRecipe);\r\n    assertInstallFunctionsWereExecuted(DryRun.INSTANCE);\r\n    // chef execution with a default cookbook recipe should contain a\r\n    // particular string\r\n    assertScriptPredicateOnPhase(DryRun.INSTANCE, \"configure\", new Predicate<String>() {\r\n\r\n        @Override\r\n        public boolean apply(String input) {\r\n            return input.contains(\"chef-solo -j /tmp/java::sun\");\r\n        }\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\chef\\src\\test\\java\\org\\apache\\whirr\\service\\chef\\ChefServiceDryRunTest.java",
+  "methodName" : "testChefWithParticularRecipe",
+  "sourceCode" : "/**\r\n * Tests that a simple recipe (the default recipe in a cookbook without any\r\n * configuration parameters) is correctly loaded and executed.\r\n */\r\n@Test\r\npublic void testChefWithParticularRecipe() throws Exception {\r\n    launchWithConfig(cookbookWithAttributes);\r\n    assertInstallFunctionsWereExecuted(DryRun.INSTANCE);\r\n    // chef execution with a default cookbook recipe should contain a\r\n    // particular string\r\n    assertScriptPredicateOnPhase(DryRun.INSTANCE, \"configure\", new Predicate<String>() {\r\n\r\n        @Override\r\n        public boolean apply(String input) {\r\n            return input.contains(\"{\\\"java\\\":{\\\"version\\\":\\\"1.5\\\",\\\"flavor\\\":\\\"vanilla\\\"}\");\r\n        }\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\chef\\src\\test\\java\\org\\apache\\whirr\\service\\chef\\integration\\ChefServiceTest.java",
+  "methodName" : "testRecipesWereRanInServiceBootstrap",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void testRecipesWereRanInServiceBootstrap() throws Exception {\r\n    // and shoudl be installed by the main handlers\r\n    Statement testAnt = Statements.exec(\"ant -version\");\r\n    Map<? extends NodeMetadata, ExecResponse> responses = controller.runScriptOnNodesMatching(clusterSpec, allNodes, testAnt);\r\n    printResponses(testAnt, responses);\r\n    assertResponsesContain(responses, testAnt, \"Apache Ant\");\r\n    Statement testMaven = Statements.exec(\"mvn --version\");\r\n    responses = controller.runScriptOnNodesMatching(clusterSpec, allNodes, testMaven);\r\n    printResponses(testMaven, responses);\r\n    assertResponsesContain(responses, testMaven, \"Apache Maven\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\chef\\src\\test\\java\\org\\apache\\whirr\\service\\chef\\integration\\ChefServiceTest.java",
+  "methodName" : "testChefRunRecipeFromURL",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void testChefRunRecipeFromURL() throws Exception {\r\n    // As chef will be mostly used indirectly in other services\r\n    // this test tests chef's ability to run a recipe, specifically to\r\n    // install nginx.\r\n    Recipe nginx = new Recipe(\"nginx\", null, \"http://s3.amazonaws.com/opscode-community/cookbook_versions/tarballs/529/original/nginx.tgz\");\r\n    Map<? extends NodeMetadata, ExecResponse> responses = runRecipe(nginx);\r\n    printResponses(nginx, responses);\r\n    HttpClient client = new HttpClient();\r\n    final GetMethod getIndex = new GetMethod(String.format(\"http://%s\", responses.keySet().iterator().next().getPublicAddresses().iterator().next()));\r\n    assertTrue(\"Could not connect with nginx server\", new RetryablePredicate<HttpClient>(new Predicate<HttpClient>() {\r\n\r\n        @Override\r\n        public boolean apply(HttpClient input) {\r\n            try {\r\n                int statusCode = input.executeMethod(getIndex);\r\n                assertEquals(\"Status code should be 200\", HttpStatus.SC_OK, statusCode);\r\n                return true;\r\n            } catch (Exception e) {\r\n                return false;\r\n            }\r\n        }\r\n    }, 10, 1, TimeUnit.SECONDS).apply(client));\r\n    String indexPageHTML = getIndex.getResponseBodyAsString();\r\n    assertTrue(\"The string 'nginx' should appear on the index page\", indexPageHTML.contains(\"nginx\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\chef\\src\\test\\java\\org\\apache\\whirr\\service\\chef\\integration\\ChefServiceTest.java",
+  "methodName" : "testChefRunRecipesFromProvidedCookbooks",
+  "sourceCode" : "/**\r\n * Test the execution of recipes (one with attribs and one with non-default\r\n * recipe) from the provided recipes dowloaded from opscode's git repo.\r\n *\r\n * @throws Exception\r\n */\r\n@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void testChefRunRecipesFromProvidedCookbooks() throws Exception {\r\n    Recipe java = new Recipe(\"java\");\r\n    java.attribs.put(\"install_flavor\", \"sun\");\r\n    // Recipes have to run directly against ComputeService as they need to be\r\n    // ran as initscripts, a future version of ClusterController might avoid\r\n    // taht.\r\n    Map<? extends NodeMetadata, ExecResponse> responses = runRecipe(java);\r\n    printResponses(java, responses);\r\n    Statement stmt = Statements.exec(\"java -version\");\r\n    responses = controller.runScriptOnNodesMatching(clusterSpec, allNodes, stmt);\r\n    assertResponsesContain(responses, stmt, \"Java(TM) SE Runtime Environment\");\r\n    Recipe postgreSql = new Recipe(\"postgresql\", \"server\");\r\n    responses = runRecipe(postgreSql);\r\n    printResponses(postgreSql, responses);\r\n    stmt = Statements.exec(\"psql --version\");\r\n    responses = controller.runScriptOnNodesMatching(clusterSpec, allNodes, stmt);\r\n    assertResponsesContain(responses, stmt, \"PostgreSQL\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\chef\\src\\test\\java\\org\\apache\\whirr\\service\\chef\\RecipeTest.java",
+  "methodName" : "testJSONConversion",
+  "sourceCode" : "@Test\r\npublic void testJSONConversion() {\r\n    Recipe nginx = new Recipe(\"nginx\");\r\n    assertEquals(\"JSON representation is incorrect.\", NGINX_JSON, nginx.toJSON());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\chef\\src\\test\\java\\org\\apache\\whirr\\service\\chef\\RecipeTest.java",
+  "methodName" : "testJSONConversionWithSpecificRecipe",
+  "sourceCode" : "@Test\r\npublic void testJSONConversionWithSpecificRecipe() {\r\n    Recipe postgresql = new Recipe(\"postgresql\", \"server\");\r\n    assertEquals(\"JSON representation is incorrect.\", POSTGRES_JSON, postgresql.toJSON());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\chef\\src\\test\\java\\org\\apache\\whirr\\service\\chef\\RecipeTest.java",
+  "methodName" : "testJSONConversionWithAttribs",
+  "sourceCode" : "@Test\r\npublic void testJSONConversionWithAttribs() {\r\n    // use the example recipe from\r\n    // http://wiki.opscode.com/display/chef/Chef+Solo\r\n    Recipe resolver = new Recipe(\"resolver\");\r\n    resolver.attribs.put(\"nameservers\", new String[] { \"10.0.0.1\" });\r\n    resolver.attribs.put(\"search\", \"int.example.com\");\r\n    assertEquals(\"JSON representation is incorrect.\", RESOLVER_JSON, resolver.toJSON());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\chef\\src\\test\\java\\org\\apache\\whirr\\service\\chef\\RecipeTest.java",
+  "methodName" : "testStatementGeneration",
+  "sourceCode" : "@Test\r\npublic void testStatementGeneration() {\r\n    Recipe recipe = new Recipe(\"nginx\", null, \"http://myurl\");\r\n    recipe.attribs.put(\"webport\", \"90\");\r\n    recipe.fileName = \"test\";\r\n    assertEquals(\"Statement representation incorrect\", CHEF_COMMAND, recipe.render(OsFamily.UNIX));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\elasticsearch\\src\\test\\java\\org\\apache\\whirr\\service\\elasticsearch\\ElasticSearchConfigurationBuilderTest.java",
+  "methodName" : "testGenerateYamlConfig",
+  "sourceCode" : "@Test\r\npublic void testGenerateYamlConfig() {\r\n    Configuration defaults = new PropertiesConfiguration();\r\n    defaults.addProperty(\"cloud.aws.id\", \"a\");\r\n    defaults.addProperty(\"cloud.aws.key\", \"b\");\r\n    defaults.addProperty(\"index.store.type\", \"memory\");\r\n    String content = StringUtils.join(ElasticSearchConfigurationBuilder.asYamlLines(defaults), \"\\n\");\r\n    assertThat(content, is(\"cloud:\\n\" + \"  aws:\\n\" + \"    id: a\\n\" + \"    key: b\\n\" + \"index:\\n\" + \"  store:\\n\" + \"    type: memory\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\elasticsearch\\src\\test\\java\\org\\apache\\whirr\\service\\elasticsearch\\ElasticSearchConfigurationBuilderTest.java",
+  "methodName" : "testDefaultConfigAwsEC2",
+  "sourceCode" : "@Test\r\npublic void testDefaultConfigAwsEC2() throws Exception {\r\n    Configuration baseConfig = new PropertiesConfiguration();\r\n    baseConfig.addProperty(\"whirr.provider\", \"aws-ec2\");\r\n    baseConfig.addProperty(\"es.plugins\", \"lang-javascript, lang-python\");\r\n    ClusterSpec spec = ClusterSpec.withTemporaryKeys(baseConfig);\r\n    Configuration config = ElasticSearchConfigurationBuilder.buildConfig(spec, null);\r\n    assertThat(config.getStringArray(\"es.plugins\"), is(new String[] { \"lang-javascript\", \"lang-python\", \"cloud-aws\" }));\r\n    assertThat(config.getString(\"es.discovery.type\"), is(\"ec2\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\elasticsearch\\src\\test\\java\\org\\apache\\whirr\\service\\elasticsearch\\ElasticSearchConfigurationBuilderTest.java",
+  "methodName" : "testDefaultUnicastConfig",
+  "sourceCode" : "@Test\r\npublic void testDefaultUnicastConfig() throws Exception {\r\n    Configuration baseConfig = new PropertiesConfiguration();\r\n    baseConfig.addProperty(\"whirr.provider\", \"cloudservers-us\");\r\n    ClusterSpec spec = ClusterSpec.withTemporaryKeys(baseConfig);\r\n    Cluster cluster = mock(Cluster.class);\r\n    Set<Cluster.Instance> instances = Sets.newLinkedHashSet();\r\n    for (String host : Lists.newArrayList(\"10.0.0.1\", \"10.0.0.2\")) {\r\n        Cluster.Instance instance = mock(Cluster.Instance.class);\r\n        when(instance.getPrivateIp()).thenReturn(host);\r\n        instances.add(instance);\r\n    }\r\n    when(cluster.getInstancesMatching((Predicate<Cluster.Instance>) any())).thenReturn(instances);\r\n    Configuration config = ElasticSearchConfigurationBuilder.buildConfig(spec, cluster);\r\n    String content = StringUtils.join(ElasticSearchConfigurationBuilder.asYamlLines(config.subset(ElasticSearchConfigurationBuilder.ES_PREFIX)), \"\\n\");\r\n    assertThat(content, is(\"index:\\n\" + \"  store:\\n\" + \"    type: memory\\n\" + \"gateway:\\n\" + \"  type: none\\n\" + \"discovery:\\n\" + \"  zen:\\n\" + \"    ping:\\n\" + \"      multicast:\\n\" + \"        enabled: false\\n\" + \"      unicast:\\n\" + \"        hosts: [\\\"10.0.0.1:9300\\\", \\\"10.0.0.2:9300\\\"]\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\elasticsearch\\src\\test\\java\\org\\apache\\whirr\\service\\elasticsearch\\ElasticSearchConfigurationBuilderTest.java",
+  "methodName" : "testOverrideDefaults",
+  "sourceCode" : "@Test\r\npublic void testOverrideDefaults() throws Exception {\r\n    Configuration baseConfig = new PropertiesConfiguration();\r\n    baseConfig.addProperty(\"whirr.provider\", \"aws-ec2\");\r\n    baseConfig.addProperty(\"es.index.store.type\", \"fs\");\r\n    ClusterSpec spec = ClusterSpec.withTemporaryKeys(baseConfig);\r\n    Configuration config = ElasticSearchConfigurationBuilder.buildConfig(spec, null);\r\n    assertThat(config.getString(\"es.index.store.type\"), is(\"fs\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\elasticsearch\\src\\test\\java\\org\\apache\\whirr\\service\\elasticsearch\\integration\\ElasticSearchTest.java",
+  "methodName" : "testCheckNumberOfNodes",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void testCheckNumberOfNodes() throws Exception {\r\n    for (int i = 0; i < 20; i++) {\r\n        int nodes = getNumberOfNodes();\r\n        LOG.info(\"{}/{} nodes joined the elasticsearch cluster\", nodes, cluster.getInstances().size());\r\n        if (nodes == cluster.getInstances().size()) {\r\n            return;\r\n        }\r\n        try {\r\n            Thread.sleep(5000);\r\n        } catch (InterruptedException e) {\r\n        }\r\n    }\r\n    throw new Exception(\"All nodes did not joined the cluster as expected\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\ganglia\\src\\test\\java\\org\\apache\\whirr\\service\\ganglia\\integration\\GangliaServiceTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void test() throws Exception {\r\n    Instance metad = cluster.getInstanceMatching(RolePredicates.role(GangliaMetadClusterActionHandler.GANGLIA_METAD_ROLE));\r\n    String metadHostname = metad.getPublicHostName();\r\n    assertNotNull(metadHostname);\r\n    HttpClient client = new HttpClient();\r\n    GetMethod getIndex = new GetMethod(String.format(\"http://%s/ganglia/\", metadHostname));\r\n    int statusCode = client.executeMethod(getIndex);\r\n    assertEquals(\"Status code should be 200\", HttpStatus.SC_OK, statusCode);\r\n    String indexPageHTML = getIndex.getResponseBodyAsString();\r\n    assertTrue(\"The string 'Ganglia' should appear on the index page\", indexPageHTML.contains(\"Ganglia\"));\r\n    assertTrue(\"The string 'WhirrGrid' should appear on the index page\", indexPageHTML.contains(\"WhirrGrid\"));\r\n    // Now check the xml produced when connecting to the ganglia monitor port on all instances.\r\n    for (Instance instance : cluster.getInstancesMatching(anyRoleIn(Sets.<String>newHashSet(GANGLIA_METAD_ROLE, GANGLIA_MONITOR_ROLE)))) {\r\n        testMonitorResponse(instance);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\hadoop\\src\\test\\java\\org\\apache\\whirr\\service\\hadoop\\HadoopConfigurationBuilderTest.java",
+  "methodName" : "testCommon",
+  "sourceCode" : "@Test\r\npublic void testCommon() throws Exception {\r\n    Configuration conf = HadoopConfigurationBuilder.buildCommonConfiguration(clusterSpec, cluster, defaults);\r\n    assertThat(Iterators.size(conf.getKeys()), is(3));\r\n    assertThat(conf.getString(\"p1\"), is(\"common1\"));\r\n    assertThat(conf.getString(\"p2\"), is(\"common2\"));\r\n    assertThat(conf.getString(\"fs.default.name\"), matches(\"hdfs://.+:8020/\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\hadoop\\src\\test\\java\\org\\apache\\whirr\\service\\hadoop\\HadoopConfigurationBuilderTest.java",
+  "methodName" : "testOverrides",
+  "sourceCode" : "@Test\r\npublic void testOverrides() throws Exception {\r\n    Configuration overrides = new PropertiesConfiguration();\r\n    overrides.addProperty(\"hadoop-common.p1\", \"overridden1\");\r\n    overrides.addProperty(\"hadoop-common.p2\", \"overridden2\");\r\n    overrides.addProperty(\"hadoop-common.fs.default.name\", \"not-overridden\");\r\n    clusterSpec = ClusterSpec.withNoDefaults(overrides);\r\n    Configuration conf = HadoopConfigurationBuilder.buildCommonConfiguration(clusterSpec, cluster, defaults);\r\n    assertThat(Iterators.size(conf.getKeys()), is(3));\r\n    assertThat(conf.getString(\"p1\"), is(\"overridden1\"));\r\n    assertThat(conf.getString(\"p2\"), is(\"overridden2\"));\r\n    assertThat(\"Can't override dynamically set properties\", conf.getString(\"fs.default.name\"), matches(\"hdfs://.+:8020/\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\hadoop\\src\\test\\java\\org\\apache\\whirr\\service\\hadoop\\HadoopConfigurationBuilderTest.java",
+  "methodName" : "testHdfs",
+  "sourceCode" : "@Test\r\npublic void testHdfs() throws Exception {\r\n    Configuration conf = HadoopConfigurationBuilder.buildHdfsConfiguration(clusterSpec, cluster, defaults);\r\n    assertThat(Iterators.size(conf.getKeys()), is(1));\r\n    assertThat(conf.getString(\"p1\"), is(\"hdfs1\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\hadoop\\src\\test\\java\\org\\apache\\whirr\\service\\hadoop\\HadoopConfigurationBuilderTest.java",
+  "methodName" : "testMapReduce",
+  "sourceCode" : "@Test\r\npublic void testMapReduce() throws Exception {\r\n    Cluster cluster = newCluster(5);\r\n    Configuration conf = HadoopConfigurationBuilder.buildMapReduceConfiguration(clusterSpec, cluster, defaults);\r\n    assertThat(conf.getString(\"p1\"), is(\"mapred1\"));\r\n    assertThat(conf.getString(\"mapred.job.tracker\"), matches(\".+:8021\"));\r\n    assertThat(conf.getString(\"mapred.tasktracker.map.tasks.maximum\"), is(\"4\"));\r\n    assertThat(conf.getString(\"mapred.tasktracker.reduce.tasks.maximum\"), is(\"3\"));\r\n    assertThat(conf.getString(\"mapred.reduce.tasks\"), is(\"15\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\hadoop\\src\\test\\java\\org\\apache\\whirr\\service\\hadoop\\HadoopConfigurationBuilderTest.java",
+  "methodName" : "testOverridesNumberOfMappers",
+  "sourceCode" : "@Test\r\npublic void testOverridesNumberOfMappers() throws Exception {\r\n    Configuration overrides = new PropertiesConfiguration();\r\n    overrides.addProperty(\"hadoop-mapreduce.mapred.tasktracker.map.tasks.maximum\", \"70\");\r\n    clusterSpec = ClusterSpec.withNoDefaults(overrides);\r\n    Configuration conf = HadoopConfigurationBuilder.buildMapReduceConfiguration(clusterSpec, cluster, defaults);\r\n    assertThat(conf.getString(\"mapred.tasktracker.map.tasks.maximum\"), is(\"70\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\hadoop\\src\\test\\java\\org\\apache\\whirr\\service\\hadoop\\HadoopConfigurationBuilderTest.java",
+  "methodName" : "testOverridesNumberOfReducers",
+  "sourceCode" : "@Test\r\npublic void testOverridesNumberOfReducers() throws Exception {\r\n    Configuration overrides = new PropertiesConfiguration();\r\n    overrides.addProperty(\"hadoop-mapreduce.mapred.reduce.tasks\", \"7\");\r\n    clusterSpec = ClusterSpec.withNoDefaults(overrides);\r\n    Configuration conf = HadoopConfigurationBuilder.buildMapReduceConfiguration(clusterSpec, cluster, defaults);\r\n    assertThat(conf.getString(\"mapred.reduce.tasks\"), is(\"7\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\hadoop\\src\\test\\java\\org\\apache\\whirr\\service\\hadoop\\HadoopConfigurationConverterTest.java",
+  "methodName" : "testConversion",
+  "sourceCode" : "@Test\r\npublic void testConversion() {\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.setProperty(\"p1\", \"v1,v2\");\r\n    conf.setProperty(\"p2\", \"v3\");\r\n    List<String> lines = HadoopConfigurationConverter.asXmlConfigurationLines(conf);\r\n    assertThat(lines, is((List<String>) Lists.newArrayList(\"<configuration>\", \"  <property>\", \"    <name>p1</name>\", \"    <value>v1,v2</value>\", \"  </property>\", \"  <property>\", \"    <name>p2</name>\", \"    <value>v3</value>\", \"  </property>\", \"</configuration>\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\hadoop\\src\\test\\java\\org\\apache\\whirr\\service\\hadoop\\HadoopConfigurationConverterTest.java",
+  "methodName" : "testFinal",
+  "sourceCode" : "@Test\r\npublic void testFinal() {\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.setProperty(\"p1\", \"v1\");\r\n    conf.setProperty(\"p2\", \"v2\");\r\n    conf.setProperty(\"p2.final\", \"true\");\r\n    List<String> lines = HadoopConfigurationConverter.asXmlConfigurationLines(conf);\r\n    assertThat(lines, is((List<String>) Lists.newArrayList(\"<configuration>\", \"  <property>\", \"    <name>p1</name>\", \"    <value>v1</value>\", \"  </property>\", \"  <property>\", \"    <name>p2</name>\", \"    <value>v2</value>\", \"    <final>true</final>\", \"  </property>\", \"</configuration>\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\hadoop\\src\\test\\java\\org\\apache\\whirr\\service\\hadoop\\integration\\AbstractHadoopServiceTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void test() throws Exception {\r\n    Configuration conf = controller.getConfiguration();\r\n    JobConf job = new JobConf(conf, HadoopServiceTest.class);\r\n    FileSystem fs = FileSystem.get(conf);\r\n    OutputStream os = fs.create(new Path(\"input\"));\r\n    Writer wr = new OutputStreamWriter(os);\r\n    wr.write(\"b a\\n\");\r\n    wr.close();\r\n    job.setMapperClass(TokenCountMapper.class);\r\n    job.setReducerClass(LongSumReducer.class);\r\n    job.setOutputKeyClass(Text.class);\r\n    job.setOutputValueClass(LongWritable.class);\r\n    FileInputFormat.setInputPaths(job, new Path(\"input\"));\r\n    FileOutputFormat.setOutputPath(job, new Path(\"output\"));\r\n    JobClient.runJob(job);\r\n    FSDataInputStream in = fs.open(new Path(\"output/part-00000\"));\r\n    BufferedReader reader = new BufferedReader(new InputStreamReader(in));\r\n    assertEquals(\"a\\t1\", reader.readLine());\r\n    assertEquals(\"b\\t1\", reader.readLine());\r\n    assertNull(reader.readLine());\r\n    reader.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\hadoop\\src\\test\\java\\org\\apache\\whirr\\service\\hadoop\\integration\\AbstractHadoopServiceTest.java",
+  "methodName" : "testExistsTemporaryFolderAndHiveWarehouse",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void testExistsTemporaryFolderAndHiveWarehouse() throws Exception {\r\n    Configuration conf = controller.getConfiguration();\r\n    FileSystem fs = FileSystem.get(conf);\r\n    assertThat(fs.exists(new Path(\"/tmp\")), is(true));\r\n    assertThat(fs.exists(new Path(\"/user/hive/warehouse\")), is(true));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\hadoop\\src\\test\\java\\org\\apache\\whirr\\service\\hadoop\\integration\\benchmark\\HadoopServiceTeraSortBenchmark.java",
+  "methodName" : "testTeraSort",
+  "sourceCode" : "@Test\r\npublic void testTeraSort() throws Exception {\r\n    int runs = Integer.parseInt(System.getProperty(\"terasortRuns\", \"3\"));\r\n    for (int i = 0; i < runs; i++) {\r\n        LOG.info(\"Starting TeraSort run {} of {}\", i + 1, runs);\r\n        runTeraGen();\r\n        runTeraSort();\r\n        runTeraValidate();\r\n        FileSystem fs = FileSystem.get(controller.getConfiguration());\r\n        FSDataInputStream in = fs.open(new Path(\"report/part-00000\"));\r\n        BufferedReader reader = new BufferedReader(new InputStreamReader(in));\r\n        String line = null;\r\n        StringBuilder problems = new StringBuilder();\r\n        boolean failed = false;\r\n        while ((line = reader.readLine()) != null) {\r\n            problems.append(line).append(\"\\n\");\r\n            failed = true;\r\n        }\r\n        assertFalse(problems.toString(), failed);\r\n        reader.close();\r\n        fs.delete(new Path(\"input\"), true);\r\n        fs.delete(new Path(\"output\"), true);\r\n        fs.delete(new Path(\"report\"), true);\r\n        LOG.info(\"Completed TeraSort run {} of {}\", i + 1, runs);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\hadoop\\src\\test\\java\\org\\apache\\whirr\\service\\hadoop\\integration\\benchmark\\HadoopServiceTestDFSIOBenchmark.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() throws Exception {\r\n    // We use TestDFSIO's Tool interface so we can pass the configuration,\r\n    // but this is only available after Hadoop 0.20.2\r\n    // (https://issues.apache.org/jira/browse/MAPREDUCE-1832)\r\n    // so we use a local copy of TestDFSIO with this patch\r\n    int runs = Integer.parseInt(System.getProperty(\"testDFSIORuns\", \"3\"));\r\n    for (int i = 0; i < runs; i++) {\r\n        LOG.info(\"Starting TestDFSIO run {} of {}\", i + 1, runs);\r\n        TestDFSIO testDFSIO = new TestDFSIO();\r\n        JobConf jobConf = controller.getJobConf();\r\n        jobConf.set(\"test.build.data\", \"/user/root/benchmark/TestDFSIO\");\r\n        testDFSIO.setConf(jobConf);\r\n        testDFSIO.run(\"-write -nrFiles 10 -fileSize 1000\".split(\" \"));\r\n        testDFSIO.run(\"-read -nrFiles 10 -fileSize 1000\".split(\" \"));\r\n        testDFSIO.run(new String[] { \"-clean\" });\r\n        LOG.info(\"Completed TestDFSIO run {} of {}\", i + 1, runs);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\hama\\src\\test\\java\\org\\apache\\whirr\\service\\hama\\integration\\HamaServiceTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void test() throws Exception {\r\n    HamaConfiguration conf = controller.getConfiguration();\r\n    BSPJobClient jobClient = new BSPJobClient(conf);\r\n    ClusterStatus cluster = jobClient.getClusterStatus(true);\r\n    assertNotNull(cluster);\r\n    assertTrue(cluster.getGroomServers() > 0);\r\n    BSPJob bsp = new BSPJob(conf, PiEstimator.class);\r\n    // Set the job name\r\n    bsp.setJobName(\"Pi Estimation Example\");\r\n    bsp.setBspClass(MyEstimator.class);\r\n    bsp.setNumBspTask(cluster.getGroomServers());\r\n    for (String peerName : cluster.getActiveGroomNames().values()) {\r\n        conf.set(masterTask, peerName);\r\n        break;\r\n    }\r\n    if (bsp.waitForCompletion(true)) {\r\n        assertEquals(jobClient.getAllJobs().length, 1);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\hbase\\src\\test\\java\\org\\apache\\whirr\\service\\hbase\\integration\\HBaseServiceTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void test() throws Exception {\r\n    ArrayList<ColumnDescriptor> columns = new ArrayList<ColumnDescriptor>();\r\n    ColumnDescriptor cd = new ColumnDescriptor();\r\n    cd.name = FAMILY1;\r\n    columns.add(cd);\r\n    cd = new ColumnDescriptor();\r\n    cd.name = FAMILY2;\r\n    columns.add(cd);\r\n    Hbase.Client client = controller.getThriftClient();\r\n    client.createTable(TABLE, columns);\r\n    ArrayList<Mutation> mutations = new ArrayList<Mutation>();\r\n    mutations.add(new Mutation(false, COLUMN, VALUE));\r\n    client.mutateRow(TABLE, ROW, mutations);\r\n    int scan1 = client.scannerOpen(TABLE, FIRST, Lists.newArrayList(FAMILY1));\r\n    List<TRowResult> rows = client.scannerGet(scan1);\r\n    assertThat(rows.size(), is(1));\r\n    assertThat(Bytes.toString(rows.get(0).getRow()), is(\"testRow\"));\r\n    assertTrue(\"No more rows\", client.scannerGet(scan1).isEmpty());\r\n    client.scannerClose(scan1);\r\n    int scan2 = client.scannerOpen(TABLE, FIRST, Lists.newArrayList(FAMILY2));\r\n    assertTrue(\"No more rows\", client.scannerGet(scan2).isEmpty());\r\n    client.scannerClose(scan2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\mahout\\src\\test\\java\\org\\apache\\whirr\\service\\mahout\\integration\\MahoutServiceTest.java",
+  "methodName" : "testBinMahout",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void testBinMahout() throws Exception {\r\n    Statement binMahout = Statements.exec(\"source /etc/profile; $MAHOUT_HOME/bin/mahout\");\r\n    Cluster.Instance mahoutInstance = findMahoutInstance();\r\n    Predicate<NodeMetadata> mahoutClientRole = and(alwaysTrue(), withIds(mahoutInstance.getId()));\r\n    Map<? extends NodeMetadata, ExecResponse> responses = controller.runScriptOnNodesMatching(clusterSpec, mahoutClientRole, binMahout);\r\n    LOG.info(\"Responses for Statement: \" + binMahout);\r\n    for (Map.Entry<? extends NodeMetadata, ExecResponse> entry : responses.entrySet()) {\r\n        LOG.info(\"Node[\" + entry.getKey().getId() + \"]: \" + entry.getValue());\r\n    }\r\n    assertResponsesContain(responses, binMahout, \"Running on hadoop\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\functions\\InstallAllModulesStatementFromPropertiesTest.java",
+  "methodName" : "testWhenMultiple",
+  "sourceCode" : "@Test\r\npublic void testWhenMultiple() {\r\n    assertEquals(\"git clone git://github.com/puppetlabs/puppetlabs-nginx.git /etc/puppet/modules/nginx\\n\" + \"git clone git://github.com/puppetlabs/puppetlabs-http.git /etc/puppet/modules/http\\n\", getStatement.apply(ImmutableMap.of(\"puppet.nginx.module\", \"git://github.com/puppetlabs/puppetlabs-nginx.git\", \"puppet.http.module\", \"git://github.com/puppetlabs/puppetlabs-http.git\")).render(OsFamily.UNIX));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\functions\\KeyToModuleNameOrNullTest.java",
+  "methodName" : "testSimple",
+  "sourceCode" : "@Test\r\npublic void testSimple() {\r\n    assertEquals(\"nginx\", KeyToModuleNameOrNull.INSTANCE.apply(\"puppet.nginx.module\"));\r\n    assertEquals(null, KeyToModuleNameOrNull.INSTANCE.apply(\"puppet.nginx.module.branch\"));\r\n    assertEquals(null, KeyToModuleNameOrNull.INSTANCE.apply(\"nginx.server\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\functions\\ModulePropertiesFromConfigurationTest.java",
+  "methodName" : "testWhenMatches",
+  "sourceCode" : "@Test\r\npublic void testWhenMatches() {\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.setProperty(\"puppet.nginx.module\", \"git://github.com/puppetlabs/puppetlabs-nginx.git\");\r\n    conf.setProperty(\"puppet.nginx.module.branch\", \"notmaster\");\r\n    conf.setProperty(\"puppet.foox.module\", null);\r\n    conf.setProperty(\"puppet.module\", \"foo\");\r\n    assertEquals(ImmutableMap.of(\"puppet.nginx.module.branch\", \"notmaster\", \"puppet.nginx.module\", \"git://github.com/puppetlabs/puppetlabs-nginx.git\"), ModulePropertiesFromConfiguration.INSTANCE.apply(conf));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\functions\\RolesManagedByPuppetTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() {\r\n    assertEquals(ImmutableSet.of(\"http\").toString(), RolesManagedByPuppet.INSTANCE.apply(ImmutableSet.of(\"hadoop\", \"puppet:http\")).toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\functions\\StatementToInstallModuleTest.java",
+  "methodName" : "testWhenRemote",
+  "sourceCode" : "@Test\r\npublic void testWhenRemote() {\r\n    assertEquals(\"install_tarball remote://path/to/tgz /etc/puppet/modules/nginx || return 1\\n\", getStatement.apply(ImmutableMap.of(\"puppet.nginx.module\", \"remote://path/to/tgz\")).render(OsFamily.UNIX));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\functions\\StatementToInstallModuleTest.java",
+  "methodName" : "testWhenFile",
+  "sourceCode" : "@Test\r\npublic void testWhenFile() {\r\n    assertEquals(\"install_tarball file://path/to/tgz /etc/puppet/modules/nginx || return 1\\n\", getStatement.apply(ImmutableMap.of(\"puppet.nginx.module\", \"file://path/to/tgz\")).render(OsFamily.UNIX));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\functions\\StatementToInstallModuleTest.java",
+  "methodName" : "testWhenGit",
+  "sourceCode" : "@Test\r\npublic void testWhenGit() {\r\n    assertEquals(\"git clone git://github.com/puppetlabs/puppetlabs-nginx.git /etc/puppet/modules/nginx\\n\", getStatement.apply(ImmutableMap.of(\"puppet.nginx.module\", \"git://github.com/puppetlabs/puppetlabs-nginx.git\")).render(OsFamily.UNIX));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\functions\\StatementToInstallModuleTest.java",
+  "methodName" : "testWhenGitAndBranch",
+  "sourceCode" : "@Test\r\npublic void testWhenGitAndBranch() {\r\n    assertEquals(\"git clone -b notmaster git://github.com/puppetlabs/puppetlabs-nginx.git /etc/puppet/modules/nginx\\n\", getStatement.apply(ImmutableMap.of(\"puppet.nginx.module.branch\", \"notmaster\", \"puppet.nginx.module\", \"git://github.com/puppetlabs/puppetlabs-nginx.git\")).render(OsFamily.UNIX));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\integration\\PuppetServiceTest.java",
+  "methodName" : "testHttpAvailable",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void testHttpAvailable() throws Exception {\r\n    // check that the http server started\r\n    for (Instance instance : cluster.getInstances()) {\r\n        // first, check the socket\r\n        IPSocket socket = new IPSocket(instance.getPublicAddress().getHostAddress(), 80);\r\n        assert socketTester.apply(socket) : instance;\r\n        // then, try a GET\r\n        URI httpUrl = URI.create(\"http://\" + instance.getPublicAddress().getHostAddress());\r\n        Strings2.toStringAndClose(httpUrl.toURL().openStream());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\ManifestTest.java",
+  "methodName" : "testPuppetConversion",
+  "sourceCode" : "// private static final String PUPPET_COMMAND =\r\n// \"echo 'class { 'ntp::client':\\n  servers => [\\\"10.0.0.1\\\"],\\n}' >> /tmp/test.pp\\nsudo -i puppet apply /tmp/test.pp\\n\";\r\n@Test\r\npublic void testPuppetConversion() {\r\n    Manifest nginx = new Manifest(\"nginx\", null);\r\n    assertEquals(\"Puppet representation is incorrect.\", NGINX_PUPPET, nginx.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\ManifestTest.java",
+  "methodName" : "testPuppetConversionWithSpecificClass",
+  "sourceCode" : "@Test\r\npublic void testPuppetConversionWithSpecificClass() {\r\n    Manifest postgresql = new Manifest(\"postgresql\", \"server\");\r\n    assertEquals(\"PUPPET representation is incorrect.\", POSTGRES_PUPPET, postgresql.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\ManifestTest.java",
+  "methodName" : "testPuppetConversionWithAttribs",
+  "sourceCode" : "@Test\r\npublic void testPuppetConversionWithAttribs() {\r\n    Manifest ntp = new Manifest(\"ntp\");\r\n    ntp.attribs.put(\"servers\", \"\\\"10.0.0.1\\\"\");\r\n    assertEquals(\"Puppet representation is incorrect.\", NTP_PUPPET, ntp.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\predicates\\PuppetPredicatesTest.java",
+  "methodName" : "testFirst",
+  "sourceCode" : "@Test\r\npublic void testFirst() {\r\n    assert PuppetPredicates.isFirstPuppetRoleIn(ImmutableSet.of(\"puppet:foo\", \"bar\", \"puppet:bird\")).apply(\"foo\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\predicates\\PuppetPredicatesTest.java",
+  "methodName" : "testLast",
+  "sourceCode" : "@Test\r\npublic void testLast() {\r\n    assert PuppetPredicates.isLastPuppetRoleIn(ImmutableSet.of(\"puppet:foo\", \"bar\", \"puppet:bird\")).apply(\"bird\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\predicates\\PuppetPredicatesTest.java",
+  "methodName" : "testIsRole",
+  "sourceCode" : "@Test\r\npublic void testIsRole() {\r\n    assert !PuppetPredicates.isPuppetRole().apply(\"bar\");\r\n    assert PuppetPredicates.isPuppetRole().apply(\"puppet:foo\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\PuppetClusterActionHandlerFactoryTest.java",
+  "methodName" : "testPuppetFactoryIsRegisteredAndWorksWithModules",
+  "sourceCode" : "@Test\r\npublic void testPuppetFactoryIsRegisteredAndWorksWithModules() {\r\n    assertEquals(new HandlerMapFactory().create().get(\"puppet:nginx\"), new PuppetClusterActionHandler(\"nginx\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\PuppetClusterActionHandlerFactoryTest.java",
+  "methodName" : "testPuppetFactoryIsRegisteredAndWorksWithManifests",
+  "sourceCode" : "@Test\r\npublic void testPuppetFactoryIsRegisteredAndWorksWithManifests() {\r\n    assertEquals(new HandlerMapFactory().create().get(\"puppet:postgresql::server\"), new PuppetClusterActionHandler(\"postgresql::server\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\statements\\CreateSitePpAndApplyRolesTest.java",
+  "methodName" : "testWithAttribs",
+  "sourceCode" : "@Test\r\npublic void testWithAttribs() throws IOException {\r\n    Configuration conf = new PropertiesConfiguration();\r\n    conf.setProperty(\"puppet.nginx.module\", \"git://github.com/puppetlabs/puppetlabs-nginx.git\");\r\n    conf.setProperty(\"nginx.server.hostname\", \"foohost\");\r\n    CreateSitePpAndApplyRoles nginx = new CreateSitePpAndApplyRoles(ImmutableSet.of(\"nginx::server\"), conf);\r\n    assertEquals(CharStreams.toString(Resources.newReaderSupplier(Resources.getResource(\"nginx-with-attribs.txt\"), Charsets.UTF_8)), nginx.render(OsFamily.UNIX));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\statements\\InstallModuleFromGitTest.java",
+  "methodName" : "testWhenModuleAndURIValid",
+  "sourceCode" : "@Test\r\npublic void testWhenModuleAndURIValid() {\r\n    InstallModuleFromGit nginx = new InstallModuleFromGit(\"nginx\", URI.create(\"git://github.com/puppetlabs/puppetlabs-nginx.git\"));\r\n    assertEquals(\"git clone git://github.com/puppetlabs/puppetlabs-nginx.git /etc/puppet/modules/nginx\\n\", nginx.render(OsFamily.UNIX));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\puppet\\src\\test\\java\\org\\apache\\whirr\\service\\puppet\\statements\\InstallModuleFromGitTest.java",
+  "methodName" : "testWhenModuleAndURIAndBranchValid",
+  "sourceCode" : "@Test\r\npublic void testWhenModuleAndURIAndBranchValid() {\r\n    InstallModuleFromGit nginx = new InstallModuleFromGit(\"nginx\", URI.create(\"git://github.com/puppetlabs/puppetlabs-nginx.git\"), \"WHIRR-385\");\r\n    assertEquals(\"git clone -b WHIRR-385 git://github.com/puppetlabs/puppetlabs-nginx.git /etc/puppet/modules/nginx\\n\", nginx.render(OsFamily.UNIX));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\voldemort\\src\\test\\java\\org\\apache\\whirr\\service\\voldemort\\integration\\VoldemortServiceTest.java",
+  "methodName" : "testInstances",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void testInstances() throws Exception {\r\n    Set<Instance> instances = cluster.getInstances();\r\n    String url = \"tcp://\" + instances.iterator().next().getPublicAddress().getHostAddress() + \":\" + ADMIN_PORT;\r\n    AdminClient client = new AdminClient(url, new AdminClientConfig());\r\n    voldemort.cluster.Cluster c = client.getAdminClientCluster();\r\n    List<String> voldemortBasedHosts = new ArrayList<String>();\r\n    for (Node node : c.getNodes()) voldemortBasedHosts.add(node.getHost());\r\n    List<String> whirrBasedHosts = new ArrayList<String>();\r\n    for (Instance instance : instances) whirrBasedHosts.add(instance.getPrivateAddress().getHostAddress());\r\n    Collections.sort(voldemortBasedHosts);\r\n    Collections.sort(whirrBasedHosts);\r\n    Assert.assertEquals(whirrBasedHosts, voldemortBasedHosts);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Whirr\\services\\zookeeper\\src\\test\\java\\org\\apache\\whirr\\service\\zookeeper\\integration\\ZooKeeperServiceTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test(timeout = TestConstants.ITEST_TIMEOUT)\r\npublic void test() throws Exception {\r\n    class ConnectionWatcher implements Watcher {\r\n\r\n        private ZooKeeper zk;\r\n\r\n        private CountDownLatch latch = new CountDownLatch(1);\r\n\r\n        public void connect(String hosts) throws IOException, InterruptedException {\r\n            zk = new ZooKeeper(hosts, 5000, this);\r\n            latch.await();\r\n        }\r\n\r\n        public ZooKeeper getZooKeeper() {\r\n            return zk;\r\n        }\r\n\r\n        @Override\r\n        public void process(WatchedEvent event) {\r\n            if (event.getState() == KeeperState.SyncConnected) {\r\n                latch.countDown();\r\n            }\r\n        }\r\n\r\n        public void close() throws InterruptedException {\r\n            if (zk != null) {\r\n                zk.close();\r\n            }\r\n        }\r\n    }\r\n    String path = \"/data\";\r\n    String data = \"Hello\";\r\n    ConnectionWatcher watcher = new ConnectionWatcher();\r\n    watcher.connect(hosts);\r\n    watcher.getZooKeeper().create(path, data.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);\r\n    watcher.close();\r\n    watcher = new ConnectionWatcher();\r\n    watcher.connect(hosts);\r\n    byte[] actualData = watcher.getZooKeeper().getData(path, false, null);\r\n    assertEquals(data, new String(actualData));\r\n    watcher.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

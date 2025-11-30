@@ -1,0 +1,829 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleMatrix.java",
+  "methodName" : "testDoubleFunction",
+  "sourceCode" : "@Test\r\npublic void testDoubleFunction() {\r\n    double[][] values = new double[][] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };\r\n    double[][] result = new double[][] { { 2, 3, 4 }, { 5, 6, 7 }, { 8, 9, 10 } };\r\n    DenseDoubleMatrix mat = new DenseDoubleMatrix(values);\r\n    mat.applyToElements(new DoubleFunction() {\r\n\r\n        @Override\r\n        public double apply(double value) {\r\n            return value + 1;\r\n        }\r\n\r\n        @Override\r\n        public double applyDerivative(double value) {\r\n            throw new UnsupportedOperationException();\r\n        }\r\n    });\r\n    double[][] actual = mat.getValues();\r\n    for (int i = 0; i < actual.length; ++i) {\r\n        assertArrayEquals(result[i], actual[i], 0.0001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleMatrix.java",
+  "methodName" : "testDoubleDoubleFunction",
+  "sourceCode" : "@Test\r\npublic void testDoubleDoubleFunction() {\r\n    double[][] values1 = new double[][] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };\r\n    double[][] values2 = new double[][] { { 2, 3, 4 }, { 5, 6, 7 }, { 8, 9, 10 } };\r\n    double[][] result = new double[][] { { 3, 5, 7 }, { 9, 11, 13 }, { 15, 17, 19 } };\r\n    DenseDoubleMatrix mat1 = new DenseDoubleMatrix(values1);\r\n    DenseDoubleMatrix mat2 = new DenseDoubleMatrix(values2);\r\n    mat1.applyToElements(mat2, new DoubleDoubleFunction() {\r\n\r\n        @Override\r\n        public double apply(double x1, double x2) {\r\n            return x1 + x2;\r\n        }\r\n\r\n        @Override\r\n        public double applyDerivative(double x1, double x2) {\r\n            throw new UnsupportedOperationException();\r\n        }\r\n    });\r\n    double[][] actual = mat1.getValues();\r\n    for (int i = 0; i < actual.length; ++i) {\r\n        assertArrayEquals(result[i], actual[i], 0.0001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleMatrix.java",
+  "methodName" : "testMultiplyNormal",
+  "sourceCode" : "@Test\r\npublic void testMultiplyNormal() {\r\n    double[][] mat1 = new double[][] { { 1, 2, 3 }, { 4, 5, 6 } };\r\n    double[][] mat2 = new double[][] { { 6, 5 }, { 4, 3 }, { 2, 1 } };\r\n    double[][] expMat = new double[][] { { 20, 14 }, { 56, 41 } };\r\n    DoubleMatrix matrix1 = new DenseDoubleMatrix(mat1);\r\n    DoubleMatrix matrix2 = new DenseDoubleMatrix(mat2);\r\n    DoubleMatrix actMatrix = matrix1.multiply(matrix2);\r\n    for (int r = 0; r < actMatrix.getRowCount(); ++r) {\r\n        assertArrayEquals(expMat[r], actMatrix.getRowVector(r).toArray(), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleMatrix.java",
+  "methodName" : "testMultiplyAbnormal",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testMultiplyAbnormal() {\r\n    double[][] mat1 = new double[][] { { 1, 2, 3 }, { 4, 5, 6 } };\r\n    double[][] mat2 = new double[][] { { 6, 5 }, { 4, 3 } };\r\n    DoubleMatrix matrix1 = new DenseDoubleMatrix(mat1);\r\n    DoubleMatrix matrix2 = new DenseDoubleMatrix(mat2);\r\n    matrix1.multiply(matrix2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleMatrix.java",
+  "methodName" : "testMultiplyElementWiseNormal",
+  "sourceCode" : "@Test\r\npublic void testMultiplyElementWiseNormal() {\r\n    double[][] mat1 = new double[][] { { 1, 2, 3 }, { 4, 5, 6 } };\r\n    double[][] mat2 = new double[][] { { 6, 5, 4 }, { 3, 2, 1 } };\r\n    double[][] expMat = new double[][] { { 6, 10, 12 }, { 12, 10, 6 } };\r\n    DoubleMatrix matrix1 = new DenseDoubleMatrix(mat1);\r\n    DoubleMatrix matrix2 = new DenseDoubleMatrix(mat2);\r\n    DoubleMatrix actMatrix = matrix1.multiplyElementWise(matrix2);\r\n    for (int r = 0; r < actMatrix.getRowCount(); ++r) {\r\n        assertArrayEquals(expMat[r], actMatrix.getRowVector(r).toArray(), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleMatrix.java",
+  "methodName" : "testMultiplyElementWiseAbnormal",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testMultiplyElementWiseAbnormal() {\r\n    double[][] mat1 = new double[][] { { 1, 2, 3 }, { 4, 5, 6 } };\r\n    double[][] mat2 = new double[][] { { 6, 5 }, { 4, 3 } };\r\n    DoubleMatrix matrix1 = new DenseDoubleMatrix(mat1);\r\n    DoubleMatrix matrix2 = new DenseDoubleMatrix(mat2);\r\n    matrix1.multiplyElementWise(matrix2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleMatrix.java",
+  "methodName" : "testMultiplyVectorNormal",
+  "sourceCode" : "@Test\r\npublic void testMultiplyVectorNormal() {\r\n    double[][] mat1 = new double[][] { { 1, 2, 3 }, { 4, 5, 6 } };\r\n    double[] mat2 = new double[] { 6, 5, 4 };\r\n    double[] expVec = new double[] { 28, 73 };\r\n    DoubleMatrix matrix1 = new DenseDoubleMatrix(mat1);\r\n    DoubleVector vector2 = new DenseDoubleVector(mat2);\r\n    DoubleVector actVec = matrix1.multiplyVector(vector2);\r\n    assertArrayEquals(expVec, actVec.toArray(), 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleMatrix.java",
+  "methodName" : "testMultiplyVectorAbnormal",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testMultiplyVectorAbnormal() {\r\n    double[][] mat1 = new double[][] { { 1, 2, 3 }, { 4, 5, 6 } };\r\n    double[] vec2 = new double[] { 6, 5 };\r\n    DoubleMatrix matrix1 = new DenseDoubleMatrix(mat1);\r\n    DoubleVector vector2 = new DenseDoubleVector(vec2);\r\n    matrix1.multiplyVector(vector2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleMatrix.java",
+  "methodName" : "testSubtractNormal",
+  "sourceCode" : "@Test\r\npublic void testSubtractNormal() {\r\n    double[][] mat1 = new double[][] { { 1, 2, 3 }, { 4, 5, 6 } };\r\n    double[][] mat2 = new double[][] { { 6, 5, 4 }, { 3, 2, 1 } };\r\n    double[][] expMat = new double[][] { { -5, -3, -1 }, { 1, 3, 5 } };\r\n    DoubleMatrix matrix1 = new DenseDoubleMatrix(mat1);\r\n    DoubleMatrix matrix2 = new DenseDoubleMatrix(mat2);\r\n    DoubleMatrix actMatrix = matrix1.subtract(matrix2);\r\n    for (int r = 0; r < actMatrix.getRowCount(); ++r) {\r\n        assertArrayEquals(expMat[r], actMatrix.getRowVector(r).toArray(), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleMatrix.java",
+  "methodName" : "testSubtractAbnormal",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testSubtractAbnormal() {\r\n    double[][] mat1 = new double[][] { { 1, 2, 3 }, { 4, 5, 6 } };\r\n    double[][] mat2 = new double[][] { { 6, 5 }, { 4, 3 } };\r\n    DoubleMatrix matrix1 = new DenseDoubleMatrix(mat1);\r\n    DoubleMatrix matrix2 = new DenseDoubleMatrix(mat2);\r\n    matrix1.subtract(matrix2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleMatrix.java",
+  "methodName" : "testDivideVectorNormal",
+  "sourceCode" : "@Test\r\npublic void testDivideVectorNormal() {\r\n    double[][] mat1 = new double[][] { { 1, 2, 3 }, { 4, 5, 6 } };\r\n    double[] mat2 = new double[] { 6, 5, 4 };\r\n    double[][] expVec = new double[][] { { 1.0 / 6, 2.0 / 5, 3.0 / 4 }, { 4.0 / 6, 5.0 / 5, 6.0 / 4 } };\r\n    DoubleMatrix matrix1 = new DenseDoubleMatrix(mat1);\r\n    DoubleVector vector2 = new DenseDoubleVector(mat2);\r\n    DoubleMatrix expMat = new DenseDoubleMatrix(expVec);\r\n    DoubleMatrix actMat = matrix1.divide(vector2);\r\n    for (int r = 0; r < actMat.getRowCount(); ++r) {\r\n        assertArrayEquals(expMat.getRowVector(r).toArray(), actMat.getRowVector(r).toArray(), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleMatrix.java",
+  "methodName" : "testDivideVectorAbnormal",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testDivideVectorAbnormal() {\r\n    double[][] mat1 = new double[][] { { 1, 2, 3 }, { 4, 5, 6 } };\r\n    double[] vec2 = new double[] { 6, 5 };\r\n    DoubleMatrix matrix1 = new DenseDoubleMatrix(mat1);\r\n    DoubleVector vector2 = new DenseDoubleVector(vec2);\r\n    matrix1.divide(vector2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleMatrix.java",
+  "methodName" : "testDivideNormal",
+  "sourceCode" : "@Test\r\npublic void testDivideNormal() {\r\n    double[][] mat1 = new double[][] { { 1, 2, 3 }, { 4, 5, 6 } };\r\n    double[][] mat2 = new double[][] { { 6, 5, 4 }, { 3, 2, 1 } };\r\n    double[][] expMat = new double[][] { { 1.0 / 6, 2.0 / 5, 3.0 / 4 }, { 4.0 / 3, 5.0 / 2, 6.0 / 1 } };\r\n    DoubleMatrix matrix1 = new DenseDoubleMatrix(mat1);\r\n    DoubleMatrix matrix2 = new DenseDoubleMatrix(mat2);\r\n    DoubleMatrix actMatrix = matrix1.divide(matrix2);\r\n    for (int r = 0; r < actMatrix.getRowCount(); ++r) {\r\n        assertArrayEquals(expMat[r], actMatrix.getRowVector(r).toArray(), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleMatrix.java",
+  "methodName" : "testDivideAbnormal",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testDivideAbnormal() {\r\n    double[][] mat1 = new double[][] { { 1, 2, 3 }, { 4, 5, 6 } };\r\n    double[][] mat2 = new double[][] { { 6, 5 }, { 4, 3 } };\r\n    DoubleMatrix matrix1 = new DenseDoubleMatrix(mat1);\r\n    DoubleMatrix matrix2 = new DenseDoubleMatrix(mat2);\r\n    matrix1.divide(matrix2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testAddNormal",
+  "sourceCode" : "@Test\r\npublic void testAddNormal() {\r\n    double[] arr1 = new double[] { 1, 2, 3 };\r\n    double[] arr2 = new double[] { 4, 5, 6 };\r\n    DoubleVector vec1 = new DenseDoubleVector(arr1);\r\n    DoubleVector vec2 = new DenseDoubleVector(arr2);\r\n    double[] arrExp = new double[] { 5, 7, 9 };\r\n    assertArrayEquals(arrExp, vec1.add(vec2).toArray(), 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testAddAbnormal",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testAddAbnormal() {\r\n    double[] arr1 = new double[] { 1, 2, 3 };\r\n    double[] arr2 = new double[] { 4, 5 };\r\n    DoubleVector vec1 = new DenseDoubleVector(arr1);\r\n    DoubleVector vec2 = new DenseDoubleVector(arr2);\r\n    vec1.add(vec2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testSubtractNormal",
+  "sourceCode" : "@Test\r\npublic void testSubtractNormal() {\r\n    double[] arr1 = new double[] { 1, 2, 3 };\r\n    double[] arr2 = new double[] { 4, 5, 6 };\r\n    DoubleVector vec1 = new DenseDoubleVector(arr1);\r\n    DoubleVector vec2 = new DenseDoubleVector(arr2);\r\n    double[] arrExp = new double[] { -3, -3, -3 };\r\n    assertArrayEquals(arrExp, vec1.subtract(vec2).toArray(), 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testSubtractAbnormal",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testSubtractAbnormal() {\r\n    double[] arr1 = new double[] { 1, 2, 3 };\r\n    double[] arr2 = new double[] { 4, 5 };\r\n    DoubleVector vec1 = new DenseDoubleVector(arr1);\r\n    DoubleVector vec2 = new DenseDoubleVector(arr2);\r\n    vec1.subtract(vec2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testMultiplyNormal",
+  "sourceCode" : "@Test\r\npublic void testMultiplyNormal() {\r\n    double[] arr1 = new double[] { 1, 2, 3 };\r\n    double[] arr2 = new double[] { 4, 5, 6 };\r\n    DoubleVector vec1 = new DenseDoubleVector(arr1);\r\n    DoubleVector vec2 = new DenseDoubleVector(arr2);\r\n    double[] arrExp = new double[] { 4, 10, 18 };\r\n    assertArrayEquals(arrExp, vec1.multiply(vec2).toArray(), 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testMultiplyAbnormal",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testMultiplyAbnormal() {\r\n    double[] arr1 = new double[] { 1, 2, 3 };\r\n    double[] arr2 = new double[] { 4, 5 };\r\n    DoubleVector vec1 = new DenseDoubleVector(arr1);\r\n    DoubleVector vec2 = new DenseDoubleVector(arr2);\r\n    vec1.multiply(vec2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testDotNormal",
+  "sourceCode" : "@Test\r\npublic void testDotNormal() {\r\n    double[] arr1 = new double[] { 1, 2, 3 };\r\n    double[] arr2 = new double[] { 4, 5, 6 };\r\n    DoubleVector vec1 = new DenseDoubleVector(arr1);\r\n    DoubleVector vec2 = new DenseDoubleVector(arr2);\r\n    assertEquals(32.0, vec1.dot(vec2), 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testDotAbnormal",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testDotAbnormal() {\r\n    double[] arr1 = new double[] { 1, 2, 3 };\r\n    double[] arr2 = new double[] { 4, 5 };\r\n    DoubleVector vec1 = new DenseDoubleVector(arr1);\r\n    DoubleVector vec2 = new DenseDoubleVector(arr2);\r\n    vec1.add(vec2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testSliceNormal",
+  "sourceCode" : "@Test\r\npublic void testSliceNormal() {\r\n    double[] arr1 = new double[] { 2, 3, 4, 5, 6 };\r\n    double[] arr2 = new double[] { 4, 5, 6 };\r\n    double[] arr3 = new double[] { 2, 3, 4 };\r\n    DoubleVector vec1 = new DenseDoubleVector(arr1);\r\n    assertArrayEquals(arr2, vec1.slice(2, 4).toArray(), 0.000001);\r\n    DoubleVector vec2 = new DenseDoubleVector(arr1);\r\n    assertArrayEquals(arr3, vec2.slice(3).toArray(), 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testSliceAbnormal",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testSliceAbnormal() {\r\n    double[] arr1 = new double[] { 2, 3, 4, 5, 6 };\r\n    DoubleVector vec = new DenseDoubleVector(arr1);\r\n    vec.slice(2, 5);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testSliceAbnormalEndTooLarge",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testSliceAbnormalEndTooLarge() {\r\n    double[] arr1 = new double[] { 2, 3, 4, 5, 6 };\r\n    DoubleVector vec = new DenseDoubleVector(arr1);\r\n    vec.slice(2, 5);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testSliceAbnormalStartLargerThanEnd",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testSliceAbnormalStartLargerThanEnd() {\r\n    double[] arr1 = new double[] { 2, 3, 4, 5, 6 };\r\n    DoubleVector vec = new DenseDoubleVector(arr1);\r\n    vec.slice(4, 3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testVectorMultiplyMatrix",
+  "sourceCode" : "@Test\r\npublic void testVectorMultiplyMatrix() {\r\n    DoubleVector vec = new DenseDoubleVector(new double[] { 1, 2, 3 });\r\n    DoubleMatrix mat = new DenseDoubleMatrix(new double[][] { { 1, 2, 3, 4 }, { 5, 6, 7, 8 }, { 9, 10, 11, 12 } });\r\n    double[] expectedRes = new double[] { 38, 44, 50, 56 };\r\n    assertArrayEquals(expectedRes, vec.multiply(mat).toArray(), 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testVectorMultiplyMatrixAbnormal",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testVectorMultiplyMatrixAbnormal() {\r\n    DoubleVector vec = new DenseDoubleVector(new double[] { 1, 2, 3 });\r\n    DoubleMatrix mat = new DenseDoubleMatrix(new double[][] { { 1, 2, 3, 4 }, { 5, 6, 7, 8 }, { 9, 10, 11, 12 }, { 13, 14, 15, 16 } });\r\n    vec.multiply(mat);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testIterator",
+  "sourceCode" : "@Test(timeout = 100)\r\npublic void testIterator() {\r\n    double[] expectedRes = new double[] { 38, 44, 50, 56, 0, 0, 3, 0, 0, 0 };\r\n    DoubleVector vec = new DenseDoubleVector(expectedRes);\r\n    Iterator<DoubleVectorElement> itr = vec.iterate();\r\n    int curIdx = 0;\r\n    while (itr.hasNext()) {\r\n        DoubleVectorElement elem = itr.next();\r\n        assertEquals(curIdx, elem.getIndex());\r\n        assertEquals(expectedRes[curIdx++], elem.getValue(), 0.000001);\r\n    }\r\n    Iterator<DoubleVectorElement> itrNonZero = vec.iterateNonDefault();\r\n    curIdx = 0;\r\n    while (itrNonZero.hasNext()) {\r\n        while (expectedRes[curIdx] == 0.0) {\r\n            ++curIdx;\r\n        }\r\n        assertEquals(expectedRes[curIdx++], itrNonZero.next().getValue(), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testApply",
+  "sourceCode" : "@Test\r\npublic void testApply() {\r\n    double[] vals = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    DoubleVector vec = new DenseDoubleVector(vals);\r\n    DoubleVector timesTwoVec = vec.applyToElements(new DoubleFunction() {\r\n\r\n        @Override\r\n        public double apply(double value) {\r\n            return value * 3;\r\n        }\r\n\r\n        @Override\r\n        public double applyDerivative(double value) {\r\n            return 0;\r\n        }\r\n    });\r\n    DoubleVector timesVec = timesTwoVec.applyToElements(vec, new DoubleDoubleFunction() {\r\n\r\n        @Override\r\n        public double apply(double x1, double x2) {\r\n            return x1 * x2;\r\n        }\r\n\r\n        @Override\r\n        public double applyDerivative(double x1, double x2) {\r\n            return 0;\r\n        }\r\n    });\r\n    for (int i = 0; i < vals.length; ++i) {\r\n        assertEquals(vals[i] * 3, timesTwoVec.get(i), 0.000001);\r\n        assertEquals(vals[i] * timesTwoVec.get(i), timesVec.get(i), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testAdd",
+  "sourceCode" : "@Test\r\npublic void testAdd() {\r\n    double[] vals1 = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    double[] vals2 = { 8, 7, 6, 5, 4, 3, 2, 1 };\r\n    DoubleVector vec1 = new DenseDoubleVector(vals1);\r\n    DoubleVector vec2 = new DenseDoubleVector(vals2);\r\n    DoubleVector vec3 = vec1.addUnsafe(vec2);\r\n    for (int i = 0; i < vals1.length; ++i) {\r\n        assertEquals(vec3.get(i), vec1.get(i) + vec2.get(i), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testAddWithException",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testAddWithException() {\r\n    double[] vals1 = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    double[] vals2 = { 8, 7, 6, 5, 4, 3, 2, 1, 0 };\r\n    DoubleVector vec1 = new DenseDoubleVector(vals1);\r\n    DoubleVector vec2 = new DenseDoubleVector(vals2);\r\n    vec1.add(vec2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testSubtract",
+  "sourceCode" : "@Test\r\npublic void testSubtract() {\r\n    double[] vals1 = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    double[] vals2 = { 8, 7, 6, 5, 4, 3, 2, 1 };\r\n    DoubleVector vec1 = new DenseDoubleVector(vals1);\r\n    DoubleVector vec2 = new DenseDoubleVector(vals2);\r\n    DoubleVector vec3 = vec1.subtractUnsafe(vec2);\r\n    for (int i = 0; i < vals1.length; ++i) {\r\n        assertEquals(vec3.get(i), vec1.get(i) - vec2.get(i), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testSubtractWithException",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testSubtractWithException() {\r\n    double[] vals1 = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    double[] vals2 = { 8, 7, 6, 5, 4, 3, 2, 1, 0 };\r\n    DoubleVector vec1 = new DenseDoubleVector(vals1);\r\n    DoubleVector vec2 = new DenseDoubleVector(vals2);\r\n    vec1.subtract(vec2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testSubtractFrom",
+  "sourceCode" : "@Test\r\npublic void testSubtractFrom() {\r\n    double[] vals1 = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    DoubleVector vec1 = new DenseDoubleVector(vals1);\r\n    double constant = 10;\r\n    DoubleVector vec3 = vec1.subtractFrom(constant);\r\n    for (int i = 0; i < vals1.length; ++i) {\r\n        assertEquals(constant - vec1.get(i), vec3.get(i), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testMultiply",
+  "sourceCode" : "@Test\r\npublic void testMultiply() {\r\n    double[] vals1 = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    double[] vals2 = { 8, 7, 6, 5, 4, 3, 2, 1 };\r\n    DoubleVector vec1 = new DenseDoubleVector(vals1);\r\n    DoubleVector vec2 = new DenseDoubleVector(vals2);\r\n    DoubleVector vec3 = vec1.multiplyUnsafe(vec2);\r\n    for (int i = 0; i < vals1.length; ++i) {\r\n        assertEquals(vec3.get(i), vec1.get(i) * vec2.get(i), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testMultiplyWithException",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testMultiplyWithException() {\r\n    double[] vals1 = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    double[] vals2 = { 8, 7, 6, 5, 4, 3, 2, 1, 0 };\r\n    DoubleVector vec1 = new DenseDoubleVector(vals1);\r\n    DoubleVector vec2 = new DenseDoubleVector(vals2);\r\n    vec1.multiply(vec2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testDivide",
+  "sourceCode" : "@Test\r\npublic void testDivide() {\r\n    double[] vals1 = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    DoubleVector vec1 = new DenseDoubleVector(vals1);\r\n    double constant = 10;\r\n    DoubleVector vec3 = vec1.divide(constant);\r\n    for (int i = 0; i < vals1.length; ++i) {\r\n        assertEquals(vec1.get(i) / constant, vec3.get(i), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testPow",
+  "sourceCode" : "@Test\r\npublic void testPow() {\r\n    double[] vals1 = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    DoubleVector vec1 = new DenseDoubleVector(vals1);\r\n    int constant = 5;\r\n    DoubleVector vec3 = vec1.pow(constant);\r\n    for (int i = 0; i < vals1.length; ++i) {\r\n        assertEquals(Math.pow(vec1.get(i), 5), vec3.get(i), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testSqrt",
+  "sourceCode" : "@Test\r\npublic void testSqrt() {\r\n    double[] vals1 = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    DoubleVector vec1 = new DenseDoubleVector(vals1);\r\n    DoubleVector vec3 = vec1.sqrt();\r\n    for (int i = 0; i < vals1.length; ++i) {\r\n        assertEquals(Math.sqrt(vec1.get(i)), vec3.get(i), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testSum",
+  "sourceCode" : "@Test\r\npublic void testSum() {\r\n    double[] vals = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    DoubleVector vec = new DenseDoubleVector(vals);\r\n    double expected = 0;\r\n    double res = vec.sum();\r\n    for (int i = 0; i < vals.length; ++i) {\r\n        expected += vec.get(i);\r\n    }\r\n    assertEquals(expected, res, 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testAbs",
+  "sourceCode" : "@Test\r\npublic void testAbs() {\r\n    double[] vals = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    DoubleVector vec = new DenseDoubleVector(vals);\r\n    DoubleVector vec2 = vec.abs();\r\n    for (int i = 0; i < vals.length; ++i) {\r\n        assertEquals(Math.abs(vec.get(i)), vec2.get(i), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testDivideFrom",
+  "sourceCode" : "@Test\r\npublic void testDivideFrom() {\r\n    double[] vals1 = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    DoubleVector vec1 = new DenseDoubleVector(vals1);\r\n    double constant = 10;\r\n    DoubleVector vec3 = vec1.divideFrom(constant);\r\n    for (int i = 0; i < vals1.length; ++i) {\r\n        assertEquals(constant / vec1.get(i), vec3.get(i), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testDot",
+  "sourceCode" : "@Test\r\npublic void testDot() {\r\n    double[] vals1 = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    double[] vals2 = { 8, 7, 6, 5, 4, 3, 2, 1 };\r\n    DoubleVector vec1 = new DenseDoubleVector(vals1);\r\n    DoubleVector vec2 = new DenseDoubleVector(vals2);\r\n    double expected = 0.0;\r\n    double res = vec1.dotUnsafe(vec2);\r\n    for (int i = 0; i < vals1.length; ++i) {\r\n        expected += vec1.get(i) * vec2.get(i);\r\n    }\r\n    assertEquals(expected, res, 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testDotWithException",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testDotWithException() {\r\n    double[] vals1 = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    double[] vals2 = { 8, 7, 6, 5, 4, 3, 2, 1, 0 };\r\n    DoubleVector vec1 = new DenseDoubleVector(vals1);\r\n    DoubleVector vec2 = new DenseDoubleVector(vals2);\r\n    vec1.dot(vec2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testSlice",
+  "sourceCode" : "@Test\r\npublic void testSlice() {\r\n    double[] vals1 = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    double[] vals2 = { 2, 3, 4, 5, 6 };\r\n    DoubleVector vec1 = new DenseDoubleVector(vals1);\r\n    DoubleVector vec2 = new DenseDoubleVector(vals2);\r\n    DoubleVector vec3 = vec1.sliceUnsafe(1, 5);\r\n    assertEquals(vec2, vec3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testSliceWithNegativeIndices",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testSliceWithNegativeIndices() {\r\n    double[] vals = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    DoubleVector vec = new DenseDoubleVector(vals);\r\n    vec.slice(-1, -9);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testSliceWithOutofBounds",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testSliceWithOutofBounds() {\r\n    double[] vals = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    DoubleVector vec = new DenseDoubleVector(vals);\r\n    vec.slice(1, 9);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testSliceWithNegativeLength",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testSliceWithNegativeLength() {\r\n    double[] vals1 = { 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    DoubleVector vec1 = new DenseDoubleVector(vals1);\r\n    vec1.slice(3, 2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testMinMax",
+  "sourceCode" : "@Test\r\npublic void testMinMax() {\r\n    double[] vals = { 11, 2, 3, 4, 15, 6, 7, 8 };\r\n    DoubleVector vec = new DenseDoubleVector(vals);\r\n    assertEquals(15, vec.max(), 0.000001);\r\n    assertEquals(2, vec.min(), 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testMaxIndexMinIndex",
+  "sourceCode" : "@Test\r\npublic void testMaxIndexMinIndex() {\r\n    double[] vals = { 11, 2, 3, 4, 15, 6, 7, 8 };\r\n    DenseDoubleVector vec = new DenseDoubleVector(vals);\r\n    assertEquals(4, vec.maxIndex());\r\n    assertEquals(1, vec.minIndex());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testRint",
+  "sourceCode" : "@Test\r\npublic void testRint() {\r\n    double[] vals = { 11, 2, 3, 4, 15, 6, 7, 8 };\r\n    DenseDoubleVector vec = new DenseDoubleVector(vals);\r\n    DenseDoubleVector vec2 = vec.rint();\r\n    for (int i = 0; i < vec.getDimension(); ++i) {\r\n        assertEquals(Math.rint(vec.get(i)), vec2.get(i), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testRound",
+  "sourceCode" : "@Test\r\npublic void testRound() {\r\n    double[] vals = { 11, 2, 3, 4, 15, 6, 7, 8 };\r\n    DenseDoubleVector vec = new DenseDoubleVector(vals);\r\n    DenseDoubleVector vec2 = vec.round();\r\n    for (int i = 0; i < vec.getDimension(); ++i) {\r\n        assertEquals(Math.round(vec.get(i)), vec2.get(i), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testCeil",
+  "sourceCode" : "@Test\r\npublic void testCeil() {\r\n    double[] vals = { 11, 2, 3, 4, 15, 6, 7, 8 };\r\n    DenseDoubleVector vec = new DenseDoubleVector(vals);\r\n    DenseDoubleVector vec2 = vec.ceil();\r\n    for (int i = 0; i < vec.getDimension(); ++i) {\r\n        assertEquals(Math.ceil(vec.get(i)), vec2.get(i), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testToArray",
+  "sourceCode" : "@Test\r\npublic void testToArray() {\r\n    double[] vals = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };\r\n    DenseDoubleVector vec = new DenseDoubleVector(vals);\r\n    double[] vals2 = vec.toArray();\r\n    assertEquals(vals, vals2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "deepCopy",
+  "sourceCode" : "@Test(expected = AssertionError.class)\r\npublic void deepCopy() {\r\n    double[] vals1 = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };\r\n    double[] vals2 = { 8, 7, 6, 5, 4, 3, 2, 1, 0 };\r\n    DoubleVector vec1 = new DenseDoubleVector(vals1);\r\n    DoubleVector vec2 = new DenseDoubleVector(vals2);\r\n    DoubleVector vec3 = vec1.deepCopy();\r\n    vec1 = vec1.add(vec2);\r\n    assertEquals(vec1, vec3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testOnes",
+  "sourceCode" : "@Test\r\npublic void testOnes() {\r\n    DoubleVector vec = DenseDoubleVector.ones(10);\r\n    for (int i = 0; i < vec.getDimension(); ++i) {\r\n        assertEquals(1, vec.get(i), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testFromUpTo",
+  "sourceCode" : "@Test\r\npublic void testFromUpTo() {\r\n    double from = 11;\r\n    double to = 111.5;\r\n    double stepsize = 2.5;\r\n    DoubleVector vec = DenseDoubleVector.fromUpTo(from, to, stepsize);\r\n    int curIndex = 0;\r\n    double cur = 11;\r\n    while (cur <= to) {\r\n        assertEquals(cur, vec.get(curIndex), 0.000001);\r\n        cur += stepsize;\r\n        ++curIndex;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestDenseDoubleVector.java",
+  "methodName" : "testSort",
+  "sourceCode" : "@Test\r\npublic void testSort() {\r\n    double[] vals = { 12, 32, 31, 11, 52, 13, -1, -222, 2 };\r\n    DoubleVector vec = new DenseDoubleVector(vals);\r\n    Comparator<Double> comparator = new Comparator<Double>() {\r\n\r\n        @Override\r\n        public int compare(Double arg0, Double arg1) {\r\n            return Double.compare(arg0, arg1);\r\n        }\r\n    };\r\n    List<Tuple<Double, Integer>> sorted = DenseDoubleVector.sort(vec, comparator);\r\n    for (int i = 1; i < sorted.size(); ++i) {\r\n        Tuple<Double, Integer> previous = sorted.get(i - 1);\r\n        Tuple<Double, Integer> cur = sorted.get(i);\r\n        assertTrue(previous.getFirst() <= cur.getFirst());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestFunctionFactory.java",
+  "methodName" : "testCreateDoubleFunction",
+  "sourceCode" : "@Test\r\npublic void testCreateDoubleFunction() {\r\n    double input = 0.8;\r\n    String sigmoidName = \"Sigmoid\";\r\n    DoubleFunction sigmoidFunction = FunctionFactory.createDoubleFunction(sigmoidName);\r\n    assertEquals(sigmoidName, sigmoidFunction.getFunctionName());\r\n    double sigmoidExcepted = 0.68997448;\r\n    assertEquals(sigmoidExcepted, sigmoidFunction.apply(input), 0.000001);\r\n    String tanhName = \"Tanh\";\r\n    DoubleFunction tanhFunction = FunctionFactory.createDoubleFunction(tanhName);\r\n    assertEquals(tanhName, tanhFunction.getFunctionName());\r\n    double tanhExpected = 0.66403677;\r\n    assertEquals(tanhExpected, tanhFunction.apply(input), 0.00001);\r\n    String identityFunctionName = \"IdentityFunction\";\r\n    DoubleFunction identityFunction = FunctionFactory.createDoubleFunction(identityFunctionName);\r\n    Random rnd = new Random();\r\n    double identityExpected = rnd.nextDouble();\r\n    assertEquals(identityExpected, identityFunction.apply(identityExpected), 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestFunctionFactory.java",
+  "methodName" : "testCreateDoubleDoubleFunction",
+  "sourceCode" : "@Test\r\npublic void testCreateDoubleDoubleFunction() {\r\n    double target = 0.5;\r\n    double output = 0.8;\r\n    String squaredErrorName = \"SquaredError\";\r\n    DoubleDoubleFunction squaredErrorFunction = FunctionFactory.createDoubleDoubleFunction(squaredErrorName);\r\n    assertEquals(squaredErrorName, squaredErrorFunction.getFunctionName());\r\n    double squaredErrorExpected = 0.045;\r\n    assertEquals(squaredErrorExpected, squaredErrorFunction.apply(target, output), 0.000001);\r\n    String crossEntropyName = \"CrossEntropy\";\r\n    DoubleDoubleFunction crossEntropyFunction = FunctionFactory.createDoubleDoubleFunction(crossEntropyName);\r\n    assertEquals(crossEntropyName, crossEntropyFunction.getFunctionName());\r\n    double crossEntropyExpected = 0.91629;\r\n    assertEquals(crossEntropyExpected, crossEntropyFunction.apply(target, output), 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestSparseDoubleVector.java",
+  "methodName" : "testBasic",
+  "sourceCode" : "@Test\r\npublic void testBasic() {\r\n    DoubleVector v1 = new SparseDoubleVector(10);\r\n    for (int i = 0; i < 10; ++i) {\r\n        assertEquals(v1.get(i), 0.0, 0.000001);\r\n    }\r\n    DoubleVector v2 = new SparseDoubleVector(10, 2.5);\r\n    for (int i = 0; i < 10; ++i) {\r\n        assertEquals(v2.get(i), 2.5, 0.000001);\r\n    }\r\n    assertEquals(v1.getDimension(), 10);\r\n    assertEquals(v2.getLength(), 10);\r\n    v1.set(5, 2);\r\n    assertEquals(v1.get(5), 2, 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestSparseDoubleVector.java",
+  "methodName" : "testIterators",
+  "sourceCode" : "@Test\r\npublic void testIterators() {\r\n    DoubleVector v1 = new SparseDoubleVector(10, 5.5);\r\n    Iterator<DoubleVectorElement> itr1 = v1.iterate();\r\n    int idx1 = 0;\r\n    while (itr1.hasNext()) {\r\n        DoubleVectorElement elem = itr1.next();\r\n        assertEquals(idx1++, elem.getIndex());\r\n        assertEquals(5.5, elem.getValue(), 0.000001);\r\n    }\r\n    v1.set(2, 20);\r\n    v1.set(6, 30);\r\n    Iterator<DoubleVectorElement> itr2 = v1.iterateNonDefault();\r\n    DoubleVectorElement elem = itr2.next();\r\n    assertEquals(2, elem.getIndex());\r\n    assertEquals(20, elem.getValue(), 0.000001);\r\n    elem = itr2.next();\r\n    assertEquals(6, elem.getIndex());\r\n    assertEquals(30, elem.getValue(), 0.000001);\r\n    assertFalse(itr2.hasNext());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestSparseDoubleVector.java",
+  "methodName" : "testApplyToElements",
+  "sourceCode" : "@Test\r\npublic void testApplyToElements() {\r\n    // v1 = {5.5, 5.5, 5.5, 5.5, 5.5, 5.5, 5.5, 5.5, 5.5, 5.5}\r\n    DoubleVector v1 = new SparseDoubleVector(10, 5.5);\r\n    // v2 = {60.6, 60.5, 60.5, 60.5, 60.5, 60.5, 60.5, 60.5, 60.5, 60.5}\r\n    DoubleVector v2 = v1.applyToElements(new DoubleFunction() {\r\n\r\n        @Override\r\n        public double apply(double value) {\r\n            return value * 11;\r\n        }\r\n\r\n        @Override\r\n        public double applyDerivative(double value) {\r\n            return 0;\r\n        }\r\n    });\r\n    // v3 = {4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5}\r\n    DoubleVector v3 = v1.applyToElements(new DoubleFunction() {\r\n\r\n        @Override\r\n        public double apply(double value) {\r\n            return value / 2 + 1.75;\r\n        }\r\n\r\n        @Override\r\n        public double applyDerivative(double value) {\r\n            return 0;\r\n        }\r\n    });\r\n    // v4 = {66, 66, 66, 66, 66, 66, 66, 66, 66, 66}\r\n    DoubleVector v4 = v1.applyToElements(v2, new DoubleDoubleFunction() {\r\n\r\n        @Override\r\n        public double apply(double x1, double x2) {\r\n            return x1 + x2;\r\n        }\r\n\r\n        @Override\r\n        public double applyDerivative(double x1, double x2) {\r\n            return 0;\r\n        }\r\n    });\r\n    for (int i = 0; i < 10; ++i) {\r\n        assertEquals(v1.get(i), 5.5, 0.000001);\r\n        assertEquals(v2.get(i), 60.5, 0.000001);\r\n        assertEquals(v3.get(i), 4.5, 0.000001);\r\n        assertEquals(v4.get(i), 66, 0.000001);\r\n    }\r\n    // v3 = {4.5, 4.5, 4.5, 10, 4.5, 4.5, 10, 4.5, 200, 4.5}\r\n    v3.set(3, 10);\r\n    v3.set(6, 10);\r\n    v3.set(8, 200);\r\n    // v4 = {66, 66, 66, 66, 66, 100, 66, 66, 1, 66}\r\n    v4.set(5, 100);\r\n    v4.set(8, 1);\r\n    // v5 = {615, 615, 615, 560, 615, 955, 560, 615, -1990, 615}\r\n    DoubleVector v5 = v4.applyToElements(v3, new DoubleDoubleFunction() {\r\n\r\n        @Override\r\n        public double apply(double x1, double x2) {\r\n            return (x1 - x2) * 10;\r\n        }\r\n\r\n        @Override\r\n        public double applyDerivative(double x1, double x2) {\r\n            return 0;\r\n        }\r\n    });\r\n    // v6 = {615, 615, 615, 560, 615, 955, 560, 615, -1990, 615}\r\n    DoubleVector v6 = new SparseDoubleVector(10, 615);\r\n    v6.set(3, 560);\r\n    v6.set(5, 955);\r\n    v6.set(6, 560);\r\n    v6.set(8, -1990);\r\n    for (int i = 0; i < v5.getDimension(); ++i) {\r\n        assertEquals(v5.get(i), v6.get(i), 0.000001);\r\n    }\r\n    // v7 = {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}\r\n    DoubleVector v7 = new DenseDoubleVector(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0 });\r\n    DoubleVector v8 = v5.applyToElements(v7, new DoubleDoubleFunction() {\r\n\r\n        @Override\r\n        public double apply(double x1, double x2) {\r\n            return (x1 + x2) * 3.3;\r\n        }\r\n\r\n        @Override\r\n        public double applyDerivative(double x1, double x2) {\r\n            return 0;\r\n        }\r\n    });\r\n    DoubleVector v9 = v6.applyToElements(v7, new DoubleDoubleFunction() {\r\n\r\n        @Override\r\n        public double apply(double x1, double x2) {\r\n            return (x1 + x2) * 3.3;\r\n        }\r\n\r\n        @Override\r\n        public double applyDerivative(double x1, double x2) {\r\n            return 0;\r\n        }\r\n    });\r\n    for (int i = 0; i < v7.getDimension(); ++i) {\r\n        assertEquals(v8.get(i), v9.get(i), 0.000001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestSparseDoubleVector.java",
+  "methodName" : "testAdd",
+  "sourceCode" : "@Test\r\npublic void testAdd() {\r\n    // addition of two sparse vectors\r\n    DoubleVector spVec1 = new SparseDoubleVector(10, 1.5);\r\n    DoubleVector spVec2 = new SparseDoubleVector(10);\r\n    for (int i = 0; i < spVec2.getDimension(); ++i) {\r\n        spVec2.set(i, 1.5);\r\n    }\r\n    DoubleVector expRes1 = new SparseDoubleVector(10, 3.0);\r\n    assertEquals(expRes1, spVec1.add(spVec2));\r\n    // addition of one sparse vector and one dense vector\r\n    DoubleVector dsVec1 = new DenseDoubleVector(10);\r\n    for (int i = 0; i < dsVec1.getDimension(); ++i) {\r\n        dsVec1.set(i, 1.5);\r\n    }\r\n    DoubleVector expRes2 = new DenseDoubleVector(10);\r\n    for (int i = 0; i < expRes2.getDimension(); ++i) {\r\n        expRes2.set(i, 3.0);\r\n    }\r\n    assertEquals(expRes2, dsVec1.add(spVec2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestSparseDoubleVector.java",
+  "methodName" : "testSubtract",
+  "sourceCode" : "@Test\r\npublic void testSubtract() {\r\n    // subtract two sparse vectors\r\n    DoubleVector spVec1 = new SparseDoubleVector(10, 1.5);\r\n    DoubleVector spVec2 = new SparseDoubleVector(10);\r\n    DoubleVector spVec3 = new SparseDoubleVector(10, 2.2);\r\n    for (int i = 0; i < spVec2.getDimension(); ++i) {\r\n        spVec2.set(i, 1.2);\r\n    }\r\n    DoubleVector expRes1 = new SparseDoubleVector(10, 0.3);\r\n    assertEquals(expRes1, spVec1.subtract(spVec2));\r\n    DoubleVector expRes2 = new SparseDoubleVector(10, -0.7);\r\n    assertEquals(expRes2, spVec1.subtract(spVec3));\r\n    // subtract one sparse vector from a dense vector\r\n    DoubleVector dsVec1 = new DenseDoubleVector(10);\r\n    for (int i = 0; i < dsVec1.getDimension(); ++i) {\r\n        dsVec1.set(i, 1.7);\r\n    }\r\n    DoubleVector expRes3 = new SparseDoubleVector(10, 0.2);\r\n    assertEquals(expRes3, dsVec1.subtract(spVec1));\r\n    // subtract one dense vector from a sparse vector\r\n    DoubleVector expRes4 = new SparseDoubleVector(10, -0.2);\r\n    assertEquals(expRes4, spVec1.subtract(dsVec1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestSparseDoubleVector.java",
+  "methodName" : "testMultiplyScala",
+  "sourceCode" : "@Test\r\npublic void testMultiplyScala() {\r\n    DoubleVector spVec1 = new SparseDoubleVector(10, 1.5);\r\n    DoubleVector spVec2 = new SparseDoubleVector(10);\r\n    DoubleVector spVec3 = new SparseDoubleVector(10, 2.2);\r\n    DoubleVector spRes1 = spVec1.applyToElements(new DoubleFunction() {\r\n\r\n        @Override\r\n        public double apply(double value) {\r\n            return value * 3;\r\n        }\r\n\r\n        @Override\r\n        public double applyDerivative(double value) {\r\n            throw new UnsupportedOperationException();\r\n        }\r\n    });\r\n    assertEquals(spRes1, spVec1.multiply(3));\r\n    assertEquals(spVec2, spVec2.multiply(1000));\r\n    assertEquals(spVec2, spVec1.multiply(0));\r\n    assertEquals(spVec1, spVec3.multiply(1.5 / 2.2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestSparseDoubleVector.java",
+  "methodName" : "testMultiply",
+  "sourceCode" : "@Test\r\npublic void testMultiply() {\r\n    DoubleVector spVec1 = new SparseDoubleVector(10, 1.5);\r\n    DoubleVector spVec2 = new SparseDoubleVector(10);\r\n    DoubleVector spVec3 = new SparseDoubleVector(10, 2.2);\r\n    DoubleVector spRes1 = spVec1.applyToElements(spVec3, new DoubleDoubleFunction() {\r\n\r\n        @Override\r\n        public double apply(double first, double second) {\r\n            return first * second;\r\n        }\r\n\r\n        @Override\r\n        public double applyDerivative(double value, double second) {\r\n            throw new UnsupportedOperationException();\r\n        }\r\n    });\r\n    assertEquals(spRes1, spVec1.multiply(spVec3));\r\n    assertEquals(spVec2, spVec1.multiply(spVec2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestSparseDoubleVector.java",
+  "methodName" : "testDivide",
+  "sourceCode" : "@Test\r\npublic void testDivide() {\r\n    DoubleVector spVec1 = new SparseDoubleVector(10, 1.5);\r\n    DoubleVector spVec2 = new SparseDoubleVector(10, 6.0);\r\n    DoubleVector spVec3 = new SparseDoubleVector(10, 2.2);\r\n    assertEquals(spVec3, spVec1.divide(1.5 / 2.2));\r\n    assertEquals(spVec2, spVec1.divideFrom(9));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestSparseDoubleVector.java",
+  "methodName" : "testPow",
+  "sourceCode" : "@Test\r\npublic void testPow() {\r\n    DoubleVector spVec1 = new SparseDoubleVector(10, 1.5);\r\n    DoubleVector spVec2 = new SparseDoubleVector(10, 1);\r\n    DoubleVector spVec3 = new SparseDoubleVector(10, 2.25);\r\n    assertEquals(spVec3, spVec1.pow(2));\r\n    assertEquals(spVec2, spVec1.pow(0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestSparseDoubleVector.java",
+  "methodName" : "testAbs",
+  "sourceCode" : "@Test\r\npublic void testAbs() {\r\n    DoubleVector spVec1 = new SparseDoubleVector(10, 1.5);\r\n    DoubleVector spVec2 = new SparseDoubleVector(10, 0);\r\n    DoubleVector spVec3 = new SparseDoubleVector(10, -1.5);\r\n    assertEquals(spVec1, spVec3.abs());\r\n    assertEquals(spVec2, spVec2.abs());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestSparseDoubleVector.java",
+  "methodName" : "testSqrt",
+  "sourceCode" : "@Test\r\npublic void testSqrt() {\r\n    DoubleVector spVec1 = new SparseDoubleVector(10, 2.25);\r\n    DoubleVector spVec2 = new SparseDoubleVector(10, 0);\r\n    DoubleVector spVec3 = new SparseDoubleVector(10, 1.5);\r\n    DoubleVector spVec4 = new SparseDoubleVector(10, 1);\r\n    assertEquals(spVec3, spVec1.sqrt());\r\n    assertEquals(spVec2, spVec2.sqrt());\r\n    assertEquals(spVec4, spVec4.sqrt());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestSparseDoubleVector.java",
+  "methodName" : "testSum",
+  "sourceCode" : "@Test\r\npublic void testSum() {\r\n    DoubleVector spVec1 = new SparseDoubleVector(10, 2.25);\r\n    DoubleVector spVec2 = new SparseDoubleVector(10, 0);\r\n    DoubleVector spVec3 = new SparseDoubleVector(10, 1.5);\r\n    assertEquals(22.5, spVec1.sum(), 0.00001);\r\n    assertEquals(0, spVec2.sum(), 0.000001);\r\n    assertEquals(15, spVec3.sum(), 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestSparseDoubleVector.java",
+  "methodName" : "testDot",
+  "sourceCode" : "@Test\r\npublic void testDot() {\r\n    DoubleVector spVec1 = new SparseDoubleVector(10, 2.25);\r\n    DoubleVector spVec2 = new SparseDoubleVector(10, 0);\r\n    DoubleVector spVec3 = new SparseDoubleVector(10, 1.5);\r\n    DoubleVector spVec4 = new SparseDoubleVector(10, 1);\r\n    assertEquals(spVec1.multiply(spVec3).sum(), spVec1.dot(spVec3), 0.000001);\r\n    assertEquals(spVec3.sum(), spVec3.dot(spVec4), 0.000001);\r\n    assertEquals(0, spVec1.dot(spVec2), 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestSparseDoubleVector.java",
+  "methodName" : "testSlice",
+  "sourceCode" : "@Test\r\npublic void testSlice() {\r\n    DoubleVector spVec1 = new SparseDoubleVector(10, 2.25);\r\n    DoubleVector spVec2 = new SparseDoubleVector(10, 0);\r\n    DoubleVector spVec3 = new SparseDoubleVector(5, 2.25);\r\n    DoubleVector spVec4 = new SparseDoubleVector(5, 0);\r\n    spVec1.set(7, 100);\r\n    spVec2.set(2, 200);\r\n    assertEquals(spVec3, spVec1.sliceUnsafe(5));\r\n    assertFalse(spVec4.equals(spVec2.slice(5)));\r\n    assertFalse(spVec3.equals(spVec1.slice(5, 9)));\r\n    assertEquals(spVec4, spVec2.slice(5, 9));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\commons\\src\\test\\java\\org\\apache\\hama\\commons\\math\\TestSparseDoubleVector.java",
+  "methodName" : "testMaxMin",
+  "sourceCode" : "@Test\r\npublic void testMaxMin() {\r\n    DoubleVector spVec1 = new SparseDoubleVector(10, 2.25);\r\n    DoubleVector spVec2 = new SparseDoubleVector(10, 0);\r\n    spVec1.set(7, 100);\r\n    spVec2.set(2, 200);\r\n    assertEquals(100, spVec1.max(), 0.000001);\r\n    assertEquals(0, spVec2.min(), 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\contrib\\avro-rpc\\src\\main\\java\\org\\apache\\hama\\avro\\TestAvroMessageManager.java",
+  "methodName" : "testAvroMessenger",
+  "sourceCode" : "@Test\r\npublic void testAvroMessenger() throws Exception {\r\n    BSPMessageBundle<Writable> randomBundle = getRandomBundle();\r\n    Configuration conf = new Configuration();\r\n    conf.set(\"hama.messenger.class\", \"org.apache.hama.bsp.message.AvroMessageManagerImpl\");\r\n    conf.set(DiskQueue.DISK_QUEUE_PATH_KEY, TMP_OUTPUT_PATH);\r\n    MessageManager<Writable> messageManager = MessageManagerFactory.getMessageManager(conf);\r\n    conf.set(BSPMessageCompressorFactory.COMPRESSION_CODEC_CLASS, SnappyCompressor.class.getName());\r\n    assertTrue(messageManager instanceof AvroMessageManagerImpl);\r\n    InetSocketAddress peer = new InetSocketAddress(BSPNetUtils.getCanonicalHostname(), BSPNetUtils.getFreePort());\r\n    BSPPeer<?, ?, ?, ?, Writable> dummyPeer = new BSPPeerImpl<NullWritable, NullWritable, NullWritable, NullWritable, Writable>(conf, FileSystem.get(conf), new Counters());\r\n    TaskAttemptID id = new TaskAttemptID(\"1\", 1, 1, 1);\r\n    messageManager.init(id, dummyPeer, conf, peer);\r\n    messageManager.transfer(peer, randomBundle);\r\n    messageManager.clearOutgoingQueues();\r\n    assertEquals(SUM, messageManager.getNumCurrentMessages());\r\n    int numIntMsgs = 0, numBoolMsgs = 0, numDoubleMsgs = 0;\r\n    Writable msg = null;\r\n    while ((msg = messageManager.getCurrentMessage()) != null) {\r\n        if (msg instanceof IntegerMessage) {\r\n            numIntMsgs++;\r\n        } else if (msg instanceof BooleanMessage) {\r\n            numBoolMsgs++;\r\n        } else if (msg instanceof DoubleMessage) {\r\n            numDoubleMsgs++;\r\n        }\r\n    }\r\n    assertEquals(INT_MSG_COUNT, numIntMsgs);\r\n    assertEquals(BOOL_MSG_COUNT, numBoolMsgs);\r\n    assertEquals(DOUBLE_MSG_COUNT, numDoubleMsgs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\core\\src\\test\\java\\org\\apache\\hama\\bsp\\sync\\TestSyncServiceFactory.java",
+  "methodName" : "testClientInstantiation",
+  "sourceCode" : "@Test\r\npublic void testClientInstantiation() throws Exception {\r\n    Configuration conf = new Configuration();\r\n    // given null, should return zookeeper\r\n    PeerSyncClient syncClient = SyncServiceFactory.getPeerSyncClient(conf);\r\n    assertTrue(syncClient instanceof ZooKeeperSyncClientImpl);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\core\\src\\test\\java\\org\\apache\\hama\\bsp\\sync\\TestSyncServiceFactory.java",
+  "methodName" : "testServerInstantiation",
+  "sourceCode" : "@Test\r\npublic void testServerInstantiation() throws Exception {\r\n    Configuration conf = new Configuration();\r\n    // given null, should return zookeeper\r\n    SyncServer syncServer = SyncServiceFactory.getSyncServer(conf);\r\n    assertTrue(syncServer instanceof ZooKeeperSyncServerImpl);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\core\\src\\test\\java\\org\\apache\\hama\\bsp\\sync\\TestSyncServiceFactory.java",
+  "methodName" : "testZKSyncStore",
+  "sourceCode" : "@Test\r\npublic void testZKSyncStore() throws Exception {\r\n    Configuration conf = new Configuration();\r\n    int zkPort = BSPNetUtils.getFreePort(21811);\r\n    conf.set(\"bsp.local.dir\", \"/tmp/hama-test\");\r\n    conf.set(\"bsp.output.dir\", \"/tmp/hama-test_out\");\r\n    conf.setInt(Constants.PEER_PORT, zkPort);\r\n    conf.set(Constants.ZOOKEEPER_QUORUM, \"localhost\");\r\n    conf.setInt(Constants.ZOOKEEPER_CLIENT_PORT, zkPort);\r\n    System.setProperty(\"user.dir\", \"/tmp\");\r\n    // given null, should return zookeeper\r\n    final SyncServer syncServer = SyncServiceFactory.getSyncServer(conf);\r\n    syncServer.init(conf);\r\n    assertTrue(syncServer instanceof ZooKeeperSyncServerImpl);\r\n    ZKServerThread serverThread = new ZKServerThread(syncServer);\r\n    ExecutorService executorService = Executors.newFixedThreadPool(1);\r\n    executorService.submit(serverThread);\r\n    executorService.awaitTermination(10, TimeUnit.SECONDS);\r\n    final PeerSyncClient syncClient = SyncServiceFactory.getPeerSyncClient(conf);\r\n    assertTrue(syncClient instanceof ZooKeeperSyncClientImpl);\r\n    BSPJobID jobId = new BSPJobID(\"abc\", 1);\r\n    TaskAttemptID taskId = new TaskAttemptID(new TaskID(jobId, 1), 1);\r\n    syncClient.init(conf, jobId, taskId);\r\n    Runtime.getRuntime().addShutdownHook(new Thread() {\r\n\r\n        @Override\r\n        public void run() {\r\n            try {\r\n                syncServer.stopServer();\r\n            } catch (Exception e) {\r\n                // too late to log!\r\n            }\r\n        }\r\n    });\r\n    Thread.sleep(3000);\r\n    IntWritable data = new IntWritable(5);\r\n    syncClient.storeInformation(syncClient.constructKey(jobId, String.valueOf(1L), \"test\"), data, true, null);\r\n    ListenerTest listenerTest = new ListenerTest();\r\n    syncClient.registerListener(syncClient.constructKey(jobId, String.valueOf(1L), \"test\"), ZKSyncEventFactory.getValueChangeEvent(), listenerTest);\r\n    IntWritable valueHolder = new IntWritable();\r\n    boolean result = syncClient.getInformation(syncClient.constructKey(jobId, String.valueOf(1L), \"test\"), valueHolder);\r\n    assertTrue(result);\r\n    int intVal = valueHolder.get();\r\n    assertTrue(intVal == data.get());\r\n    data.set(6);\r\n    syncClient.storeInformation(syncClient.constructKey(jobId, String.valueOf(1L), \"test\"), data, true, null);\r\n    valueHolder = new IntWritable();\r\n    result = syncClient.getInformation(syncClient.constructKey(jobId, String.valueOf(1L), \"test\"), valueHolder);\r\n    assertTrue(result);\r\n    intVal = valueHolder.get();\r\n    assertTrue(intVal == data.get());\r\n    Thread.sleep(5000);\r\n    assertEquals(true, listenerTest.getValue().equals(\"Changed\"));\r\n    syncServer.stopServer();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\core\\src\\test\\java\\org\\apache\\hama\\bsp\\TestKeyValueTextInputFormat.java",
+  "methodName" : "testInput",
+  "sourceCode" : "@Test\r\npublic void testInput() {\r\n    Configuration fsConf = new Configuration();\r\n    String strDataPath = \"/tmp/test_keyvalueinputformat\";\r\n    Path dataPath = new Path(strDataPath);\r\n    Path outPath = new Path(\"/tmp/test_keyvalueinputformat_out\");\r\n    int maxValue = 1000;\r\n    try {\r\n        URI uri = new URI(strDataPath);\r\n        FileSystem fs = FileSystem.get(uri, fsConf);\r\n        fs.delete(dataPath, true);\r\n        FSDataOutputStream fileOut = fs.create(dataPath, true);\r\n        StringBuilder str = new StringBuilder();\r\n        for (int i = 0; i < maxValue; ++i) {\r\n            str.append(i);\r\n            str.append(\"\\t\");\r\n            str.append(i * i);\r\n            str.append(\"\\n\");\r\n        }\r\n        fileOut.writeBytes(str.toString());\r\n        fileOut.close();\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    }\r\n    try {\r\n        HamaConfiguration conf = new HamaConfiguration();\r\n        conf.setInt(KeyValueHashPartitionedBSP.TEST_MAX_VALUE, maxValue);\r\n        BSPJob job = new BSPJob(conf, TestKeyValueTextInputFormat.class);\r\n        job.setJobName(\"Test KeyValueTextInputFormat together with HashPartitioner\");\r\n        job.setBspClass(KeyValueHashPartitionedBSP.class);\r\n        job.setBoolean(Constants.ENABLE_RUNTIME_PARTITIONING, true);\r\n        job.setPartitioner(HashPartitioner.class);\r\n        // FIXME see 362 line at BSPJobClient.java\r\n        job.setNumBspTask(1);\r\n        job.setInputPath(dataPath);\r\n        job.setInputFormat(KeyValueTextInputFormat.class);\r\n        job.setInputKeyClass(Text.class);\r\n        job.setInputValueClass(Text.class);\r\n        job.setOutputPath(outPath);\r\n        job.setOutputFormat(SequenceFileOutputFormat.class);\r\n        job.setOutputKeyClass(NullWritable.class);\r\n        job.setOutputValueClass(NullWritable.class);\r\n        assertEquals(true, job.waitForCompletion(true));\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\core\\src\\test\\java\\org\\apache\\hama\\bsp\\TestZooKeeper.java",
+  "methodName" : "testClearZKNodes",
+  "sourceCode" : "@Test\r\npublic void testClearZKNodes() throws IOException, KeeperException, InterruptedException {\r\n    final ZooKeeperSyncServerImpl server = new ZooKeeperSyncServerImpl();\r\n    boolean done = false;\r\n    try {\r\n        server.init(configuration);\r\n        ExecutorService executorService = Executors.newCachedThreadPool();\r\n        executorService.submit(new Runnable() {\r\n\r\n            @Override\r\n            public void run() {\r\n                try {\r\n                    server.start();\r\n                } catch (Exception e) {\r\n                    e.printStackTrace();\r\n                }\r\n            }\r\n        });\r\n        executorService.awaitTermination(10, TimeUnit.SECONDS);\r\n        String bspRoot = \"/bsp\";\r\n        ZooKeeperSyncClientImpl peerClient = (ZooKeeperSyncClientImpl) SyncServiceFactory.getPeerSyncClient(configuration);\r\n        ZKSyncBSPMasterClient masterClient = (ZKSyncBSPMasterClient) SyncServiceFactory.getMasterSyncClient(configuration);\r\n        masterClient.init(configuration);\r\n        Thread.sleep(100);\r\n        Log.info(\"Created master and client sync clients\");\r\n        assertTrue(masterClient.hasKey(bspRoot));\r\n        Log.info(\"BSP root exists\");\r\n        BSPJobID jobID = new BSPJobID(\"test1\", 1);\r\n        masterClient.registerJob(jobID.toString());\r\n        TaskID taskId1 = new TaskID(jobID, 1);\r\n        TaskID taskId2 = new TaskID(jobID, 2);\r\n        TaskAttemptID task1 = new TaskAttemptID(taskId1, 1);\r\n        TaskAttemptID task2 = new TaskAttemptID(taskId2, 1);\r\n        int zkPort = BSPNetUtils.getFreePort(21815);\r\n        configuration.setInt(Constants.PEER_PORT, zkPort);\r\n        peerClient.init(configuration, jobID, task1);\r\n        peerClient.registerTask(jobID, \"hamanode1\", 5000L, task1);\r\n        peerClient.registerTask(jobID, \"hamanode2\", 5000L, task2);\r\n        peerClient.storeInformation(peerClient.constructKey(jobID, \"info\", \"level2\"), new IntWritable(5), true, null);\r\n        String[] names = peerClient.getAllPeerNames(task1.getJobID());\r\n        Log.info(\"Found child count = \" + names.length);\r\n        assertEquals(2, names.length);\r\n        Log.info(\"Passed the child count test\");\r\n        masterClient.addKey(masterClient.constructKey(jobID, \"peer\", \"1\"), true, null);\r\n        masterClient.addKey(masterClient.constructKey(jobID, \"peer\", \"2\"), true, null);\r\n        String[] peerChild = masterClient.getChildKeySet(masterClient.constructKey(jobID, \"peer\"), null);\r\n        Log.info(\"Found child count = \" + peerChild.length);\r\n        assertEquals(2, peerChild.length);\r\n        Log.info(\" Peer name \" + peerChild[0]);\r\n        Log.info(\" Peer name \" + peerChild[1]);\r\n        Log.info(\"Passed the child key set test\");\r\n        masterClient.deregisterJob(jobID.toString());\r\n        Log.info(masterClient.constructKey(jobID));\r\n        Thread.sleep(200);\r\n        assertEquals(false, masterClient.hasKey(masterClient.constructKey(jobID)));\r\n        Log.info(\"Passed the key presence test\");\r\n        boolean result = masterClient.getInformation(masterClient.constructKey(jobID, \"info\", \"level3\"), new IntWritable());\r\n        assertEquals(false, result);\r\n        Writable[] writableArr = new Writable[2];\r\n        writableArr[0] = new LongWritable(3L);\r\n        writableArr[1] = new LongWritable(5L);\r\n        ArrayWritable arrWritable = new ArrayWritable(LongWritable.class);\r\n        arrWritable.set(writableArr);\r\n        masterClient.storeInformation(masterClient.constructKey(jobID, \"info\", \"level3\"), arrWritable, true, null);\r\n        ArrayWritable valueHolder = new ArrayWritable(LongWritable.class);\r\n        boolean getResult = masterClient.getInformation(masterClient.constructKey(jobID, \"info\", \"level3\"), valueHolder);\r\n        assertTrue(getResult);\r\n        assertEquals(arrWritable.get()[0], valueHolder.get()[0]);\r\n        assertEquals(arrWritable.get()[1], valueHolder.get()[1]);\r\n        Log.info(\"Passed array writable test\");\r\n        done = true;\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    } finally {\r\n        server.stopServer();\r\n    }\r\n    assertEquals(true, done);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\BipartiteMatchingTest.java",
+  "methodName" : "testBipartiteMatching",
+  "sourceCode" : "@Test\r\npublic void testBipartiteMatching() throws IOException, InterruptedException, ClassNotFoundException {\r\n    deleteTempDirs();\r\n    generateTestData();\r\n    try {\r\n        HamaConfiguration conf = new HamaConfiguration();\r\n        GraphJob job = BipartiteMatching.createJob(new String[] { INPUT, OUTPUT, \"30\", \"2\" }, conf);\r\n        job.setPartitioner(CustomTextPartitioner.class);\r\n        long startTime = System.currentTimeMillis();\r\n        if (job.waitForCompletion(true)) {\r\n            System.out.println(\"Job Finished in \" + (System.currentTimeMillis() - startTime) / 1000.0 + \" seconds\");\r\n        }\r\n        verifyResult();\r\n    } finally {\r\n        deleteTempDirs();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\CombineExampleTest.java",
+  "methodName" : "testCorrectCombineExecution",
+  "sourceCode" : "@Test\r\npublic void testCorrectCombineExecution() {\r\n    try {\r\n        CombineExample.main(new String[] {});\r\n    } catch (Exception e) {\r\n        fail(e.getLocalizedMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\DynamicGraphTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() throws IOException, InterruptedException, ClassNotFoundException {\r\n    try {\r\n        DynamicGraph.main(new String[] { \"src/test/resources/dg.txt\", OUTPUT });\r\n        verifyResult();\r\n    } finally {\r\n        deleteTempDirs();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\FastGraphGenTest.java",
+  "methodName" : "testGraphGenerator",
+  "sourceCode" : "@Test\r\npublic void testGraphGenerator() throws Exception {\r\n    Configuration conf = new Configuration();\r\n    // vertex size : 20\r\n    // maximum edges : 10\r\n    // output path : /tmp/test\r\n    // tasks num : 3\r\n    FastGraphGen.main(new String[] { \"-v\", \"20\", \"-e\", \"10\", \"-o\", TEST_OUTPUT, \"-t\", \"3\" });\r\n    FileSystem fs = FileSystem.get(conf);\r\n    FileStatus[] globStatus = fs.globStatus(new Path(TEST_OUTPUT + \"/part-*\"));\r\n    for (FileStatus fts : globStatus) {\r\n        BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(fts.getPath())));\r\n        try {\r\n            String line;\r\n            line = br.readLine();\r\n            while (line != null) {\r\n                String[] keyValue = line.split(\"\\t\");\r\n                String[] outlinkId = keyValue[1].split(\" \");\r\n                assertTrue(outlinkId.length <= 10);\r\n                for (String edge : outlinkId) {\r\n                    assertTrue(Integer.parseInt(edge) < 20);\r\n                    assertTrue(Integer.parseInt(edge) >= 0);\r\n                }\r\n                line = br.readLine();\r\n            }\r\n        } finally {\r\n            br.close();\r\n        }\r\n    }\r\n    fs.delete(new Path(TEST_OUTPUT), true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\FastGraphGenTest.java",
+  "methodName" : "testJsonGraphGenerator",
+  "sourceCode" : "@Test\r\npublic void testJsonGraphGenerator() throws Exception {\r\n    Configuration conf = new Configuration();\r\n    // vertex size : 20\r\n    // maximum edges : 10\r\n    // output path : /tmp/test\r\n    // tasks num : 3\r\n    // output type : json\r\n    // weight : 0\r\n    FastGraphGen.main(new String[] { \"-v\", \"20\", \"-e\", \"10\", \"-o\", TEST_OUTPUT, \"-t\", \"1\", \"-of\", \"json\", \"-w\", \"0\" });\r\n    FileSystem fs = FileSystem.get(conf);\r\n    FileStatus[] globStatus = fs.globStatus(new Path(TEST_OUTPUT + \"/part-*\"));\r\n    JSONParser parser = new JSONParser();\r\n    for (FileStatus fts : globStatus) {\r\n        BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(fts.getPath())));\r\n        try {\r\n            String line;\r\n            line = br.readLine();\r\n            while (line != null) {\r\n                JSONArray jsonArray = (JSONArray) parser.parse(line);\r\n                // the edge data begins at the third element.\r\n                JSONArray edgeArray = (JSONArray) jsonArray.get(2);\r\n                assertTrue(edgeArray.size() <= 10);\r\n                for (Object obj : edgeArray) {\r\n                    JSONArray edge = (JSONArray) obj;\r\n                    assertTrue(Integer.parseInt(edge.get(0).toString()) < 20);\r\n                    assertTrue(Integer.parseInt(edge.get(0).toString()) >= 0);\r\n                    assertTrue(Integer.parseInt(edge.get(1).toString()) == 0);\r\n                }\r\n                line = br.readLine();\r\n            }\r\n        } finally {\r\n            br.close();\r\n        }\r\n    }\r\n    fs.delete(new Path(TEST_OUTPUT), true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\KCoreTest.java",
+  "methodName" : "testKcore",
+  "sourceCode" : "@Test\r\npublic void testKcore() throws IllegalArgumentException, IOException, ClassNotFoundException, InterruptedException {\r\n    try {\r\n        setOutputResult();\r\n        KCore.main(new String[] { INPUT, OUTPUT });\r\n        verifyResult();\r\n    } finally {\r\n        fs.exists(new Path(OUTPUT));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\LinearRegressionTest.java",
+  "methodName" : "testCorrectGDWithLinearRegressionExecution",
+  "sourceCode" : "@Test\r\npublic void testCorrectGDWithLinearRegressionExecution() throws Exception {\r\n    GradientDescentExample.main(new String[] { \"src/test/resources/linear_regression_sample.txt\", \"linear\" });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\LogisticRegressionTest.java",
+  "methodName" : "testCorrectGDWithLogisticRegressionExecution",
+  "sourceCode" : "@Test\r\npublic void testCorrectGDWithLogisticRegressionExecution() throws Exception {\r\n    GradientDescentExample.main(new String[] { \"src/test/resources/logistic_regression_sample.txt\", \"logistic\" });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\PageRankTest.java",
+  "methodName" : "testPageRank",
+  "sourceCode" : "@Test\r\npublic void testPageRank() throws IOException, InterruptedException, ClassNotFoundException, InstantiationException, IllegalAccessException {\r\n    generateTestData();\r\n    try {\r\n        PageRank.main(new String[] { \"-input_path\", INPUT, \"-output_path\", OUTPUT, \"-task_num\", \"5\", \"-f\", \"json\" });\r\n        verifyResult();\r\n    } catch (ParseException e) {\r\n        e.printStackTrace();\r\n    } finally {\r\n        deleteTempDirs();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\PiEstimatorTest.java",
+  "methodName" : "testCorrectPiExecution",
+  "sourceCode" : "@Test\r\npublic void testCorrectPiExecution() {\r\n    try {\r\n        PiEstimator.main(new String[] { \"10\" });\r\n    } catch (Exception e) {\r\n        fail(e.getLocalizedMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\PiEstimatorTest.java",
+  "methodName" : "testPiExecutionWithEmptyArgs",
+  "sourceCode" : "@Test\r\npublic void testPiExecutionWithEmptyArgs() {\r\n    try {\r\n        PiEstimator.main(new String[10]);\r\n        fail(\"PiEstimator should fail if the argument list has size 0\");\r\n    } catch (Exception e) {\r\n        // everything ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\RandBenchTest.java",
+  "methodName" : "testCorrectRandBenchExecution",
+  "sourceCode" : "@Test\r\npublic void testCorrectRandBenchExecution() {\r\n    try {\r\n        RandBench.main(new String[] { \"10\", \"3\", \"2\" });\r\n    } catch (Exception e) {\r\n        fail(e.getLocalizedMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\RandBenchTest.java",
+  "methodName" : "testRandBenchExecutionWithEmptyArgs",
+  "sourceCode" : "@Test\r\npublic void testRandBenchExecutionWithEmptyArgs() {\r\n    try {\r\n        RandBench.main(new String[10]);\r\n        fail(\"RandBench should fail if the argument list has size < 3\");\r\n    } catch (Exception e) {\r\n        // everything ok\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\SemiClusterMatchingTest.java",
+  "methodName" : "testSemiClustering",
+  "sourceCode" : "@Test\r\npublic void testSemiClustering() throws IOException, InterruptedException, ClassNotFoundException {\r\n    try {\r\n        HamaConfiguration conf = new HamaConfiguration();\r\n        conf.setInt(semiClusterMaximumVertexCount, 100);\r\n        conf.setInt(graphJobMessageSentCount, 100);\r\n        conf.setInt(graphJobVertexMaxClusterCount, 1);\r\n        GraphJob semiClusterJob = new GraphJob(conf, SemiClusterJobDriver.class);\r\n        semiClusterJob.setMaxIteration(15);\r\n        semiClusterJob.setCompressionCodec(Bzip2Compressor.class);\r\n        semiClusterJob.setVertexOutputWriterClass(SemiClusterVertexOutputWriter.class);\r\n        semiClusterJob.setJobName(\"SemiClusterJob\");\r\n        semiClusterJob.setVertexClass(SemiClusteringVertex.class);\r\n        semiClusterJob.setInputPath(new Path(INPUT));\r\n        semiClusterJob.setOutputPath(new Path(OUTPUT));\r\n        semiClusterJob.set(\"hama.graph.self.ref\", \"true\");\r\n        semiClusterJob.setVertexIDClass(Text.class);\r\n        semiClusterJob.setVertexValueClass(SemiClusterMessage.class);\r\n        semiClusterJob.setEdgeValueClass(DoubleWritable.class);\r\n        semiClusterJob.setInputKeyClass(LongWritable.class);\r\n        semiClusterJob.setInputValueClass(Text.class);\r\n        semiClusterJob.setInputFormat(TextInputFormat.class);\r\n        semiClusterJob.setVertexInputReaderClass(SemiClusterTextReader.class);\r\n        semiClusterJob.setPartitioner(HashPartitioner.class);\r\n        semiClusterJob.setOutputFormat(TextOutputFormat.class);\r\n        semiClusterJob.setOutputKeyClass(Text.class);\r\n        semiClusterJob.setOutputValueClass(Text.class);\r\n        semiClusterJob.setNumBspTask(3);\r\n        long startTime = System.currentTimeMillis();\r\n        if (semiClusterJob.waitForCompletion(true)) {\r\n            System.out.println(\"Job Finished in \" + (System.currentTimeMillis() - startTime) / 1000.0 + \" seconds\");\r\n        }\r\n        semiClusterOutputChecker();\r\n    } finally {\r\n        deleteTempDirs();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\SpMVTest.java",
+  "methodName" : "runFromDriver",
+  "sourceCode" : "/**\r\n * Simple test of running spmv from {@link ExampleDriver}. You should specify\r\n * paths.\r\n */\r\n@Test\r\npublic void runFromDriver() {\r\n    try {\r\n        String matrixPath = \"\";\r\n        String vectorPath = \"\";\r\n        String outputPath = \"\";\r\n        if (matrixPath.isEmpty() || vectorPath.isEmpty() || outputPath.isEmpty()) {\r\n            LOG.info(\"Please setup input path for vector and matrix and output path for result.\");\r\n            return;\r\n        }\r\n        ExampleDriver.main(new String[] { \"spmv\", matrixPath, vectorPath, outputPath, \"4\" });\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail(e.getLocalizedMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\SpMVTest.java",
+  "methodName" : "simpleSpMVTest",
+  "sourceCode" : "/**\r\n * Simple test. multiplying [1 0 6 0] [2] [38] [0 4 0 0] * [3] = [12] [0 2 3\r\n * 0] [6] [24] [3 0 0 5] [1] [11]\r\n */\r\n@Test\r\npublic void simpleSpMVTest() {\r\n    HamaConfiguration conf = new HamaConfiguration();\r\n    String testDir = \"/simple/\";\r\n    int size = 4;\r\n    String matrixPath = baseDir + testDir + \"inputMatrix\";\r\n    String vectorPath = baseDir + testDir + \"inputVector\";\r\n    String outputPath = baseDir + testDir;\r\n    try {\r\n        if (fs.exists(new Path(baseDir))) {\r\n            fs.delete(new Path(baseDir), true);\r\n        }\r\n        // creating test matrix\r\n        HashMap<Integer, Writable> inputMatrix = new HashMap<Integer, Writable>();\r\n        SparseVectorWritable vector0 = new SparseVectorWritable();\r\n        vector0.setSize(size);\r\n        vector0.addCell(0, 1);\r\n        vector0.addCell(2, 6);\r\n        SparseVectorWritable vector1 = new SparseVectorWritable();\r\n        vector1.setSize(size);\r\n        vector1.addCell(1, 4);\r\n        SparseVectorWritable vector2 = new SparseVectorWritable();\r\n        vector2.setSize(size);\r\n        vector2.addCell(1, 2);\r\n        vector2.addCell(2, 3);\r\n        SparseVectorWritable vector3 = new SparseVectorWritable();\r\n        vector3.setSize(size);\r\n        vector3.addCell(0, 3);\r\n        vector3.addCell(3, 5);\r\n        inputMatrix.put(0, vector0);\r\n        inputMatrix.put(1, vector1);\r\n        inputMatrix.put(2, vector2);\r\n        inputMatrix.put(3, vector3);\r\n        writeMatrix(matrixPath, conf, inputMatrix);\r\n        HashMap<Integer, Writable> inputVector = new HashMap<Integer, Writable>();\r\n        DenseVectorWritable vector = new DenseVectorWritable();\r\n        vector.setSize(size);\r\n        vector.addCell(0, 2);\r\n        vector.addCell(1, 3);\r\n        vector.addCell(2, 6);\r\n        vector.addCell(3, 1);\r\n        inputVector.put(0, vector);\r\n        writeMatrix(vectorPath, conf, inputVector);\r\n        SpMV.main(new String[] { matrixPath, vectorPath, outputPath, \"4\" });\r\n        String resultPath = SpMV.getResultPath();\r\n        DenseVectorWritable result = new DenseVectorWritable();\r\n        SpMV.readFromFile(resultPath, result, conf);\r\n        LOG.info(\"result is a file: \" + fs.isFile(new Path(resultPath)));\r\n        double[] expected = { 38, 12, 24, 11 };\r\n        if (result.getSize() != size)\r\n            throw new Exception(\"Incorrect size of output vector\");\r\n        for (int i = 0; i < result.getSize(); i++) if ((result.get(i) - expected[i]) < 0.01)\r\n            expected[i] = 0;\r\n        for (int i = 0; i < expected.length; i++) if (expected[i] != 0)\r\n            throw new Exception(\"Result doesn't meets expectations\");\r\n        fs.delete(new Path(baseDir), true);\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail(e.getLocalizedMessage());\r\n    } finally {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\SpMVTest.java",
+  "methodName" : "simpleSpMVTestFile",
+  "sourceCode" : "/**\r\n * Simple test of spmv work with files. You should specify paths.\r\n */\r\n@Test\r\npublic void simpleSpMVTestFile() {\r\n    try {\r\n        int size = 4;\r\n        String matrixPath = \"\";\r\n        String vectorPath = \"\";\r\n        String outputPath = \"\";\r\n        if (matrixPath.isEmpty() || vectorPath.isEmpty() || outputPath.isEmpty()) {\r\n            LOG.info(\"Please setup input path for vector and matrix and output path for result, \" + \"if you want to run this example\");\r\n            return;\r\n        }\r\n        SpMV.main(new String[] { matrixPath, vectorPath, outputPath, \"4\" });\r\n        String resultPath = SpMV.getResultPath();\r\n        DenseVectorWritable result = new DenseVectorWritable();\r\n        SpMV.readFromFile(resultPath, result, conf);\r\n        double[] expected = { 38, 12, 24, 11 };\r\n        if (result.getSize() != size)\r\n            throw new Exception(\"Incorrect size of output vector\");\r\n        for (int i = 0; i < result.getSize(); i++) if ((result.get(i) - expected[i]) < 0.01)\r\n            expected[i] = 0;\r\n        for (int i = 0; i < expected.length; i++) if (expected[i] != 0)\r\n            throw new Exception(\"Result doesn't meets expectations\");\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail(e.getLocalizedMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\SSSPTest.java",
+  "methodName" : "testShortestPaths",
+  "sourceCode" : "@Test\r\npublic void testShortestPaths() throws IOException, InterruptedException, ClassNotFoundException, InstantiationException, IllegalAccessException {\r\n    generateTestData();\r\n    try {\r\n        SSSP.main(new String[] { \"0\", INPUT, OUTPUT, \"3\" });\r\n        verifyResult();\r\n    } finally {\r\n        deleteTempDirs();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\examples\\src\\test\\java\\org\\apache\\hama\\examples\\SymmetricMatrixGenTest.java",
+  "methodName" : "testGraphGenerator",
+  "sourceCode" : "@Test\r\npublic void testGraphGenerator() throws Exception {\r\n    Configuration conf = new Configuration();\r\n    SymmetricMatrixGen.main(new String[] { \"20\", \"10\", TEST_OUTPUT, \"3\" });\r\n    FileSystem fs = FileSystem.get(conf);\r\n    FileStatus[] globStatus = fs.globStatus(new Path(TEST_OUTPUT + \"/part-*\"));\r\n    for (FileStatus fts : globStatus) {\r\n        SequenceFile.Reader reader = new SequenceFile.Reader(fs, fts.getPath(), conf);\r\n        Text key = new Text();\r\n        TextArrayWritable value = new TextArrayWritable();\r\n        while (reader.next(key, value)) {\r\n            String values = \"\";\r\n            for (Writable v : value.get()) {\r\n                values += v.toString() + \" \";\r\n            }\r\n            LOG.info(fts.getPath() + \": \" + key.toString() + \" | \" + values);\r\n        }\r\n        reader.close();\r\n    }\r\n    fs.delete(new Path(TEST_OUTPUT), true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\graph\\src\\test\\java\\org\\apache\\hama\\graph\\TestAbsDiffAggregator.java",
+  "methodName" : "testAggregator",
+  "sourceCode" : "@Test\r\npublic void testAggregator() {\r\n    AbsDiffAggregator diff = new AbsDiffAggregator();\r\n    diff.aggregate(new DoubleWritable(5), new DoubleWritable(2));\r\n    diff.aggregate(new DoubleWritable(5), new DoubleWritable(2));\r\n    diff.aggregate(null, new DoubleWritable(5));\r\n    // 0, because this is totally worthless for diffs\r\n    assertEquals(0, diff.getTimesAggregated().get());\r\n    assertEquals(6, (int) diff.getValue().get());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\graph\\src\\test\\java\\org\\apache\\hama\\graph\\TestAverageAggregator.java",
+  "methodName" : "testAggregator",
+  "sourceCode" : "@Test\r\npublic void testAggregator() {\r\n    AverageAggregator diff = new AverageAggregator();\r\n    diff.aggregate(new DoubleWritable(5), new DoubleWritable(2));\r\n    diff.aggregateInternal();\r\n    diff.aggregate(new DoubleWritable(5), new DoubleWritable(2));\r\n    diff.aggregateInternal();\r\n    diff.aggregate(null, new DoubleWritable(5));\r\n    diff.aggregateInternal();\r\n    assertEquals(3, diff.getTimesAggregated().get());\r\n    DoubleWritable x = diff.finalizeAggregation();\r\n    assertEquals(2, (int) x.get());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\graph\\src\\test\\java\\org\\apache\\hama\\graph\\TestGraphJobMessage.java",
+  "methodName" : "testPriorityQueue",
+  "sourceCode" : "@Test\r\npublic void testPriorityQueue() throws IOException {\r\n    PriorityQueue<GraphJobMessage> prio = new PriorityQueue<GraphJobMessage>();\r\n    prio.addAll(getMessages());\r\n    GraphJobMessage poll = prio.poll();\r\n    assertEquals(true, poll.isMapMessage());\r\n    poll = prio.poll();\r\n    assertEquals(true, poll.isVertexMessage());\r\n    assertEquals(\"1\", poll.getVertexId().toString());\r\n    poll = prio.poll();\r\n    assertEquals(true, poll.isVertexMessage());\r\n    assertEquals(\"2\", poll.getVertexId().toString());\r\n    poll = prio.poll();\r\n    assertEquals(true, poll.isVertexMessage());\r\n    assertEquals(\"3\", poll.getVertexId().toString());\r\n    assertTrue(prio.isEmpty());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\graph\\src\\test\\java\\org\\apache\\hama\\graph\\TestMinMaxAggregator.java",
+  "methodName" : "testMinAggregator",
+  "sourceCode" : "@Test\r\npublic void testMinAggregator() {\r\n    MinAggregator diff = new MinAggregator();\r\n    diff.aggregate(new IntWritable(5));\r\n    diff.aggregate(new IntWritable(25));\r\n    assertEquals(5, diff.getValue().get());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\graph\\src\\test\\java\\org\\apache\\hama\\graph\\TestMinMaxAggregator.java",
+  "methodName" : "testMaxAggregator",
+  "sourceCode" : "@Test\r\npublic void testMaxAggregator() {\r\n    MaxAggregator diff = new MaxAggregator();\r\n    diff.aggregate(new IntWritable(5));\r\n    diff.aggregate(new IntWritable(25));\r\n    assertEquals(25, diff.getValue().get());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\graph\\src\\test\\java\\org\\apache\\hama\\graph\\TestSumAggregator.java",
+  "methodName" : "testAggregator",
+  "sourceCode" : "@Test\r\npublic void testAggregator() {\r\n    SumAggregator diff = new SumAggregator();\r\n    diff.aggregate(new DoubleWritable(5));\r\n    diff.aggregate(new DoubleWritable(5));\r\n    assertEquals(10, (int) diff.getValue().get());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\ann\\TestAutoEncoder.java",
+  "methodName" : "testAutoEncoderSimple",
+  "sourceCode" : "@Test\r\npublic void testAutoEncoderSimple() {\r\n    double[][] instances = { { 0, 0, 0, 1 }, { 0, 0, 1, 0 }, { 0, 1, 0, 0 }, { 0, 0, 0, 0 } };\r\n    AutoEncoder encoder = new AutoEncoder(4, 2);\r\n    encoder.setLearningRate(0.5);\r\n    encoder.setMomemtumWeight(0.2);\r\n    int maxIteration = 2000;\r\n    Random rnd = new Random();\r\n    for (int iteration = 0; iteration < maxIteration; ++iteration) {\r\n        for (int i = 0; i < instances.length; ++i) {\r\n            encoder.trainOnline(new DenseDoubleVector(instances[rnd.nextInt(instances.length)]));\r\n        }\r\n    }\r\n    for (int i = 0; i < instances.length; ++i) {\r\n        DoubleVector encodeVec = encoder.encode(new DenseDoubleVector(instances[i]));\r\n        DoubleVector decodeVec = encoder.decode(encodeVec);\r\n        for (int d = 0; d < instances[i].length; ++d) {\r\n            assertEquals(instances[i][d], decodeVec.get(d), 0.1);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\ann\\TestAutoEncoder.java",
+  "methodName" : "testAutoEncoderSwissRollDataset",
+  "sourceCode" : "@Test\r\npublic void testAutoEncoderSwissRollDataset() {\r\n    List<double[]> instanceList = new ArrayList<double[]>();\r\n    try {\r\n        BufferedReader br = new BufferedReader(new FileReader(\"src/test/resources/dimensional_reduction.txt\"));\r\n        String line = null;\r\n        while ((line = br.readLine()) != null) {\r\n            String[] tokens = line.split(\"\\t\");\r\n            double[] instance = new double[tokens.length];\r\n            for (int i = 0; i < instance.length; ++i) {\r\n                instance[i] = Double.parseDouble(tokens[i]);\r\n            }\r\n            instanceList.add(instance);\r\n        }\r\n        br.close();\r\n        // normalize instances\r\n        zeroOneNormalization(instanceList, instanceList.get(0).length);\r\n    } catch (FileNotFoundException e) {\r\n        e.printStackTrace();\r\n    } catch (NumberFormatException e) {\r\n        e.printStackTrace();\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    }\r\n    List<DoubleVector> vecInstanceList = new ArrayList<DoubleVector>();\r\n    for (double[] instance : instanceList) {\r\n        vecInstanceList.add(new DenseDoubleVector(instance));\r\n    }\r\n    AutoEncoder encoder = new AutoEncoder(3, 2);\r\n    encoder.setLearningRate(0.05);\r\n    encoder.setMomemtumWeight(0.1);\r\n    int maxIteration = 2000;\r\n    for (int iteration = 0; iteration < maxIteration; ++iteration) {\r\n        for (DoubleVector vector : vecInstanceList) {\r\n            encoder.trainOnline(vector);\r\n        }\r\n    }\r\n    double errorInstance = 0;\r\n    for (DoubleVector vector : vecInstanceList) {\r\n        DoubleVector decoded = encoder.getOutput(vector);\r\n        DoubleVector diff = vector.subtract(decoded);\r\n        double error = diff.dot(diff);\r\n        if (error > 0.1) {\r\n            ++errorInstance;\r\n        }\r\n    }\r\n    Log.info(String.format(\"Autoecoder error rate: %f%%\\n\", errorInstance * 100 / vecInstanceList.size()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\ann\\TestAutoEncoder.java",
+  "methodName" : "testAutoEncoderSwissRollDatasetDistributed",
+  "sourceCode" : "@Test\r\npublic void testAutoEncoderSwissRollDatasetDistributed() {\r\n    String strDataPath = \"/tmp/dimensional_reduction.txt\";\r\n    Path path = new Path(strDataPath);\r\n    List<double[]> instanceList = new ArrayList<double[]>();\r\n    try {\r\n        Configuration conf = new Configuration();\r\n        FileSystem fs = FileSystem.get(new URI(strDataPath), conf);\r\n        if (fs.exists(path)) {\r\n            fs.delete(path, true);\r\n        }\r\n        String line = null;\r\n        BufferedReader br = new BufferedReader(new FileReader(\"src/test/resources/dimensional_reduction.txt\"));\r\n        while ((line = br.readLine()) != null) {\r\n            String[] tokens = line.split(\"\\t\");\r\n            double[] instance = new double[tokens.length];\r\n            for (int i = 0; i < instance.length; ++i) {\r\n                instance[i] = Double.parseDouble(tokens[i]);\r\n            }\r\n            instanceList.add(instance);\r\n        }\r\n        br.close();\r\n        // normalize instances\r\n        zeroOneNormalization(instanceList, instanceList.get(0).length);\r\n        SequenceFile.Writer writer = new SequenceFile.Writer(fs, conf, path, LongWritable.class, VectorWritable.class);\r\n        for (int i = 0; i < instanceList.size(); ++i) {\r\n            DoubleVector vector = new DenseDoubleVector(instanceList.get(i));\r\n            writer.append(new LongWritable(i), new VectorWritable(vector));\r\n        }\r\n        writer.close();\r\n    } catch (FileNotFoundException e) {\r\n        e.printStackTrace();\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    } catch (URISyntaxException e) {\r\n        e.printStackTrace();\r\n    }\r\n    AutoEncoder encoder = new AutoEncoder(3, 2);\r\n    String modelPath = \"/tmp/autoencoder-modelpath\";\r\n    encoder.setModelPath(modelPath);\r\n    Map<String, String> trainingParams = new HashMap<String, String>();\r\n    encoder.setLearningRate(0.5);\r\n    trainingParams.put(\"tasks\", \"5\");\r\n    trainingParams.put(\"training.max.iterations\", \"3000\");\r\n    trainingParams.put(\"training.batch.size\", \"200\");\r\n    encoder.train(path, trainingParams);\r\n    double errorInstance = 0;\r\n    for (double[] instance : instanceList) {\r\n        DoubleVector vector = new DenseDoubleVector(instance);\r\n        DoubleVector decoded = encoder.getOutput(vector);\r\n        DoubleVector diff = vector.subtract(decoded);\r\n        double error = diff.dot(diff);\r\n        if (error > 0.1) {\r\n            ++errorInstance;\r\n        }\r\n    }\r\n    Log.info(String.format(\"Autoecoder error rate: %f%%\\n\", errorInstance * 100 / instanceList.size()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\ann\\TestSmallLayeredNeuralNetwork.java",
+  "methodName" : "testReadWrite",
+  "sourceCode" : "@Test\r\npublic void testReadWrite() {\r\n    SmallLayeredNeuralNetwork ann = new SmallLayeredNeuralNetwork();\r\n    ann.addLayer(2, false, FunctionFactory.createDoubleFunction(\"IdentityFunction\"));\r\n    ann.addLayer(5, false, FunctionFactory.createDoubleFunction(\"IdentityFunction\"));\r\n    ann.addLayer(1, true, FunctionFactory.createDoubleFunction(\"IdentityFunction\"));\r\n    ann.setCostFunction(FunctionFactory.createDoubleDoubleFunction(\"SquaredError\"));\r\n    double learningRate = 0.2;\r\n    ann.setLearningRate(learningRate);\r\n    double momentumWeight = 0.5;\r\n    ann.setMomemtumWeight(momentumWeight);\r\n    double regularizationWeight = 0.05;\r\n    ann.setRegularizationWeight(regularizationWeight);\r\n    // intentionally initialize all weights to 0.5\r\n    DoubleMatrix[] matrices = new DenseDoubleMatrix[2];\r\n    matrices[0] = new DenseDoubleMatrix(5, 3, 0.2);\r\n    matrices[1] = new DenseDoubleMatrix(1, 6, 0.8);\r\n    ann.setWeightMatrices(matrices);\r\n    ann.setLearningStyle(LearningStyle.UNSUPERVISED);\r\n    FeatureTransformer defaultFeatureTransformer = new DefaultFeatureTransformer();\r\n    ann.setFeatureTransformer(defaultFeatureTransformer);\r\n    // write to file\r\n    String modelPath = \"/tmp/testSmallLayeredNeuralNetworkReadWrite\";\r\n    ann.setModelPath(modelPath);\r\n    try {\r\n        ann.writeModelToFile();\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    }\r\n    // read from file\r\n    SmallLayeredNeuralNetwork annCopy = new SmallLayeredNeuralNetwork(modelPath);\r\n    assertEquals(annCopy.getClass().getSimpleName(), annCopy.getModelType());\r\n    assertEquals(modelPath, annCopy.getModelPath());\r\n    assertEquals(learningRate, annCopy.getLearningRate(), 0.000001);\r\n    assertEquals(momentumWeight, annCopy.getMomemtumWeight(), 0.000001);\r\n    assertEquals(regularizationWeight, annCopy.getRegularizationWeight(), 0.000001);\r\n    assertEquals(TrainingMethod.GRADIENT_DESCENT, annCopy.getTrainingMethod());\r\n    assertEquals(LearningStyle.UNSUPERVISED, annCopy.getLearningStyle());\r\n    // compare weights\r\n    DoubleMatrix[] weightsMatrices = annCopy.getWeightMatrices();\r\n    for (int i = 0; i < weightsMatrices.length; ++i) {\r\n        DoubleMatrix expectMat = matrices[i];\r\n        DoubleMatrix actualMat = weightsMatrices[i];\r\n        for (int j = 0; j < expectMat.getRowCount(); ++j) {\r\n            for (int k = 0; k < expectMat.getColumnCount(); ++k) {\r\n                assertEquals(expectMat.get(j, k), actualMat.get(j, k), 0.000001);\r\n            }\r\n        }\r\n    }\r\n    FeatureTransformer copyTransformer = annCopy.getFeatureTransformer();\r\n    assertEquals(defaultFeatureTransformer.getClass().getName(), copyTransformer.getClass().getName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\ann\\TestSmallLayeredNeuralNetwork.java",
+  "methodName" : "testOutput",
+  "sourceCode" : "@Test\r\npublic /**\r\n * Test the forward functionality.\r\n */\r\nvoid testOutput() {\r\n    // first network\r\n    SmallLayeredNeuralNetwork ann = new SmallLayeredNeuralNetwork();\r\n    ann.addLayer(2, false, FunctionFactory.createDoubleFunction(\"IdentityFunction\"));\r\n    ann.addLayer(5, false, FunctionFactory.createDoubleFunction(\"IdentityFunction\"));\r\n    ann.addLayer(1, true, FunctionFactory.createDoubleFunction(\"IdentityFunction\"));\r\n    ann.setCostFunction(FunctionFactory.createDoubleDoubleFunction(\"SquaredError\"));\r\n    ann.setLearningRate(0.1);\r\n    // intentionally initialize all weights to 0.5\r\n    DoubleMatrix[] matrices = new DenseDoubleMatrix[2];\r\n    matrices[0] = new DenseDoubleMatrix(5, 3, 0.5);\r\n    matrices[1] = new DenseDoubleMatrix(1, 6, 0.5);\r\n    ann.setWeightMatrices(matrices);\r\n    double[] arr = new double[] { 0, 1 };\r\n    DoubleVector training = new DenseDoubleVector(arr);\r\n    DoubleVector result = ann.getOutput(training);\r\n    assertEquals(1, result.getDimension());\r\n    // assertEquals(3, result.get(0), 0.000001);\r\n    // second network\r\n    SmallLayeredNeuralNetwork ann2 = new SmallLayeredNeuralNetwork();\r\n    ann2.addLayer(2, false, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann2.addLayer(3, false, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann2.addLayer(1, true, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann2.setCostFunction(FunctionFactory.createDoubleDoubleFunction(\"SquaredError\"));\r\n    ann2.setLearningRate(0.3);\r\n    // intentionally initialize all weights to 0.5\r\n    DoubleMatrix[] matrices2 = new DenseDoubleMatrix[2];\r\n    matrices2[0] = new DenseDoubleMatrix(3, 3, 0.5);\r\n    matrices2[1] = new DenseDoubleMatrix(1, 4, 0.5);\r\n    ann2.setWeightMatrices(matrices2);\r\n    double[] test = { 0, 0 };\r\n    double[] result2 = { 0.807476 };\r\n    DoubleVector vec = ann2.getOutput(new DenseDoubleVector(test));\r\n    assertArrayEquals(result2, vec.toArray(), 0.000001);\r\n    SmallLayeredNeuralNetwork ann3 = new SmallLayeredNeuralNetwork();\r\n    ann3.addLayer(2, false, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann3.addLayer(3, false, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann3.addLayer(1, true, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann3.setCostFunction(FunctionFactory.createDoubleDoubleFunction(\"SquaredError\"));\r\n    ann3.setLearningRate(0.3);\r\n    // intentionally initialize all weights to 0.5\r\n    DoubleMatrix[] initMatrices = new DenseDoubleMatrix[2];\r\n    initMatrices[0] = new DenseDoubleMatrix(3, 3, 0.5);\r\n    initMatrices[1] = new DenseDoubleMatrix(1, 4, 0.5);\r\n    ann3.setWeightMatrices(initMatrices);\r\n    double[] instance = { 0, 1 };\r\n    DoubleVector output = ann3.getOutput(new DenseDoubleVector(instance));\r\n    assertEquals(0.8315410, output.get(0), 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\ann\\TestSmallLayeredNeuralNetwork.java",
+  "methodName" : "testXORlocal",
+  "sourceCode" : "@Test\r\npublic void testXORlocal() {\r\n    SmallLayeredNeuralNetwork ann = new SmallLayeredNeuralNetwork();\r\n    ann.addLayer(2, false, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann.addLayer(3, false, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann.addLayer(1, true, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann.setCostFunction(FunctionFactory.createDoubleDoubleFunction(\"SquaredError\"));\r\n    ann.setLearningRate(0.5);\r\n    ann.setMomemtumWeight(0.0);\r\n    // iteration should be set to a very large number\r\n    int iterations = 50000;\r\n    double[][] instances = { { 0, 1, 1 }, { 0, 0, 0 }, { 1, 0, 1 }, { 1, 1, 0 } };\r\n    for (int i = 0; i < iterations; ++i) {\r\n        DoubleMatrix[] matrices = null;\r\n        for (int j = 0; j < instances.length; ++j) {\r\n            matrices = ann.trainByInstance(new DenseDoubleVector(instances[j % instances.length]));\r\n            ann.updateWeightMatrices(matrices);\r\n        }\r\n    }\r\n    for (int i = 0; i < instances.length; ++i) {\r\n        DoubleVector input = new DenseDoubleVector(instances[i]).slice(2);\r\n        // the expected output is the last element in array\r\n        double result = instances[i][2];\r\n        double actual = ann.getOutput(input).get(0);\r\n        if (result < 0.5 && actual >= 0.5 || result >= 0.5 && actual < 0.5) {\r\n            Log.info(\"Neural network failes to lear the XOR.\");\r\n        }\r\n    }\r\n    // write model into file and read out\r\n    String modelPath = \"/tmp/testSmallLayeredNeuralNetworkXORLocal\";\r\n    ann.setModelPath(modelPath);\r\n    try {\r\n        ann.writeModelToFile();\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    }\r\n    SmallLayeredNeuralNetwork annCopy = new SmallLayeredNeuralNetwork(modelPath);\r\n    // test on instances\r\n    for (int i = 0; i < instances.length; ++i) {\r\n        DoubleVector input = new DenseDoubleVector(instances[i]).slice(2);\r\n        // the expected output is the last element in array\r\n        double result = instances[i][2];\r\n        double actual = annCopy.getOutput(input).get(0);\r\n        if (result < 0.5 && actual >= 0.5 || result >= 0.5 && actual < 0.5) {\r\n            Log.info(\"Neural network failes to lear the XOR.\");\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\ann\\TestSmallLayeredNeuralNetwork.java",
+  "methodName" : "testXORWithMomentum",
+  "sourceCode" : "@Test\r\npublic void testXORWithMomentum() {\r\n    SmallLayeredNeuralNetwork ann = new SmallLayeredNeuralNetwork();\r\n    ann.addLayer(2, false, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann.addLayer(3, false, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann.addLayer(1, true, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann.setCostFunction(FunctionFactory.createDoubleDoubleFunction(\"SquaredError\"));\r\n    ann.setLearningRate(0.6);\r\n    ann.setMomemtumWeight(0.3);\r\n    // iteration should be set to a very large number\r\n    int iterations = 2000;\r\n    double[][] instances = { { 0, 1, 1 }, { 0, 0, 0 }, { 1, 0, 1 }, { 1, 1, 0 } };\r\n    for (int i = 0; i < iterations; ++i) {\r\n        for (int j = 0; j < instances.length; ++j) {\r\n            ann.trainOnline(new DenseDoubleVector(instances[j % instances.length]));\r\n        }\r\n    }\r\n    for (int i = 0; i < instances.length; ++i) {\r\n        DoubleVector input = new DenseDoubleVector(instances[i]).slice(2);\r\n        // the expected output is the last element in array\r\n        double result = instances[i][2];\r\n        double actual = ann.getOutput(input).get(0);\r\n        if (result < 0.5 && actual >= 0.5 || result >= 0.5 && actual < 0.5) {\r\n            Log.info(\"Neural network failes to lear the XOR.\");\r\n        }\r\n    }\r\n    // write model into file and read out\r\n    String modelPath = \"/tmp/testSmallLayeredNeuralNetworkXORLocalWithMomentum\";\r\n    ann.setModelPath(modelPath);\r\n    try {\r\n        ann.writeModelToFile();\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    }\r\n    SmallLayeredNeuralNetwork annCopy = new SmallLayeredNeuralNetwork(modelPath);\r\n    // test on instances\r\n    for (int i = 0; i < instances.length; ++i) {\r\n        DoubleVector input = new DenseDoubleVector(instances[i]).slice(2);\r\n        // the expected output is the last element in array\r\n        double result = instances[i][2];\r\n        double actual = annCopy.getOutput(input).get(0);\r\n        if (result < 0.5 && actual >= 0.5 || result >= 0.5 && actual < 0.5) {\r\n            Log.info(\"Neural network failes to lear the XOR.\");\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\ann\\TestSmallLayeredNeuralNetwork.java",
+  "methodName" : "testXORLocalWithRegularization",
+  "sourceCode" : "@Test\r\npublic void testXORLocalWithRegularization() {\r\n    SmallLayeredNeuralNetwork ann = new SmallLayeredNeuralNetwork();\r\n    ann.addLayer(2, false, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann.addLayer(3, false, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann.addLayer(1, true, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann.setCostFunction(FunctionFactory.createDoubleDoubleFunction(\"SquaredError\"));\r\n    ann.setLearningRate(0.7);\r\n    ann.setMomemtumWeight(0.5);\r\n    ann.setRegularizationWeight(0.002);\r\n    // iteration should be set to a very large number\r\n    int iterations = 5000;\r\n    double[][] instances = { { 0, 1, 1 }, { 0, 0, 0 }, { 1, 0, 1 }, { 1, 1, 0 } };\r\n    for (int i = 0; i < iterations; ++i) {\r\n        for (int j = 0; j < instances.length; ++j) {\r\n            ann.trainOnline(new DenseDoubleVector(instances[j % instances.length]));\r\n        }\r\n    }\r\n    for (int i = 0; i < instances.length; ++i) {\r\n        DoubleVector input = new DenseDoubleVector(instances[i]).slice(2);\r\n        // the expected output is the last element in array\r\n        double result = instances[i][2];\r\n        double actual = ann.getOutput(input).get(0);\r\n        if (result < 0.5 && actual >= 0.5 || result >= 0.5 && actual < 0.5) {\r\n            Log.info(\"Neural network failes to lear the XOR.\");\r\n        }\r\n    }\r\n    // write model into file and read out\r\n    String modelPath = \"/tmp/testSmallLayeredNeuralNetworkXORLocalWithRegularization\";\r\n    ann.setModelPath(modelPath);\r\n    try {\r\n        ann.writeModelToFile();\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    }\r\n    SmallLayeredNeuralNetwork annCopy = new SmallLayeredNeuralNetwork(modelPath);\r\n    // test on instances\r\n    for (int i = 0; i < instances.length; ++i) {\r\n        DoubleVector input = new DenseDoubleVector(instances[i]).slice(2);\r\n        // the expected output is the last element in array\r\n        double result = instances[i][2];\r\n        double actual = annCopy.getOutput(input).get(0);\r\n        if (result < 0.5 && actual >= 0.5 || result >= 0.5 && actual < 0.5) {\r\n            Log.info(\"Neural network failes to lear the XOR.\");\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\ann\\TestSmallLayeredNeuralNetwork.java",
+  "methodName" : "testTwoClassClassification",
+  "sourceCode" : "@Test\r\npublic void testTwoClassClassification() {\r\n    // use logistic regression data\r\n    String filepath = \"src/test/resources/logistic_regression_data.txt\";\r\n    List<double[]> instanceList = new ArrayList<double[]>();\r\n    try {\r\n        BufferedReader br = new BufferedReader(new FileReader(filepath));\r\n        String line = null;\r\n        while ((line = br.readLine()) != null) {\r\n            String[] tokens = line.trim().split(\",\");\r\n            double[] instance = new double[tokens.length];\r\n            for (int i = 0; i < tokens.length; ++i) {\r\n                instance[i] = Double.parseDouble(tokens[i]);\r\n            }\r\n            instanceList.add(instance);\r\n        }\r\n        br.close();\r\n    } catch (FileNotFoundException e) {\r\n        e.printStackTrace();\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    }\r\n    zeroOneNormalization(instanceList, instanceList.get(0).length - 1);\r\n    int dimension = instanceList.get(0).length - 1;\r\n    // divide dataset into training and testing\r\n    List<double[]> testInstances = new ArrayList<double[]>();\r\n    testInstances.addAll(instanceList.subList(instanceList.size() - 100, instanceList.size()));\r\n    List<double[]> trainingInstances = instanceList.subList(0, instanceList.size() - 100);\r\n    SmallLayeredNeuralNetwork ann = new SmallLayeredNeuralNetwork();\r\n    ann.setLearningRate(0.001);\r\n    ann.setMomemtumWeight(0.1);\r\n    ann.setRegularizationWeight(0.01);\r\n    ann.addLayer(dimension, false, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann.addLayer(dimension, false, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann.addLayer(dimension, false, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann.addLayer(1, true, FunctionFactory.createDoubleFunction(\"Sigmoid\"));\r\n    ann.setCostFunction(FunctionFactory.createDoubleDoubleFunction(\"CrossEntropy\"));\r\n    long start = new Date().getTime();\r\n    int iterations = 1000;\r\n    for (int i = 0; i < iterations; ++i) {\r\n        for (double[] trainingInstance : trainingInstances) {\r\n            ann.trainOnline(new DenseDoubleVector(trainingInstance));\r\n        }\r\n    }\r\n    long end = new Date().getTime();\r\n    Log.info(String.format(\"Training time: %fs\\n\", (double) (end - start) / 1000));\r\n    double errorRate = 0;\r\n    // calculate the error on test instance\r\n    for (double[] testInstance : testInstances) {\r\n        DoubleVector instance = new DenseDoubleVector(testInstance);\r\n        double expected = instance.get(instance.getDimension() - 1);\r\n        instance = instance.slice(instance.getDimension() - 1);\r\n        double actual = ann.getOutput(instance).get(0);\r\n        if (actual < 0.5 && expected >= 0.5 || actual >= 0.5 && expected < 0.5) {\r\n            ++errorRate;\r\n        }\r\n    }\r\n    errorRate /= testInstances.size();\r\n    Log.info(String.format(\"Relative error: %f%%\\n\", errorRate * 100));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\ann\\TestSmallLayeredNeuralNetwork.java",
+  "methodName" : "testLogisticRegression",
+  "sourceCode" : "@Test\r\npublic void testLogisticRegression() {\r\n    this.testLogisticRegressionDistributedVersion();\r\n    this.testLogisticRegressionDistributedVersionWithFeatureTransformer();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\ann\\TestSmallLayeredNeuralNetworkMessage.java",
+  "methodName" : "testReadWriteWithoutPrev",
+  "sourceCode" : "@Test\r\npublic void testReadWriteWithoutPrev() {\r\n    double error = 0.22;\r\n    double[][] matrix1 = new double[][] { { 0.1, 0.2, 0.8, 0.5 }, { 0.3, 0.4, 0.6, 0.2 }, { 0.5, 0.6, 0.1, 0.5 } };\r\n    double[][] matrix2 = new double[][] { { 0.8, 1.2, 0.5 } };\r\n    DoubleMatrix[] matrices = new DoubleMatrix[2];\r\n    matrices[0] = new DenseDoubleMatrix(matrix1);\r\n    matrices[1] = new DenseDoubleMatrix(matrix2);\r\n    boolean isConverge = false;\r\n    SmallLayeredNeuralNetworkMessage message = new SmallLayeredNeuralNetworkMessage(error, isConverge, matrices, null);\r\n    Configuration conf = new Configuration();\r\n    String strPath = \"/tmp/testReadWriteSmallLayeredNeuralNetworkMessage\";\r\n    Path path = new Path(strPath);\r\n    try {\r\n        FileSystem fs = FileSystem.get(new URI(strPath), conf);\r\n        FSDataOutputStream out = fs.create(path);\r\n        message.write(out);\r\n        out.close();\r\n        FSDataInputStream in = fs.open(path);\r\n        SmallLayeredNeuralNetworkMessage readMessage = new SmallLayeredNeuralNetworkMessage(0, isConverge, null, null);\r\n        readMessage.readFields(in);\r\n        in.close();\r\n        assertEquals(error, readMessage.getTrainingError(), 0.000001);\r\n        assertFalse(readMessage.isConverge());\r\n        DoubleMatrix[] readMatrices = readMessage.getCurMatrices();\r\n        assertEquals(2, readMatrices.length);\r\n        for (int i = 0; i < readMatrices.length; ++i) {\r\n            double[][] doubleMatrices = ((DenseDoubleMatrix) readMatrices[i]).getValues();\r\n            double[][] doubleExpected = ((DenseDoubleMatrix) matrices[i]).getValues();\r\n            for (int r = 0; r < doubleMatrices.length; ++r) {\r\n                assertArrayEquals(doubleExpected[r], doubleMatrices[r], 0.000001);\r\n            }\r\n        }\r\n        DoubleMatrix[] readPrevMatrices = readMessage.getPrevMatrices();\r\n        assertNull(readPrevMatrices);\r\n        // delete\r\n        fs.delete(path, true);\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    } catch (URISyntaxException e) {\r\n        e.printStackTrace();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\ann\\TestSmallLayeredNeuralNetworkMessage.java",
+  "methodName" : "testReadWriteWithPrev",
+  "sourceCode" : "@Test\r\npublic void testReadWriteWithPrev() {\r\n    double error = 0.22;\r\n    boolean isConverge = true;\r\n    double[][] matrix1 = new double[][] { { 0.1, 0.2, 0.8, 0.5 }, { 0.3, 0.4, 0.6, 0.2 }, { 0.5, 0.6, 0.1, 0.5 } };\r\n    double[][] matrix2 = new double[][] { { 0.8, 1.2, 0.5 } };\r\n    DoubleMatrix[] matrices = new DoubleMatrix[2];\r\n    matrices[0] = new DenseDoubleMatrix(matrix1);\r\n    matrices[1] = new DenseDoubleMatrix(matrix2);\r\n    double[][] prevMatrix1 = new double[][] { { 0.1, 0.1, 0.2, 0.3 }, { 0.2, 0.4, 0.1, 0.5 }, { 0.5, 0.1, 0.5, 0.2 } };\r\n    double[][] prevMatrix2 = new double[][] { { 0.1, 0.2, 0.5, 0.9 }, { 0.3, 0.5, 0.2, 0.6 }, { 0.6, 0.8, 0.7, 0.5 } };\r\n    DoubleMatrix[] prevMatrices = new DoubleMatrix[2];\r\n    prevMatrices[0] = new DenseDoubleMatrix(prevMatrix1);\r\n    prevMatrices[1] = new DenseDoubleMatrix(prevMatrix2);\r\n    SmallLayeredNeuralNetworkMessage message = new SmallLayeredNeuralNetworkMessage(error, isConverge, matrices, prevMatrices);\r\n    Configuration conf = new Configuration();\r\n    String strPath = \"/tmp/testReadWriteSmallLayeredNeuralNetworkMessageWithPrev\";\r\n    Path path = new Path(strPath);\r\n    try {\r\n        FileSystem fs = FileSystem.get(new URI(strPath), conf);\r\n        FSDataOutputStream out = fs.create(path);\r\n        message.write(out);\r\n        out.close();\r\n        FSDataInputStream in = fs.open(path);\r\n        SmallLayeredNeuralNetworkMessage readMessage = new SmallLayeredNeuralNetworkMessage(0, isConverge, null, null);\r\n        readMessage.readFields(in);\r\n        in.close();\r\n        assertTrue(readMessage.isConverge());\r\n        DoubleMatrix[] readMatrices = readMessage.getCurMatrices();\r\n        assertEquals(2, readMatrices.length);\r\n        for (int i = 0; i < readMatrices.length; ++i) {\r\n            double[][] doubleMatrices = ((DenseDoubleMatrix) readMatrices[i]).getValues();\r\n            double[][] doubleExpected = ((DenseDoubleMatrix) matrices[i]).getValues();\r\n            for (int r = 0; r < doubleMatrices.length; ++r) {\r\n                assertArrayEquals(doubleExpected[r], doubleMatrices[r], 0.000001);\r\n            }\r\n        }\r\n        DoubleMatrix[] readPrevMatrices = readMessage.getPrevMatrices();\r\n        assertEquals(2, readPrevMatrices.length);\r\n        for (int i = 0; i < readPrevMatrices.length; ++i) {\r\n            double[][] doubleMatrices = ((DenseDoubleMatrix) readPrevMatrices[i]).getValues();\r\n            double[][] doubleExpected = ((DenseDoubleMatrix) prevMatrices[i]).getValues();\r\n            for (int r = 0; r < doubleMatrices.length; ++r) {\r\n                assertArrayEquals(doubleExpected[r], doubleMatrices[r], 0.000001);\r\n            }\r\n        }\r\n        // delete\r\n        fs.delete(path, true);\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    } catch (URISyntaxException e) {\r\n        e.printStackTrace();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\perception\\TestSmallMLPMessage.java",
+  "methodName" : "testReadWriteWithoutPrevUpdate",
+  "sourceCode" : "@Test\r\npublic void testReadWriteWithoutPrevUpdate() {\r\n    int owner = 101;\r\n    double[][] mat = { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };\r\n    double[][] mat2 = { { 10, 20 }, { 30, 40 }, { 50, 60 } };\r\n    double[][][] mats = { mat, mat2 };\r\n    DenseDoubleMatrix[] matrices = new DenseDoubleMatrix[] { new DenseDoubleMatrix(mat), new DenseDoubleMatrix(mat2) };\r\n    SmallMLPMessage message = new SmallMLPMessage(owner, true, matrices);\r\n    Configuration conf = new Configuration();\r\n    String strPath = \"/tmp/testSmallMLPMessage\";\r\n    Path path = new Path(strPath);\r\n    try {\r\n        FileSystem fs = FileSystem.get(new URI(strPath), conf);\r\n        FSDataOutputStream out = fs.create(path, true);\r\n        message.write(out);\r\n        out.close();\r\n        FSDataInputStream in = fs.open(path);\r\n        SmallMLPMessage outMessage = new SmallMLPMessage(0, false, null);\r\n        outMessage.readFields(in);\r\n        assertEquals(owner, outMessage.getOwner());\r\n        DenseDoubleMatrix[] outMatrices = outMessage.getWeightUpdatedMatrices();\r\n        // check each matrix\r\n        for (int i = 0; i < outMatrices.length; ++i) {\r\n            double[][] outMat = outMatrices[i].getValues();\r\n            for (int j = 0; j < outMat.length; ++j) {\r\n                assertArrayEquals(mats[i][j], outMat[j], 0.0001);\r\n            }\r\n        }\r\n        fs.delete(path, true);\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    } catch (URISyntaxException e) {\r\n        e.printStackTrace();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\perception\\TestSmallMLPMessage.java",
+  "methodName" : "testReadWriteWithPrevUpdate",
+  "sourceCode" : "@Test\r\npublic void testReadWriteWithPrevUpdate() {\r\n    int owner = 101;\r\n    double[][] mat = { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };\r\n    double[][] mat2 = { { 10, 20 }, { 30, 40 }, { 50, 60 } };\r\n    double[][][] mats = { mat, mat2 };\r\n    double[][] prevMat = { { 0.1, 0.2, 0.3 }, { 0.4, 0.5, 0.6 }, { 0.7, 0.8, 0.9 } };\r\n    double[][] prevMat2 = { { 1, 2 }, { 3, 4 }, { 5, 6 } };\r\n    double[][][] prevMats = { prevMat, prevMat2 };\r\n    DenseDoubleMatrix[] matrices = new DenseDoubleMatrix[] { new DenseDoubleMatrix(mat), new DenseDoubleMatrix(mat2) };\r\n    DenseDoubleMatrix[] prevMatrices = new DenseDoubleMatrix[] { new DenseDoubleMatrix(prevMat), new DenseDoubleMatrix(prevMat2) };\r\n    boolean terminated = false;\r\n    SmallMLPMessage message = new SmallMLPMessage(owner, terminated, matrices, prevMatrices);\r\n    Configuration conf = new Configuration();\r\n    String strPath = \"/tmp/testSmallMLPMessageWithPrevMatrices\";\r\n    Path path = new Path(strPath);\r\n    try {\r\n        FileSystem fs = FileSystem.get(new URI(strPath), conf);\r\n        FSDataOutputStream out = fs.create(path, true);\r\n        message.write(out);\r\n        out.close();\r\n        FSDataInputStream in = fs.open(path);\r\n        SmallMLPMessage outMessage = new SmallMLPMessage(0, false, null);\r\n        outMessage.readFields(in);\r\n        assertEquals(owner, outMessage.getOwner());\r\n        assertEquals(terminated, outMessage.isTerminated());\r\n        DenseDoubleMatrix[] outMatrices = outMessage.getWeightUpdatedMatrices();\r\n        // check each matrix\r\n        for (int i = 0; i < outMatrices.length; ++i) {\r\n            double[][] outMat = outMatrices[i].getValues();\r\n            for (int j = 0; j < outMat.length; ++j) {\r\n                assertArrayEquals(mats[i][j], outMat[j], 0.0001);\r\n            }\r\n        }\r\n        DenseDoubleMatrix[] outPrevMatrices = outMessage.getPrevWeightsUpdatedMatrices();\r\n        // check each matrix\r\n        for (int i = 0; i < outPrevMatrices.length; ++i) {\r\n            double[][] outMat = outPrevMatrices[i].getValues();\r\n            for (int j = 0; j < outMat.length; ++j) {\r\n                assertArrayEquals(prevMats[i][j], outMat[j], 0.0001);\r\n            }\r\n        }\r\n        fs.delete(path, true);\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    } catch (URISyntaxException e) {\r\n        e.printStackTrace();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\perception\\TestSmallMultiLayerPerceptron.java",
+  "methodName" : "testWriteReadMLP",
+  "sourceCode" : "/**\r\n * Write and read the parameters of MLP.\r\n */\r\n@Test\r\npublic void testWriteReadMLP() {\r\n    String modelPath = \"/tmp/sampleModel-testWriteReadMLP.data\";\r\n    double learningRate = 0.3;\r\n    // no regularization\r\n    double regularization = 0.0;\r\n    // no momentum\r\n    double momentum = 0;\r\n    String squashingFunctionName = \"Sigmoid\";\r\n    String costFunctionName = \"SquaredError\";\r\n    int[] layerSizeArray = new int[] { 3, 2, 2, 3 };\r\n    MultiLayerPerceptron mlp = new SmallMultiLayerPerceptron(learningRate, regularization, momentum, squashingFunctionName, costFunctionName, layerSizeArray);\r\n    FeatureTransformer transformer = new DefaultFeatureTransformer();\r\n    mlp.setFeatureTransformer(transformer);\r\n    try {\r\n        mlp.writeModelToFile(modelPath);\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    }\r\n    try {\r\n        // read the meta-data\r\n        Configuration conf = new Configuration();\r\n        FileSystem fs = FileSystem.get(conf);\r\n        mlp = new SmallMultiLayerPerceptron(modelPath);\r\n        assertEquals(mlp.getClass().getName(), mlp.getMLPType());\r\n        assertEquals(learningRate, mlp.getLearningRate(), 0.001);\r\n        assertEquals(regularization, mlp.isRegularization(), 0.001);\r\n        assertEquals(layerSizeArray.length, mlp.getNumberOfLayers());\r\n        assertEquals(momentum, mlp.getMomentum(), 0.001);\r\n        assertEquals(squashingFunctionName, mlp.getSquashingFunctionName());\r\n        assertEquals(costFunctionName, mlp.getCostFunctionName());\r\n        assertArrayEquals(layerSizeArray, mlp.getLayerSizeArray());\r\n        assertEquals(transformer.getClass().getName(), mlp.getFeatureTransformer().getClass().getName());\r\n        // delete test file\r\n        fs.delete(new Path(modelPath), true);\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\perception\\TestSmallMultiLayerPerceptron.java",
+  "methodName" : "testOutput",
+  "sourceCode" : "/**\r\n * Test the output of an example MLP.\r\n */\r\n@Test\r\npublic void testOutput() {\r\n    // write the MLP meta-data manually\r\n    String modelPath = \"/tmp/sampleModel-testOutput.data\";\r\n    Configuration conf = new Configuration();\r\n    try {\r\n        FileSystem fs = FileSystem.get(conf);\r\n        FSDataOutputStream output = fs.create(new Path(modelPath), true);\r\n        String MLPType = SmallMultiLayerPerceptron.class.getName();\r\n        double learningRate = 0.5;\r\n        double regularization = 0.0;\r\n        double momentum = 0.1;\r\n        String squashingFunctionName = \"Sigmoid\";\r\n        String costFunctionName = \"SquaredError\";\r\n        int[] layerSizeArray = new int[] { 3, 2, 3, 3 };\r\n        int numberOfLayers = layerSizeArray.length;\r\n        WritableUtils.writeString(output, MLPType);\r\n        output.writeDouble(learningRate);\r\n        output.writeDouble(regularization);\r\n        output.writeDouble(momentum);\r\n        output.writeInt(numberOfLayers);\r\n        WritableUtils.writeString(output, squashingFunctionName);\r\n        WritableUtils.writeString(output, costFunctionName);\r\n        // write the number of neurons for each layer\r\n        for (int i = 0; i < numberOfLayers; ++i) {\r\n            output.writeInt(layerSizeArray[i]);\r\n        }\r\n        double[][] matrix01 = { // 4 by 2\r\n        { 0.5, 0.2 }, { 0.1, 0.1 }, { 0.2, 0.5 }, { 0.1, 0.5 } };\r\n        double[][] matrix12 = { // 3 by 3\r\n        { 0.1, 0.2, 0.5 }, { 0.2, 0.5, 0.2 }, { 0.5, 0.5, 0.1 } };\r\n        double[][] matrix23 = { // 4 by 3\r\n        { 0.2, 0.5, 0.2 }, { 0.5, 0.1, 0.5 }, { 0.1, 0.2, 0.1 }, { 0.1, 0.2, 0.5 } };\r\n        DoubleMatrix[] matrices = { new DenseDoubleMatrix(matrix01), new DenseDoubleMatrix(matrix12), new DenseDoubleMatrix(matrix23) };\r\n        for (DoubleMatrix mat : matrices) {\r\n            MatrixWritable.write(mat, output);\r\n        }\r\n        // serialize the feature transformer\r\n        FeatureTransformer transformer = new DefaultFeatureTransformer();\r\n        Class<? extends FeatureTransformer> featureTransformerCls = transformer.getClass();\r\n        byte[] featureTransformerBytes = SerializationUtils.serialize(featureTransformerCls);\r\n        output.writeInt(featureTransformerBytes.length);\r\n        output.write(featureTransformerBytes);\r\n        output.close();\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    }\r\n    // initial the mlp with existing model meta-data and get the output\r\n    MultiLayerPerceptron mlp = new SmallMultiLayerPerceptron(modelPath);\r\n    DoubleVector input = new DenseDoubleVector(new double[] { 1, 2, 3 });\r\n    try {\r\n        DoubleVector result = mlp.output(input);\r\n        assertArrayEquals(new double[] { 0.6636557, 0.7009963, 0.7213835 }, result.toArray(), 0.0001);\r\n    } catch (Exception e1) {\r\n        e1.printStackTrace();\r\n    }\r\n    // delete meta-data\r\n    try {\r\n        FileSystem fs = FileSystem.get(conf);\r\n        fs.delete(new Path(modelPath), true);\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\perception\\TestSmallMultiLayerPerceptron.java",
+  "methodName" : "testTrainWithSquaredError",
+  "sourceCode" : "/**\r\n * Test training with squared error on the XOR problem.\r\n */\r\n@Test\r\npublic void testTrainWithSquaredError() {\r\n    // generate training data\r\n    DoubleVector[] trainingData = new DenseDoubleVector[] { new DenseDoubleVector(new double[] { 0, 0, 0 }), new DenseDoubleVector(new double[] { 0, 1, 1 }), new DenseDoubleVector(new double[] { 1, 0, 1 }), new DenseDoubleVector(new double[] { 1, 1, 0 }) };\r\n    // set parameters\r\n    double learningRate = 0.3;\r\n    // no regularization\r\n    double regularization = 0.02;\r\n    // no momentum\r\n    double momentum = 0;\r\n    String squashingFunctionName = \"Sigmoid\";\r\n    String costFunctionName = \"SquaredError\";\r\n    int[] layerSizeArray = new int[] { 2, 5, 1 };\r\n    SmallMultiLayerPerceptron mlp = new SmallMultiLayerPerceptron(learningRate, regularization, momentum, squashingFunctionName, costFunctionName, layerSizeArray);\r\n    try {\r\n        // train by multiple instances\r\n        Random rnd = new Random();\r\n        for (int i = 0; i < 100000; ++i) {\r\n            DenseDoubleMatrix[] weightUpdates = mlp.trainByInstance(trainingData[rnd.nextInt(4)]);\r\n            mlp.updateWeightMatrices(weightUpdates);\r\n        }\r\n        // System.out.printf(\"Weight matrices: %s\\n\",\r\n        // mlp.weightsToString(mlp.getWeightMatrices()));\r\n        for (int i = 0; i < trainingData.length; ++i) {\r\n            DenseDoubleVector testVec = (DenseDoubleVector) trainingData[i].slice(2);\r\n            double expected = trainingData[i].toArray()[2];\r\n            double actual = mlp.output(testVec).toArray()[0];\r\n            if (expected < 0.5 && actual >= 0.5 || expected >= 0.5 && actual < 0.5) {\r\n                Log.info(\"Neural network failes to lear the XOR.\");\r\n            }\r\n        }\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\perception\\TestSmallMultiLayerPerceptron.java",
+  "methodName" : "testTrainWithCrossEntropy",
+  "sourceCode" : "/**\r\n * Test training with cross entropy on the XOR problem.\r\n */\r\n@Test\r\npublic void testTrainWithCrossEntropy() {\r\n    // generate training data\r\n    DoubleVector[] trainingData = new DenseDoubleVector[] { new DenseDoubleVector(new double[] { 0, 0, 0 }), new DenseDoubleVector(new double[] { 0, 1, 1 }), new DenseDoubleVector(new double[] { 1, 0, 1 }), new DenseDoubleVector(new double[] { 1, 1, 0 }) };\r\n    // set parameters\r\n    double learningRate = 0.3;\r\n    // no regularization\r\n    double regularization = 0.0;\r\n    // no momentum\r\n    double momentum = 0;\r\n    String squashingFunctionName = \"Sigmoid\";\r\n    String costFunctionName = \"CrossEntropy\";\r\n    int[] layerSizeArray = new int[] { 2, 7, 1 };\r\n    SmallMultiLayerPerceptron mlp = new SmallMultiLayerPerceptron(learningRate, regularization, momentum, squashingFunctionName, costFunctionName, layerSizeArray);\r\n    try {\r\n        // train by multiple instances\r\n        Random rnd = new Random();\r\n        for (int i = 0; i < 50000; ++i) {\r\n            DenseDoubleMatrix[] weightUpdates = mlp.trainByInstance(trainingData[rnd.nextInt(4)]);\r\n            mlp.updateWeightMatrices(weightUpdates);\r\n        }\r\n        // System.out.printf(\"Weight matrices: %s\\n\",\r\n        // mlp.weightsToString(mlp.getWeightMatrices()));\r\n        for (int i = 0; i < trainingData.length; ++i) {\r\n            DenseDoubleVector testVec = (DenseDoubleVector) trainingData[i].slice(2);\r\n            double expected = trainingData[i].toArray()[2];\r\n            double actual = mlp.output(testVec).toArray()[0];\r\n            if (expected < 0.5 && actual >= 0.5 || expected >= 0.5 && actual < 0.5) {\r\n                Log.info(\"Neural network failes to lear the XOR.\");\r\n            }\r\n        }\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\perception\\TestSmallMultiLayerPerceptron.java",
+  "methodName" : "testWithRegularization",
+  "sourceCode" : "/**\r\n * Test training with regularizatiion.\r\n */\r\n@Test\r\npublic void testWithRegularization() {\r\n    // generate training data\r\n    DoubleVector[] trainingData = new DenseDoubleVector[] { new DenseDoubleVector(new double[] { 0, 0, 0 }), new DenseDoubleVector(new double[] { 0, 1, 1 }), new DenseDoubleVector(new double[] { 1, 0, 1 }), new DenseDoubleVector(new double[] { 1, 1, 0 }) };\r\n    // set parameters\r\n    double learningRate = 0.3;\r\n    // regularization should be a tiny number\r\n    double regularization = 0.02;\r\n    // no momentum\r\n    double momentum = 0;\r\n    String squashingFunctionName = \"Sigmoid\";\r\n    String costFunctionName = \"CrossEntropy\";\r\n    int[] layerSizeArray = new int[] { 2, 7, 1 };\r\n    SmallMultiLayerPerceptron mlp = new SmallMultiLayerPerceptron(learningRate, regularization, momentum, squashingFunctionName, costFunctionName, layerSizeArray);\r\n    try {\r\n        // train by multiple instances\r\n        Random rnd = new Random();\r\n        for (int i = 0; i < 20000; ++i) {\r\n            DenseDoubleMatrix[] weightUpdates = mlp.trainByInstance(trainingData[rnd.nextInt(4)]);\r\n            mlp.updateWeightMatrices(weightUpdates);\r\n        }\r\n        // System.out.printf(\"Weight matrices: %s\\n\",\r\n        // mlp.weightsToString(mlp.getWeightMatrices()));\r\n        for (int i = 0; i < trainingData.length; ++i) {\r\n            DenseDoubleVector testVec = (DenseDoubleVector) trainingData[i].slice(2);\r\n            double expected = trainingData[i].toArray()[2];\r\n            double actual = mlp.output(testVec).toArray()[0];\r\n            if (expected < 0.5 && actual >= 0.5 || expected >= 0.5 && actual < 0.5) {\r\n                Log.info(\"Neural network failes to lear the XOR.\");\r\n            }\r\n        }\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\perception\\TestSmallMultiLayerPerceptron.java",
+  "methodName" : "testWithMomentum",
+  "sourceCode" : "/**\r\n * Test training with momentum. The MLP can converge faster.\r\n */\r\n@Test\r\npublic void testWithMomentum() {\r\n    // generate training data\r\n    DoubleVector[] trainingData = new DenseDoubleVector[] { new DenseDoubleVector(new double[] { 0, 0, 0 }), new DenseDoubleVector(new double[] { 0, 1, 1 }), new DenseDoubleVector(new double[] { 1, 0, 1 }), new DenseDoubleVector(new double[] { 1, 1, 0 }) };\r\n    // set parameters\r\n    double learningRate = 0.3;\r\n    // regularization should be a tiny number\r\n    double regularization = 0.02;\r\n    // no momentum\r\n    double momentum = 0.5;\r\n    String squashingFunctionName = \"Sigmoid\";\r\n    String costFunctionName = \"CrossEntropy\";\r\n    int[] layerSizeArray = new int[] { 2, 7, 1 };\r\n    SmallMultiLayerPerceptron mlp = new SmallMultiLayerPerceptron(learningRate, regularization, momentum, squashingFunctionName, costFunctionName, layerSizeArray);\r\n    try {\r\n        // train by multiple instances\r\n        Random rnd = new Random();\r\n        for (int i = 0; i < 5000; ++i) {\r\n            DenseDoubleMatrix[] weightUpdates = mlp.trainByInstance(trainingData[rnd.nextInt(4)]);\r\n            mlp.updateWeightMatrices(weightUpdates);\r\n        }\r\n        // System.out.printf(\"Weight matrices: %s\\n\",\r\n        // mlp.weightsToString(mlp.getWeightMatrices()));\r\n        for (int i = 0; i < trainingData.length; ++i) {\r\n            DenseDoubleVector testVec = (DenseDoubleVector) trainingData[i].slice(2);\r\n            double expected = trainingData[i].toArray()[2];\r\n            double actual = mlp.output(testVec).toArray()[0];\r\n            if (expected < 0.5 && actual >= 0.5 || expected >= 0.5 && actual < 0.5) {\r\n                Log.info(\"Neural network failes to lear the XOR.\");\r\n            }\r\n        }\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\perception\\TestSmallMultiLayerPerceptron.java",
+  "methodName" : "testByRunningJobs",
+  "sourceCode" : "@Test\r\npublic void testByRunningJobs() {\r\n    this.testTrainingByXOR();\r\n    this.testFeatureTransformer();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\recommendation\\TestOnlineCF.java",
+  "methodName" : "testOnlineCF",
+  "sourceCode" : "@SuppressWarnings({ \"deprecation\", \"rawtypes\", \"unchecked\" })\r\n@Test\r\npublic void testOnlineCF() {\r\n    Preference[] train_prefs = { new Preference<Integer, Integer>(1, 1, 4), new Preference<Integer, Integer>(1, 2, 2.5), new Preference<Integer, Integer>(1, 3, 3.5), new Preference<Integer, Integer>(1, 4, 1), new Preference<Integer, Integer>(1, 5, 3.5), new Preference<Integer, Integer>(2, 1, 4), new Preference<Integer, Integer>(2, 2, 2.5), new Preference<Integer, Integer>(2, 3, 3.5), new Preference<Integer, Integer>(2, 4, 1), new Preference<Integer, Integer>(2, 5, 3.5), new Preference<Integer, Integer>(3, 1, 4), new Preference<Integer, Integer>(3, 2, 2.5), new Preference<Integer, Integer>(3, 3, 3.5) };\r\n    Preference[] test_prefs = { new Preference<Integer, Integer>(1, 3, 3.5), new Preference<Integer, Integer>(2, 4, 1), new Preference<Integer, Integer>(3, 4, 1), new Preference<Integer, Integer>(3, 5, 3.5) };\r\n    Random rnd = new Random();\r\n    Long num = Long.valueOf(rnd.nextInt(100000));\r\n    String fileName = \"onlinecf_train\" + num.toString();\r\n    String outputFileName = \"onlinecf_model\" + num.toString();\r\n    Configuration fsConf = new Configuration();\r\n    String strDataPath = \"/tmp/\" + fileName;\r\n    String convertedFileName = \"/tmp/converted_\" + fileName;\r\n    Path dataPath = new Path(strDataPath);\r\n    try {\r\n        URI uri = new URI(strDataPath);\r\n        FileSystem fs = FileSystem.get(uri, fsConf);\r\n        fs.delete(dataPath, true);\r\n        FSDataOutputStream fileOut = fs.create(dataPath, true);\r\n        StringBuilder str = new StringBuilder();\r\n        for (Preference taste : train_prefs) {\r\n            str.append(taste.getUserId());\r\n            str.append(\"::\");\r\n            str.append(taste.getItemId());\r\n            str.append(\"::\");\r\n            str.append(taste.getValue().get());\r\n            str.append(\"\\n\");\r\n        }\r\n        fileOut.writeBytes(str.toString());\r\n        fileOut.close();\r\n        MovieLensConverter converter = new MovieLensConverter();\r\n        assertEquals(true, converter.convert(strDataPath, null, convertedFileName));\r\n        OnlineCF recommender = new OnlineCF();\r\n        recommender.setInputPreferences(convertedFileName);\r\n        recommender.setIteration(150);\r\n        recommender.setMatrixRank(3);\r\n        recommender.setSkipCount(1);\r\n        recommender.setTaskCount(2);\r\n        recommender.setUpdateFunction(MeanAbsError.class);\r\n        recommender.setOutputPath(outputFileName);\r\n        assertEquals(true, recommender.train());\r\n        recommender.load(outputFileName, false);\r\n        int correct = 0;\r\n        for (Preference<Integer, Integer> test : test_prefs) {\r\n            double actual = test.getValue().get();\r\n            double estimated = recommender.estimatePreference(test.getUserId(), test.getItemId());\r\n            correct += (Math.abs(actual - estimated) < 0.5) ? 1 : 0;\r\n        }\r\n        assertEquals(test_prefs.length * 0.75, correct, 1);\r\n        fs.delete(new Path(outputFileName));\r\n        fs.delete(new Path(strDataPath));\r\n        fs.delete(new Path(convertedFileName));\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    }\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\regression\\LinearRegressionModelTest.java",
+  "methodName" : "testCorrectCostCalculation",
+  "sourceCode" : "@Test\r\npublic void testCorrectCostCalculation() throws Exception {\r\n    LinearRegressionModel linearRegressionModel = new LinearRegressionModel();\r\n    DoubleVector x = new DenseDoubleVector(new double[] { 2, 3, 4 });\r\n    double y = 1;\r\n    DoubleVector theta = new DenseDoubleVector(new double[] { 1, 1, 1 });\r\n    BigDecimal cost = linearRegressionModel.calculateCostForItem(x, y, 2, theta);\r\n    assertEquals(\"wrong cost calculation for linear regression\", BigDecimal.valueOf(16d), cost);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\regression\\LinearRegressionModelTest.java",
+  "methodName" : "testCorrectHypothesisCalculation",
+  "sourceCode" : "@Test\r\npublic void testCorrectHypothesisCalculation() throws Exception {\r\n    LinearRegressionModel linearRegressionModel = new LinearRegressionModel();\r\n    BigDecimal hypothesisValue = linearRegressionModel.applyHypothesis(new DenseDoubleVector(new double[] { 1, 1, 1 }), new DenseDoubleVector(new double[] { 2, 3, 4 }));\r\n    assertEquals(\"wrong hypothesis value for linear regression\", BigDecimal.valueOf(9d), hypothesisValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\regression\\LogisticRegressionModelTest.java",
+  "methodName" : "testCorrectCostCalculation",
+  "sourceCode" : "@Test\r\npublic void testCorrectCostCalculation() throws Exception {\r\n    LogisticRegressionModel logisticRegressionModel = new LogisticRegressionModel();\r\n    DoubleVector x = new DenseDoubleVector(new double[] { 2, 3, 4 });\r\n    double y = 1;\r\n    DoubleVector theta = new DenseDoubleVector(new double[] { 1, 1, 1 });\r\n    BigDecimal cost = logisticRegressionModel.calculateCostForItem(x, y, 2, theta);\r\n    assertEquals(\"wrong cost calculation for logistic regression\", 6.170109486162941E-5d, cost.doubleValue(), 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\regression\\LogisticRegressionModelTest.java",
+  "methodName" : "testCorrectHypothesisCalculation",
+  "sourceCode" : "@Test\r\npublic void testCorrectHypothesisCalculation() throws Exception {\r\n    LogisticRegressionModel logisticRegressionModel = new LogisticRegressionModel();\r\n    BigDecimal hypothesisValue = logisticRegressionModel.applyHypothesis(new DenseDoubleVector(new double[] { 1, 1, 1 }), new DenseDoubleVector(new double[] { 2, 3, 4 }));\r\n    assertEquals(\"wrong hypothesis value for logistic regression\", 0.9998766054240137682597533152954043d, hypothesisValue.doubleValue(), 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\regression\\LogisticRegressionModelTest.java",
+  "methodName" : "testMultipleCostCalculation",
+  "sourceCode" : "@Test\r\npublic void testMultipleCostCalculation() throws Exception {\r\n    LogisticRegressionModel logisticRegressionModel = new LogisticRegressionModel();\r\n    double[] theta1 = new double[] { 10.010000000474975, 10.050000002374873, 10.01600000075996, 10.018000000854954, 10.024000001139939, 10.038000001804903, 10.036000001709908 };\r\n    double[] theta2 = new double[] { 13.000000142492354, 25.00000071246177, 14.800000227987766, 15.400000256486237, 17.20000034198165, 21.400000541470945, 20.800000512972474 };\r\n    DenseDoubleVector theta1Vector = new DenseDoubleVector(theta1);\r\n    DenseDoubleVector theta2Vector = new DenseDoubleVector(theta2);\r\n    DenseDoubleVector x = new DenseDoubleVector(new double[] { 1, 10, 3, 2, 1, 6, 1 });\r\n    BigDecimal res1 = logisticRegressionModel.applyHypothesis(theta1Vector, x);\r\n    BigDecimal res2 = logisticRegressionModel.applyHypothesis(theta2Vector, x);\r\n    assertFalse(res1 + \" shouldn't be the same as \" + res2, res1.equals(res2));\r\n    BigDecimal itemCost1 = logisticRegressionModel.calculateCostForItem(x, 2, 8, theta1Vector);\r\n    BigDecimal itemCost2 = logisticRegressionModel.calculateCostForItem(x, 2, 8, theta2Vector);\r\n    assertFalse(itemCost1 + \" shouldn't be the same as \" + itemCost2, itemCost1.equals(itemCost2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\regression\\TestLinearRegression.java",
+  "methodName" : "testLinearRegressionSimple",
+  "sourceCode" : "@Test\r\npublic void testLinearRegressionSimple() {\r\n    // y = 2.1 * x_1 + 0.7 * x_2 * 0.1 * x_3\r\n    double[][] instances = { { 1, 1, 1, 2.9 }, { 5, 2, 3, 12.2 }, { 2, 5, 8, 8.5 }, { 0.5, 0.1, 0.2, 1.14 }, { 10, 20, 30, 38 }, { 0.6, 20, 5, 16.76 } };\r\n    LinearRegression regression = new LinearRegression(instances[0].length - 1);\r\n    regression.setLearningRate(0.001);\r\n    regression.setMomemtumWeight(0.1);\r\n    int iterations = 100;\r\n    for (int i = 0; i < iterations; ++i) {\r\n        for (int j = 0; j < instances.length; ++j) {\r\n            regression.trainOnline(new DenseDoubleVector(instances[j]));\r\n        }\r\n    }\r\n    double relativeError = 0;\r\n    for (int i = 0; i < instances.length; ++i) {\r\n        DoubleVector test = new DenseDoubleVector(instances[i]);\r\n        double expected = test.get(test.getDimension() - 1);\r\n        test = test.slice(test.getDimension() - 1);\r\n        double actual = regression.getOutput(test).get(0);\r\n        relativeError += Math.abs((expected - actual) / expected);\r\n    }\r\n    relativeError /= instances.length;\r\n    Log.info(String.format(\"Relative error %f%%\\n\", relativeError));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\regression\\TestLinearRegression.java",
+  "methodName" : "testLinearRegressionOnlineTraining",
+  "sourceCode" : "@Test\r\npublic void testLinearRegressionOnlineTraining() {\r\n    // read linear regression data\r\n    String filepath = \"src/test/resources/linear_regression_data.txt\";\r\n    List<double[]> instanceList = new ArrayList<double[]>();\r\n    try {\r\n        BufferedReader br = new BufferedReader(new FileReader(filepath));\r\n        String line = null;\r\n        while ((line = br.readLine()) != null) {\r\n            if (line.startsWith(\"#\")) {\r\n                // ignore comments\r\n                continue;\r\n            }\r\n            String[] tokens = line.trim().split(\" \");\r\n            double[] instance = new double[tokens.length];\r\n            for (int i = 0; i < tokens.length; ++i) {\r\n                instance[i] = Double.parseDouble(tokens[i]);\r\n            }\r\n            instanceList.add(instance);\r\n        }\r\n        br.close();\r\n    } catch (FileNotFoundException e) {\r\n        e.printStackTrace();\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    }\r\n    // divide dataset into training and testing\r\n    List<double[]> testInstances = new ArrayList<double[]>();\r\n    testInstances.addAll(instanceList.subList(instanceList.size() - 20, instanceList.size()));\r\n    List<double[]> trainingInstances = instanceList.subList(0, instanceList.size() - 20);\r\n    int dimension = instanceList.get(0).length - 1;\r\n    LinearRegression regression = new LinearRegression(dimension);\r\n    regression.setLearningRate(0.00000005);\r\n    regression.setMomemtumWeight(0.1);\r\n    regression.setRegularizationWeight(0.05);\r\n    int iterations = 2000;\r\n    for (int i = 0; i < iterations; ++i) {\r\n        for (double[] trainingInstance : trainingInstances) {\r\n            regression.trainOnline(new DenseDoubleVector(trainingInstance));\r\n        }\r\n    }\r\n    double relativeError = 0.0;\r\n    // calculate the error on test instance\r\n    for (double[] testInstance : testInstances) {\r\n        DoubleVector instance = new DenseDoubleVector(testInstance);\r\n        double expected = instance.get(instance.getDimension() - 1);\r\n        instance = instance.slice(instance.getDimension() - 1);\r\n        double actual = regression.getOutput(instance).get(0);\r\n        if (expected == 0) {\r\n            expected = 0.0000001;\r\n        }\r\n        relativeError += Math.abs((expected - actual) / expected);\r\n    }\r\n    relativeError /= testInstances.size();\r\n    Log.info(String.format(\"Relative error: %f%%\\n\", relativeError * 100));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\regression\\TestLogisticRegression.java",
+  "methodName" : "testLogisticRegressionLocal",
+  "sourceCode" : "@Test\r\npublic void testLogisticRegressionLocal() {\r\n    // read logistic regression data\r\n    String filepath = \"src/test/resources/logistic_regression_data.txt\";\r\n    List<double[]> instanceList = new ArrayList<double[]>();\r\n    try {\r\n        BufferedReader br = new BufferedReader(new FileReader(filepath));\r\n        String line = null;\r\n        while ((line = br.readLine()) != null) {\r\n            if (line.startsWith(\"#\")) {\r\n                // ignore comments\r\n                continue;\r\n            }\r\n            String[] tokens = line.trim().split(\",\");\r\n            double[] instance = new double[tokens.length];\r\n            for (int i = 0; i < tokens.length; ++i) {\r\n                instance[i] = Double.parseDouble(tokens[i]);\r\n            }\r\n            instanceList.add(instance);\r\n        }\r\n        br.close();\r\n    } catch (FileNotFoundException e) {\r\n        e.printStackTrace();\r\n    } catch (IOException e) {\r\n        e.printStackTrace();\r\n    }\r\n    int dimension = instanceList.get(0).length - 1;\r\n    // min-max normalization\r\n    double[] mins = new double[dimension];\r\n    double[] maxs = new double[dimension];\r\n    Arrays.fill(mins, Double.MAX_VALUE);\r\n    Arrays.fill(maxs, Double.MIN_VALUE);\r\n    for (double[] instance : instanceList) {\r\n        for (int i = 0; i < instance.length - 1; ++i) {\r\n            if (mins[i] > instance[i]) {\r\n                mins[i] = instance[i];\r\n            }\r\n            if (maxs[i] < instance[i]) {\r\n                maxs[i] = instance[i];\r\n            }\r\n        }\r\n    }\r\n    for (double[] instance : instanceList) {\r\n        for (int i = 0; i < instance.length - 1; ++i) {\r\n            double range = maxs[i] - mins[i];\r\n            if (range != 0) {\r\n                instance[i] = (instance[i] - mins[i]) / range;\r\n            }\r\n        }\r\n    }\r\n    // divide dataset into training and testing\r\n    List<double[]> testInstances = new ArrayList<double[]>();\r\n    testInstances.addAll(instanceList.subList(instanceList.size() - 100, instanceList.size()));\r\n    List<double[]> trainingInstances = instanceList.subList(0, instanceList.size() - 100);\r\n    LogisticRegression regression = new LogisticRegression(dimension);\r\n    regression.setLearningRate(0.2);\r\n    regression.setMomemtumWeight(0.1);\r\n    regression.setRegularizationWeight(0.1);\r\n    int iterations = 1000;\r\n    for (int i = 0; i < iterations; ++i) {\r\n        for (double[] trainingInstance : trainingInstances) {\r\n            regression.trainOnline(new DenseDoubleVector(trainingInstance));\r\n        }\r\n    }\r\n    double errorRate = 0;\r\n    // calculate the error on test instance\r\n    for (double[] testInstance : testInstances) {\r\n        DoubleVector instance = new DenseDoubleVector(testInstance);\r\n        double expected = instance.get(instance.getDimension() - 1);\r\n        DoubleVector features = instance.slice(instance.getDimension() - 1);\r\n        double actual = regression.getOutput(features).get(0);\r\n        if (actual < 0.5 && expected >= 0.5 || actual >= 0.5 && expected < 0.5) {\r\n            ++errorRate;\r\n        }\r\n    }\r\n    errorRate /= testInstances.size();\r\n    Log.info(String.format(\"Relative error: %f%%\\n\", errorRate * 100));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Hama\\ml\\src\\test\\java\\org\\apache\\hama\\ml\\regression\\VectorDoubleFileInputFormatTest.java",
+  "methodName" : "testFileRead",
+  "sourceCode" : "@Test\r\npublic void testFileRead() throws Exception {\r\n    VectorDoubleFileInputFormat inputFormat = new VectorDoubleFileInputFormat();\r\n    Path file = new Path(\"src/test/resources/vd_file_sample.txt\");\r\n    InputSplit split = new FileSplit(file, 0, 1000, new String[] { \"localhost\" });\r\n    BSPJob job = new BSPJob();\r\n    RecordReader<VectorWritable, DoubleWritable> recordReader = inputFormat.getRecordReader(split, job);\r\n    assertNotNull(recordReader);\r\n    VectorWritable key = recordReader.createKey();\r\n    assertNotNull(key);\r\n    DoubleWritable value = recordReader.createValue();\r\n    assertNotNull(value);\r\n    assertTrue(recordReader.next(key, value));\r\n    assertEquals(new DenseDoubleVector(new double[] { 2d, 3d, 4d }), key.getVector());\r\n    assertEquals(new DoubleWritable(1d), value);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

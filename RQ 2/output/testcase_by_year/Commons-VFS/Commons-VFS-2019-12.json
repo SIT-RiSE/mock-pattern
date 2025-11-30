@@ -1,0 +1,1483 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\auth\\StaticUserAuthenticatorTestCase.java",
+  "methodName" : "testAuthenticationRequest",
+  "sourceCode" : "@Test\r\npublic void testAuthenticationRequest() {\r\n    final UserAuthenticator userAuthenticator = new StaticUserAuthenticator(\"DOMAIN\", \"USER\", \"PWD\");\r\n    UserAuthenticationData authenticationData = userAuthenticator.requestAuthentication(ArrayUtils.toArray(UserAuthenticationData.DOMAIN));\r\n    assertArrayEquals(\"DOMAIN\".toCharArray(), authenticationData.getData(UserAuthenticationData.DOMAIN));\r\n    assertNull(authenticationData.getData(UserAuthenticationData.USERNAME));\r\n    assertNull(authenticationData.getData(UserAuthenticationData.PASSWORD));\r\n    authenticationData = userAuthenticator.requestAuthentication(ArrayUtils.toArray(UserAuthenticationData.USERNAME, UserAuthenticationData.PASSWORD));\r\n    assertNull(authenticationData.getData(UserAuthenticationData.DOMAIN));\r\n    assertArrayEquals(\"USER\".toCharArray(), authenticationData.getData(UserAuthenticationData.USERNAME));\r\n    assertArrayEquals(\"PWD\".toCharArray(), authenticationData.getData(UserAuthenticationData.PASSWORD));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\auth\\StaticUserAuthenticatorTestCase.java",
+  "methodName" : "testEquality",
+  "sourceCode" : "@Test\r\npublic void testEquality() {\r\n    final UserAuthenticator userAuthenticator = new StaticUserAuthenticator(\"DOMAIN\", \"USER\", \"PWD\");\r\n    assertEquals(new StaticUserAuthenticator(\"DOMAIN\", \"USER\", \"PWD\"), userAuthenticator);\r\n    assertNotEquals(new StaticUserAuthenticator(\"DOMAIN\", \"USER\", null), userAuthenticator);\r\n    assertNotEquals(new StaticUserAuthenticator(\"DOMAIN\", null, \"PWD\"), userAuthenticator);\r\n    assertNotEquals(new StaticUserAuthenticator(null, \"USER\", \"PWD\"), userAuthenticator);\r\n    assertEquals(new StaticUserAuthenticator(\"DOMAIN\", \"USER\", \"PWD\").hashCode(), userAuthenticator.hashCode());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileChangeEventTest.java",
+  "methodName" : "testFileObject",
+  "sourceCode" : "@Test\r\npublic void testFileObject() throws FileSystemException {\r\n    try (final FileObject baseFile = VFS.getManager().toFileObject(new File(\".\"))) {\r\n        Assert.assertNotNull(baseFile);\r\n        final FileChangeEvent fileChangeEvent = new FileChangeEvent(baseFile);\r\n        Assert.assertEquals(fileChangeEvent.getFile(), fileChangeEvent.getFileObject());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileExtensionSelectorTest.java",
+  "methodName" : "testEmpty",
+  "sourceCode" : "/**\r\n * Tests an empty selector.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testEmpty() throws Exception {\r\n    final FileSelector selector = new FileExtensionSelector();\r\n    final FileObject[] foList = BaseFolder.findFiles(selector);\r\n    Assert.assertEquals(0, foList.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileExtensionSelectorTest.java",
+  "methodName" : "testManyExtensions",
+  "sourceCode" : "/**\r\n * Tests many extensions at once.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testManyExtensions() throws Exception {\r\n    final FileObject[] foArray = BaseFolder.findFiles(Selectors.SELECT_FILES);\r\n    Assert.assertTrue(foArray.length > 0);\r\n    // gather file extensions.\r\n    final Set<String> extensionSet = new HashSet<>();\r\n    for (final FileObject fo : foArray) {\r\n        extensionSet.add(fo.getName().getExtension());\r\n    }\r\n    final String message = String.format(\"Extensions: %s; files: %s\", extensionSet.toString(), Arrays.asList(foArray).toString());\r\n    Assert.assertTrue(message, extensionSet.size() > 0);\r\n    Assert.assertEquals(message, ExtensionCount, extensionSet.size());\r\n    // check all unique extensions\r\n    final FileSelector selector = new FileExtensionSelector(extensionSet);\r\n    final FileObject[] list = BaseFolder.findFiles(selector);\r\n    Assert.assertEquals(FileCount, list.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileExtensionSelectorTest.java",
+  "methodName" : "testNullCollection",
+  "sourceCode" : "/**\r\n * Tests a null selector.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testNullCollection() throws Exception {\r\n    final FileSelector selector0 = new FileExtensionSelector((Collection<String>) null);\r\n    final FileObject[] foList = BaseFolder.findFiles(selector0);\r\n    Assert.assertEquals(0, foList.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileExtensionSelectorTest.java",
+  "methodName" : "testNullString",
+  "sourceCode" : "/**\r\n * Tests a null selector.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testNullString() throws Exception {\r\n    final FileSelector selector0 = new FileExtensionSelector((String) null);\r\n    final FileObject[] foList = BaseFolder.findFiles(selector0);\r\n    Assert.assertEquals(0, foList.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileExtensionSelectorTest.java",
+  "methodName" : "testOneExtension",
+  "sourceCode" : "/**\r\n * Tests a one extension selector.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testOneExtension() throws Exception {\r\n    final FileObject[] foArray = BaseFolder.findFiles(Selectors.SELECT_FILES);\r\n    Assert.assertTrue(foArray.length > 0);\r\n    // gather file extensions.\r\n    final Set<String> extensionSet = new HashSet<>();\r\n    for (final FileObject fo : foArray) {\r\n        extensionSet.add(fo.getName().getExtension());\r\n    }\r\n    final String message = String.format(\"Extensions: %s; files: %s\", extensionSet.toString(), Arrays.asList(foArray).toString());\r\n    Assert.assertEquals(message, ExtensionCount, extensionSet.size());\r\n    // check each extension\r\n    for (final String extension : extensionSet) {\r\n        final FileSelector selector = new FileExtensionSelector(extension);\r\n        final FileObject[] list = BaseFolder.findFiles(selector);\r\n        Assert.assertEquals(FilesPerExtensionCount, list.length);\r\n    }\r\n    // check each file against itself\r\n    for (final FileObject fo : foArray) {\r\n        final FileSelector selector = new FileExtensionSelector(fo.getName().getExtension());\r\n        final FileObject[] list = BaseFolder.findFiles(selector);\r\n        Assert.assertEquals(FilesPerExtensionCount, list.length);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileIteratorTest.java",
+  "methodName" : "testIterator",
+  "sourceCode" : "@Test\r\npublic void testIterator() throws FileSystemException {\r\n    final FileObject[] findFiles = BaseFolder.findFiles(Selectors.SELECT_ALL);\r\n    Assert.assertEquals(FileCount, findFiles.length);\r\n    final FileObject[] listFiles = BaseFolder.getChildren();\r\n    Assert.assertTrue(FileCount > listFiles.length);\r\n    int i = 0;\r\n    for (final FileObject actualFile : BaseFolder) {\r\n        final FileObject expectedFile = findFiles[i];\r\n        Assert.assertEquals(expectedFile, actualFile);\r\n        i++;\r\n    }\r\n    final Iterator<FileObject> iter = BaseFolder.iterator();\r\n    i = 0;\r\n    while (iter.hasNext()) {\r\n        final FileObject expectedFile = findFiles[i];\r\n        Assert.assertEquals(expectedFile, iter.next());\r\n        i++;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileSystemExceptionTest.java",
+  "methodName" : "testMasksPasswordOfUrlsWithBasicAuthentication",
+  "sourceCode" : "/**\r\n * Tests a {@link FileSystemException} containing info with a URL containing a complete basic authentication.\r\n */\r\n@Test\r\npublic void testMasksPasswordOfUrlsWithBasicAuthentication() {\r\n    final FileSystemException fse = new FileSystemException(\"vfs.provider/rename.error\", \"file://test.bin\", \"http://foo:bar@junit.org/test.bin\");\r\n    assertEquals(\"file://test.bin\", fse.getInfo()[0]);\r\n    assertEquals(\"http://foo:***@junit.org/test.bin\", fse.getInfo()[1]);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileSystemExceptionTest.java",
+  "methodName" : "testDoesNotModifyUrlsWithoutPassword",
+  "sourceCode" : "/**\r\n * Tests a {@link FileSystemException} containing info with a URL containing only the user information.\r\n */\r\n@Test\r\npublic void testDoesNotModifyUrlsWithoutPassword() {\r\n    final FileSystemException fse = new FileSystemException(\"vfs.provider/delete.error\", \"http://foo@junit.org/test.bin\");\r\n    assertEquals(\"http://foo@junit.org/test.bin\", fse.getInfo()[0]);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileSystemExceptionTest.java",
+  "methodName" : "testProperDetectionOfUrl",
+  "sourceCode" : "/**\r\n * Tests a {@link FileSystemException} containing info with a nested URL containing a complete basic authentication.\r\n */\r\n@Test\r\npublic void testProperDetectionOfUrl() {\r\n    final FileSystemException fse = new FileSystemException(\"vfs.provider/delete.error\", \"zip:http://foo:bar@junit.org/test.bin\");\r\n    assertEquals(\"zip:http://foo:***@junit.org/test.bin\", fse.getInfo()[0]);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileSystemOptionsTest.java",
+  "methodName" : "testEqualsHashCodeAndCompareTo",
+  "sourceCode" : "@Test\r\npublic void testEqualsHashCodeAndCompareTo() {\r\n    final JUnitConfigBuilder builder = JUnitConfigBuilder.getInstance();\r\n    final FileSystemOptions expected = new FileSystemOptions();\r\n    builder.setId(expected, \"Test\");\r\n    final FileSystemOptions actual = new FileSystemOptions();\r\n    builder.setId(actual, \"Test\");\r\n    Assert.assertEquals(expected, actual);\r\n    Assert.assertEquals(0, actual.compareTo(expected));\r\n    Assert.assertEquals(expected.hashCode(), actual.hashCode());\r\n    builder.setNames(expected, new String[] { \"A\", \"B\", \"C\" });\r\n    Assert.assertNotEquals(expected, actual);\r\n    Assert.assertEquals(-1, actual.compareTo(expected));\r\n    Assert.assertNotEquals(expected.hashCode(), actual.hashCode());\r\n    builder.setNames(actual, new String[] { \"A\", \"B\", \"C\" });\r\n    Assert.assertEquals(expected, actual);\r\n    Assert.assertEquals(0, actual.compareTo(expected));\r\n    Assert.assertEquals(expected.hashCode(), actual.hashCode());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileTypeSelectorTest.java",
+  "methodName" : "testFileOrFolders",
+  "sourceCode" : "@Test\r\npublic void testFileOrFolders() throws Exception {\r\n    final FileSelector selector = new FileTypeSelector(FileType.FILE_OR_FOLDER);\r\n    final FileObject[] foList = BaseFolder.findFiles(selector);\r\n    // Why 0?\r\n    Assert.assertEquals(0, foList.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileTypeSelectorTest.java",
+  "methodName" : "testFiles",
+  "sourceCode" : "@Test\r\npublic void testFiles() throws Exception {\r\n    final FileSelector selector = new FileTypeSelector(FileType.FILE);\r\n    final FileObject[] foList = BaseFolder.findFiles(selector);\r\n    Assert.assertEquals(5, foList.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileTypeSelectorTest.java",
+  "methodName" : "testFolders",
+  "sourceCode" : "@Test\r\npublic void testFolders() throws Exception {\r\n    final FileSelector selector = new FileTypeSelector(FileType.FOLDER);\r\n    final FileObject[] foList = BaseFolder.findFiles(selector);\r\n    Assert.assertEquals(8, foList.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileTypeTest.java",
+  "methodName" : "testSerializationFile",
+  "sourceCode" : "@Test\r\npublic void testSerializationFile() {\r\n    test(FileType.FILE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileTypeTest.java",
+  "methodName" : "testSerializationContainer",
+  "sourceCode" : "@Test\r\npublic void testSerializationContainer() {\r\n    final Fixture expectedFixture = new Fixture();\r\n    final byte[] serialized = SerializationUtils.serialize(expectedFixture);\r\n    final Fixture actualFixture = (Fixture) SerializationUtils.deserialize(serialized);\r\n    assertEquals(expectedFixture.getFileType(), actualFixture.getFileType());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileTypeTest.java",
+  "methodName" : "testSerializationFileOrFolder",
+  "sourceCode" : "@Test\r\npublic void testSerializationFileOrFolder() {\r\n    test(FileType.FILE_OR_FOLDER);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileTypeTest.java",
+  "methodName" : "testSerializationFolder",
+  "sourceCode" : "@Test\r\npublic void testSerializationFolder() {\r\n    test(FileType.FOLDER);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\FileTypeTest.java",
+  "methodName" : "testSerializationImaginary",
+  "sourceCode" : "@Test\r\npublic void testSerializationImaginary() {\r\n    test(FileType.IMAGINARY);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\AgeFileFilterTest.java",
+  "methodName" : "testAgeFileFilterDate",
+  "sourceCode" : "@Test\r\npublic void testAgeFileFilterDate() throws FileSystemException {\r\n    final AgeFileFilter testee = new AgeFileFilter(new Date());\r\n    Assert.assertTrue(testee.accept(oldFileInfo));\r\n    Assert.assertTrue(testee.accept(currentFileInfo));\r\n    Assert.assertFalse(testee.accept(newFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\AgeFileFilterTest.java",
+  "methodName" : "testAgeFileFilterDateBoolean",
+  "sourceCode" : "@Test\r\npublic void testAgeFileFilterDateBoolean() throws FileSystemException {\r\n    AgeFileFilter testee;\r\n    testee = new AgeFileFilter(new Date(), true);\r\n    Assert.assertTrue(testee.accept(oldFileInfo));\r\n    Assert.assertTrue(testee.accept(currentFileInfo));\r\n    Assert.assertFalse(testee.accept(newFileInfo));\r\n    testee = new AgeFileFilter(new Date(), false);\r\n    Assert.assertFalse(testee.accept(oldFileInfo));\r\n    Assert.assertFalse(testee.accept(currentFileInfo));\r\n    Assert.assertTrue(testee.accept(newFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\AgeFileFilterTest.java",
+  "methodName" : "testAgeFileFilterFile",
+  "sourceCode" : "@Test\r\npublic void testAgeFileFilterFile() throws FileSystemException {\r\n    final AgeFileFilter testee = new AgeFileFilter(currentFileInfo.getFile());\r\n    Assert.assertTrue(testee.accept(oldFileInfo));\r\n    Assert.assertTrue(testee.accept(currentFileInfo));\r\n    Assert.assertFalse(testee.accept(newFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\AgeFileFilterTest.java",
+  "methodName" : "testAgeFileFilterFileBoolean",
+  "sourceCode" : "@Test\r\npublic void testAgeFileFilterFileBoolean() throws FileSystemException {\r\n    AgeFileFilter testee;\r\n    testee = new AgeFileFilter(currentFileInfo.getFile(), true);\r\n    Assert.assertTrue(testee.accept(oldFileInfo));\r\n    Assert.assertTrue(testee.accept(currentFileInfo));\r\n    Assert.assertFalse(testee.accept(newFileInfo));\r\n    testee = new AgeFileFilter(currentFileInfo.getFile(), false);\r\n    Assert.assertFalse(testee.accept(oldFileInfo));\r\n    Assert.assertFalse(testee.accept(currentFileInfo));\r\n    Assert.assertTrue(testee.accept(newFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\AgeFileFilterTest.java",
+  "methodName" : "testAgeFileFilterLong",
+  "sourceCode" : "@Test\r\npublic void testAgeFileFilterLong() throws FileSystemException {\r\n    final AgeFileFilter testee = new AgeFileFilter(NOW);\r\n    Assert.assertTrue(testee.accept(oldFileInfo));\r\n    Assert.assertTrue(testee.accept(currentFileInfo));\r\n    Assert.assertFalse(testee.accept(newFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\AgeFileFilterTest.java",
+  "methodName" : "testAgeFileFilterLongBoolean",
+  "sourceCode" : "@Test\r\npublic void testAgeFileFilterLongBoolean() throws FileSystemException {\r\n    AgeFileFilter testee;\r\n    testee = new AgeFileFilter(NOW, true);\r\n    Assert.assertTrue(testee.accept(oldFileInfo));\r\n    Assert.assertTrue(testee.accept(currentFileInfo));\r\n    Assert.assertFalse(testee.accept(newFileInfo));\r\n    testee = new AgeFileFilter(NOW, false);\r\n    Assert.assertFalse(testee.accept(oldFileInfo));\r\n    Assert.assertFalse(testee.accept(currentFileInfo));\r\n    Assert.assertTrue(testee.accept(newFileInfo));\r\n    // Same test with ZIP file\r\n    FileObject[] files;\r\n    files = zipFileObj.findFiles(new FileFilterSelector(new AgeFileFilter(NOW, true)));\r\n    assertContains(files, oldFile.getName(), currentFile.getName());\r\n    Assert.assertEquals(2, files.length);\r\n    files = zipFileObj.findFiles(new FileFilterSelector(new AgeFileFilter(NOW, false)));\r\n    assertContains(files, newFile.getName());\r\n    Assert.assertEquals(1, files.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\AndFileFilterTest.java",
+  "methodName" : "testAndFileFilterFileFilter",
+  "sourceCode" : "@Test\r\npublic void testAndFileFilterFileFilter() {\r\n    // PREPARE\r\n    final FileFilter filter1 = new DummyFilter();\r\n    final FileFilter filter2 = new DummyFilter();\r\n    final FileFilter filter3 = new DummyFilter();\r\n    // TEST\r\n    final AndFileFilter testee = new AndFileFilter(filter1, filter2, filter3);\r\n    // VERIFY\r\n    assertContainsOnly(testee.getFileFilters(), filter1, filter2, filter3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\AndFileFilterTest.java",
+  "methodName" : "testAndFileFilterList",
+  "sourceCode" : "@Test\r\npublic void testAndFileFilterList() {\r\n    // PREPARE\r\n    final FileFilter filter1 = new DummyFilter();\r\n    final FileFilter filter2 = new DummyFilter();\r\n    final FileFilter filter3 = new DummyFilter();\r\n    final List<FileFilter> list = new ArrayList<>();\r\n    list.add(filter1);\r\n    list.add(filter2);\r\n    list.add(filter3);\r\n    // TEST\r\n    final AndFileFilter testee = new AndFileFilter(list);\r\n    // VERIFY\r\n    assertContainsOnly(testee.getFileFilters(), filter1, filter2, filter3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\AndFileFilterTest.java",
+  "methodName" : "testAddFileFilter",
+  "sourceCode" : "@Test\r\npublic void testAddFileFilter() {\r\n    // PREPARE\r\n    final FileFilter filter1 = new DummyFilter();\r\n    final FileFilter filter2 = new DummyFilter();\r\n    final FileFilter filter3 = new DummyFilter();\r\n    // TEST\r\n    final AndFileFilter testee = new AndFileFilter();\r\n    testee.addFileFilter(filter1);\r\n    testee.addFileFilter(filter2);\r\n    testee.addFileFilter(filter3);\r\n    // VERIFY\r\n    assertContainsOnly(testee.getFileFilters(), filter1, filter2, filter3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\AndFileFilterTest.java",
+  "methodName" : "testRemoveFileFilter",
+  "sourceCode" : "@Test\r\npublic void testRemoveFileFilter() {\r\n    // PREPARE\r\n    final FileFilter filter1 = new DummyFilter();\r\n    final FileFilter filter2 = new DummyFilter();\r\n    final FileFilter filter3 = new DummyFilter();\r\n    final AndFileFilter testee = new AndFileFilter(filter1, filter2, filter3);\r\n    // TEST\r\n    testee.removeFileFilter(filter2);\r\n    // VERIFY\r\n    assertContainsOnly(testee.getFileFilters(), filter1, filter3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\AndFileFilterTest.java",
+  "methodName" : "testSetFileFilters",
+  "sourceCode" : "@Test\r\npublic void testSetFileFilters() {\r\n    // PREPARE\r\n    final FileFilter filter1 = new DummyFilter();\r\n    final FileFilter filter2 = new DummyFilter();\r\n    final FileFilter filter3 = new DummyFilter();\r\n    final List<FileFilter> list = new ArrayList<>();\r\n    list.add(filter1);\r\n    list.add(filter2);\r\n    list.add(filter3);\r\n    final AndFileFilter testee = new AndFileFilter();\r\n    // TEST\r\n    testee.setFileFilters(list);\r\n    // VERIFY\r\n    assertContainsOnly(testee.getFileFilters(), filter1, filter2, filter3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\AndFileFilterTest.java",
+  "methodName" : "testAccept",
+  "sourceCode" : "@SuppressWarnings(\"deprecation\")\r\n@Test\r\npublic void testAccept() throws FileSystemException {\r\n    final FileSelectInfo any = createFileSelectInfo(new File(\"anyfile\"));\r\n    // Empty\r\n    Assert.assertFalse(new AndFileFilter().accept(any));\r\n    // True\r\n    Assert.assertTrue(new AndFileFilter(new True()).accept(any));\r\n    Assert.assertTrue(new AndFileFilter(new True(), new True()).accept(any));\r\n    // False\r\n    Assert.assertFalse(new AndFileFilter(new False()).accept(any));\r\n    Assert.assertFalse(new AndFileFilter(new False(), new False()).accept(any));\r\n    Assert.assertFalse(new AndFileFilter(new False(), new True()).accept(any));\r\n    Assert.assertFalse(new AndFileFilter(new True(), new False()).accept(any));\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\AndFileFilterTest.java",
+  "methodName" : "testAcceptChecked",
+  "sourceCode" : "@Test\r\npublic void testAcceptChecked() throws FileSystemException {\r\n    final FileSelectInfo any = createFileSelectInfo(new File(\"anyfile\"));\r\n    // Empty\r\n    Assert.assertFalse(new AndFileFilter().accept(any));\r\n    // True\r\n    Assert.assertTrue(new AndFileFilter(new True()).accept(any));\r\n    Assert.assertTrue(new AndFileFilter(new True(), new True()).accept(any));\r\n    // False\r\n    Assert.assertFalse(new AndFileFilter(new False()).accept(any));\r\n    Assert.assertFalse(new AndFileFilter(new False(), new False()).accept(any));\r\n    Assert.assertFalse(new AndFileFilter(new False(), new True()).accept(any));\r\n    Assert.assertFalse(new AndFileFilter(new True(), new False()).accept(any));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\CanExecuteFileFilterTest.java",
+  "methodName" : "testAcceptCanExecute",
+  "sourceCode" : "@Test\r\npublic void testAcceptCanExecute() throws FileSystemException {\r\n    Assert.assertTrue(CanExecuteFileFilter.CAN_EXECUTE.accept(executableFileInfo));\r\n    Assert.assertTrue(CanExecuteFileFilter.CAN_EXECUTE.accept(notExecutableFileInfo));\r\n    Assert.assertFalse(CanExecuteFileFilter.CAN_EXECUTE.accept(notExistingFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\CanExecuteFileFilterTest.java",
+  "methodName" : "testAcceptCannotExecute",
+  "sourceCode" : "@Test\r\npublic void testAcceptCannotExecute() throws FileSystemException {\r\n    Assert.assertFalse(CanExecuteFileFilter.CANNOT_EXECUTE.accept(executableFileInfo));\r\n    Assert.assertFalse(CanExecuteFileFilter.CANNOT_EXECUTE.accept(notExecutableFileInfo));\r\n    Assert.assertTrue(CanExecuteFileFilter.CANNOT_EXECUTE.accept(notExistingFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\CanReadFileFilterTest.java",
+  "methodName" : "testAcceptCanRead",
+  "sourceCode" : "@Test\r\npublic void testAcceptCanRead() throws FileSystemException {\r\n    Assert.assertTrue(CanReadFileFilter.CAN_READ.accept(writeableFileInfo));\r\n    Assert.assertTrue(CanReadFileFilter.CAN_READ.accept(readOnlyFileInfo));\r\n    Assert.assertFalse(CanReadFileFilter.CAN_READ.accept(notExistingFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\CanReadFileFilterTest.java",
+  "methodName" : "testAcceptCannotRead",
+  "sourceCode" : "@Test\r\npublic void testAcceptCannotRead() throws FileSystemException {\r\n    Assert.assertFalse(CanReadFileFilter.CANNOT_READ.accept(writeableFileInfo));\r\n    Assert.assertFalse(CanReadFileFilter.CANNOT_READ.accept(readOnlyFileInfo));\r\n    Assert.assertTrue(CanReadFileFilter.CANNOT_READ.accept(notExistingFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\CanReadFileFilterTest.java",
+  "methodName" : "testAcceptReadOnly",
+  "sourceCode" : "@Test\r\npublic void testAcceptReadOnly() throws FileSystemException {\r\n    Assert.assertFalse(CanReadFileFilter.READ_ONLY.accept(writeableFileInfo));\r\n    Assert.assertTrue(CanReadFileFilter.READ_ONLY.accept(readOnlyFileInfo));\r\n    Assert.assertFalse(CanReadFileFilter.READ_ONLY.accept(notExistingFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\CanReadFileFilterTest.java",
+  "methodName" : "testAcceptZipFile",
+  "sourceCode" : "@Test\r\npublic void testAcceptZipFile() throws FileSystemException {\r\n    FileObject[] files;\r\n    // CAN_READ Filter\r\n    files = zipFileObj.findFiles(new FileFilterSelector(CanReadFileFilter.CAN_READ));\r\n    assertContains(files, READONLY, WRITEABLE);\r\n    Assert.assertEquals(2, files.length);\r\n    // CANNOT_READ Filter\r\n    files = zipFileObj.findFiles(new FileFilterSelector(CanReadFileFilter.CANNOT_READ));\r\n    Assert.assertTrue(files == null || files.length == 0);\r\n    // READ_ONLY Filter\r\n    files = zipFileObj.findFiles(new FileFilterSelector(CanReadFileFilter.READ_ONLY));\r\n    assertContains(files, READONLY, WRITEABLE);\r\n    Assert.assertEquals(2, files.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\CanWriteFileFilterTest.java",
+  "methodName" : "testAcceptCanWrite",
+  "sourceCode" : "@Test\r\npublic void testAcceptCanWrite() throws FileSystemException {\r\n    Assert.assertTrue(CanWriteFileFilter.CAN_WRITE.accept(writeableFileInfo));\r\n    Assert.assertFalse(CanWriteFileFilter.CAN_WRITE.accept(readOnlyFileInfo));\r\n    Assert.assertTrue(CanWriteFileFilter.CAN_WRITE.accept(notExistingFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\CanWriteFileFilterTest.java",
+  "methodName" : "testAcceptCannotWrite",
+  "sourceCode" : "@Test\r\npublic void testAcceptCannotWrite() throws FileSystemException {\r\n    Assert.assertFalse(CanWriteFileFilter.CANNOT_WRITE.accept(writeableFileInfo));\r\n    Assert.assertTrue(CanWriteFileFilter.CANNOT_WRITE.accept(readOnlyFileInfo));\r\n    Assert.assertFalse(CanWriteFileFilter.CANNOT_WRITE.accept(notExistingFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\CanWriteFileFilterTest.java",
+  "methodName" : "testAcceptZipFile",
+  "sourceCode" : "@Test\r\npublic void testAcceptZipFile() throws FileSystemException {\r\n    FileObject[] files;\r\n    // CAN_WRITE Filter\r\n    files = zipFileObj.findFiles(new FileFilterSelector(CanWriteFileFilter.CAN_WRITE));\r\n    Assert.assertTrue(files == null || files.length == 0);\r\n    // CANNOT_WRITE Filter\r\n    files = zipFileObj.findFiles(new FileFilterSelector(CanWriteFileFilter.CANNOT_WRITE));\r\n    assertContains(files, READONLY, WRITEABLE);\r\n    Assert.assertEquals(2, files.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\DirectoryAndFileFilterTest.java",
+  "methodName" : "testDirectoryFileFilter",
+  "sourceCode" : "@Test\r\npublic void testDirectoryFileFilter() throws FileSystemException {\r\n    final FileFilter testee = DirectoryFileFilter.DIRECTORY;\r\n    Assert.assertTrue(testee.accept(dirInfo));\r\n    Assert.assertFalse(testee.accept(fileInfo));\r\n    Assert.assertFalse(testee.accept(notExistingFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\DirectoryAndFileFilterTest.java",
+  "methodName" : "testFileFileFilter",
+  "sourceCode" : "@Test\r\npublic void testFileFileFilter() throws FileSystemException {\r\n    final FileFilter testee = FileFileFilter.FILE;\r\n    Assert.assertTrue(testee.accept(fileInfo));\r\n    Assert.assertFalse(testee.accept(dirInfo));\r\n    Assert.assertFalse(testee.accept(notExistingFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\DirectoryAndFileFilterTest.java",
+  "methodName" : "testAcceptZipFile",
+  "sourceCode" : "@Test\r\npublic void testAcceptZipFile() throws FileSystemException {\r\n    FileObject[] files;\r\n    // FILE Filter\r\n    files = zipFileObj.findFiles(new FileSelector() {\r\n\r\n        @Override\r\n        public boolean traverseDescendents(final FileSelectInfo fileInfo) throws Exception {\r\n            return true;\r\n        }\r\n\r\n        @Override\r\n        public boolean includeFile(final FileSelectInfo fileInfo) throws Exception {\r\n            return FileFileFilter.FILE.accept(fileInfo);\r\n        }\r\n    });\r\n    assertContains(files, FILE);\r\n    Assert.assertEquals(1, files.length);\r\n    // DIRECTORY Filter\r\n    files = zipFileObj.findFiles(new FileFilterSelector(DirectoryFileFilter.DIRECTORY));\r\n    assertContains(files, DIR);\r\n    Assert.assertEquals(1, files.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\EmptyFileFilterTest.java",
+  "methodName" : "testAcceptEmpty",
+  "sourceCode" : "@Test\r\npublic void testAcceptEmpty() throws FileSystemException {\r\n    final FileFilter testee = EmptyFileFilter.EMPTY;\r\n    Assert.assertFalse(testee.accept(notEmptyFileInfo));\r\n    Assert.assertTrue(testee.accept(emptyFileInfo));\r\n    Assert.assertFalse(testee.accept(notEmptyDirInfo));\r\n    Assert.assertTrue(testee.accept(emptyDirInfo));\r\n    Assert.assertTrue(testee.accept(notExistingFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\EmptyFileFilterTest.java",
+  "methodName" : "testAcceptNotEmpty",
+  "sourceCode" : "@Test\r\npublic void testAcceptNotEmpty() throws FileSystemException {\r\n    final FileFilter testee = EmptyFileFilter.NOT_EMPTY;\r\n    Assert.assertTrue(testee.accept(notEmptyFileInfo));\r\n    Assert.assertFalse(testee.accept(emptyFileInfo));\r\n    Assert.assertTrue(testee.accept(notEmptyDirInfo));\r\n    Assert.assertFalse(testee.accept(emptyDirInfo));\r\n    Assert.assertFalse(testee.accept(notExistingFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\EmptyFileFilterTest.java",
+  "methodName" : "testZipFile",
+  "sourceCode" : "@Test\r\npublic void testZipFile() throws FileSystemException {\r\n    // Same test with ZIP file\r\n    FileObject[] files;\r\n    files = zipFileObj.findFiles(new FileFilterSelector(EmptyFileFilter.EMPTY));\r\n    assertContains(files, emptyFile.getName());\r\n    Assert.assertEquals(1, files.length);\r\n    files = zipFileObj.findFiles(new FileFilterSelector(EmptyFileFilter.NOT_EMPTY));\r\n    assertContains(files, notEmptyFile.getName(), notEmptyDir.getName());\r\n    Assert.assertEquals(2, files.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\HiddenFileFilterTest.java",
+  "methodName" : "testAcceptHidden",
+  "sourceCode" : "@Test\r\npublic void testAcceptHidden() throws FileSystemException {\r\n    final FileFilter testee = HiddenFileFilter.HIDDEN;\r\n    Assert.assertFalse(testee.accept(visibleFileInfo));\r\n    // TODO xxx In Java 6 there is no way to hide a file\r\n    // assertThat(testee.accept(hiddenFileInfo));\r\n    Assert.assertFalse(testee.accept(notExistingFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\HiddenFileFilterTest.java",
+  "methodName" : "testAcceptVisible",
+  "sourceCode" : "@Test\r\npublic void testAcceptVisible() throws FileSystemException {\r\n    final FileFilter testee = HiddenFileFilter.VISIBLE;\r\n    Assert.assertTrue(testee.accept(visibleFileInfo));\r\n    // TODO xxx In Java 6 there is no way to hide a file\r\n    // assertThat(testee.accept(hiddenFileInfo));\r\n    Assert.assertTrue(testee.accept(notExistingFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\HiddenFileFilterTest.java",
+  "methodName" : "testZipFile",
+  "sourceCode" : "@Test\r\npublic void testZipFile() throws FileSystemException {\r\n    // Same test with ZIP file\r\n    FileObject[] files;\r\n    // TODO xxx In Java 6 there is no way to hide a file\r\n    // files = zipFileObj.findFiles(new\r\n    // FileFilterSelector(HiddenFileFilter.HIDDEN));\r\n    // assertContains(files, hiddenFile.getName());\r\n    // assertThat(files).hasSize(1);\r\n    files = zipFileObj.findFiles(new FileFilterSelector(HiddenFileFilter.VISIBLE));\r\n    assertContains(files, visibleFile.getName());\r\n    Assert.assertEquals(1, files.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\NameFileFilterTest.java",
+  "methodName" : "testAcceptList",
+  "sourceCode" : "@Test\r\npublic void testAcceptList() throws FileSystemException {\r\n    // PREPARE\r\n    final List<String> list = new ArrayList<>();\r\n    list.add(\"test1.txt\");\r\n    list.add(\"test2.txt\");\r\n    final NameFileFilter filter = new NameFileFilter(list);\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"Test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\NameFileFilterTest.java",
+  "methodName" : "testAcceptListIOCaseInsensitive",
+  "sourceCode" : "@Test\r\npublic void testAcceptListIOCaseInsensitive() throws FileSystemException {\r\n    // PREPARE\r\n    final List<String> list = new ArrayList<>();\r\n    list.add(\"test1.txt\");\r\n    list.add(\"test2.txt\");\r\n    final NameFileFilter filter = new NameFileFilter(IOCase.INSENSITIVE, list);\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"TEST1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"Test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\NameFileFilterTest.java",
+  "methodName" : "testAcceptListIOCaseSensitive",
+  "sourceCode" : "@Test\r\npublic void testAcceptListIOCaseSensitive() throws FileSystemException {\r\n    // PREPARE\r\n    final List<String> list = new ArrayList<>();\r\n    list.add(\"test1.txt\");\r\n    list.add(\"test2.txt\");\r\n    final NameFileFilter filter = new NameFileFilter(IOCase.SENSITIVE, list);\r\n    // TEST\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"TEST1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"Test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\NameFileFilterTest.java",
+  "methodName" : "testAcceptString",
+  "sourceCode" : "@Test\r\npublic void testAcceptString() throws FileSystemException {\r\n    // PREPARE\r\n    final NameFileFilter filter = new NameFileFilter(\"test1.txt\");\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"Test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\NameFileFilterTest.java",
+  "methodName" : "testAcceptStringIOCaseInsensitive",
+  "sourceCode" : "@Test\r\npublic void testAcceptStringIOCaseInsensitive() throws FileSystemException {\r\n    // PREPARE\r\n    final NameFileFilter filter = new NameFileFilter(IOCase.INSENSITIVE, \"test2.txt\");\r\n    // TEST\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"Test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\NameFileFilterTest.java",
+  "methodName" : "testAcceptStringIOCaseSensitive",
+  "sourceCode" : "@Test\r\npublic void testAcceptStringIOCaseSensitive() throws FileSystemException {\r\n    // PREPARE\r\n    final NameFileFilter filter = new NameFileFilter(IOCase.SENSITIVE, \"test2.txt\");\r\n    // TEST\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"Test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\NotFileFilterTest.java",
+  "methodName" : "testAccept",
+  "sourceCode" : "@Test\r\npublic void testAccept() throws FileSystemException {\r\n    final FileSelectInfo any = createFileSelectInfo(new File(\"test1.txt\"));\r\n    Assert.assertFalse(new NotFileFilter(TrueFileFilter.TRUE).accept(any));\r\n    Assert.assertTrue(new NotFileFilter(FalseFileFilter.FALSE).accept(any));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\OrFileFilterTest.java",
+  "methodName" : "testOrFileFilterFileFilter",
+  "sourceCode" : "@Test\r\npublic void testOrFileFilterFileFilter() {\r\n    // PREPARE\r\n    final FileFilter filter1 = new DummyFilter();\r\n    final FileFilter filter2 = new DummyFilter();\r\n    final FileFilter filter3 = new DummyFilter();\r\n    // TEST\r\n    final OrFileFilter testee = new OrFileFilter(filter1, filter2, filter3);\r\n    // VERIFY\r\n    assertContainsOnly(testee.getFileFilters(), filter1, filter2, filter3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\OrFileFilterTest.java",
+  "methodName" : "testOrFileFilterList",
+  "sourceCode" : "@Test\r\npublic void testOrFileFilterList() {\r\n    // PREPARE\r\n    final FileFilter filter1 = new DummyFilter();\r\n    final FileFilter filter2 = new DummyFilter();\r\n    final FileFilter filter3 = new DummyFilter();\r\n    final List<FileFilter> list = new ArrayList<>();\r\n    list.add(filter1);\r\n    list.add(filter2);\r\n    list.add(filter3);\r\n    // TEST\r\n    final OrFileFilter testee = new OrFileFilter(list);\r\n    // VERIFY\r\n    assertContainsOnly(testee.getFileFilters(), filter1, filter2, filter3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\OrFileFilterTest.java",
+  "methodName" : "testAddFileFilter",
+  "sourceCode" : "@Test\r\npublic void testAddFileFilter() {\r\n    // PREPARE\r\n    final FileFilter filter1 = new DummyFilter();\r\n    final FileFilter filter2 = new DummyFilter();\r\n    final FileFilter filter3 = new DummyFilter();\r\n    // TEST\r\n    final OrFileFilter testee = new OrFileFilter();\r\n    testee.addFileFilter(filter1);\r\n    testee.addFileFilter(filter2);\r\n    testee.addFileFilter(filter3);\r\n    // VERIFY\r\n    assertContainsOnly(testee.getFileFilters(), filter1, filter2, filter3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\OrFileFilterTest.java",
+  "methodName" : "testRemoveFileFilter",
+  "sourceCode" : "@Test\r\npublic void testRemoveFileFilter() {\r\n    // PREPARE\r\n    final FileFilter filter1 = new DummyFilter();\r\n    final FileFilter filter2 = new DummyFilter();\r\n    final FileFilter filter3 = new DummyFilter();\r\n    final OrFileFilter testee = new OrFileFilter(filter1, filter2, filter3);\r\n    // TEST\r\n    testee.removeFileFilter(filter2);\r\n    // VERIFY\r\n    assertContainsOnly(testee.getFileFilters(), filter1, filter3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\OrFileFilterTest.java",
+  "methodName" : "testSetFileFilters",
+  "sourceCode" : "@Test\r\npublic void testSetFileFilters() {\r\n    // PREPARE\r\n    final FileFilter filter1 = new DummyFilter();\r\n    final FileFilter filter2 = new DummyFilter();\r\n    final FileFilter filter3 = new DummyFilter();\r\n    final List<FileFilter> list = new ArrayList<>();\r\n    list.add(filter1);\r\n    list.add(filter2);\r\n    list.add(filter3);\r\n    final OrFileFilter testee = new OrFileFilter();\r\n    // TEST\r\n    testee.setFileFilters(list);\r\n    // VERIFY\r\n    assertContainsOnly(testee.getFileFilters(), filter1, filter2, filter3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\OrFileFilterTest.java",
+  "methodName" : "testAccept",
+  "sourceCode" : "@Test\r\npublic void testAccept() throws FileSystemException {\r\n    final FileSelectInfo any = createFileSelectInfo(new File(\"anyfile\"));\r\n    // Empty\r\n    Assert.assertFalse(new OrFileFilter().accept(any));\r\n    // True\r\n    Assert.assertTrue(new OrFileFilter(new True()).accept(any));\r\n    Assert.assertTrue(new OrFileFilter(new True(), new True()).accept(any));\r\n    Assert.assertTrue(new OrFileFilter(new False(), new True()).accept(any));\r\n    Assert.assertTrue(new OrFileFilter(new True(), new False()).accept(any));\r\n    // False\r\n    Assert.assertFalse(new OrFileFilter(new False()).accept(any));\r\n    Assert.assertFalse(new OrFileFilter(new False(), new False()).accept(any));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\PrefixFileFilterTest.java",
+  "methodName" : "testAcceptList",
+  "sourceCode" : "@Test\r\npublic void testAcceptList() throws FileSystemException {\r\n    // PREPARE\r\n    final List<String> list = new ArrayList<>();\r\n    list.add(\"test1\");\r\n    list.add(\"test2\");\r\n    final PrefixFileFilter filter = new PrefixFileFilter(list);\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"Test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\PrefixFileFilterTest.java",
+  "methodName" : "testAcceptListIOCaseInsensitive",
+  "sourceCode" : "@Test\r\npublic void testAcceptListIOCaseInsensitive() throws FileSystemException {\r\n    // PREPARE\r\n    final List<String> list = new ArrayList<>();\r\n    list.add(\"test1\");\r\n    list.add(\"test2\");\r\n    final PrefixFileFilter filter = new PrefixFileFilter(IOCase.INSENSITIVE, list);\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"TEST1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"Test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\PrefixFileFilterTest.java",
+  "methodName" : "testAcceptListIOCaseSensitive",
+  "sourceCode" : "@Test\r\npublic void testAcceptListIOCaseSensitive() throws FileSystemException {\r\n    // PREPARE\r\n    final List<String> list = new ArrayList<>();\r\n    list.add(\"test1\");\r\n    list.add(\"test2\");\r\n    final PrefixFileFilter filter = new PrefixFileFilter(IOCase.SENSITIVE, list);\r\n    // TEST\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"TEST1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"Test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\PrefixFileFilterTest.java",
+  "methodName" : "testAcceptString",
+  "sourceCode" : "@Test\r\npublic void testAcceptString() throws FileSystemException {\r\n    // PREPARE\r\n    final PrefixFileFilter filter = new PrefixFileFilter(\"test\");\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"Test2.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\PrefixFileFilterTest.java",
+  "methodName" : "testAcceptStringIOCaseInsensitive",
+  "sourceCode" : "@Test\r\npublic void testAcceptStringIOCaseInsensitive() throws FileSystemException {\r\n    // PREPARE\r\n    final PrefixFileFilter filter = new PrefixFileFilter(IOCase.INSENSITIVE, \"test\");\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"Test2.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\PrefixFileFilterTest.java",
+  "methodName" : "testAcceptStringIOCaseSensitive",
+  "sourceCode" : "@Test\r\npublic void testAcceptStringIOCaseSensitive() throws FileSystemException {\r\n    // PREPARE\r\n    final PrefixFileFilter filter = new PrefixFileFilter(IOCase.SENSITIVE, \"test\");\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"Test2.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\RegexFileFilterTestCase.java",
+  "methodName" : "testRegex",
+  "sourceCode" : "@Test\r\npublic void testRegex() throws Exception {\r\n    FileFilter filter;\r\n    filter = new RegexFileFilter(\"^.*[tT]est(-\\\\d+)?\\\\.java$\");\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"Test.java\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test-10.java\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test-.java\"))));\r\n    filter = new RegexFileFilter(\"^[Tt]est.java$\");\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"Test.java\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.java\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"tEST.java\"))));\r\n    filter = new RegexFileFilter(Pattern.compile(\"^test.java$\", Pattern.CASE_INSENSITIVE));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"Test.java\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.java\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"tEST.java\"))));\r\n    filter = new RegexFileFilter(\"^test.java$\", Pattern.CASE_INSENSITIVE);\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"Test.java\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.java\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"tEST.java\"))));\r\n    filter = new RegexFileFilter(\"^test.java$\", IOCase.INSENSITIVE);\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"Test.java\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.java\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"tEST.java\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\RegexFileFilterTestCase.java",
+  "methodName" : "testStringNullArgConstruction",
+  "sourceCode" : "@Test\r\npublic void testStringNullArgConstruction() {\r\n    try {\r\n        new RegexFileFilter((String) null);\r\n        fail();\r\n    } catch (final IllegalArgumentException ex) {\r\n        Assert.assertEquals(RegexFileFilter.PATTERN_IS_MISSING, ex.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\RegexFileFilterTestCase.java",
+  "methodName" : "testPatternNullArgConstruction",
+  "sourceCode" : "@Test\r\npublic void testPatternNullArgConstruction() {\r\n    try {\r\n        new RegexFileFilter((Pattern) null);\r\n        fail();\r\n    } catch (final IllegalArgumentException ex) {\r\n        Assert.assertEquals(RegexFileFilter.PATTERN_IS_MISSING, ex.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\RegexFileFilterTestCase.java",
+  "methodName" : "testStringPatternNullArgConstruction",
+  "sourceCode" : "@Test\r\npublic void testStringPatternNullArgConstruction() {\r\n    try {\r\n        new RegexFileFilter((String) null, Pattern.CASE_INSENSITIVE);\r\n        fail();\r\n    } catch (final IllegalArgumentException ex) {\r\n        Assert.assertEquals(RegexFileFilter.PATTERN_IS_MISSING, ex.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\RegexFileFilterTestCase.java",
+  "methodName" : "testStringIOCaseNullArgConstruction",
+  "sourceCode" : "@Test\r\npublic void testStringIOCaseNullArgConstruction() {\r\n    try {\r\n        new RegexFileFilter((String) null, IOCase.INSENSITIVE);\r\n        fail();\r\n    } catch (final IllegalArgumentException ex) {\r\n        Assert.assertEquals(RegexFileFilter.PATTERN_IS_MISSING, ex.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\SizeFileFilterTest.java",
+  "methodName" : "testSizeFileFilterLong",
+  "sourceCode" : "@Test\r\npublic void testSizeFileFilterLong() throws FileSystemException {\r\n    final SizeFileFilter testee = new SizeFileFilter(4);\r\n    Assert.assertFalse(testee.accept(minFileInfo));\r\n    Assert.assertTrue(testee.accept(optFileInfo));\r\n    Assert.assertTrue(testee.accept(maxFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\SizeFileFilterTest.java",
+  "methodName" : "testSizeFileFilterLongBoolean",
+  "sourceCode" : "@Test\r\npublic void testSizeFileFilterLongBoolean() throws FileSystemException {\r\n    SizeFileFilter testee;\r\n    testee = new SizeFileFilter(4, true);\r\n    Assert.assertFalse(testee.accept(minFileInfo));\r\n    Assert.assertTrue(testee.accept(optFileInfo));\r\n    Assert.assertTrue(testee.accept(maxFileInfo));\r\n    testee = new SizeFileFilter(4, false);\r\n    Assert.assertTrue(testee.accept(minFileInfo));\r\n    Assert.assertFalse(testee.accept(optFileInfo));\r\n    Assert.assertFalse(testee.accept(maxFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\SizeFileFilterTest.java",
+  "methodName" : "testSizeRangeFileFilter",
+  "sourceCode" : "@Test\r\npublic void testSizeRangeFileFilter() throws FileSystemException {\r\n    SizeRangeFileFilter testee;\r\n    testee = new SizeRangeFileFilter(2, 6);\r\n    Assert.assertTrue(testee.accept(minFileInfo));\r\n    Assert.assertTrue(testee.accept(optFileInfo));\r\n    Assert.assertTrue(testee.accept(maxFileInfo));\r\n    testee = new SizeRangeFileFilter(3, 6);\r\n    Assert.assertFalse(testee.accept(minFileInfo));\r\n    Assert.assertTrue(testee.accept(optFileInfo));\r\n    Assert.assertTrue(testee.accept(maxFileInfo));\r\n    testee = new SizeRangeFileFilter(2, 5);\r\n    Assert.assertTrue(testee.accept(minFileInfo));\r\n    Assert.assertTrue(testee.accept(optFileInfo));\r\n    Assert.assertFalse(testee.accept(maxFileInfo));\r\n    testee = new SizeRangeFileFilter(3, 5);\r\n    Assert.assertFalse(testee.accept(minFileInfo));\r\n    Assert.assertTrue(testee.accept(optFileInfo));\r\n    Assert.assertFalse(testee.accept(maxFileInfo));\r\n    testee = new SizeRangeFileFilter(4, 4);\r\n    Assert.assertFalse(testee.accept(minFileInfo));\r\n    Assert.assertTrue(testee.accept(optFileInfo));\r\n    Assert.assertFalse(testee.accept(maxFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\SizeFileFilterTest.java",
+  "methodName" : "testSizeFileFilterZipDir",
+  "sourceCode" : "@Test\r\npublic void testSizeFileFilterZipDir() throws FileSystemException {\r\n    // Same test with ZIP file\r\n    FileObject[] files;\r\n    files = zipFileObj.findFiles(new FileFilterSelector(new SizeFileFilter(4, true)));\r\n    assertContains(files, optFile.getName(), maxFile.getName());\r\n    Assert.assertEquals(2, files.length);\r\n    files = zipFileObj.findFiles(new FileFilterSelector(new SizeFileFilter(4, false)));\r\n    assertContains(files, minFile.getName());\r\n    Assert.assertEquals(1, files.length);\r\n    files = zipFileObj.findFiles(new FileFilterSelector(new SizeRangeFileFilter(2, 6)));\r\n    assertContains(files, minFile.getName(), optFile.getName(), maxFile.getName());\r\n    Assert.assertEquals(3, files.length);\r\n    files = zipFileObj.findFiles(new FileFilterSelector(new SizeRangeFileFilter(3, 6)));\r\n    assertContains(files, optFile.getName(), maxFile.getName());\r\n    Assert.assertEquals(2, files.length);\r\n    files = zipFileObj.findFiles(new FileFilterSelector(new SizeRangeFileFilter(2, 5)));\r\n    assertContains(files, minFile.getName(), optFile.getName());\r\n    Assert.assertEquals(2, files.length);\r\n    files = zipFileObj.findFiles(new FileFilterSelector(new SizeRangeFileFilter(3, 5)));\r\n    assertContains(files, optFile.getName());\r\n    Assert.assertEquals(1, files.length);\r\n    files = zipFileObj.findFiles(new FileFilterSelector(new SizeRangeFileFilter(4, 4)));\r\n    assertContains(files, optFile.getName());\r\n    Assert.assertEquals(1, files.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\SuffixFileFilterTest.java",
+  "methodName" : "testAcceptList",
+  "sourceCode" : "@Test\r\npublic void testAcceptList() throws FileSystemException {\r\n    // PREPARE\r\n    final List<String> list = new ArrayList<>();\r\n    list.add(\".txt\");\r\n    list.add(\".bin\");\r\n    final SuffixFileFilter filter = new SuffixFileFilter(list);\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.bin\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test2.BIN\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\SuffixFileFilterTest.java",
+  "methodName" : "testAcceptListIOCaseInsensitive",
+  "sourceCode" : "@Test\r\npublic void testAcceptListIOCaseInsensitive() throws FileSystemException {\r\n    // PREPARE\r\n    final List<String> list = new ArrayList<>();\r\n    list.add(\".txt\");\r\n    list.add(\".bin\");\r\n    final SuffixFileFilter filter = new SuffixFileFilter(IOCase.INSENSITIVE, list);\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"TEST1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.bin\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.TXT\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\SuffixFileFilterTest.java",
+  "methodName" : "testAcceptListIOCaseSensitive",
+  "sourceCode" : "@Test\r\npublic void testAcceptListIOCaseSensitive() throws FileSystemException {\r\n    // PREPARE\r\n    final List<String> list = new ArrayList<>();\r\n    list.add(\".txt\");\r\n    list.add(\".bin\");\r\n    final SuffixFileFilter filter = new SuffixFileFilter(IOCase.SENSITIVE, list);\r\n    // TEST\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test1.Txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test2.BIN\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\SuffixFileFilterTest.java",
+  "methodName" : "testAcceptString",
+  "sourceCode" : "@Test\r\npublic void testAcceptString() throws FileSystemException {\r\n    // PREPARE\r\n    final SuffixFileFilter filter = new SuffixFileFilter(\".txt\", \".xxx\");\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test2.TXT\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\SuffixFileFilterTest.java",
+  "methodName" : "testAcceptStringIOCaseInsensitive",
+  "sourceCode" : "@Test\r\npublic void testAcceptStringIOCaseInsensitive() throws FileSystemException {\r\n    // PREPARE\r\n    final SuffixFileFilter filter = new SuffixFileFilter(IOCase.INSENSITIVE, \".txt\", \".xxx\");\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.TXT\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\SuffixFileFilterTest.java",
+  "methodName" : "testAcceptStringIOCaseSensitive",
+  "sourceCode" : "@Test\r\npublic void testAcceptStringIOCaseSensitive() throws FileSystemException {\r\n    // PREPARE\r\n    final SuffixFileFilter filter = new SuffixFileFilter(IOCase.SENSITIVE, \".txt\", \".xxx\");\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test2.TXT\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\SymbolicLinkFileFilterTest.java",
+  "methodName" : "testAcceptActual",
+  "sourceCode" : "@Test\r\npublic void testAcceptActual() throws FileSystemException {\r\n    final FileFilter testee = SymbolicLinkFileFilter.ACTUAL;\r\n    Assert.assertTrue(targetFileInfo.getBaseFolder().exists());\r\n    Assert.assertTrue(targetFileInfo.getFile().exists());\r\n    Assert.assertTrue(targetFileInfo.toString(), testee.accept(targetFileInfo));\r\n    Assert.assertTrue(notExistingFileInfo.toString(), testee.accept(notExistingFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\SymbolicLinkFileFilterTest.java",
+  "methodName" : "testAcceptSymbolic",
+  "sourceCode" : "@Test\r\npublic void testAcceptSymbolic() throws FileSystemException {\r\n    final FileFilter testee = SymbolicLinkFileFilter.SYMBOLIC;\r\n    Assert.assertTrue(linkFileInfo.toString(), testee.accept(linkFileInfo));\r\n    Assert.assertFalse(notExistingFileInfo.toString(), testee.accept(notExistingFileInfo));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\SymbolicLinkFileFilterTest.java",
+  "methodName" : "testZipFile",
+  "sourceCode" : "@Test\r\npublic void testZipFile() throws FileSystemException {\r\n    final FileObject[] files = zipFileObject.findFiles(new FileFilterSelector(SymbolicLinkFileFilter.SYMBOLIC));\r\n    Assert.assertEquals(0, files.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\WildcardFileFilterTest.java",
+  "methodName" : "testAcceptList",
+  "sourceCode" : "@Test\r\npublic void testAcceptList() throws FileSystemException {\r\n    // PREPARE\r\n    final List<String> list = new ArrayList<>();\r\n    list.add(\"*.txt\");\r\n    list.add(\"*.a??\");\r\n    final WildcardFileFilter filter = new WildcardFileFilter(list);\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.a\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.ab\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.abc\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.ABC\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.aaa\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.Aaa\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.aAA\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.abcd\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\WildcardFileFilterTest.java",
+  "methodName" : "testAcceptListIOCaseInsensitive",
+  "sourceCode" : "@Test\r\npublic void testAcceptListIOCaseInsensitive() throws FileSystemException {\r\n    // PREPARE\r\n    final List<String> list = new ArrayList<>();\r\n    list.add(\"*.txt\");\r\n    list.add(\"*.a??\");\r\n    final WildcardFileFilter filter = new WildcardFileFilter(IOCase.INSENSITIVE, list);\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.a\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.ab\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.abc\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.ABC\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.aaa\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.Aaa\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.aAA\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.abcd\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\WildcardFileFilterTest.java",
+  "methodName" : "testAcceptListIOCaseSensitive",
+  "sourceCode" : "@Test\r\npublic void testAcceptListIOCaseSensitive() throws FileSystemException {\r\n    // PREPARE\r\n    final List<String> list = new ArrayList<>();\r\n    list.add(\"*.txt\");\r\n    list.add(\"*.a??\");\r\n    final WildcardFileFilter filter = new WildcardFileFilter(IOCase.SENSITIVE, list);\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.a\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.ab\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.abc\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.ABC\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.aaa\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.Aaa\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.aAA\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.abcd\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\WildcardFileFilterTest.java",
+  "methodName" : "testAcceptString",
+  "sourceCode" : "@Test\r\npublic void testAcceptString() throws FileSystemException {\r\n    // PREPARE\r\n    final WildcardFileFilter filter = new WildcardFileFilter(\"*.txt\", \"*.a??\");\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.a\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.ab\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.abc\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.ABC\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.aaa\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.Aaa\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.aAA\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.abcd\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\WildcardFileFilterTest.java",
+  "methodName" : "testAcceptStringIOCaseInsensitive",
+  "sourceCode" : "@Test\r\npublic void testAcceptStringIOCaseInsensitive() throws FileSystemException {\r\n    // PREPARE\r\n    final WildcardFileFilter filter = new WildcardFileFilter(IOCase.INSENSITIVE, \"*.txt\", \"*.a??\");\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.a\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.ab\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.abc\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.ABC\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.aaa\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.Aaa\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.aAA\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.abcd\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\filter\\WildcardFileFilterTest.java",
+  "methodName" : "testAcceptStringIOCaseSensitive",
+  "sourceCode" : "@Test\r\npublic void testAcceptStringIOCaseSensitive() throws FileSystemException {\r\n    // PREPARE\r\n    final WildcardFileFilter filter = new WildcardFileFilter(IOCase.SENSITIVE, \"*.txt\", \"*.a??\");\r\n    // TEST\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test1.txt\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test2.txt\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.a\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.ab\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.abc\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.ABC\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.aaa\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.Aaa\"))));\r\n    Assert.assertTrue(filter.accept(createFileSelectInfo(new File(\"test.aAA\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.abcd\"))));\r\n    Assert.assertFalse(filter.accept(createFileSelectInfo(new File(\"test.xxx\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\function\\VfsConsumerTest.java",
+  "methodName" : "test",
+  "sourceCode" : "/**\r\n * Tests {@link VfsConsumer}.\r\n */\r\n@Test\r\npublic void test() throws FileSystemException {\r\n    test(fileObject -> fileObject.exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\impl\\DefaultFileSystemManagerTest.java",
+  "methodName" : "test_close",
+  "sourceCode" : "/**\r\n * Tests {@link DefaultFileSystemManager#close()}.\r\n *\r\n * @throws FileSystemException\r\n */\r\n@Test\r\npublic void test_close() throws FileSystemException {\r\n    try (FileSystemManager fileSystemManager = new DefaultFileSystemManager()) {\r\n        VFS.setManager(fileSystemManager);\r\n        VFS.setManager(null);\r\n    }\r\n    Assert.assertNotNull(VFS.getManager());\r\n    Assert.assertFalse(VFS.getManager().resolveFile(Paths.get(\"DoesNotExist.not\").toUri()).exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\impl\\StandardFileSystemManagerTest.java",
+  "methodName" : "test_close",
+  "sourceCode" : "/**\r\n * Tests {@link StandardFileSystemManager#close()}.\r\n *\r\n * @throws FileSystemException\r\n */\r\n@Test\r\npublic void test_close() throws FileSystemException {\r\n    try (FileSystemManager fileSystemManager = new StandardFileSystemManager()) {\r\n        VFS.setManager(fileSystemManager);\r\n        VFS.setManager(null);\r\n    }\r\n    Assert.assertNotNull(VFS.getManager());\r\n    Assert.assertFalse(VFS.getManager().resolveFile(Paths.get(\"DoesNotExist.not\").toUri()).exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\impl\\test\\DefaultFileSystemManagerTest.java",
+  "methodName" : "testResolveFileRelativeThrows",
+  "sourceCode" : "@Test(expected = NullPointerException.class)\r\npublic void testResolveFileRelativeThrows() throws FileSystemException {\r\n    VFS.getManager().resolveFile((File) null, \"relativePath\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\impl\\test\\DefaultFileSystemManagerTest.java",
+  "methodName" : "testResolveFileAbsoluteThrows",
+  "sourceCode" : "/**\r\n * Even if the file name is absolute, the base file must be given. This is an inconsistency in the API, but it is\r\n * documented as such.\r\n *\r\n * @see \"VFS-519\"\r\n */\r\n@Test(expected = NullPointerException.class)\r\npublic void testResolveFileAbsoluteThrows() throws FileSystemException {\r\n    final String absolute = new File(\"/\").getAbsoluteFile().toURI().toString();\r\n    VFS.getManager().resolveFile((File) null, absolute);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\impl\\test\\DefaultFileSystemManagerTest.java",
+  "methodName" : "testResolveFileObjectRelativeThrows",
+  "sourceCode" : "@Test(expected = FileSystemException.class)\r\npublic void testResolveFileObjectRelativeThrows() throws FileSystemException {\r\n    VFS.getManager().resolveFile((FileObject) null, \"relativePath\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\impl\\test\\DefaultFileSystemManagerTest.java",
+  "methodName" : "testResolveFileObjectNullAbsolute",
+  "sourceCode" : "@Test\r\npublic void testResolveFileObjectNullAbsolute() throws FileSystemException {\r\n    final String absolute = new File(\"/\").getAbsoluteFile().toURI().toString();\r\n    VFS.getManager().resolveFile((FileObject) null, absolute);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\impl\\test\\DefaultFileSystemManagerTest.java",
+  "methodName" : "testResolveFileNameNull",
+  "sourceCode" : "/**\r\n * If the base name is {@code null}, the file system manager should fail throwing a FileSystemException.\r\n *\r\n * @see VFS-189\r\n */\r\n@Test(expected = FileSystemException.class)\r\npublic void testResolveFileNameNull() throws FileSystemException {\r\n    VFS.getManager().resolveName((FileName) null, \"../\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\InvertIncludeFileSelectorTest.java",
+  "methodName" : "testInvertMatchAll",
+  "sourceCode" : "@Test\r\npublic void testInvertMatchAll() throws Exception {\r\n    final FileObject[] list = PatternFileSelectorTest.getBaseFolder().findFiles(new InvertIncludeFileSelector(new PatternFileSelector(\".*\")));\r\n    Assert.assertEquals(0, list.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\InvertIncludeFileSelectorTest.java",
+  "methodName" : "testInvertMatchSome",
+  "sourceCode" : "@Test\r\npublic void testInvertMatchSome() throws Exception {\r\n    final FileObject[] list = PatternFileSelectorTest.getBaseFolder().findFiles(new InvertIncludeFileSelector(new PatternFileSelector(\".*\\\\.html\")));\r\n    Assert.assertEquals(7, list.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\operations\\BasicOperationsTestCase.java",
+  "methodName" : "testLifecycleComp",
+  "sourceCode" : "/**\r\n * Ensure FileOperationProviders which are VfsComponents are set up and teared down.\r\n *\r\n * @throws FileSystemException for runtime problems\r\n */\r\n@Test\r\npublic void testLifecycleComp() throws FileSystemException {\r\n    final MyFileOprationProviderBase myop = new MyFileOperationProviderComp();\r\n    assertEquals(0, myop.ops);\r\n    manager.addOperationProvider(\"file\", myop);\r\n    assertEquals(7, myop.ops);\r\n    manager.close();\r\n    // VFS-577\r\n    assertEquals(\"close() not called\", 15, myop.ops);\r\n    // fixture will close again\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\operations\\BasicOperationsTestCase.java",
+  "methodName" : "testLifecycleNoncomp",
+  "sourceCode" : "/**\r\n * Ensure you can use FileOperationProvider which is not a VfsComponnt.\r\n *\r\n * @throws FileSystemException for runtime problems\r\n */\r\n@Test\r\npublic void testLifecycleNoncomp() throws FileSystemException {\r\n    final MyFileOprationProviderBase myop = new MyFileOperationProviderNoncomp();\r\n    manager.addOperationProvider(\"file\", myop);\r\n    final FileOperationProvider[] ops = manager.getOperationProviders(\"file\");\r\n    assertSame(\"exactly one provider registered\", 1, ops.length);\r\n    assertSame(myop, ops[0]);\r\n    // collect not invoked\r\n    assertEquals(0, myop.ops);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\operations\\BasicOperationsTestCase.java",
+  "methodName" : "testNotFoundAny",
+  "sourceCode" : "/**\r\n * Ensures getOperations calls collect and allows empty response.\r\n *\r\n * @throws FileSystemException for runtime problems\r\n */\r\n@Test\r\npublic void testNotFoundAny() throws FileSystemException {\r\n    final MyFileOprationProviderBase myop = new MyFileOperationProviderNoncomp();\r\n    manager.addOperationProvider(\"file\", myop);\r\n    final FileObject fo = manager.toFileObject(new File(\".\"));\r\n    final FileOperations ops = fo.getFileOperations();\r\n    assertNotNull(ops);\r\n    final Class<? extends FileOperation>[] oparray = ops.getOperations();\r\n    assertSame(\"no ops should be found\", 0, oparray.length);\r\n    // collect\r\n    assertSame(16, myop.ops);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\operations\\BasicOperationsTestCase.java",
+  "methodName" : "testNotFoundOperation",
+  "sourceCode" : "/**\r\n * Ensure proper response for not found FileOperation.\r\n *\r\n * @throws FileSystemException for runtime problems\r\n */\r\n@Test\r\npublic void testNotFoundOperation() throws FileSystemException {\r\n    final MyFileOprationProviderBase myop = new MyFileOperationProviderNoncomp();\r\n    manager.addOperationProvider(\"file\", myop);\r\n    final FileObject fo = manager.toFileObject(new File(\".\"));\r\n    final FileOperations ops = fo.getFileOperations();\r\n    assertNotNull(ops);\r\n    try {\r\n        final FileOperation logop = ops.getOperation(VcsLog.class);\r\n        fail(\"Must throw but returned \" + logop);\r\n    } catch (final FileSystemException e) {\r\n        assertEquals(\"vfs.operation/operation-not-supported.error\", e.getCode());\r\n    }\r\n    // getOperation was called\r\n    assertSame(32, myop.ops);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\PatternFileSelectorTest.java",
+  "methodName" : "testNullString",
+  "sourceCode" : "/**\r\n * Tests a null selector.\r\n *\r\n * @throws Exception\r\n */\r\n@Test(expected = NullPointerException.class)\r\npublic void testNullString() throws Exception {\r\n    // Yep, this will blow up.\r\n    new PatternFileSelector((String) null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\PatternFileSelectorTest.java",
+  "methodName" : "testMatchAll",
+  "sourceCode" : "/**\r\n * Tests matching all\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testMatchAll() throws Exception {\r\n    final FileObject[] list = BaseFolder.findFiles(new PatternFileSelector(\".*\"));\r\n    Assert.assertEquals(EntryCount, list.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\PatternFileSelectorTest.java",
+  "methodName" : "testFileExtensions",
+  "sourceCode" : "/**\r\n * Tests a one extension selector.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testFileExtensions() throws Exception {\r\n    final FileObject[] foArray = BaseFolder.findFiles(Selectors.SELECT_FILES);\r\n    Assert.assertTrue(foArray.length > 0);\r\n    final String regExPrefix = \".*\\\\.\";\r\n    // gather file extensions.\r\n    final Set<String> extensionSet = new HashSet<>();\r\n    for (final FileObject fo : foArray) {\r\n        extensionSet.add(regExPrefix + fo.getName().getExtension());\r\n    }\r\n    final String message = String.format(\"Extensions: %s; files: %s\", extensionSet.toString(), Arrays.asList(foArray).toString());\r\n    Assert.assertEquals(message, ExtensionCount, extensionSet.size());\r\n    // check each extension\r\n    for (final String extension : extensionSet) {\r\n        final FileSelector selector = new PatternFileSelector(extension);\r\n        final FileObject[] list = BaseFolder.findFiles(selector);\r\n        Assert.assertEquals(FilesPerExtensionCount, list.length);\r\n    }\r\n    // check each file against itself\r\n    for (final FileObject fo : foArray) {\r\n        final FileSelector selector = new PatternFileSelector(regExPrefix + fo.getName().getExtension());\r\n        final FileObject[] list = BaseFolder.findFiles(selector);\r\n        Assert.assertEquals(FilesPerExtensionCount, list.length);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\PatternFileSelectorTest.java",
+  "methodName" : "testMatchPartial",
+  "sourceCode" : "/**\r\n * Tests matching partial file names\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testMatchPartial() throws Exception {\r\n    final FileObject[] list = BaseFolder.findFiles(new PatternFileSelector(\".*a.htm\"));\r\n    Assert.assertEquals(1, list.length);\r\n    assertEquals(list[0].getName().getBaseName(), \"aa.htm\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\PatternFileSelectorTest.java",
+  "methodName" : "testMatchPartialDelimited",
+  "sourceCode" : "/**\r\n * Tests matching partial file names with delimiter\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testMatchPartialDelimited() throws Exception {\r\n    final FileObject[] list = BaseFolder.findFiles(new PatternFileSelector(\"^.*\\\\/b.htm$\"));\r\n    Assert.assertEquals(1, list.length);\r\n    assertEquals(list[0].getName().getBaseName(), \"b.htm\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\AbstractFileNameTest.java",
+  "methodName" : "testHashSignEncoded",
+  "sourceCode" : "@Test\r\npublic void testHashSignEncoded() {\r\n    final AbstractFileName fileName = new AbstractFileName(\"file\", \"/foo/bar/file#name.txt\", FileType.FILE) {\r\n\r\n        @Override\r\n        public FileName createName(final String absolutePath, final FileType fileType) {\r\n            return null;\r\n        }\r\n\r\n        @Override\r\n        protected void appendRootUri(final StringBuilder buffer, final boolean addPassword) {\r\n            if (addPassword) {\r\n                buffer.append(\"pass\");\r\n            }\r\n        }\r\n    };\r\n    Assert.assertEquals(\"pass/foo/bar/file%23name.txt\", fileName.getURI());\r\n    Assert.assertEquals(\"/foo/bar/file%23name.txt\", fileName.getFriendlyURI());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\bzip2\\Bzip2TestCase.java",
+  "methodName" : "testBZip2",
+  "sourceCode" : "@Test\r\npublic void testBZip2() throws IOException {\r\n    final File testResource = getTestResource(\"bla.txt.bz2\");\r\n    try (final FileObject bz2FileObject = VFS.getManager().resolveFile(\"bz2://\" + testResource)) {\r\n        Assert.assertTrue(bz2FileObject.exists());\r\n        Assert.assertTrue(bz2FileObject.isFolder());\r\n        try (final FileObject fileObjectDir = bz2FileObject.resolveFile(\"bla.txt\")) {\r\n            Assert.assertTrue(fileObjectDir.exists());\r\n            Assert.assertTrue(bz2FileObject.isFolder());\r\n            try (final FileObject fileObject = fileObjectDir.resolveFile(\"bla.txt\")) {\r\n                Assert.assertTrue(fileObject.exists());\r\n                Assert.assertFalse(fileObject.isFolder());\r\n                Assert.assertTrue(fileObject.isFile());\r\n                try (final FileContent content = fileObject.getContent()) {\r\n                    Assert.assertEquals(CompressedFileFileObject.SIZE_UNDEFINED, content.getSize());\r\n                    // blows up, Commons Compress?\r\n                    final String string = content.getString(StandardCharsets.UTF_8);\r\n                    Assert.assertEquals(26, string.length());\r\n                    Assert.assertEquals(\"Hallo, dies ist ein Test.\\n\", string);\r\n                }\r\n            }\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\DefaultFileContentTest.java",
+  "methodName" : "testGetZeroContents",
+  "sourceCode" : "/**\r\n * Test VFS-724 should be done on a website which render a page with no content size. Note the getSize() is\r\n * currently the value sent back by the server then zero usually means no content length attached.\r\n */\r\n@Test\r\npublic void testGetZeroContents() throws IOException {\r\n    final FileSystemManager fsManager = VFS.getManager();\r\n    try (final FileObject fo = fsManager.resolveFile(new File(\".\"), \"src/test/resources/test-data/size-0-file.bin\");\r\n        final FileContent content = fo.getContent()) {\r\n        Assert.assertEquals(0, content.getSize());\r\n        Assert.assertTrue(content.isEmpty());\r\n        Assert.assertEquals(StringUtils.EMPTY, content.getString(StandardCharsets.UTF_8));\r\n        Assert.assertEquals(StringUtils.EMPTY, content.getString(StandardCharsets.UTF_8.name()));\r\n        Assert.assertArrayEquals(ArrayUtils.EMPTY_BYTE_ARRAY, content.getByteArray());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\DefaultFileContentTest.java",
+  "methodName" : "testInputStreamBufferSizeNegative",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testInputStreamBufferSizeNegative() throws Exception {\r\n    testInputStreamBufferSize(-2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\DefaultFileContentTest.java",
+  "methodName" : "testMarkingWhenReadingEOS",
+  "sourceCode" : "@Test\r\npublic void testMarkingWhenReadingEOS() throws Exception {\r\n    final File temp = File.createTempFile(\"temp-file-name\", \".tmp\");\r\n    final FileSystemManager fileSystemManager = VFS.getManager();\r\n    try (FileObject file = fileSystemManager.resolveFile(temp.getAbsolutePath())) {\r\n        try (OutputStream outputStream = file.getContent().getOutputStream()) {\r\n            outputStream.write(expected.getBytes());\r\n            outputStream.flush();\r\n        }\r\n        try (InputStream stream = file.getContent().getInputStream()) {\r\n            int readCount = 0;\r\n            if (stream.markSupported()) {\r\n                for (int i = 0; i < 10; i++) {\r\n                    stream.mark(0);\r\n                    final byte[] data = new byte[100];\r\n                    readCount = stream.read(data, 0, 7);\r\n                    stream.read();\r\n                    Assert.assertEquals(readCount, 7);\r\n                    Assert.assertEquals(expected, new String(data).trim());\r\n                    readCount = stream.read(data, 8, 10);\r\n                    Assert.assertEquals(readCount, -1);\r\n                    stream.reset();\r\n                }\r\n            }\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\DefaultFileContentTest.java",
+  "methodName" : "testMarkingWorks",
+  "sourceCode" : "@Test\r\npublic void testMarkingWorks() throws Exception {\r\n    final File temp = File.createTempFile(\"temp-file-name\", \".tmp\");\r\n    final FileSystemManager fileSystemManager = VFS.getManager();\r\n    try (FileObject file = fileSystemManager.resolveFile(temp.getAbsolutePath())) {\r\n        try (OutputStream outputStream = file.getContent().getOutputStream()) {\r\n            outputStream.write(expected.getBytes());\r\n            outputStream.flush();\r\n        }\r\n        try (InputStream stream = file.getContent().getInputStream()) {\r\n            if (stream.markSupported()) {\r\n                for (int i = 0; i < 10; i++) {\r\n                    stream.mark(0);\r\n                    final byte[] data = new byte[100];\r\n                    stream.read(data, 0, 7);\r\n                    stream.read();\r\n                    Assert.assertEquals(expected, new String(data).trim());\r\n                    stream.reset();\r\n                }\r\n            }\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\DefaultFileContentTest.java",
+  "methodName" : "testOutputStreamBufferSizeNegative",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testOutputStreamBufferSizeNegative() throws Exception {\r\n    testOutputStreamBufferSize(-1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\DefaultFileContentTest.java",
+  "methodName" : "testOutputStreamBufferSizeNegativeWithAppendFlag",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testOutputStreamBufferSizeNegativeWithAppendFlag() throws Exception {\r\n    final File temp = File.createTempFile(\"temp-file-name\", \".tmp\");\r\n    final FileSystemManager fileSystemManager = VFS.getManager();\r\n    try (FileObject file = fileSystemManager.resolveFile(temp.getAbsolutePath())) {\r\n        file.getContent().getOutputStream(true, -1);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\ftp\\test\\MultipleConnectionTestCase.java",
+  "methodName" : "testConnectRoot",
+  "sourceCode" : "@Test\r\npublic void testConnectRoot() throws SocketException, IOException {\r\n    resolveRoot();\r\n    resolveRoot();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\ftp\\test\\MultipleConnectionTestCase.java",
+  "methodName" : "testUnderlyingConnect",
+  "sourceCode" : "@Test\r\npublic void testUnderlyingConnect() throws SocketException, IOException {\r\n    final FTPClient client1 = new FTPClient();\r\n    final FTPClient client2 = new FTPClient();\r\n    try {\r\n        final String hostname = \"localhost\";\r\n        client1.connect(hostname, FtpProviderTestCase.getSocketPort());\r\n        client2.connect(hostname, FtpProviderTestCase.getSocketPort());\r\n    } finally {\r\n        if (client1 != null) {\r\n            client1.disconnect();\r\n        }\r\n        if (client2 != null) {\r\n            client2.disconnect();\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\ftps\\test\\MultipleConnectionTestCase.java",
+  "methodName" : "testConnectRoot",
+  "sourceCode" : "@Test\r\npublic void testConnectRoot() throws IOException {\r\n    resolveRoot();\r\n    resolveRoot();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\ftps\\test\\MultipleConnectionTestCase.java",
+  "methodName" : "testUnderlyingConnect",
+  "sourceCode" : "@Test\r\npublic void testUnderlyingConnect() throws SocketException, IOException {\r\n    final FTPSClient client1 = this.init(new FTPSClient(true));\r\n    final FTPSClient client2 = this.init(new FTPSClient(true));\r\n    try {\r\n        final String hostname = \"localhost\";\r\n        client1.connect(hostname, AbstractFtpsProviderTestCase.getSocketPort());\r\n        client2.connect(hostname, AbstractFtpsProviderTestCase.getSocketPort());\r\n    } finally {\r\n        if (client1 != null) {\r\n            client1.disconnect();\r\n        }\r\n        if (client2 != null) {\r\n            client2.disconnect();\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\hdfs\\test\\HdfsFileProviderTest.java",
+  "methodName" : "testCanRenameTo",
+  "sourceCode" : "@Test(expected = UnsupportedOperationException.class)\r\npublic void testCanRenameTo() throws Exception {\r\n    final FileObject fo = createTestFile(hdfs);\r\n    Assert.assertNotNull(fo);\r\n    fo.canRenameTo(fo);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\hdfs\\test\\HdfsFileProviderTest.java",
+  "methodName" : "testDoListChildren",
+  "sourceCode" : "@Test\r\npublic void testDoListChildren() throws Exception {\r\n    final FileObject fo = manager.resolveFile(TEST_DIR1);\r\n    Assert.assertNotNull(fo);\r\n    Assert.assertFalse(fo.exists());\r\n    // Create the test file\r\n    final FileObject file = createTestFile(hdfs);\r\n    Assert.assertTrue(fo.exists());\r\n    final FileObject dir = file.getParent();\r\n    final FileObject[] children = dir.getChildren();\r\n    Assert.assertTrue(children.length == 1);\r\n    Assert.assertTrue(children[0].getName().equals(file.getName()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\hdfs\\test\\HdfsFileProviderTest.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "@Test\r\npublic void testEquals() throws Exception {\r\n    // Create test file (and check parent was created)\r\n    final FileObject dir = manager.resolveFile(TEST_DIR1);\r\n    Assert.assertNotNull(dir);\r\n    Assert.assertFalse(dir.exists());\r\n    final FileObject file1 = createTestFile(hdfs);\r\n    Assert.assertTrue(file1.exists());\r\n    Assert.assertTrue(dir.exists());\r\n    // Get a handle to the same file and ensure it is equal\r\n    final FileObject file2 = manager.resolveFile(TEST_FILE1);\r\n    Assert.assertEquals(file1, file2);\r\n    // Ensure different files on same filesystem are not equal\r\n    Assert.assertNotEquals(dir, file1);\r\n    Assert.assertNotEquals(dir, file2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\hdfs\\test\\HdfsFileProviderTest.java",
+  "methodName" : "testGetAttributes",
+  "sourceCode" : "@Test\r\npublic void testGetAttributes() throws Exception {\r\n    final FileObject fo = manager.resolveFile(TEST_DIR1);\r\n    Assert.assertNotNull(fo);\r\n    Assert.assertFalse(fo.exists());\r\n    // Create the test file\r\n    final FileObject file = createTestFile(hdfs);\r\n    Assert.assertTrue(fo.exists());\r\n    final Map<String, Object> attributes = file.getContent().getAttributes();\r\n    Assert.assertTrue(attributes.containsKey(HdfsFileAttributes.BLOCK_SIZE.toString()));\r\n    Assert.assertTrue(attributes.containsKey(HdfsFileAttributes.GROUP.toString()));\r\n    Assert.assertTrue(attributes.containsKey(HdfsFileAttributes.LAST_ACCESS_TIME.toString()));\r\n    Assert.assertTrue(attributes.containsKey(HdfsFileAttributes.LENGTH.toString()));\r\n    Assert.assertTrue(attributes.containsKey(HdfsFileAttributes.MODIFICATION_TIME.toString()));\r\n    Assert.assertTrue(attributes.containsKey(HdfsFileAttributes.OWNER.toString()));\r\n    Assert.assertTrue(attributes.containsKey(HdfsFileAttributes.PERMISSIONS.toString()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\hdfs\\test\\HdfsFileProviderTest.java",
+  "methodName" : "testGetContentSize",
+  "sourceCode" : "@Test\r\npublic void testGetContentSize() throws Exception {\r\n    final FileObject fo = manager.resolveFile(TEST_DIR1);\r\n    Assert.assertNotNull(fo);\r\n    Assert.assertFalse(fo.exists());\r\n    // Create the test file\r\n    final FileObject file = createTestFile(hdfs);\r\n    Assert.assertTrue(fo.exists());\r\n    Assert.assertEquals(0, file.getContent().getSize());\r\n    Assert.assertTrue(file.getContent().isEmpty());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\hdfs\\test\\HdfsFileProviderTest.java",
+  "methodName" : "testGetInputStream",
+  "sourceCode" : "@Test\r\npublic void testGetInputStream() throws Exception {\r\n    final FileObject fo = manager.resolveFile(TEST_DIR1);\r\n    Assert.assertNotNull(fo);\r\n    Assert.assertFalse(fo.exists());\r\n    // Create the test file\r\n    final FileObject file = createTestFile(hdfs);\r\n    Assert.assertTrue(fo.exists());\r\n    file.getContent().getInputStream().close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\hdfs\\test\\HdfsFileProviderTest.java",
+  "methodName" : "testInit",
+  "sourceCode" : "@Test\r\npublic void testInit() throws Exception {\r\n    final FileObject fo = manager.resolveFile(TEST_FILE1);\r\n    Assert.assertNotNull(fo);\r\n    Assert.assertFalse(fo.exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\hdfs\\test\\HdfsFileProviderTest.java",
+  "methodName" : "testIsHidden",
+  "sourceCode" : "@Test\r\npublic void testIsHidden() throws Exception {\r\n    final FileObject fo = manager.resolveFile(TEST_DIR1);\r\n    Assert.assertNotNull(fo);\r\n    Assert.assertFalse(fo.exists());\r\n    // Create the test file\r\n    final FileObject file = createTestFile(hdfs);\r\n    Assert.assertTrue(fo.exists());\r\n    Assert.assertFalse(file.isHidden());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\hdfs\\test\\HdfsFileProviderTest.java",
+  "methodName" : "testIsReadable",
+  "sourceCode" : "@Test\r\npublic void testIsReadable() throws Exception {\r\n    final FileObject fo = manager.resolveFile(TEST_DIR1);\r\n    Assert.assertNotNull(fo);\r\n    Assert.assertFalse(fo.exists());\r\n    // Create the test file\r\n    final FileObject file = createTestFile(hdfs);\r\n    Assert.assertTrue(fo.exists());\r\n    Assert.assertTrue(file.isReadable());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\hdfs\\test\\HdfsFileProviderTest.java",
+  "methodName" : "testIsWritable",
+  "sourceCode" : "@Test\r\npublic void testIsWritable() throws Exception {\r\n    final FileObject fo = manager.resolveFile(TEST_DIR1);\r\n    Assert.assertNotNull(fo);\r\n    Assert.assertFalse(fo.exists());\r\n    // Create the test file\r\n    final FileObject file = createTestFile(hdfs);\r\n    Assert.assertTrue(fo.exists());\r\n    Assert.assertFalse(file.isWriteable());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\hdfs\\test\\HdfsFileProviderTest.java",
+  "methodName" : "testLastModificationTime",
+  "sourceCode" : "@Test\r\npublic void testLastModificationTime() throws Exception {\r\n    final FileObject fo = manager.resolveFile(TEST_DIR1);\r\n    Assert.assertNotNull(fo);\r\n    Assert.assertFalse(fo.exists());\r\n    // Create the test file\r\n    final FileObject file = createTestFile(hdfs);\r\n    Assert.assertTrue(fo.exists());\r\n    Assert.assertFalse(-1 == file.getContent().getLastModifiedTime());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\hdfs\\test\\HdfsFileProviderTest.java",
+  "methodName" : "testRandomAccessContent",
+  "sourceCode" : "@Test(expected = FileSystemException.class)\r\npublic void testRandomAccessContent() throws Exception {\r\n    final FileObject fo = manager.resolveFile(TEST_DIR1);\r\n    Assert.assertNotNull(fo);\r\n    Assert.assertFalse(fo.exists());\r\n    // Create the test file\r\n    final FileObject file = createTestFile(hdfs);\r\n    Assert.assertTrue(fo.exists());\r\n    file.getContent().getRandomAccessContent(RandomAccessMode.READWRITE).close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\hdfs\\test\\HdfsFileProviderTest.java",
+  "methodName" : "testRandomAccessContent2",
+  "sourceCode" : "@Test\r\npublic void testRandomAccessContent2() throws Exception {\r\n    final FileObject fo = manager.resolveFile(TEST_DIR1);\r\n    Assert.assertNotNull(fo);\r\n    Assert.assertFalse(fo.exists());\r\n    // Create the test file\r\n    final FileObject file = createTestFile(hdfs);\r\n    Assert.assertTrue(fo.exists());\r\n    file.getContent().getRandomAccessContent(RandomAccessMode.READ).close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\http\\test\\GetContentInfoFunctionalTest.java",
+  "methodName" : "testGetContentInfo",
+  "sourceCode" : "/**\r\n * Tests VFS-427 NPE on HttpFileObject.getContent().getContentInfo().\r\n *\r\n * @throws FileSystemException thrown when the getContentInfo API fails.\r\n */\r\n@Test\r\npublic void testGetContentInfo() throws FileSystemException {\r\n    final FileSystemManager fsManager = VFS.getManager();\r\n    try (final FileObject fo = fsManager.resolveFile(\"http://www.apache.org/licenses/LICENSE-2.0.txt\");\r\n        final FileContent content = fo.getContent()) {\r\n        Assert.assertNotNull(content);\r\n        // Used to NPE before fix:\r\n        content.getContentInfo();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\http\\test\\HttpFilesCacheTestCase.java",
+  "methodName" : "testQueryStringUrls",
+  "sourceCode" : "/**\r\n * Tests https://issues.apache.org/jira/browse/VFS-426\r\n */\r\n@Test\r\npublic void testQueryStringUrls() throws FileSystemException {\r\n    final String noQueryStringUrl = \"http://commons.apache.org/vfs\";\r\n    final String queryStringUrl = \"http://commons.apache.org/vfs?query=string\";\r\n    final String queryStringUrl2 = \"http://commons.apache.org/vfs?query=string&more=stuff\";\r\n    final FileSystemManager fileSystemManager = VFS.getManager();\r\n    try (final FileObject noQueryFile = fileSystemManager.resolveFile(noQueryStringUrl)) {\r\n        Assert.assertEquals(noQueryStringUrl, noQueryFile.getURL().toExternalForm());\r\n    }\r\n    try (final FileObject queryFile = fileSystemManager.resolveFile(queryStringUrl)) {\r\n        // failed for VFS-426\r\n        Assert.assertEquals(queryStringUrl, queryFile.getURL().toExternalForm());\r\n    }\r\n    try (final FileObject queryFile2 = fileSystemManager.resolveFile(queryStringUrl2)) {\r\n        // failed for VFS-426\r\n        Assert.assertEquals(queryStringUrl2, queryFile2.getURL().toExternalForm());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\http4\\test\\Http4FilesCacheTestCase.java",
+  "methodName" : "testQueryStringUrls",
+  "sourceCode" : "/**\r\n * Tests https://issues.apache.org/jira/browse/VFS-426\r\n */\r\n@Test\r\npublic void testQueryStringUrls() throws FileSystemException {\r\n    final String noQueryStringUrl = \"http4://commons.apache.org/vfs\";\r\n    final String queryStringUrl = \"http4://commons.apache.org/vfs?query=string\";\r\n    final String queryStringUrl2 = \"http4://commons.apache.org/vfs?query=string&more=stuff\";\r\n    final FileSystemManager fileSystemManager = VFS.getManager();\r\n    final FileObject noQueryFile = fileSystemManager.resolveFile(noQueryStringUrl);\r\n    Assert.assertEquals(noQueryStringUrl, noQueryFile.getURL().toExternalForm());\r\n    final FileObject queryFile = fileSystemManager.resolveFile(queryStringUrl);\r\n    // failed for VFS-426\r\n    Assert.assertEquals(queryStringUrl, queryFile.getURL().toExternalForm());\r\n    final FileObject queryFile2 = fileSystemManager.resolveFile(queryStringUrl2);\r\n    // failed for VFS-426\r\n    Assert.assertEquals(queryStringUrl2, queryFile2.getURL().toExternalForm());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\http4\\test\\Http4GetContentInfoTest.java",
+  "methodName" : "testGetContentInfo",
+  "sourceCode" : "/**\r\n * Tests VFS-427 NPE on Http4FileObject.getContent().getContentInfo().\r\n *\r\n * @throws FileSystemException thrown when the getContentInfo API fails.\r\n */\r\n@Test\r\npublic void testGetContentInfo() throws FileSystemException {\r\n    final FileSystemManager fsManager = VFS.getManager();\r\n    final FileObject fo = fsManager.resolveFile(\"http4://www.apache.org/licenses/LICENSE-2.0.txt\");\r\n    final FileContent content = fo.getContent();\r\n    Assert.assertNotNull(content);\r\n    // Used to NPE before fix:\r\n    content.getContentInfo();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\http4s\\test\\Http4sGetContentInfoTest.java",
+  "methodName" : "testGetContentInfo",
+  "sourceCode" : "/**\r\n * Tests VFS-427 NPE on Http4FileObject.getContent().getContentInfo().\r\n *\r\n * @throws FileSystemException thrown when the getContentInfo API fails.\r\n * @throws MalformedURLException thrown when the System environment contains an invalid URL for an HTTPS proxy.\r\n */\r\n@Test\r\npublic void testGetContentInfo() throws FileSystemException, MalformedURLException {\r\n    String httpsProxyHost = null;\r\n    int httpsProxyPort = -1;\r\n    final String httpsProxy = System.getenv(\"https_proxy\");\r\n    if (httpsProxy != null) {\r\n        final URL url = new URL(httpsProxy);\r\n        httpsProxyHost = url.getHost();\r\n        httpsProxyPort = url.getPort();\r\n    }\r\n    final FileSystemOptions opts;\r\n    if (httpsProxyHost != null) {\r\n        opts = new FileSystemOptions();\r\n        final Http4FileSystemConfigBuilder builder = Http4FileSystemConfigBuilder.getInstance();\r\n        builder.setProxyHost(opts, httpsProxyHost);\r\n        if (httpsProxyPort >= 0) {\r\n            builder.setProxyPort(opts, httpsProxyPort);\r\n        }\r\n    } else {\r\n        opts = null;\r\n    }\r\n    final FileSystemManager fsManager = VFS.getManager();\r\n    final FileObject fo = fsManager.resolveFile(\"http4://www.apache.org/licenses/LICENSE-2.0.txt\", opts);\r\n    final FileContent content = fo.getContent();\r\n    Assert.assertNotNull(content);\r\n    // Used to NPE before fix:\r\n    content.getContentInfo();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\http5\\test\\Http5FilesCacheTestCase.java",
+  "methodName" : "testQueryStringUrls",
+  "sourceCode" : "/**\r\n * Tests https://issues.apache.org/jira/browse/VFS-426\r\n */\r\n@Test\r\npublic void testQueryStringUrls() throws FileSystemException {\r\n    final String noQueryStringUrl = \"http5://commons.apache.org/vfs\";\r\n    final String queryStringUrl = \"http5://commons.apache.org/vfs?query=string\";\r\n    final String queryStringUrl2 = \"http5://commons.apache.org/vfs?query=string&more=stuff\";\r\n    final FileSystemManager fileSystemManager = VFS.getManager();\r\n    final FileObject noQueryFile = fileSystemManager.resolveFile(noQueryStringUrl);\r\n    Assert.assertEquals(noQueryStringUrl, noQueryFile.getURL().toExternalForm());\r\n    final FileObject queryFile = fileSystemManager.resolveFile(queryStringUrl);\r\n    // failed for VFS-426\r\n    Assert.assertEquals(queryStringUrl, queryFile.getURL().toExternalForm());\r\n    final FileObject queryFile2 = fileSystemManager.resolveFile(queryStringUrl2);\r\n    // failed for VFS-426\r\n    Assert.assertEquals(queryStringUrl2, queryFile2.getURL().toExternalForm());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\http5\\test\\Http5GetContentInfoTest.java",
+  "methodName" : "testGetContentInfo",
+  "sourceCode" : "/**\r\n * Tests VFS-427 NPE on Http5FileObject.getContent().getContentInfo().\r\n *\r\n * @throws FileSystemException thrown when the getContentInfo API fails.\r\n */\r\n@Test\r\npublic void testGetContentInfo() throws FileSystemException {\r\n    final FileSystemManager fsManager = VFS.getManager();\r\n    final FileObject fo = fsManager.resolveFile(\"http5://www.apache.org/licenses/LICENSE-2.0.txt\");\r\n    final FileContent content = fo.getContent();\r\n    Assert.assertNotNull(content);\r\n    // Used to NPE before fix:\r\n    content.getContentInfo();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\http5s\\test\\Http5sGetContentInfoTest.java",
+  "methodName" : "testGetContentInfo",
+  "sourceCode" : "/**\r\n * Tests VFS-427 NPE on Http5FileObject.getContent().getContentInfo().\r\n *\r\n * @throws FileSystemException thrown when the getContentInfo API fails.\r\n * @throws MalformedURLException thrown when the System environment contains an invalid URL for an HTTPS proxy.\r\n */\r\n@Test\r\npublic void testGetContentInfo() throws FileSystemException, MalformedURLException {\r\n    String httpsProxyHost = null;\r\n    int httpsProxyPort = -1;\r\n    final String httpsProxy = System.getenv(\"https_proxy\");\r\n    if (httpsProxy != null) {\r\n        final URL url = new URL(httpsProxy);\r\n        httpsProxyHost = url.getHost();\r\n        httpsProxyPort = url.getPort();\r\n    }\r\n    final FileSystemOptions opts;\r\n    if (httpsProxyHost != null) {\r\n        opts = new FileSystemOptions();\r\n        final Http5FileSystemConfigBuilder builder = Http5FileSystemConfigBuilder.getInstance();\r\n        builder.setProxyHost(opts, httpsProxyHost);\r\n        if (httpsProxyPort >= 0) {\r\n            builder.setProxyPort(opts, httpsProxyPort);\r\n        }\r\n    } else {\r\n        opts = null;\r\n    }\r\n    final FileSystemManager fsManager = VFS.getManager();\r\n    final FileObject fo = fsManager.resolveFile(\"http5://www.apache.org/licenses/LICENSE-2.0.txt\", opts);\r\n    final FileContent content = fo.getContent();\r\n    Assert.assertNotNull(content);\r\n    // Used to NPE before fix:\r\n    content.getContentInfo();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\https\\test\\GetContentInfoFunctionalTest.java",
+  "methodName" : "testGetContentInfo",
+  "sourceCode" : "/**\r\n * Tests VFS-427 NPE on HttpFileObject.getContent().getContentInfo().\r\n *\r\n * @throws FileSystemException   thrown when the getContentInfo API fails.\r\n * @throws MalformedURLException thrown when the System environment contains an\r\n *                               invalid URL for an HTTPS proxy.\r\n */\r\n@Test\r\npublic void testGetContentInfo() throws FileSystemException, MalformedURLException {\r\n    String httpsProxyHost = null;\r\n    int httpsProxyPort = -1;\r\n    final String httpsProxy = System.getenv(\"https_proxy\");\r\n    if (httpsProxy != null) {\r\n        final URL url = new URL(httpsProxy);\r\n        httpsProxyHost = url.getHost();\r\n        httpsProxyPort = url.getPort();\r\n    }\r\n    final FileSystemOptions opts;\r\n    if (httpsProxyHost != null) {\r\n        opts = new FileSystemOptions();\r\n        final HttpFileSystemConfigBuilder builder = HttpFileSystemConfigBuilder.getInstance();\r\n        builder.setProxyHost(opts, httpsProxyHost);\r\n        if (httpsProxyPort >= 0) {\r\n            builder.setProxyPort(opts, httpsProxyPort);\r\n        }\r\n    } else {\r\n        opts = null;\r\n    }\r\n    final FileSystemManager fsManager = VFS.getManager();\r\n    try (final FileObject fo = fsManager.resolveFile(\"http://www.apache.org/licenses/LICENSE-2.0.txt\", opts);\r\n        final FileContent content = fo.getContent()) {\r\n        Assert.assertNotNull(content);\r\n        // Used to NPE before fix:\r\n        content.getContentInfo();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\jar\\test\\JarAttributesTestCase.java",
+  "methodName" : "testAttributes",
+  "sourceCode" : "@Test\r\npublic void testAttributes() throws Exception {\r\n    final FileObject file = JarProviderTestCase.getTestJar(VFS.getManager(), \"test.jar\");\r\n    final Map<String, Object> attributes = file.getContent().getAttributes();\r\n    Assert.assertEquals(\"1.0\", attributes.get(\"Manifest-Version\"));\r\n    // Debugging:\r\n    // this.printAttributes(attributes);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\jar\\test\\JarAttributesTestCase.java",
+  "methodName" : "testNestedAttributes",
+  "sourceCode" : "@Test\r\npublic void testNestedAttributes() throws Exception {\r\n    final FileObject nested = JarProviderTestCase.getTestJar(VFS.getManager(), \"nested.jar\");\r\n    final FileObject file = nested.resolveFile(\"test.jar\");\r\n    final Map<String, Object> attributes = file.getContent().getAttributes();\r\n    Assert.assertEquals(\"1.0\", attributes.get(\"Manifest-Version\"));\r\n    // Debugging:\r\n    // this.printAttributes(attributes);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\local\\test\\ConversionTestCase.java",
+  "methodName" : "testFileNameWithSpaces",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testFileNameWithSpaces() throws URISyntaxException, IOException {\r\n    final File file = new File(\"target\", \"a name.txt\");\r\n    final String fileURL = file.toURI().toURL().toExternalForm();\r\n    assertEquals(file.getAbsoluteFile(), new File(file.toURI().getPath()));\r\n    assertEquals(file.getAbsoluteFile(), new File(new URL(fileURL).toURI().getPath()));\r\n    final FileSystemManager manager = VFS.getManager();\r\n    final FileObject fo = manager.resolveFile(fileURL);\r\n    assertEquals(file.getAbsoluteFile(), new File(new URL(fo.getURL().toExternalForm()).toURI().getPath()));\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\local\\test\\ConversionTestCase.java",
+  "methodName" : "testFileNameWithCharacters",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testFileNameWithCharacters() throws URISyntaxException, IOException {\r\n    final File file = new File(\"target\", \"+# %&.txt\");\r\n    final String fileURL = file.toURI().toURL().toExternalForm();\r\n    assertEquals(file.getAbsoluteFile(), new File(file.toURI().getPath()));\r\n    assertEquals(file.getAbsoluteFile(), new File(new URL(fileURL).toURI().getPath()));\r\n    try {\r\n        new FileOutputStream(file).close();\r\n        assertTrue(file.exists());\r\n        final FileSystemManager manager = VFS.getManager();\r\n        final FileObject fo = manager.resolveFile(fileURL);\r\n        assertTrue(fo.exists());\r\n        assertEquals(file.getAbsoluteFile(), new File(new URL(fo.getURL().toExternalForm()).toURI().getPath()));\r\n    } finally {\r\n        file.delete();\r\n    }\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\ram\\test\\CustomRamProviderTest.java",
+  "methodName" : "testReadEmptyFileByteByByte",
+  "sourceCode" : "@Test\r\npublic void testReadEmptyFileByteByByte() throws FileSystemException, IOException {\r\n    final InputStream input = this.createEmptyFile();\r\n    assertEquals(\"Empty file didnt return EOF -1\", -1, input.read());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\ram\\test\\CustomRamProviderTest.java",
+  "methodName" : "testReadEmptyFileIntoBuffer",
+  "sourceCode" : "@Test\r\npublic void testReadEmptyFileIntoBuffer() throws FileSystemException, IOException {\r\n    final InputStream input = this.createEmptyFile();\r\n    final byte[] buffer = new byte[100];\r\n    assertEquals(\"Empty file didnt return when filling buffer\", -1, input.read(buffer));\r\n    assertArrayEquals(\"Buffer was written too\", new byte[100], buffer);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\ram\\test\\CustomRamProviderTest.java",
+  "methodName" : "testReadEmptyFileIntoBufferWithOffsetAndLength",
+  "sourceCode" : "@Test\r\npublic void testReadEmptyFileIntoBufferWithOffsetAndLength() throws FileSystemException, IOException {\r\n    final InputStream input = this.createEmptyFile();\r\n    final byte[] buffer = new byte[100];\r\n    assertEquals(\"Empty file didnt return when filling buffer\", -1, input.read(buffer, 10, 90));\r\n    assertArrayEquals(\"Buffer was written too\", new byte[100], buffer);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\ram\\test\\CustomRamProviderTest.java",
+  "methodName" : "testReadNonEmptyFileByteByByte",
+  "sourceCode" : "@Test\r\npublic void testReadNonEmptyFileByteByByte() throws FileSystemException, IOException {\r\n    final InputStream input = this.createNonEmptyFile();\r\n    assertEquals(\"Read 1st byte failed\", 1, input.read());\r\n    assertEquals(\"Rread 2st byte failed\", 2, input.read());\r\n    assertEquals(\"Read 3st byte failed\", 3, input.read());\r\n    assertEquals(\"File should be empty\", -1, input.read());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\ram\\test\\CustomRamProviderTest.java",
+  "methodName" : "testReadNonEmptyFileIntoBuffer",
+  "sourceCode" : "@Test\r\npublic void testReadNonEmptyFileIntoBuffer() throws FileSystemException, IOException {\r\n    final InputStream input = this.createNonEmptyFile();\r\n    final byte[] buffer = new byte[100];\r\n    assertEquals(\"Filling buffer failed when file is not empty\", NON_EMPTY_FILE_CONTENT.length, input.read(buffer));\r\n    final byte[] expectedBuffer = new byte[100];\r\n    System.arraycopy(NON_EMPTY_FILE_CONTENT, 0, expectedBuffer, 0, NON_EMPTY_FILE_CONTENT.length);\r\n    assertArrayEquals(\"Buffer not filled\", expectedBuffer, buffer);\r\n    Arrays.fill(buffer, (byte) 0);\r\n    Arrays.fill(expectedBuffer, (byte) 0);\r\n    assertEquals(\"File should be empty after filling buffer\", -1, input.read(buffer));\r\n    assertArrayEquals(\"Buffer was written when empty\", expectedBuffer, buffer);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\ram\\test\\CustomRamProviderTest.java",
+  "methodName" : "testReadNonEmptyFileIntoBufferWithOffsetAndLength",
+  "sourceCode" : "@Test\r\npublic void testReadNonEmptyFileIntoBufferWithOffsetAndLength() throws FileSystemException, IOException {\r\n    final InputStream input = this.createNonEmptyFile();\r\n    final byte[] buffer = new byte[100];\r\n    final int offset = 10;\r\n    assertEquals(\"Filling buffer failed when file is not empty\", NON_EMPTY_FILE_CONTENT.length, input.read(buffer, offset, 100 - offset));\r\n    final byte[] expectedBuffer = new byte[100];\r\n    System.arraycopy(NON_EMPTY_FILE_CONTENT, 0, expectedBuffer, offset, NON_EMPTY_FILE_CONTENT.length);\r\n    assertArrayEquals(\"Buffer not filled\", expectedBuffer, buffer);\r\n    Arrays.fill(buffer, (byte) 0);\r\n    Arrays.fill(expectedBuffer, (byte) 0);\r\n    assertEquals(\"File should be empty after filling buffer\", -1, input.read(buffer, 10, 90));\r\n    assertArrayEquals(\"Buffer was written when empty\", expectedBuffer, buffer);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\ram\\test\\CustomRamProviderTest.java",
+  "methodName" : "testRootFolderExists",
+  "sourceCode" : "/**\r\n * Checks root folder exists\r\n *\r\n * @throws FileSystemException\r\n */\r\n@Test\r\npublic void testRootFolderExists() throws FileSystemException {\r\n    final FileObject root = manager.resolveFile(\"ram:///\", defaultRamFso);\r\n    assertTrue(root.getType().hasChildren());\r\n    try {\r\n        root.delete();\r\n        fail();\r\n    } catch (final FileSystemException e) {\r\n        // Expected\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\ram\\test\\CustomRamProviderTest.java",
+  "methodName" : "testFSOptions",
+  "sourceCode" : "@Test\r\npublic void testFSOptions() throws Exception {\r\n    // Default FS\r\n    final FileObject fo1 = manager.resolveFile(\"ram:/\");\r\n    final FileObject fo2 = manager.resolveFile(\"ram:/\");\r\n    assertTrue(\"Both files should exist in the same fs instance.\", fo1.getFileSystem() == fo2.getFileSystem());\r\n    FileSystemOptions fsOptions = fo1.getFileSystem().getFileSystemOptions();\r\n    long maxFilesystemSize = RamFileSystemConfigBuilder.getInstance().getLongMaxSize(fsOptions);\r\n    assertEquals(\"Filesystem option maxSize must be unlimited\", Long.MAX_VALUE, maxFilesystemSize);\r\n    // Small FS\r\n    final FileObject fo3 = manager.resolveFile(\"ram:/fo3\", smallSizedFso);\r\n    final FileObject fo4 = manager.resolveFile(\"ram:/\", smallSizedFso);\r\n    assertTrue(\"Both files should exist in the same FileSystem instance.\", fo3.getFileSystem() == fo4.getFileSystem());\r\n    assertTrue(\"Both files should exist in different FileSystem instance.\", fo1.getFileSystem() != fo3.getFileSystem());\r\n    fsOptions = fo3.getFileSystem().getFileSystemOptions();\r\n    maxFilesystemSize = RamFileSystemConfigBuilder.getInstance().getLongMaxSize(fsOptions);\r\n    assertEquals(\"Filesystem option maxSize must be set\", 10, maxFilesystemSize);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\ram\\test\\CustomRamProviderTest.java",
+  "methodName" : "testSmallFS",
+  "sourceCode" : "@Test\r\npublic void testSmallFS() throws Exception {\r\n    // Small FS\r\n    final FileObject fo3 = manager.resolveFile(\"ram:/fo3\", smallSizedFso);\r\n    fo3.createFile();\r\n    try {\r\n        final OutputStream os = fo3.getContent().getOutputStream();\r\n        os.write(new byte[10]);\r\n        os.close();\r\n    } catch (final FileSystemException e) {\r\n        fail(\"Test should be able to save such a small file\");\r\n    }\r\n    try {\r\n        final OutputStream os = fo3.getContent().getOutputStream();\r\n        os.write(new byte[11]);\r\n        os.close();\r\n        fail(\"It shouldn't save such a big file\");\r\n    } catch (final FileSystemException e) {\r\n        // Expected\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\ram\\test\\CustomRamProviderTest.java",
+  "methodName" : "testMoveFile",
+  "sourceCode" : "/**\r\n * Tests VFS-625.\r\n * @throws FileSystemException\r\n */\r\n@Test\r\npublic void testMoveFile() throws FileSystemException {\r\n    final FileObject fileSource = manager.resolveFile(\"ram://virtual/source\");\r\n    fileSource.createFile();\r\n    final FileObject fileDest = manager.resolveFile(\"ram://virtual/dest\");\r\n    Assert.assertTrue(fileSource.canRenameTo(fileDest));\r\n    fileSource.moveTo(fileDest);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\ram\\test\\CustomRamProviderTest.java",
+  "methodName" : "testSpecialName",
+  "sourceCode" : "/**\r\n * Test some special file name symbols.\r\n * <p>\r\n * Use the RamProvider since it has no character limitations like\r\n * the (Windows) LocalFileProvider.\r\n */\r\n@Test\r\npublic void testSpecialName() throws FileSystemException {\r\n    // we test with this file name\r\n    // does not work with '!'\r\n    final String testDir = \"/spacialtest/\";\r\n    final String testFileName = \"test:+-_ \\\"()<>%#.txt\";\r\n    final String expectedName = testDir + testFileName;\r\n    final FileObject dir = prepareSpecialFile(testDir, testFileName);\r\n    // DO: verify you can list it:\r\n    // includes dir\r\n    final FileObject[] findFilesResult = dir.findFiles(new AllFileSelector());\r\n    final FileObject[] getChildrenResult = dir.getChildren();\r\n    final FileObject getChildResult = dir.getChild(UriParser.encode(testFileName, ENC));\r\n    // validate findFiles returns expected result\r\n    assertEquals(\"Unexpected result findFiles: \" + Arrays.toString(findFilesResult), 2, findFilesResult.length);\r\n    String resultName = findFilesResult[0].getName().getPathDecoded();\r\n    assertEquals(\"findFiles Child name does not match\", expectedName, resultName);\r\n    assertEquals(\"Did findFiles but child was no file\", FileType.FILE, findFilesResult[0].getType());\r\n    // validate getChildren returns expected result\r\n    assertEquals(\"Unexpected result getChildren: \" + Arrays.toString(getChildrenResult), 1, getChildrenResult.length);\r\n    resultName = getChildrenResult[0].getName().getPathDecoded();\r\n    assertEquals(\"getChildren Child name does not match\", expectedName, resultName);\r\n    assertEquals(\"Did getChildren but child was no file\", FileType.FILE, getChildrenResult[0].getType());\r\n    // validate getChild returns expected child\r\n    assertNotNull(\"Did not find direct child\", getChildResult);\r\n    resultName = getChildResult.getName().getPathDecoded();\r\n    assertEquals(\"getChild name does not match\", expectedName, resultName);\r\n    assertEquals(\"getChild was no file\", FileType.FILE, getChildResult.getType());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\ram\\test\\CustomRamProviderTest.java",
+  "methodName" : "testSchemePrefix",
+  "sourceCode" : "/**\r\n * Test if listing files with known scheme prefix works.\r\n * <p>\r\n * This test is not RamProvider specific but it uses it as a simple test-bed.\r\n * Verifies VFS-741.\r\n */\r\n@Test\r\npublic void testSchemePrefix() throws FileSystemException {\r\n    // use a :-prefix with a known scheme (unknown scheme works since VFS-398)\r\n    // typically \"ram\"\r\n    final String KNOWN_SCHEME = manager.getSchemes()[0];\r\n    // we test with this file name\r\n    final String testDir = \"/prefixtest/\";\r\n    final String testFileName = KNOWN_SCHEME + \":test:txt\";\r\n    final String expectedName = testDir + testFileName;\r\n    final FileObject dir = prepareSpecialFile(testDir, testFileName);\r\n    // verify we can list dir\r\n    // if not it throws:\r\n    // Caused by: org.apache.commons.vfs2.FileSystemException: Invalid descendent file name \"ram:data:test.txt\".\r\n    //   at org.apache.commons.vfs2.impl.DefaultFileSystemManager.resolveName\r\n    //   at org.apache.commons.vfs2.provider.AbstractFileObject.getChildren\r\n    //   at org.apache.commons.vfs2.provider.AbstractFileObject.traverse\r\n    //   at org.apache.commons.vfs2.provider.AbstractFileObject.findFiles\r\n    // test methods to get the child:\r\n    // includes dir\r\n    final FileObject[] findFilesResult = dir.findFiles(new AllFileSelector());\r\n    final FileObject[] getChildrenResult = dir.getChildren();\r\n    final FileObject getChildResult = dir.getChild(testFileName);\r\n    // validate findFiles returns expected result\r\n    assertEquals(\"Unexpected result findFiles: \" + Arrays.toString(findFilesResult), 2, findFilesResult.length);\r\n    String resultName = findFilesResult[0].getName().getPathDecoded();\r\n    assertEquals(\"findFiles Child name does not match\", expectedName, resultName);\r\n    assertEquals(\"Did findFiles but child was no file\", FileType.FILE, findFilesResult[0].getType());\r\n    // validate getChildren returns expected result\r\n    assertEquals(\"Unexpected result getChildren: \" + Arrays.toString(getChildrenResult), 1, getChildrenResult.length);\r\n    resultName = getChildrenResult[0].getName().getPathDecoded();\r\n    assertEquals(\"getChildren Child name does not match\", expectedName, resultName);\r\n    assertEquals(\"Did getChildren but child was no file\", FileType.FILE, getChildrenResult[0].getType());\r\n    // validate getChild returns expected child\r\n    assertNotNull(\"Did not find direct child\", getChildResult);\r\n    resultName = getChildResult.getName().getPathDecoded();\r\n    assertEquals(\"getChild name does not match\", expectedName, resultName);\r\n    assertEquals(\"getChild was no file\", FileType.FILE, getChildResult.getType());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\res\\test\\ResSchemeTestCase.java",
+  "methodName" : "test_resolveFile_String",
+  "sourceCode" : "@Test\r\npublic void test_resolveFile_String() throws FileSystemException {\r\n    Assert.assertTrue(VFS.getManager().resolveFile(\"res:test.properties\").exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\res\\test\\ResSchemeTestCase.java",
+  "methodName" : "test_resolveFile_String_S",
+  "sourceCode" : "@Test\r\npublic void test_resolveFile_String_S() throws FileSystemException {\r\n    Assert.assertTrue(VFS.getManager().resolveFile(\"res:/test.properties\").exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\res\\test\\ResSchemeTestCase.java",
+  "methodName" : "test_resolveFile_String_SS",
+  "sourceCode" : "@Test\r\npublic void test_resolveFile_String_SS() throws FileSystemException {\r\n    Assert.assertTrue(VFS.getManager().resolveFile(\"res://test.properties\").exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\res\\test\\ResSchemeTestCase.java",
+  "methodName" : "test_resolveFile_String_SSS",
+  "sourceCode" : "@Test\r\npublic void test_resolveFile_String_SSS() throws FileSystemException {\r\n    Assert.assertTrue(VFS.getManager().resolveFile(\"res://test.properties\").exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\res\\test\\ResSchemeTestCase.java",
+  "methodName" : "test_resolveFile_URI",
+  "sourceCode" : "@Test\r\npublic void test_resolveFile_URI() throws FileSystemException, URISyntaxException {\r\n    Assert.assertTrue(VFS.getManager().resolveFile(new URI(\"res:test.properties\")).exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\res\\test\\ResSchemeTestCase.java",
+  "methodName" : "test_resolveFile_URI_S",
+  "sourceCode" : "@Test\r\npublic void test_resolveFile_URI_S() throws FileSystemException, URISyntaxException {\r\n    Assert.assertTrue(VFS.getManager().resolveFile(new URI(\"res:/test.properties\")).exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\res\\test\\ResSchemeTestCase.java",
+  "methodName" : "test_resolveFile_URI_SS",
+  "sourceCode" : "@Test\r\npublic void test_resolveFile_URI_SS() throws FileSystemException, URISyntaxException {\r\n    Assert.assertTrue(VFS.getManager().resolveFile(new URI(\"res://test.properties\")).exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\res\\test\\ResSchemeTestCase.java",
+  "methodName" : "test_resolveFile_URI_SSS",
+  "sourceCode" : "@Test\r\npublic void test_resolveFile_URI_SSS() throws FileSystemException, URISyntaxException {\r\n    Assert.assertTrue(VFS.getManager().resolveFile(new URI(\"res://test.properties\")).exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\res\\test\\ResSchemeTestCase.java",
+  "methodName" : "test_resolveURI_String",
+  "sourceCode" : "@Test\r\npublic void test_resolveURI_String() throws FileSystemException {\r\n    Assert.assertTrue(VFS.getManager().resolveURI(\"res:test.properties\").isFile());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\res\\test\\ResSchemeTestCase.java",
+  "methodName" : "test_resolveURI_String_S",
+  "sourceCode" : "@Test\r\npublic void test_resolveURI_String_S() throws FileSystemException {\r\n    Assert.assertTrue(VFS.getManager().resolveURI(\"res:/test.properties\").isFile());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\res\\test\\ResSchemeTestCase.java",
+  "methodName" : "test_resolveURI_String_SS",
+  "sourceCode" : "@Test\r\npublic void test_resolveURI_String_SS() throws FileSystemException {\r\n    Assert.assertTrue(VFS.getManager().resolveURI(\"res://test.properties\").isFile());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\res\\test\\ResSchemeTestCase.java",
+  "methodName" : "test_resolveURI_String_SSS",
+  "sourceCode" : "@Test\r\npublic void test_resolveURI_String_SSS() throws FileSystemException {\r\n    Assert.assertTrue(VFS.getManager().resolveURI(\"res:///test.properties\").isFile());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\res\\test\\ResSchemeTestCase.java",
+  "methodName" : "test_resolveURI_String_SSSnull",
+  "sourceCode" : "@Test(expected = FileSystemException.class)\r\npublic void test_resolveURI_String_SSSnull() throws FileSystemException {\r\n    // Resulting path is empty\r\n    Assert.assertTrue(VFS.getManager().resolveURI(\"res:///\").isFile());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\res\\test\\ResSchemeTestCase.java",
+  "methodName" : "test_resolveFile_String_SSSnull",
+  "sourceCode" : "@Test(expected = FileSystemException.class)\r\npublic void test_resolveFile_String_SSSnull() throws FileSystemException {\r\n    // Resulting path is empty\r\n    Assert.assertTrue(VFS.getManager().resolveFile(\"res:///\").exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\tar\\test\\LargeTarTestCase.java",
+  "methodName" : "testLargeFile",
+  "sourceCode" : "@Test\r\npublic void testLargeFile() throws Exception {\r\n    final File realFile = new File(largeFilePath + largeFileName + \".tar.gz\");\r\n    final FileObject file = manager.resolveFile(\"tgz:file://\" + realFile.getCanonicalPath() + \"!/\");\r\n    assertNotNull(file);\r\n    final List<FileObject> files = Arrays.asList(file.getChildren());\r\n    assertNotNull(files);\r\n    assertEquals(1, files.size());\r\n    final FileObject f = files.get(0);\r\n    assertTrue(\"Expected file not found: \" + largeFileName + \".txt\", f.getName().getBaseName().equals(largeFileName + \".txt\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\test\\FileObjectSortTestCase.java",
+  "methodName" : "testSortArrayIgnoreCase",
+  "sourceCode" : "/**\r\n * Tests that sorting ignores case.\r\n *\r\n * @throws FileSystemException\r\n */\r\n@Test\r\npublic void testSortArrayIgnoreCase() throws FileSystemException {\r\n    final FileObject file1 = VfsFileSystem.resolveFile(\"A1\");\r\n    final FileObject file2 = VfsFileSystem.resolveFile(\"a2\");\r\n    final FileObject file3 = VfsFileSystem.resolveFile(\"A3\");\r\n    final FileObject[] actualArray = { file3, file1, file2, file1, file2 };\r\n    final FileObject[] expectedArray = { file1, file1, file2, file2, file3 };\r\n    Arrays.sort(actualArray);\r\n    Assert.assertArrayEquals(expectedArray, actualArray);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\test\\FileObjectSortTestCase.java",
+  "methodName" : "testSortArrayMoveAll",
+  "sourceCode" : "/**\r\n * Tests sorting an array\r\n *\r\n * @throws FileSystemException\r\n */\r\n@Test\r\npublic void testSortArrayMoveAll() throws FileSystemException {\r\n    final FileObject[] actualArray = UnSortedArray.clone();\r\n    Assert.assertFalse(Arrays.equals(UnSortedArray, SortedArray));\r\n    Arrays.sort(actualArray);\r\n    Assert.assertArrayEquals(SortedArray, actualArray);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\test\\FileObjectSortTestCase.java",
+  "methodName" : "testSortArrayMoveNone",
+  "sourceCode" : "/**\r\n * Tests that sorting an array already in oder does not mess it up.\r\n *\r\n * @throws FileSystemException\r\n */\r\n@Test\r\npublic void testSortArrayMoveNone() throws FileSystemException {\r\n    final FileObject[] actualArray = SortedArray.clone();\r\n    Arrays.sort(actualArray);\r\n    Assert.assertArrayEquals(SortedArray, actualArray);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\test\\FileObjectSortTestCase.java",
+  "methodName" : "testSortListMoveAll",
+  "sourceCode" : "/**\r\n * Tests sorting a list\r\n *\r\n * @throws FileSystemException\r\n */\r\n@Test\r\npublic void testSortListMoveAll() throws FileSystemException {\r\n    final List<FileObject> actualList = Arrays.asList(UnSortedArray);\r\n    final List<FileObject> expectedSortedList = Arrays.asList(SortedArray);\r\n    Assert.assertFalse(actualList.equals(expectedSortedList));\r\n    Collections.sort(actualList);\r\n    Assert.assertTrue(actualList.equals(expectedSortedList));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\test\\FileObjectSortTestCase.java",
+  "methodName" : "testSortListMoveNone",
+  "sourceCode" : "/**\r\n * Tests that sorting a list already in oder does not mess it up.\r\n *\r\n * @throws FileSystemException\r\n */\r\n@Test\r\npublic void testSortListMoveNone() throws FileSystemException {\r\n    final List<FileObject> actualList = Arrays.asList(SortedArray);\r\n    final List<FileObject> expectedSortedList = Arrays.asList(SortedArray);\r\n    Collections.sort(actualList);\r\n    Assert.assertTrue(actualList.equals(expectedSortedList));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\UriParserTestCase.java",
+  "methodName" : "testColonInFileNameAndNotSupportedScheme",
+  "sourceCode" : "@Test\r\npublic void testColonInFileNameAndNotSupportedScheme() {\r\n    Assert.assertEquals(null, UriParser.extractScheme(schemes, \"some:file\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\UriParserTestCase.java",
+  "methodName" : "testColonInFileNameWithPath",
+  "sourceCode" : "@Test\r\npublic void testColonInFileNameWithPath() {\r\n    Assert.assertEquals(null, UriParser.extractScheme(schemes, \"some/path/some:file\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\UriParserTestCase.java",
+  "methodName" : "testNormalScheme",
+  "sourceCode" : "@Test\r\npublic void testNormalScheme() {\r\n    Assert.assertEquals(\"ftp\", UriParser.extractScheme(schemes, \"ftp://user:pass@host/some/path/some:file\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\UriParserTestCase.java",
+  "methodName" : "testOneSlashScheme",
+  "sourceCode" : "@Test\r\npublic void testOneSlashScheme() {\r\n    Assert.assertEquals(\"file\", UriParser.extractScheme(schemes, \"file:/user:pass@host/some/path/some:file\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\UriParserTestCase.java",
+  "methodName" : "testColonNotFollowedBySlash",
+  "sourceCode" : "@Test\r\npublic void testColonNotFollowedBySlash() {\r\n    Assert.assertEquals(\"file\", UriParser.extractScheme(schemes, \"file:user/subdir/some/path/some:file\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\UriParserTestCase.java",
+  "methodName" : "testNormalSchemeWithBuffer",
+  "sourceCode" : "@Test\r\npublic void testNormalSchemeWithBuffer() {\r\n    final StringBuilder buffer = new StringBuilder();\r\n    UriParser.extractScheme(schemes, \"ftp://user:pass@host/some/path/some:file\", buffer);\r\n    Assert.assertEquals(\"//user:pass@host/some/path/some:file\", buffer.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\UriParserTestCase.java",
+  "methodName" : "testOneSlashSchemeWithBuffer",
+  "sourceCode" : "@Test\r\npublic void testOneSlashSchemeWithBuffer() {\r\n    final StringBuilder buffer = new StringBuilder();\r\n    UriParser.extractScheme(schemes, \"file:/user:pass@host/some/path/some:file\", buffer);\r\n    Assert.assertEquals(\"/user:pass@host/some/path/some:file\", buffer.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\UriParserTestCase.java",
+  "methodName" : "testColonInFileName",
+  "sourceCode" : "@Test\r\npublic void testColonInFileName() {\r\n    Assert.assertEquals(null, UriParser.extractScheme(\"some/path/some:file\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\url\\UrlFileNameParserTest.java",
+  "methodName" : "testJira739",
+  "sourceCode" : "@Test\r\npublic void testJira739() throws Exception {\r\n    final String uriStr = \"maprfs:///\";\r\n    // Check that we have a valid URI\r\n    final URI uri = new URI(uriStr);\r\n    // VFS-739 shows that parseUri throws an NPE:\r\n    final FileName fileName = new UrlFileNameParser().parseUri(null, null, uriStr);\r\n    Assert.assertEquals(uriStr, fileName.getURI());\r\n    Assert.assertEquals(uri.getScheme(), fileName.getScheme());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\Jira733TestCase.java",
+  "methodName" : "testZipParentLayer",
+  "sourceCode" : "@Test\r\npublic void testZipParentLayer() throws Exception {\r\n    final File file = new File(\"src/test/resources/test-data/test.zip\");\r\n    final String nestedPath = \"zip:\" + file.getAbsolutePath() + \"!/read-tests/file1.txt\";\r\n    try (final FileObject fileObject = VFS.getManager().resolveFile(nestedPath);\r\n        final FileObject wrappedFileObject = new OnCallRefreshFileObject(fileObject)) {\r\n        // VFS.getManager().getFilesCache().close();\r\n        Assert.assertNotNull(\"getParentLayer() 1\", wrappedFileObject.getFileSystem().getParentLayer());\r\n        wrappedFileObject.exists();\r\n        wrappedFileObject.getContent();\r\n        Assert.assertNotNull(\"getParentLayer() 2\", wrappedFileObject.getFileSystem().getParentLayer());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\Jira733TestCase.java",
+  "methodName" : "testZipParentLayer_exists",
+  "sourceCode" : "@Test\r\npublic void testZipParentLayer_exists() throws Exception {\r\n    testZipParentLayer(fileObject -> fileObject.exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\Jira733TestCase.java",
+  "methodName" : "testZipParentLayer_exists_getContents",
+  "sourceCode" : "@Test\r\npublic void testZipParentLayer_exists_getContents() throws Exception {\r\n    testZipParentLayer(fileObject -> {\r\n        fileObject.exists();\r\n        fileObject.getContent();\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\Jira733TestCase.java",
+  "methodName" : "testZipParentLayer_getChildren",
+  "sourceCode" : "@Test\r\npublic void testZipParentLayer_getChildren() throws Exception {\r\n    testZipParentLayer(fileObject -> fileObject.getParent().getChildren());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\Jira733TestCase.java",
+  "methodName" : "testZipParentLayer_getContents",
+  "sourceCode" : "@Test\r\npublic void testZipParentLayer_getContents() throws Exception {\r\n    testZipParentLayer(fileObject -> fileObject.getContent());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\Jira733TestCase.java",
+  "methodName" : "testZipParentLayer_getType",
+  "sourceCode" : "@Test\r\npublic void testZipParentLayer_getType() throws Exception {\r\n    testZipParentLayer(fileObject -> fileObject.getType());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\Jira733TestCase.java",
+  "methodName" : "testZipParentLayer_isAttached",
+  "sourceCode" : "@Test\r\npublic void testZipParentLayer_isAttached() throws Exception {\r\n    testZipParentLayer(fileObject -> fileObject.isAttached());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\Jira733TestCase.java",
+  "methodName" : "testZipParentLayer_isContentOpen",
+  "sourceCode" : "@Test\r\npublic void testZipParentLayer_isContentOpen() throws Exception {\r\n    testZipParentLayer(fileObject -> fileObject.isContentOpen());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\Jira733TestCase.java",
+  "methodName" : "testZipParentLayer_isExecutable",
+  "sourceCode" : "@Test\r\npublic void testZipParentLayer_isExecutable() throws Exception {\r\n    testZipParentLayer(fileObject -> fileObject.isExecutable());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\Jira733TestCase.java",
+  "methodName" : "testZipParentLayer_isFile",
+  "sourceCode" : "@Test\r\npublic void testZipParentLayer_isFile() throws Exception {\r\n    testZipParentLayer(fileObject -> fileObject.isFile());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\Jira733TestCase.java",
+  "methodName" : "testZipParentLayer_isFolder",
+  "sourceCode" : "@Test\r\npublic void testZipParentLayer_isFolder() throws Exception {\r\n    testZipParentLayer(fileObject -> fileObject.isFolder());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\Jira733TestCase.java",
+  "methodName" : "testZipParentLayer_isHidden",
+  "sourceCode" : "@Test\r\npublic void testZipParentLayer_isHidden() throws Exception {\r\n    testZipParentLayer(fileObject -> fileObject.isHidden());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\Jira733TestCase.java",
+  "methodName" : "testZipParentLayer_isReadable",
+  "sourceCode" : "@Test\r\npublic void testZipParentLayer_isReadable() throws Exception {\r\n    testZipParentLayer(fileObject -> fileObject.isReadable());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\Jira733TestCase.java",
+  "methodName" : "testZipParentLayer_isWriteable",
+  "sourceCode" : "@Test\r\npublic void testZipParentLayer_isWriteable() throws Exception {\r\n    testZipParentLayer(fileObject -> fileObject.isWriteable());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\FileLockTestCase.java",
+  "methodName" : "testCannotDeleteWhileStreaming",
+  "sourceCode" : "@Test\r\npublic void testCannotDeleteWhileStreaming() throws Exception {\r\n    try (final FileObject zipFileObject = manager.resolveFile(zipFileUri)) {\r\n        try (InputStream inputStream = zipFileObject.getContent().getInputStream()) {\r\n            if (Os.isFamily(Os.OS_FAMILY_WINDOWS)) {\r\n                // We do not use newZipFile in the Assert message to avoid touching it before calling delete().\r\n                Assert.assertFalse(\"Could not delete file\", newZipFile.delete());\r\n            }\r\n        }\r\n    }\r\n    assertDelete();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\FileLockTestCase.java",
+  "methodName" : "testCannotDeleteWhileStreaming2",
+  "sourceCode" : "@Test\r\npublic void testCannotDeleteWhileStreaming2() throws Exception {\r\n    Assume.assumeTrue(Os.isFamily(Os.OS_FAMILY_WINDOWS));\r\n    try (final FileObject zipFileObject = manager.resolveFile(zipFileUri)) {\r\n        try (InputStream inputStream = zipFileObject.getContent().getInputStream()) {\r\n            // We do not use newZipFile in the Assert message to avoid touching it before calling delete().\r\n            Assert.assertFalse(\"Could not delete file\", newZipFile.delete());\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\FileLockTestCase.java",
+  "methodName" : "testResolveAndOpenCloseContent",
+  "sourceCode" : "@Test\r\npublic void testResolveAndOpenCloseContent() throws Exception {\r\n    resolveAndOpenCloseContent();\r\n    assertDelete();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\FileLockTestCase.java",
+  "methodName" : "testResolveAndOpenReadCloseInputStream",
+  "sourceCode" : "@Test\r\npublic void testResolveAndOpenReadCloseInputStream() throws Exception {\r\n    resolveAndOpenReadCloseInputStream();\r\n    assertDelete();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\FileLockTestCase.java",
+  "methodName" : "testResolveAndOpenReadCloseInputStream3",
+  "sourceCode" : "@Test\r\npublic void testResolveAndOpenReadCloseInputStream3() throws Exception {\r\n    resolveAndOpenReadCloseInputStream();\r\n    resolveAndOpenReadCloseInputStream();\r\n    resolveAndOpenReadCloseInputStream();\r\n    assertDelete();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\FileLockTestCase.java",
+  "methodName" : "testResolveAndOpenCloseContent3",
+  "sourceCode" : "@Test\r\npublic void testResolveAndOpenCloseContent3() throws Exception {\r\n    resolveAndOpenCloseContent();\r\n    resolveAndOpenCloseContent();\r\n    resolveAndOpenCloseContent();\r\n    assertDelete();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\FileLockTestCase.java",
+  "methodName" : "testResolveAndOpenCloseInputStream",
+  "sourceCode" : "/**\r\n * This test checks whether we can modify an underlying Zip file after we have performed IO operations on files\r\n * within it, but although we no longer have any FileObjects explicitly open.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testResolveAndOpenCloseInputStream() throws Exception {\r\n    resolveAndOpenCloseInputStream();\r\n    assertDelete();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\FileLockTestCase.java",
+  "methodName" : "testResolveAndOpenCloseInputStream3",
+  "sourceCode" : "@Test\r\npublic void testResolveAndOpenCloseInputStream3() throws Exception {\r\n    resolveAndOpenCloseInputStream();\r\n    resolveAndOpenCloseInputStream();\r\n    resolveAndOpenCloseInputStream();\r\n    assertDelete();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\FileLockTestCase.java",
+  "methodName" : "testResolveOpenCloseNestedInputStreams",
+  "sourceCode" : "@Test\r\npublic void testResolveOpenCloseNestedInputStreams() throws Exception {\r\n    try (final FileObject zipFileObject = manager.resolveFile(zipFileUri)) {\r\n        try (final FileObject zipFileObject2 = manager.resolveFile(zipFileUri)) {\r\n            zipFileObject2.getContent().getInputStream().close();\r\n        }\r\n        zipFileObject.getContent().getInputStream().close();\r\n    }\r\n    assertDelete();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\FileLockTestCase.java",
+  "methodName" : "testReadClosedFileObject",
+  "sourceCode" : "@Test\r\npublic void testReadClosedFileObject() throws Exception {\r\n    final FileObject zipFileObjectRef;\r\n    try (final FileObject zipFileObject = manager.resolveFile(zipFileUri)) {\r\n        zipFileObjectRef = zipFileObject;\r\n        try (final InputStream inputStream = zipFileObject.getContent().getInputStream()) {\r\n            readAndAssert(inputStream);\r\n        }\r\n    }\r\n    try (final InputStream inputStream = zipFileObjectRef.getContent().getInputStream()) {\r\n        readAndAssert(inputStream);\r\n    } finally {\r\n        zipFileObjectRef.close();\r\n    }\r\n    assertDelete();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\ParseXmlInZipTestCase.java",
+  "methodName" : "testParseXmlInZip",
+  "sourceCode" : "@Test\r\npublic void testParseXmlInZip() throws IOException, SAXException {\r\n    final File newZipFile = createTempFile();\r\n    final String xmlFilePath = \"zip:file:\" + newZipFile.getAbsolutePath() + \"!/read-xml-tests/file1.xml\";\r\n    final FileSystemManager manager = VFS.getManager();\r\n    try (final FileObject zipFileObject = manager.resolveFile(xmlFilePath)) {\r\n        try (final InputStream inputStream = zipFileObject.getContent().getInputStream()) {\r\n            final Document document = newDocumentBuilder(zipFileObject, zipFileObject, null).parse(inputStream);\r\n            Assert.assertNotNull(document);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\ParseXmlInZipTestCase.java",
+  "methodName" : "testResolveAndParseBiggerXmlInZip",
+  "sourceCode" : "@Test\r\npublic void testResolveAndParseBiggerXmlInZip() throws IOException, SAXException {\r\n    // File is > 64 bytes\r\n    // In this case, we want to make sure that the XML document does NOT fit in the internal buffer used to parse\r\n    // the XML declaration and see if that affects JAXP when it uses its \"rewind\" input stream.\r\n    testResolveAndParseXmlInZip(\"read-xml-tests/file3-bigger.xml\", null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\ParseXmlInZipTestCase.java",
+  "methodName" : "testResolveAndParseInvalidXml",
+  "sourceCode" : "@Test\r\npublic void testResolveAndParseInvalidXml() throws IOException, SAXException {\r\n    try {\r\n        testResolveAndParseXmlInZip(\"read-xml-tests/name-invalid.xml\", \"/read-xml-tests/name.xsd\");\r\n    } catch (final SAXException e) {\r\n        final Pattern p = Pattern.compile(\"Invalid content was found starting with element.+FOO\");\r\n        Assert.assertTrue(p.matcher(e.toString()).find());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\ParseXmlInZipTestCase.java",
+  "methodName" : "testResolveAndParseNotWellFormedXml",
+  "sourceCode" : "@Test\r\npublic void testResolveAndParseNotWellFormedXml() throws IOException {\r\n    try {\r\n        testResolveAndParseXmlInZip(\"read-xml-tests/name-not-well-formed.xml\", \"/read-xml-tests/name.xsd\");\r\n    } catch (final SAXException e) {\r\n        Assert.assertTrue(e.toString().contains(\"XML document structures must start and end within the same entity.\"));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\ParseXmlInZipTestCase.java",
+  "methodName" : "testResolveAndParseXmlInZip",
+  "sourceCode" : "@Test\r\npublic void testResolveAndParseXmlInZip() throws IOException, SAXException {\r\n    // File is < 64 bytes\r\n    // In this case, we want to make sure that the XML document DOES fit in the internal buffer used to parse\r\n    // the XML declaration and see if that affects JAXP when it uses its \"rewind\" input stream.\r\n    testResolveAndParseXmlInZip(\"read-xml-tests/file1.xml\", null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\ParseXmlInZipTestCase.java",
+  "methodName" : "testResolveAndParseXmlInZipWithOneXmlSchema",
+  "sourceCode" : "@Test\r\npublic void testResolveAndParseXmlInZipWithOneXmlSchema() throws IOException, SAXException {\r\n    testResolveAndParseXmlInZip(\"read-xml-tests/name-with-xsd-ref.xml\", \"/read-xml-tests/name.xsd\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\ParseXmlInZipTestCase.java",
+  "methodName" : "testResolveAndParseXmlInZipWithTwoXmlSchema",
+  "sourceCode" : "@Test\r\npublic void testResolveAndParseXmlInZipWithTwoXmlSchema() throws IOException, SAXException {\r\n    testResolveAndParseXmlInZip(\"read-xml-tests/person.xml\", \"/read-xml-tests/person.xsd\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\ZipFileObjectTestCase.java",
+  "methodName" : "testLeaveNestedFileOpen",
+  "sourceCode" : "/**\r\n * Tests that when we read a file inside a file Zip and leave it open, we can still delete the Zip after we clean up\r\n * the Zip file.\r\n *\r\n * @throws IOException\r\n */\r\n@Test\r\n@Ignore(\"Shows that leaving a stream open and not closing any resource leaves the container file locked\")\r\npublic void testLeaveNestedFileOpen() throws IOException {\r\n    final File newZipFile = createTempFile();\r\n    final FileSystemManager manager = VFS.getManager();\r\n    try (final FileObject zipFileObject = manager.resolveFile(\"zip:file:\" + newZipFile.getAbsolutePath())) {\r\n        @SuppressWarnings({ \"resource\" })\r\n        final FileObject zipFileObject1 = zipFileObject.resolveFile(NESTED_FILE_1);\r\n        getInputStreamAndAssert(zipFileObject1, \"1\");\r\n    }\r\n    assertDelete(newZipFile);\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\ZipFileObjectTestCase.java",
+  "methodName" : "testReadingFilesInZipFile",
+  "sourceCode" : "/**\r\n * Tests that we can read more than one file within a Zip file, especially after closing each FileObject.\r\n *\r\n * @throws IOException\r\n */\r\n@Test\r\npublic void testReadingFilesInZipFile() throws IOException {\r\n    final File newZipFile = createTempFile();\r\n    final FileSystemManager manager = VFS.getManager();\r\n    try (final FileObject zipFileObject = manager.resolveFile(\"zip:file:\" + newZipFile.getAbsolutePath())) {\r\n        try (final FileObject zipFileObject1 = zipFileObject.resolveFile(NESTED_FILE_1)) {\r\n            try (final InputStream inputStream = zipFileObject1.getContent().getInputStream()) {\r\n                readAndAssert(zipFileObject1, inputStream, \"1\");\r\n            }\r\n        }\r\n        resolveReadAssert(zipFileObject, NESTED_FILE_2);\r\n    }\r\n    assertDelete(newZipFile);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\ZipFileObjectTestCase.java",
+  "methodName" : "testReadingOneAfterClosingAnotherFile",
+  "sourceCode" : "/**\r\n * Tests that we can get a stream from one file in a zip file, then close another file from the same zip, then\r\n * process the initial input stream.\r\n *\r\n * @throws IOException\r\n */\r\n@Test\r\npublic void testReadingOneAfterClosingAnotherFile() throws IOException {\r\n    final File newZipFile = createTempFile();\r\n    final FileSystemManager manager = VFS.getManager();\r\n    final FileObject zipFileObject1;\r\n    final InputStream inputStream1;\r\n    try (final FileObject zipFileObject = manager.resolveFile(\"zip:file:\" + newZipFile.getAbsolutePath())) {\r\n        // leave resources open\r\n        zipFileObject1 = zipFileObject.resolveFile(NESTED_FILE_1);\r\n        inputStream1 = zipFileObject1.getContent().getInputStream();\r\n    }\r\n    // The zip file is \"closed\", but we read from the stream now.\r\n    readAndAssert(zipFileObject1, inputStream1, \"1\");\r\n    // clean up\r\n    zipFileObject1.close();\r\n    assertDelete(newZipFile);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\ZipFileObjectTestCase.java",
+  "methodName" : "testReadingOneAfterClosingAnotherStream",
+  "sourceCode" : "/**\r\n * Tests that we can get a stream from one file in a zip file, then close another file from the same zip, then\r\n * process the initial input stream. If our internal reference counting is correct, the test passes.\r\n *\r\n * @throws IOException\r\n */\r\n@Test\r\npublic void testReadingOneAfterClosingAnotherStream() throws IOException {\r\n    final File newZipFile = createTempFile();\r\n    final FileSystemManager manager = VFS.getManager();\r\n    final FileObject zipFileObject1;\r\n    final InputStream inputStream1;\r\n    try (final FileObject zipFileObject = manager.resolveFile(\"zip:file:\" + newZipFile.getAbsolutePath())) {\r\n        // leave resources open (note that internal counters are updated)\r\n        zipFileObject1 = zipFileObject.resolveFile(NESTED_FILE_1);\r\n        inputStream1 = zipFileObject1.getContent().getInputStream();\r\n        resolveReadAssert(zipFileObject, NESTED_FILE_2);\r\n    }\r\n    // The Zip file is \"closed\", but we read from the stream now, which currently fails.\r\n    // Why aren't internal counters preventing the stream from closing?\r\n    readAndAssert(zipFileObject1, inputStream1, \"1\");\r\n    // clean up\r\n    zipFileObject1.close();\r\n    assertDelete(newZipFile);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\provider\\zip\\test\\ZipFileObjectTestCase.java",
+  "methodName" : "testResolveNestedFileWithoutCleanup",
+  "sourceCode" : "/**\r\n * Tests that we can resolve a file in a Zip file, then close the container zip, which should still let us delete\r\n * the Zip file.\r\n *\r\n * @throws IOException\r\n */\r\n@Test\r\npublic void testResolveNestedFileWithoutCleanup() throws IOException {\r\n    final File newZipFile = createTempFile();\r\n    final FileSystemManager manager = VFS.getManager();\r\n    try (final FileObject zipFileObject = manager.resolveFile(\"zip:file:\" + newZipFile.getAbsolutePath())) {\r\n        @SuppressWarnings({ \"unused\", \"resource\" })\r\n        final FileObject // We resolve a nested file and do nothing else.\r\n        zipFileObject1 = zipFileObject.resolveFile(NESTED_FILE_1);\r\n    }\r\n    assertDelete(newZipFile);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\UserAuthenticationDataTestCase.java",
+  "methodName" : "testCharacterBasedData",
+  "sourceCode" : "@Test\r\npublic void testCharacterBasedData() {\r\n    final UserAuthenticationData data = new UserAuthenticationData();\r\n    final char[] array = \"PMC\".toCharArray();\r\n    data.setData(UserAuthenticationData.USERNAME, array);\r\n    data.setData(UserAuthenticationData.DOMAIN, \"Apache\".toCharArray());\r\n    assertSame(array, data.getData(UserAuthenticationData.USERNAME));\r\n    assertArrayEquals(\"Apache\".toCharArray(), data.getData(UserAuthenticationData.DOMAIN));\r\n    data.setData(UserAuthenticationData.DOMAIN, \"Apache Commons\".toCharArray());\r\n    assertArrayEquals(\"Apache Commons\".toCharArray(), data.getData(UserAuthenticationData.DOMAIN));\r\n    assertNull(data.getData(UserAuthenticationData.PASSWORD));\r\n    data.cleanup();\r\n    assertNull(data.getData(UserAuthenticationData.USERNAME));\r\n    assertNull(data.getData(UserAuthenticationData.DOMAIN));\r\n    final char[] nulls = { 0, 0, 0 };\r\n    assertArrayEquals(nulls, array);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\UserAuthenticationDataTestCase.java",
+  "methodName" : "testCustomType",
+  "sourceCode" : "@Test\r\npublic void testCustomType() {\r\n    final UserAuthenticationData.Type type = new UserAuthenticationData.Type(\"JUNIT\");\r\n    final UserAuthenticationData data = new UserAuthenticationData();\r\n    final char[] array = \"test\".toCharArray();\r\n    data.setData(type, array);\r\n    assertSame(array, data.getData(type));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\util\\DelegatingFileSystemOptionsBuilderTest.java",
+  "methodName" : "testDelegatingGood",
+  "sourceCode" : "@Test\r\npublic void testDelegatingGood() throws Throwable {\r\n    final String[] identityPaths = new String[] { \"/file1\", \"/file2\" };\r\n    final FileSystemOptions opts = new FileSystemOptions();\r\n    final DelegatingFileSystemOptionsBuilder delgate = new DelegatingFileSystemOptionsBuilder(fsm);\r\n    delgate.setConfigString(opts, \"http\", \"proxyHost\", \"proxy\");\r\n    delgate.setConfigString(opts, \"http\", \"proxyPort\", \"8080\");\r\n    delgate.setConfigClass(opts, \"sftp\", \"userinfo\", TrustEveryoneUserInfo.class);\r\n    delgate.setConfigStrings(opts, \"sftp\", \"identities\", identityPaths);\r\n    assertEquals(\"http.proxyHost\", HttpFileSystemConfigBuilder.getInstance().getProxyHost(opts), \"proxy\");\r\n    assertEquals(\"http.proxyPort\", HttpFileSystemConfigBuilder.getInstance().getProxyPort(opts), 8080);\r\n    assertEquals(\"sftp.userInfo\", SftpFileSystemConfigBuilder.getInstance().getUserInfo(opts).getClass(), TrustEveryoneUserInfo.class);\r\n    final File[] identities = SftpFileSystemConfigBuilder.getInstance().getIdentities(opts);\r\n    assertNotNull(\"sftp.identities\", identities);\r\n    assertEquals(\"sftp.identities size\", identities.length, identityPaths.length);\r\n    for (int iterIdentities = 0; iterIdentities < identities.length; iterIdentities++) {\r\n        assertEquals(\"sftp.identities #\" + iterIdentities, identities[iterIdentities].getAbsolutePath(), new File(identityPaths[iterIdentities]).getAbsolutePath());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\util\\DelegatingFileSystemOptionsBuilderTest.java",
+  "methodName" : "testDelegatingBad",
+  "sourceCode" : "@Test\r\npublic void testDelegatingBad() throws Throwable {\r\n    final FileSystemOptions opts = new FileSystemOptions();\r\n    final DelegatingFileSystemOptionsBuilder delgate = new DelegatingFileSystemOptionsBuilder(fsm);\r\n    try {\r\n        delgate.setConfigString(opts, \"http\", \"proxyPort\", \"wrong_port\");\r\n        fail();\r\n    } catch (final FileSystemException e) {\r\n        assertEquals(e.getCause().getClass(), InvocationTargetException.class);\r\n        assertEquals(((InvocationTargetException) e.getCause()).getTargetException().getClass(), NumberFormatException.class);\r\n    }\r\n    try {\r\n        delgate.setConfigClass(opts, \"sftp\", \"userinfo\", String.class);\r\n        fail();\r\n    } catch (final FileSystemException e) {\r\n        assertEquals(e.getCode(), \"vfs.provider/config-value-invalid.error\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\util\\DelegatingFileSystemOptionsBuilderTest.java",
+  "methodName" : "testConfiguration",
+  "sourceCode" : "@Test\r\npublic void testConfiguration() throws Exception {\r\n    for (final String scheme : schemes) {\r\n        assertTrue(\"Missing \" + scheme + \" provider\", fsm.hasProvider(scheme));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\util\\EncryptDecryptTest.java",
+  "methodName" : "testEncryptDecrypt",
+  "sourceCode" : "@Test\r\npublic void testEncryptDecrypt() throws Exception {\r\n    final String source = \"Qryp2!t&tpR59\";\r\n    final String expected = \"914589F049CE3E8E3BB1A41BEAE12A9C\";\r\n    final Cryptor cryptor = CryptorFactory.getCryptor();\r\n    final String encrypted = cryptor.encrypt(source);\r\n    assertEquals(expected, encrypted);\r\n    final String decrypted = cryptor.decrypt(encrypted);\r\n    assertEquals(source, decrypted);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\util\\EncryptDecryptTest.java",
+  "methodName" : "testInvalidDecrypt",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testInvalidDecrypt() throws Exception {\r\n    // provider.HostFileNameParser.extractToPath(String, StringBuilder) catches `Exception`\r\n    final String broken = \"91458\";\r\n    final Cryptor cryptor = CryptorFactory.getCryptor();\r\n    /* ignored */\r\n    cryptor.decrypt(broken);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\util\\FileObjectUtilsTest.java",
+  "methodName" : "testExistsNotNull",
+  "sourceCode" : "@Test\r\npublic void testExistsNotNull() throws FileSystemException {\r\n    Assert.assertTrue(FileObjectUtils.exists(VFS.getManager().toFileObject(SystemUtils.getJavaIoTmpDir())));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\util\\FileObjectUtilsTest.java",
+  "methodName" : "testgetContentAsString_Charset",
+  "sourceCode" : "@Test\r\npublic void testgetContentAsString_Charset() throws FileSystemException, IOException {\r\n    Assert.assertEquals(\"This is a test file.\", FileObjectUtils.getContentAsString(VFS.getManager().toFileObject(new File(\"src/test/resources/test-data/read-tests/file1.txt\")), StandardCharsets.UTF_8));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\util\\FileObjectUtilsTest.java",
+  "methodName" : "testgetContentAsString_CharsetNull",
+  "sourceCode" : "@Test\r\npublic void testgetContentAsString_CharsetNull() throws FileSystemException, IOException {\r\n    Assert.assertEquals(\"This is a test file.\", FileObjectUtils.getContentAsString(VFS.getManager().toFileObject(new File(\"src/test/resources/test-data/read-tests/file1.txt\")), (Charset) null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\util\\FileObjectUtilsTest.java",
+  "methodName" : "testgetContentAsString_String",
+  "sourceCode" : "@Test\r\npublic void testgetContentAsString_String() throws FileSystemException, IOException {\r\n    Assert.assertEquals(\"This is a test file.\", FileObjectUtils.getContentAsString(VFS.getManager().toFileObject(new File(\"src/test/resources/test-data/read-tests/file1.txt\")), \"UTF-8\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\util\\FileObjectUtilsTest.java",
+  "methodName" : "testgetContentAsString_StringNull",
+  "sourceCode" : "@Test\r\npublic void testgetContentAsString_StringNull() throws FileSystemException, IOException {\r\n    Assert.assertEquals(\"This is a test file.\", FileObjectUtils.getContentAsString(VFS.getManager().toFileObject(new File(\"src/test/resources/test-data/read-tests/file1.txt\")), (String) null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\util\\FileObjectUtilsTest.java",
+  "methodName" : "testNotExistsNotNull",
+  "sourceCode" : "@Test\r\npublic void testNotExistsNotNull() throws FileSystemException {\r\n    Assert.assertFalse(FileObjectUtils.exists(VFS.getManager().toFileObject(new File(\"This file can't possibly exist, right?\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\util\\FileObjectUtilsTest.java",
+  "methodName" : "testNotExistsNull",
+  "sourceCode" : "@Test\r\npublic void testNotExistsNull() throws FileSystemException {\r\n    Assert.assertFalse(FileObjectUtils.exists(null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\util\\FileObjectUtilsTest.java",
+  "methodName" : "testReadProperties",
+  "sourceCode" : "@Test\r\npublic void testReadProperties() throws FileSystemException, IOException {\r\n    assertProperties(FileObjectUtils.readProperties(VFS.getManager().toFileObject(new File(\"src/test/resources/test.properties\"))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\util\\FileObjectUtilsTest.java",
+  "methodName" : "testReadPropertiesInto",
+  "sourceCode" : "@Test\r\npublic void testReadPropertiesInto() throws FileSystemException, IOException {\r\n    final Properties p = new Properties();\r\n    p.setProperty(\"extraKey\", \"extraValue\");\r\n    assertProperties(FileObjectUtils.readProperties(VFS.getManager().toFileObject(new File(\"src/test/resources/test.properties\")), p));\r\n    Assert.assertEquals(\"extraValue\", p.getProperty(\"extraKey\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\VFSTest.java",
+  "methodName" : "test_close",
+  "sourceCode" : "/**\r\n * Tests {@link FileSystemManager#close()}.\r\n *\r\n * @throws FileSystemException\r\n * @since 2.5.0\r\n */\r\n@Test\r\npublic void test_close() throws FileSystemException {\r\n    try (FileSystemManager fileSystemManager = new StandardFileSystemManager()) {\r\n        VFS.setManager(fileSystemManager);\r\n        VFS.setManager(null);\r\n    }\r\n    Assert.assertNotNull(VFS.getManager());\r\n    Assert.assertFalse(VFS.getManager().resolveFile(Paths.get(\"DoesNotExist.not\").toUri()).exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-VFS\\commons-vfs2\\src\\test\\java\\org\\apache\\commons\\vfs2\\VFSTest.java",
+  "methodName" : "test_setManager",
+  "sourceCode" : "@Test\r\npublic void test_setManager() throws FileSystemException {\r\n    final StandardFileSystemManager fileSystemManager = new StandardFileSystemManager();\r\n    VFS.setManager(fileSystemManager);\r\n    Assert.assertEquals(fileSystemManager, VFS.getManager());\r\n    // Reset global for other tests\r\n    VFS.setManager(null);\r\n    Assert.assertNotNull(VFS.getManager());\r\n    Assert.assertNotEquals(fileSystemManager, VFS.getManager());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

@@ -1,0 +1,403 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\config\\CommonConfigurationTest.java",
+  "methodName" : "testInit",
+  "sourceCode" : "@Test\r\npublic void testInit() {\r\n    configuration.init();\r\n    Assert.assertEquals(\"value1\", configuration.eventMeshEnv);\r\n    Assert.assertEquals(\"value2\", configuration.eventMeshIDC);\r\n    Assert.assertEquals(\"3\", configuration.sysID);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\config\\ConfigurationWrapperTest.java",
+  "methodName" : "testGetProp",
+  "sourceCode" : "@Test\r\npublic void testGetProp() {\r\n    Assert.assertEquals(\"value1\", wraper.getProp(\"eventMesh.server.env\"));\r\n    Assert.assertEquals(\"value2\", wraper.getProp(\"eventMesh.server.idc\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\EventMeshMessageTest.java",
+  "methodName" : "testGetProp",
+  "sourceCode" : "@Test\r\npublic void testGetProp() {\r\n    EventMeshMessage message = createLiteMessage();\r\n    Assert.assertEquals(2L, message.getProp().size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\EventMeshMessageTest.java",
+  "methodName" : "testSetProp",
+  "sourceCode" : "@Test\r\npublic void testSetProp() {\r\n    EventMeshMessage message = createLiteMessage();\r\n    Map<String, String> prop = new HashMap<>();\r\n    prop.put(\"key3\", \"value3\");\r\n    message.setProp(prop);\r\n    Assert.assertEquals(1L, message.getProp().size());\r\n    Assert.assertEquals(\"value3\", message.getProp(\"key3\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\EventMeshMessageTest.java",
+  "methodName" : "testAddProp",
+  "sourceCode" : "@Test\r\npublic void testAddProp() {\r\n    EventMeshMessage message = createLiteMessage();\r\n    message.addProp(\"key3\", \"value3\");\r\n    Assert.assertEquals(3L, message.getProp().size());\r\n    Assert.assertEquals(\"value1\", message.getProp(\"key1\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\EventMeshMessageTest.java",
+  "methodName" : "testGetPropKey",
+  "sourceCode" : "@Test\r\npublic void testGetPropKey() {\r\n    EventMeshMessage message = createLiteMessage();\r\n    Assert.assertEquals(\"value1\", message.getProp(\"key1\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\EventMeshMessageTest.java",
+  "methodName" : "testRemoveProp",
+  "sourceCode" : "@Test\r\npublic void testRemoveProp() {\r\n    EventMeshMessage message = createLiteMessage();\r\n    message.removePropIfPresent(\"key1\");\r\n    Assert.assertEquals(1L, message.getProp().size());\r\n    Assert.assertNull(message.getProp(\"key1\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\loadbalance\\RandomLoadBalanceSelectorTest.java",
+  "methodName" : "testSelect",
+  "sourceCode" : "@Test\r\npublic void testSelect() {\r\n    Map<String, Integer> addressToNum = new HashMap<>();\r\n    for (int i = 0; i < 100; i++) {\r\n        String select = randomLoadBalanceSelector.select();\r\n        addressToNum.put(select, addressToNum.getOrDefault(select, 0) + 1);\r\n    }\r\n    addressToNum.forEach((key, value) -> logger.info(\"{} : {}\", key, value));\r\n    // just assert success if no exception\r\n    Assert.assertTrue(true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\loadbalance\\RandomLoadBalanceSelectorTest.java",
+  "methodName" : "testGetType",
+  "sourceCode" : "@Test\r\npublic void testGetType() {\r\n    Assert.assertEquals(LoadBalanceType.RANDOM, randomLoadBalanceSelector.getType());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\loadbalance\\WeightRandomLoadBalanceSelectorTest.java",
+  "methodName" : "testSelect",
+  "sourceCode" : "@Test\r\npublic void testSelect() throws Exception {\r\n    List<Weight<String>> weightList = new ArrayList<>();\r\n    weightList.add(new Weight<>(\"192.168.0.1\", 10));\r\n    weightList.add(new Weight<>(\"192.168.0.2\", 20));\r\n    weightList.add(new Weight<>(\"192.168.0.3\", 40));\r\n    WeightRandomLoadBalanceSelector<String> weightRandomLoadBalanceSelector = new WeightRandomLoadBalanceSelector<>(weightList);\r\n    Assert.assertEquals(LoadBalanceType.WEIGHT_RANDOM, weightRandomLoadBalanceSelector.getType());\r\n    int testRange = 100_000;\r\n    Map<String, Integer> addressToNum = IntStream.range(0, testRange).mapToObj(i -> weightRandomLoadBalanceSelector.select()).collect(groupingBy(Function.identity(), summingInt(i -> 1)));\r\n    addressToNum.forEach((key, value) -> {\r\n        logger.info(\"{}: {}\", key, value);\r\n    });\r\n    System.out.printf(addressToNum.toString());\r\n    // the error less than 5%\r\n    Assert.assertTrue(Math.abs(addressToNum.get(\"192.168.0.3\") - addressToNum.get(\"192.168.0.2\") * 2) < testRange / 20);\r\n    Assert.assertTrue(Math.abs(addressToNum.get(\"192.168.0.3\") - addressToNum.get(\"192.168.0.1\") * 4) < testRange / 20);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\loadbalance\\WeightRandomLoadBalanceSelectorTest.java",
+  "methodName" : "testSameWeightSelect",
+  "sourceCode" : "@Test\r\npublic void testSameWeightSelect() throws Exception {\r\n    List<Weight<String>> weightList = new ArrayList<>();\r\n    weightList.add(new Weight<>(\"192.168.0.1\", 10));\r\n    weightList.add(new Weight<>(\"192.168.0.2\", 10));\r\n    weightList.add(new Weight<>(\"192.168.0.3\", 10));\r\n    WeightRandomLoadBalanceSelector<String> weightRandomLoadBalanceSelector = new WeightRandomLoadBalanceSelector<>(weightList);\r\n    Assert.assertEquals(LoadBalanceType.WEIGHT_RANDOM, weightRandomLoadBalanceSelector.getType());\r\n    int testRange = 100_000;\r\n    Map<String, Integer> addressToNum = IntStream.range(0, testRange).mapToObj(i -> weightRandomLoadBalanceSelector.select()).collect(groupingBy(Function.identity(), summingInt(i -> 1)));\r\n    Field field = WeightRandomLoadBalanceSelector.class.getDeclaredField(\"sameWeightGroup\");\r\n    field.setAccessible(true);\r\n    boolean sameWeightGroup = (boolean) field.get(weightRandomLoadBalanceSelector);\r\n    Assert.assertTrue(sameWeightGroup);\r\n    addressToNum.forEach((key, value) -> {\r\n        logger.info(\"{}: {}\", key, value);\r\n    });\r\n    // the error less than 5%\r\n    Assert.assertTrue(Math.abs(addressToNum.get(\"192.168.0.3\") - addressToNum.get(\"192.168.0.2\")) < testRange / 20);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\loadbalance\\WeightRoundRobinLoadBalanceSelectorTest.java",
+  "methodName" : "testSelect",
+  "sourceCode" : "@Test\r\npublic void testSelect() {\r\n    Map<String, Integer> addressToNum = new HashMap<>();\r\n    for (int i = 0; i < 100_000; i++) {\r\n        String select = weightRoundRobinLoadBalanceSelector.select();\r\n        addressToNum.put(select, addressToNum.getOrDefault(select, 0) + 1);\r\n    }\r\n    addressToNum.forEach((key, value) -> {\r\n        logger.info(\"{}: {}\", key, value);\r\n    });\r\n    Assert.assertTrue(addressToNum.get(\"B\") > addressToNum.get(\"A\"));\r\n    Assert.assertTrue(addressToNum.get(\"C\") > addressToNum.get(\"B\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\loadbalance\\WeightRoundRobinLoadBalanceSelectorTest.java",
+  "methodName" : "testGetType",
+  "sourceCode" : "@Test\r\npublic void testGetType() {\r\n    Assert.assertEquals(LoadBalanceType.WEIGHT_ROUND_ROBIN, weightRoundRobinLoadBalanceSelector.getType());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\loadbalance\\WeightTest.java",
+  "methodName" : "testDecreaseTotal",
+  "sourceCode" : "@Test\r\npublic void testDecreaseTotal() {\r\n    Weight weight = new Weight(null, 0);\r\n    weight.decreaseTotal(1);\r\n    Assert.assertEquals(-1, weight.getCurrentWeight().get());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\loadbalance\\WeightTest.java",
+  "methodName" : "testIncreaseCurrentWeight",
+  "sourceCode" : "@Test\r\npublic void testIncreaseCurrentWeight() {\r\n    Weight weight = new Weight(null, 10);\r\n    weight.increaseCurrentWeight();\r\n    Assert.assertEquals(10, weight.getCurrentWeight().get());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\loadbalance\\WeightTest.java",
+  "methodName" : "testGetCurrentWeight",
+  "sourceCode" : "@Test\r\npublic void testGetCurrentWeight() {\r\n    Weight weight = new Weight(null, 0);\r\n    Assert.assertEquals(0, weight.getCurrentWeight().get());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\body\\BaseResponseBodyTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    BaseResponseBody body = new BaseResponseBody();\r\n    body.setRetCode(200);\r\n    body.setRetMsg(\"SUCCESS\");\r\n    Assert.assertTrue(body.toMap().containsKey(ProtocolKey.RETCODE));\r\n    Assert.assertTrue(body.toMap().containsKey(ProtocolKey.RETMSG));\r\n    Assert.assertTrue(body.toMap().containsKey(ProtocolKey.RESTIME));\r\n    Assert.assertThat(body.toMap().get(ProtocolKey.RETCODE), is(200));\r\n    Assert.assertThat(body.toMap().get(ProtocolKey.RETMSG), is(\"SUCCESS\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\header\\BaseRequestHeaderTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    Map<String, Object> headerParam = new HashMap<>();\r\n    headerParam.put(ProtocolKey.REQUEST_CODE, \"200\");\r\n    BaseRequestHeader header = BaseRequestHeader.buildHeader(headerParam);\r\n    Assert.assertTrue(header.toMap().containsKey(ProtocolKey.REQUEST_CODE));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.REQUEST_CODE), is(\"200\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\header\\BaseResponseHeaderTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    BaseResponseHeader header = BaseResponseHeader.buildHeader(\"200\");\r\n    Assert.assertTrue(header.toMap().containsKey(ProtocolKey.REQUEST_CODE));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.REQUEST_CODE), is(\"200\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\header\\client\\HeartbeatRequestHeaderTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    HeartbeatRequestHeader header = HeartbeatRequestHeader.buildHeader(new HashMap<>());\r\n    assertMapContent(header);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\header\\client\\HeartbeatResponseHeaderTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    HeartbeatResponseHeader header = HeartbeatResponseHeader.buildHeader(200, \"CLUSTER\", \"127.0.0.1\", \"DEV\", \"IDC\");\r\n    assertMapContent(header);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\header\\client\\RegRequestHeaderTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    RegRequestHeader header = RegRequestHeader.buildHeader(new HashMap<>());\r\n    assertMapContent(header);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\header\\client\\RegResponseHeaderTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    RegResponseHeader header = RegResponseHeader.buildHeader(200, \"CLUSTER\", \"127.0.0.1\", \"DEV\", \"IDC\");\r\n    assertMapContent(header);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\header\\client\\SubscribeRequestHeaderTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    SubscribeRequestHeader header = SubscribeRequestHeader.buildHeader(new HashMap<>());\r\n    assertMapContent(header);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\header\\client\\SubscribeResponseHeaderTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    SubscribeResponseHeader header = SubscribeResponseHeader.buildHeader(200, \"CLUSTER\", \"127.0.0.1\", \"DEV\", \"IDC\");\r\n    assertMapContent(header);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\header\\client\\UnRegRequestHeaderTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    UnRegRequestHeader header = UnRegRequestHeader.buildHeader(new HashMap<>());\r\n    assertMapContent(header);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\header\\client\\UnRegResponseHeaderTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    UnRegResponseHeader header = UnRegResponseHeader.buildHeader(200, \"CLUSTER\", \"127.0.0.1\", \"DEV\", \"IDC\");\r\n    assertMapContent(header);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\header\\client\\UnSubscribeRequestHeaderTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    UnSubscribeRequestHeader header = UnSubscribeRequestHeader.buildHeader(new HashMap<>());\r\n    assertMapContent(header);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\header\\client\\UnSubscribeResponseHeaderTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    UnSubscribeResponseHeader header = UnSubscribeResponseHeader.buildHeader(200, \"CLUSTER\", \"127.0.0.1\", \"DEV\", \"IDC\");\r\n    assertMapContent(header);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\header\\message\\PushMessageRequestHeaderTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.REQUEST_CODE), is(200));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.LANGUAGE), is(Constants.LANGUAGE_JAVA));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.VERSION), is(ProtocolVersion.V1));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.EventMeshInstanceKey.EVENTMESHCLUSTER), is(\"default cluster\"));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.EventMeshInstanceKey.EVENTMESHIP), is(\"127.0.0.1\"));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.EventMeshInstanceKey.EVENTMESHENV), is(\"DEV\"));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.EventMeshInstanceKey.EVENTMESHIDC), is(\"IDC\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\header\\message\\PushMessageResponseHeaderTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    PushMessageResponseHeader header = PushMessageResponseHeader.buildHeader(100, \"DEV\", \"IDC\", \"SYSID\", \"PID\", \"127.0.0.1\");\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.REQUEST_CODE), is(100));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.LANGUAGE), is(Constants.LANGUAGE_JAVA));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.VERSION), is(ProtocolVersion.V1));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.ClientInstanceKey.ENV), is(\"DEV\"));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.ClientInstanceKey.IDC), is(\"IDC\"));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.ClientInstanceKey.SYS), is(\"SYSID\"));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.ClientInstanceKey.PID), is(\"PID\"));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.ClientInstanceKey.IP), is(\"127.0.0.1\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\header\\message\\ReplyMessageRequestHeaderTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.REQUEST_CODE), is(\"200\"));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.LANGUAGE), is(Constants.LANGUAGE_JAVA));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.VERSION), is(ProtocolVersion.V1));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.ClientInstanceKey.ENV), is(\"DEV\"));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.ClientInstanceKey.IDC), is(\"IDC\"));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.ClientInstanceKey.SYS), is(\"SYS\"));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.ClientInstanceKey.PID), is(\"PID\"));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.ClientInstanceKey.IP), is(\"127.0.0.1\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\header\\message\\ReplyMessageResponseHeaderTest.java",
+  "methodName" : "testToMap",
+  "sourceCode" : "@Test\r\npublic void testToMap() {\r\n    ReplyMessageResponseHeader header = ReplyMessageResponseHeader.buildHeader(100, \"Cluster\", \"127.0.0.1\", \"DEV\", \"IDC\");\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.REQUEST_CODE), is(100));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.EventMeshInstanceKey.EVENTMESHCLUSTER), is(\"Cluster\"));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.EventMeshInstanceKey.EVENTMESHIP), is(\"127.0.0.1\"));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.EventMeshInstanceKey.EVENTMESHENV), is(\"DEV\"));\r\n    Assert.assertThat(header.toMap().get(ProtocolKey.EventMeshInstanceKey.EVENTMESHIDC), is(\"IDC\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\HttpCommandTest.java",
+  "methodName" : "testCreateHttpCommandResponseWithHeaderAndBody",
+  "sourceCode" : "@Test\r\npublic void testCreateHttpCommandResponseWithHeaderAndBody() {\r\n    HttpCommand command = httpCommand.createHttpCommandResponse(header, body);\r\n    Map<String, Object> headerMap = new HashMap<>();\r\n    headerMap.put(\"key1\", \"value1\");\r\n    when(header.toMap()).thenReturn(headerMap);\r\n    Assert.assertEquals(\"1.1\", command.getHttpVersion());\r\n    Assert.assertEquals(\"POST\", command.getHttpMethod());\r\n    Assert.assertEquals(\"200\", command.getRequestCode());\r\n    Assert.assertEquals(\"value1\", command.getHeader().toMap().get(\"key1\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\HttpCommandTest.java",
+  "methodName" : "testAbstractDesc",
+  "sourceCode" : "@Test\r\npublic void testAbstractDesc() {\r\n    HttpCommand command = httpCommand.createHttpCommandResponse(header, body);\r\n    String desc = command.abstractDesc();\r\n    Assert.assertTrue(desc.startsWith(\"httpCommand\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\HttpCommandTest.java",
+  "methodName" : "testSimpleDesc",
+  "sourceCode" : "@Test\r\npublic void testSimpleDesc() {\r\n    HttpCommand command = httpCommand.createHttpCommandResponse(header, body);\r\n    String desc = command.simpleDesc();\r\n    Assert.assertTrue(desc.startsWith(\"httpCommand\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\HttpCommandTest.java",
+  "methodName" : "testHttpResponse",
+  "sourceCode" : "@Test\r\npublic void testHttpResponse() throws Exception {\r\n    HttpCommand command = httpCommand.createHttpCommandResponse(header, body);\r\n    DefaultFullHttpResponse response = command.httpResponse();\r\n    Assert.assertEquals(\"keep-alive\", response.headers().get(HttpHeaderNames.CONNECTION));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\http\\HttpCommandTest.java",
+  "methodName" : "testHttpResponseWithREQCmdType",
+  "sourceCode" : "@Test\r\npublic void testHttpResponseWithREQCmdType() throws Exception {\r\n    DefaultFullHttpResponse response = httpCommand.httpResponse();\r\n    Assert.assertNull(response);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\protocol\\tcp\\codec\\CodecTest.java",
+  "methodName" : "testCodec",
+  "sourceCode" : "@Test\r\npublic void testCodec() throws Exception {\r\n    Package testP = new Package();\r\n    Codec.Encoder ce = new Codec.Encoder();\r\n    ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer();\r\n    ce.encode(null, testP, buf);\r\n    Codec.Decoder cd = new Codec.Decoder();\r\n    ArrayList<Object> result = new ArrayList<>();\r\n    cd.decode(null, buf, result);\r\n    Assert.assertNotNull(result.get(0));\r\n    Assert.assertEquals(result.get(0).toString(), testP.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\utils\\IPUtilsTest.java",
+  "methodName" : "testDockerIP",
+  "sourceCode" : "@Test\r\npublic void testDockerIP() {\r\n    EnvironmentVariables environmentVariables = new EnvironmentVariables();\r\n    environmentVariables.set(\"docker_host_ip\", \"dockHostIP\");\r\n    Assert.assertEquals(\"dockHostIP\", IPUtils.getLocalAddress());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\utils\\IPUtilsTest.java",
+  "methodName" : "testLocalhostIP",
+  "sourceCode" : "@Test\r\npublic void testLocalhostIP() {\r\n    Assert.assertNotNull(IPUtils.getLocalAddress());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\utils\\ThreadUtilsTest.java",
+  "methodName" : "testRandomSleep",
+  "sourceCode" : "@Test\r\npublic void testRandomSleep() throws InterruptedException {\r\n    TestThread testThread = new TestThread();\r\n    testThread.start();\r\n    testThread.join();\r\n    Assert.assertTrue(testThread.getSleepTime() > 0);\r\n    Assert.assertTrue(testThread.getSleepTime() <= 60);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-common\\src\\test\\java\\org\\apache\\eventmesh\\common\\utils\\ThreadUtilsTest.java",
+  "methodName" : "testPID",
+  "sourceCode" : "@Test\r\npublic void testPID() {\r\n    Assert.assertNotEquals(-1, ThreadUtils.getPID());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-plugin\\eventmesh-connector-rocketmq\\src\\test\\java\\org\\apache\\rocketmq\\consumer\\PushConsumerImplTest.java",
+  "methodName" : "testConsumeMessage",
+  "sourceCode" : "@Test\r\npublic void testConsumeMessage() {\r\n    final byte[] testBody = new byte[] { 'a', 'b' };\r\n    MessageExt consumedMsg = new MessageExt();\r\n    consumedMsg.setMsgId(\"NewMsgId\");\r\n    consumedMsg.setBody(testBody);\r\n    consumedMsg.putUserProperty(NonStandardKeys.MESSAGE_DESTINATION, \"TOPIC\");\r\n    consumedMsg.setTopic(\"HELLO_QUEUE\");\r\n    consumer.subscribe(\"HELLO_QUEUE\", \"*\", new EventListener() {\r\n\r\n        @Override\r\n        public void consume(CloudEvent cloudEvent, org.apache.eventmesh.api.AsyncConsumeContext context) {\r\n            assertThat(cloudEvent.getExtension(\"MESSAGE_ID\")).isEqualTo(\"NewMsgId\");\r\n            assertThat(cloudEvent.getData()).isEqualTo(testBody);\r\n            context.commit(EventMeshAction.CommitMessage);\r\n        }\r\n    });\r\n    ((MessageListenerConcurrently) rocketmqPushConsumer.getMessageListener()).consumeMessage(Collections.singletonList(consumedMsg), null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-plugin\\eventmesh-connector-rocketmq\\src\\test\\java\\org\\apache\\rocketmq\\producer\\ProducerImplTest.java",
+  "methodName" : "testSend_OK",
+  "sourceCode" : "@Test\r\npublic void testSend_OK() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {\r\n    SendResult sendResult = new SendResult();\r\n    sendResult.setMsgId(\"TestMsgID\");\r\n    sendResult.setSendStatus(SendStatus.SEND_OK);\r\n    MessageQueue messageQueue = new MessageQueue(\"HELLO_TOPIC\", \"testBroker\", 0);\r\n    sendResult.setMessageQueue(messageQueue);\r\n    Mockito.when(rocketmqProducer.send(any(Message.class))).thenReturn(sendResult);\r\n    DefaultMQProducer defaultMQProducer = new DefaultMQProducer(\"testGroup\");\r\n    DefaultMQProducerImpl defaultMQProducerImpl = new DefaultMQProducerImpl(defaultMQProducer);\r\n    defaultMQProducerImpl.setServiceState(ServiceState.RUNNING);\r\n    Mockito.when(rocketmqProducer.getDefaultMQProducerImpl()).thenReturn(defaultMQProducerImpl);\r\n    CloudEvent cloudEvent = CloudEventBuilder.v1().withId(\"id1\").withSource(URI.create(\"https://github.com/cloudevents/*****\")).withType(\"producer.example\").withSubject(\"HELLO_TOPIC\").withData(\"hello world\".getBytes()).build();\r\n    org.apache.eventmesh.api.SendResult result = producer.send(cloudEvent);\r\n    assertThat(result.getMessageId()).isEqualTo(\"TestMsgID\");\r\n    Mockito.verify(rocketmqProducer).getDefaultMQProducerImpl();\r\n    Mockito.verify(rocketmqProducer).send(any(Message.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-plugin\\eventmesh-connector-rocketmq\\src\\test\\java\\org\\apache\\rocketmq\\producer\\ProducerImplTest.java",
+  "methodName" : "testSend_WithException",
+  "sourceCode" : "//    @Test\r\n//    public void testSend_Not_OK() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {\r\n//        SendResult sendResult = new SendResult();\r\n//        sendResult.setSendStatus(SendStatus.FLUSH_DISK_TIMEOUT);\r\n//        MessageQueue messageQueue = new  MessageQueue(\"HELLO_TOPIC\", \"testBroker\", 0);\r\n//        sendResult.setMessageQueue(messageQueue);\r\n//\r\n//        when(rocketmqProducer.send(any(Message.class))).thenReturn(sendResult);\r\n//\r\n//        DefaultMQProducer defaultMQProducer =new DefaultMQProducer(\"testGroup\");\r\n//        DefaultMQProducerImpl defaultMQProducerImpl = new DefaultMQProducerImpl(defaultMQProducer);\r\n//        defaultMQProducerImpl.setServiceState(ServiceState.RUNNING);\r\n//        when(rocketmqProducer.getDefaultMQProducerImpl()).thenReturn(defaultMQProducerImpl);\r\n//\r\n//        try {\r\n//            io.openmessaging.api.Message message = new io.openmessaging.api.Message(\"HELLO_TOPIC\", \"\", new byte[] {'a'});\r\n//            producer.send(message);\r\n//            failBecauseExceptionWasNotThrown(OMSRuntimeException.class);\r\n//        } catch (Exception e) {\r\n//            assertThat(e).hasMessageContaining(\"Send message to RocketMQ broker failed.\");\r\n//        }\r\n//    }\r\n@Test\r\npublic void testSend_WithException() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {\r\n    DefaultMQProducer defaultMQProducer = new DefaultMQProducer(\"testGroup\");\r\n    DefaultMQProducerImpl defaultMQProducerImpl = new DefaultMQProducerImpl(defaultMQProducer);\r\n    defaultMQProducerImpl.setServiceState(ServiceState.RUNNING);\r\n    Mockito.when(rocketmqProducer.getDefaultMQProducerImpl()).thenReturn(defaultMQProducerImpl);\r\n    MQClientException exception = new MQClientException(\"Send message to RocketMQ broker failed.\", new Exception());\r\n    Mockito.when(rocketmqProducer.send(any(Message.class))).thenThrow(exception);\r\n    try {\r\n        io.openmessaging.api.Message message = new io.openmessaging.api.Message(\"HELLO_TOPIC\", \"\", new byte[] { 'a' });\r\n        CloudEvent cloudEvent = CloudEventBuilder.v1().withId(\"id1\").withSource(URI.create(\"https://github.com/cloudevents/*****\")).withType(\"producer.example\").withSubject(\"HELLO_TOPIC\").withData(new byte[] { 'a' }).build();\r\n        producer.send(cloudEvent);\r\n        failBecauseExceptionWasNotThrown(ConnectorRuntimeException.class);\r\n    } catch (Exception e) {\r\n        assertThat(e).hasMessageContaining(\"Send message to RocketMQ broker failed.\");\r\n    }\r\n    Mockito.verify(rocketmqProducer).send(any(Message.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-plugin\\eventmesh-connector-rocketmq\\src\\test\\java\\org\\apache\\rocketmq\\utils\\BeanUtilsTest.java",
+  "methodName" : "testPopulate",
+  "sourceCode" : "@Test\r\npublic void testPopulate() {\r\n    CustomizedConfig config = BeanUtils.populate(properties, CustomizedConfig.class);\r\n    //RemotingConfig config = BeanUtils.populate(properties, RemotingConfig.class);\r\n    Assert.assertEquals(config.getRmqMaxRedeliveryTimes(), 120);\r\n    Assert.assertEquals(config.getStringTest(), \"kaka\");\r\n    Assert.assertEquals(config.getRmqConsumerGroup(), \"Default_Consumer_Group\");\r\n    Assert.assertEquals(config.getRmqMessageConsumeTimeout(), 101);\r\n    Assert.assertEquals(config.getLongTest(), 1234567890L);\r\n    Assert.assertEquals(config.getDoubleTest(), 10.234, 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-plugin\\eventmesh-connector-rocketmq\\src\\test\\java\\org\\apache\\rocketmq\\utils\\BeanUtilsTest.java",
+  "methodName" : "testPopulate_ExistObj",
+  "sourceCode" : "@Test\r\npublic void testPopulate_ExistObj() {\r\n    CustomizedConfig config = new CustomizedConfig();\r\n    config.setConsumerId(\"NewConsumerId\");\r\n    Assert.assertEquals(config.getConsumerId(), \"NewConsumerId\");\r\n    config = BeanUtils.populate(properties, config);\r\n    //RemotingConfig config = BeanUtils.populate(properties, RemotingConfig.class);\r\n    Assert.assertEquals(config.getRmqMaxRedeliveryTimes(), 120);\r\n    Assert.assertEquals(config.getStringTest(), \"kaka\");\r\n    Assert.assertEquals(config.getRmqConsumerGroup(), \"Default_Consumer_Group\");\r\n    Assert.assertEquals(config.getRmqMessageConsumeTimeout(), 101);\r\n    Assert.assertEquals(config.getLongTest(), 1234567890L);\r\n    Assert.assertEquals(config.getDoubleTest(), 10.234, 0.000001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-plugin\\eventmesh-connector-standalone\\src\\test\\java\\org\\apache\\eventmesh\\connector\\standalone\\broker\\StandaloneBrokerTest.java",
+  "methodName" : "getInstance",
+  "sourceCode" : "@Test\r\npublic void getInstance() {\r\n    Assert.assertNotNull(StandaloneBroker.getInstance());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-plugin\\eventmesh-connector-standalone\\src\\test\\java\\org\\apache\\eventmesh\\connector\\standalone\\broker\\StandaloneBrokerTest.java",
+  "methodName" : "putMessage",
+  "sourceCode" : "@Test\r\npublic void putMessage() throws InterruptedException {\r\n    StandaloneBroker instance = StandaloneBroker.getInstance();\r\n    MessageEntity messageEntity = instance.putMessage(\"test-topic\", new Message());\r\n    Assert.assertNotNull(messageEntity);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-plugin\\eventmesh-connector-standalone\\src\\test\\java\\org\\apache\\eventmesh\\connector\\standalone\\broker\\StandaloneBrokerTest.java",
+  "methodName" : "takeMessage",
+  "sourceCode" : "@Test\r\npublic void takeMessage() throws InterruptedException {\r\n    StandaloneBroker instance = StandaloneBroker.getInstance();\r\n    instance.putMessage(\"test-topic\", new Message());\r\n    Message message = instance.takeMessage(\"test-topic\");\r\n    Assert.assertNotNull(message);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-plugin\\eventmesh-connector-standalone\\src\\test\\java\\org\\apache\\eventmesh\\connector\\standalone\\broker\\StandaloneBrokerTest.java",
+  "methodName" : "getMessage",
+  "sourceCode" : "@Test\r\npublic void getMessage() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-plugin\\eventmesh-connector-standalone\\src\\test\\java\\org\\apache\\eventmesh\\connector\\standalone\\broker\\StandaloneBrokerTest.java",
+  "methodName" : "testGetMessage",
+  "sourceCode" : "@Test\r\npublic void testGetMessage() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-connector-plugin\\eventmesh-connector-standalone\\src\\test\\java\\org\\apache\\eventmesh\\connector\\standalone\\broker\\StandaloneBrokerTest.java",
+  "methodName" : "checkTopicExist",
+  "sourceCode" : "@Test\r\npublic void checkTopicExist() {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-protocol-plugin\\eventmesh-protocol-cloudevents\\src\\test\\java\\org\\apache\\eventmesh\\protocol\\cloudevents\\CloudEventsProtocolAdaptorTest.java",
+  "methodName" : "loadPlugin",
+  "sourceCode" : "@Test\r\npublic void loadPlugin() {\r\n    ProtocolAdaptor<ProtocolTransportObject> protocolAdaptor = ProtocolPluginFactory.getProtocolAdaptor(CloudEventsProtocolConstant.PROTOCOL_NAME);\r\n    Assert.assertNotNull(protocolAdaptor);\r\n    Assert.assertEquals(CloudEventsProtocolConstant.PROTOCOL_NAME, protocolAdaptor.getProtocolType());\r\n    Assert.assertEquals(CloudEventsProtocolAdaptor.class, protocolAdaptor.getClass());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-protocol-plugin\\eventmesh-protocol-openmessage\\src\\test\\java\\org\\apache\\eventmesh\\protocol\\openmessage\\OpenMessageProtocolAdaptorTest.java",
+  "methodName" : "loadPlugin",
+  "sourceCode" : "@Test\r\npublic void loadPlugin() {\r\n    ProtocolAdaptor<ProtocolTransportObject> protocolAdaptor = ProtocolPluginFactory.getProtocolAdaptor(OpenMessageProtocolConstant.PROTOCOL_NAME);\r\n    Assert.assertNotNull(protocolAdaptor);\r\n    Assert.assertEquals(OpenMessageProtocolConstant.PROTOCOL_NAME, protocolAdaptor.getProtocolType());\r\n    Assert.assertEquals(OpenMessageProtocolAdaptor.class, protocolAdaptor.getClass());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\org\\apache\\eventmesh\\runtime\\admin\\handler\\RedirectClientByIpPortHandlerTest.java",
+  "methodName" : "testHandleParamIllegal",
+  "sourceCode" : "@Test\r\npublic void testHandleParamIllegal() throws IOException {\r\n    OutputStream outputStream = new ByteArrayOutputStream();\r\n    URI uri = URI.create(\"ip=127.0.0.1&port=1234&desteventMeshIp=127.0.0.1&desteventMeshPort=\");\r\n    HttpExchange mockExchange = PowerMockito.mock(HttpExchange.class);\r\n    PowerMockito.when(mockExchange.getResponseBody()).thenReturn(outputStream);\r\n    PowerMockito.when(mockExchange.getRequestURI()).thenReturn(uri);\r\n    redirectClientByIpPortHandler.handle(mockExchange);\r\n    String response = outputStream.toString();\r\n    Assert.assertEquals(\"params illegal!\", response);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\org\\apache\\eventmesh\\runtime\\cloudevent\\OMSFactoryTest.java",
+  "methodName" : "readBinary",
+  "sourceCode" : "@Test\r\npublic void readBinary() {\r\n    Stream<Arguments> argumentsStream = binaryTestArguments();\r\n    argumentsStream.forEach(argument -> {\r\n        if (argument.contentType != null) {\r\n            argument.props.put(OMSHeaders.CONTENT_TYPE, argument.contentType);\r\n        }\r\n        Properties properties = new Properties();\r\n        properties.putAll(argument.props);\r\n        final MessageReader reader = OMSMessageFactory.createReader(properties, argument.body);\r\n        assertThat(reader.getEncoding()).isEqualTo(Encoding.BINARY);\r\n        assertThat(reader.toEvent()).isEqualTo(argument.event);\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\org\\apache\\eventmesh\\runtime\\cloudevent\\OMSFactoryTest.java",
+  "methodName" : "readStructured",
+  "sourceCode" : "@Test\r\npublic void readStructured() {\r\n    Stream<CloudEvent> cloudEventStream = Data.allEventsWithoutExtensions();\r\n    EventFormatProvider.getInstance().registerFormat(CSVFormat.INSTANCE);\r\n    cloudEventStream.forEach(event -> {\r\n        final String contentType = CSVFormat.INSTANCE.serializedContentType() + \"; charset=utf8\";\r\n        final byte[] contentPayload = CSVFormat.INSTANCE.serialize(event);\r\n        Properties properties = new Properties();\r\n        properties.put(OMSHeaders.CONTENT_TYPE, contentType);\r\n        final MessageReader reader = OMSMessageFactory.createReader(properties, contentPayload);\r\n        assertThat(reader.getEncoding()).isEqualTo(Encoding.STRUCTURED);\r\n        assertThat(reader.toEvent()).isEqualTo(event);\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\org\\apache\\eventmesh\\runtime\\cloudevent\\OMSWriterTest.java",
+  "methodName" : "testRequestWithStructured",
+  "sourceCode" : "@Test\r\npublic void testRequestWithStructured() {\r\n    Stream<CloudEvent> cloudEventStream = Data.allEventsWithoutExtensions();\r\n    //String expectedContentType = CSVFormat.INSTANCE.serializedContentType();\r\n    cloudEventStream.forEach(event -> {\r\n        byte[] expectedBuffer = CSVFormat.INSTANCE.serialize(event);\r\n        String topic = \"test\";\r\n        String keys = \"keys\";\r\n        String tags = \"tags\";\r\n        Message message = StructuredMessageReader.from(event, CSVFormat.INSTANCE).read(OMSMessageFactory.createWriter(topic, keys, tags));\r\n        assertThat(message.getTopic()).isEqualTo(topic);\r\n        assertThat(message.getKey()).isEqualTo(keys);\r\n        assertThat(message.getTag()).isEqualTo(tags);\r\n        assertThat(message.getBody()).isEqualTo(expectedBuffer);\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\org\\apache\\eventmesh\\runtime\\cloudevent\\OMSWriterTest.java",
+  "methodName" : "testRequestWithBinary",
+  "sourceCode" : "@Test\r\npublic void testRequestWithBinary() {\r\n    Stream<Arguments> argumentsStream = binaryTestArguments();\r\n    String topic = \"test\";\r\n    String keys = \"keys\";\r\n    String tags = \"tags\";\r\n    argumentsStream.forEach(argument -> {\r\n        Message message = OMSMessageFactory.createWriter(topic, keys, tags).writeBinary(argument.cloudEvent);\r\n        assertThat(message.getTopic()).isEqualTo(topic);\r\n        assertThat(message.getKey()).isEqualTo(keys);\r\n        assertThat(message.getTag()).isEqualTo(tags);\r\n        assertThat(message.getBody()).isEqualTo(argument.body);\r\n        assertThat(message.getUserProperties().keySet().containsAll(argument.properties.keySet()));\r\n        assertThat(message.getUserProperties().values().containsAll(argument.properties.values()));\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-runtime\\src\\test\\java\\org\\apache\\eventmesh\\runtime\\util\\EventMeshUtilTest.java",
+  "methodName" : "testBuildPushMsgSeqNo",
+  "sourceCode" : "@Test\r\npublic void testBuildPushMsgSeqNo() {\r\n    String seq = EventMeshUtil.buildPushMsgSeqNo();\r\n    Assert.assertTrue(Pattern.compile(\"\\\\d{17}\").matcher(seq).matches());\r\n    Assert.assertEquals(17, seq.length());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-sdk-java\\src\\test\\java\\org\\apache\\eventmesh\\client\\http\\util\\HttpLoadBalanceUtilsTest.java",
+  "methodName" : "testCreateRandomSelector",
+  "sourceCode" : "@Test\r\npublic void testCreateRandomSelector() throws EventMeshException {\r\n    EventMeshHttpClientConfig eventMeshHttpClientConfig = new EventMeshHttpClientConfig().setLiteEventMeshAddr(\"127.0.0.1:1001;127.0.0.2:1002\");\r\n    LoadBalanceSelector<String> randomSelector = HttpLoadBalanceUtils.createEventMeshServerLoadBalanceSelector(eventMeshHttpClientConfig);\r\n    Assert.assertEquals(LoadBalanceType.RANDOM, randomSelector.getType());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-sdk-java\\src\\test\\java\\org\\apache\\eventmesh\\client\\http\\util\\HttpLoadBalanceUtilsTest.java",
+  "methodName" : "testCreateWeightRoundRobinSelector",
+  "sourceCode" : "@Test\r\npublic void testCreateWeightRoundRobinSelector() throws EventMeshException {\r\n    EventMeshHttpClientConfig eventMeshHttpClientConfig = new EventMeshHttpClientConfig().setLiteEventMeshAddr(\"127.0.0.1:1001:1;127.0.0.2:1001:2\").setLoadBalanceType(LoadBalanceType.WEIGHT_ROUND_ROBIN);\r\n    LoadBalanceSelector<String> weightRoundRobinSelector = HttpLoadBalanceUtils.createEventMeshServerLoadBalanceSelector(eventMeshHttpClientConfig);\r\n    Assert.assertEquals(LoadBalanceType.WEIGHT_ROUND_ROBIN, weightRoundRobinSelector.getType());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-sdk-java\\src\\test\\java\\org\\apache\\eventmesh\\client\\http\\util\\HttpLoadBalanceUtilsTest.java",
+  "methodName" : "testCreateWeightRandomSelector",
+  "sourceCode" : "@Test\r\npublic void testCreateWeightRandomSelector() throws EventMeshException {\r\n    EventMeshHttpClientConfig eventMeshHttpClientConfig = new EventMeshHttpClientConfig().setLiteEventMeshAddr(\"127.0.0.1:1001:1;127.0.0.2:1001:2\").setLoadBalanceType(LoadBalanceType.WEIGHT_RANDOM);\r\n    LoadBalanceSelector<String> weightRoundRobinSelector = HttpLoadBalanceUtils.createEventMeshServerLoadBalanceSelector(eventMeshHttpClientConfig);\r\n    Assert.assertEquals(LoadBalanceType.WEIGHT_RANDOM, weightRoundRobinSelector.getType());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-spi\\src\\test\\java\\org\\apache\\eventmesh\\spi\\EventMeshExtensionFactoryTest.java",
+  "methodName" : "testGetSingletonExtension",
+  "sourceCode" : "@Test\r\npublic void testGetSingletonExtension() {\r\n    TestSingletonExtension extensionA = EventMeshExtensionFactory.getExtension(TestSingletonExtension.class, \"singletonExtension\");\r\n    TestSingletonExtension extensionB = EventMeshExtensionFactory.getExtension(TestSingletonExtension.class, \"singletonExtension\");\r\n    Assert.assertSame(extensionA, extensionB);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\eventmesh-spi\\src\\test\\java\\org\\apache\\eventmesh\\spi\\EventMeshExtensionFactoryTest.java",
+  "methodName" : "testGetPrototypeExtension",
+  "sourceCode" : "@Test\r\npublic void testGetPrototypeExtension() {\r\n    TestPrototypeExtension prototypeExtensionA = EventMeshExtensionFactory.getExtension(TestPrototypeExtension.class, \"prototypeExtension\");\r\n    TestPrototypeExtension prototypeExtensionB = EventMeshExtensionFactory.getExtension(TestPrototypeExtension.class, \"prototypeExtension\");\r\n    Assert.assertNotSame(prototypeExtensionA, prototypeExtensionB);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

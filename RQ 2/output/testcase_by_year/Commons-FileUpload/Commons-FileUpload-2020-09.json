@@ -1,0 +1,505 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\DefaultFileItemTest.java",
+  "methodName" : "testTextFieldConstruction",
+  "sourceCode" : "/**\r\n * Test construction of a regular text field.\r\n */\r\n@Test\r\npublic void testTextFieldConstruction() {\r\n    FileItemFactory factory = createFactory(null);\r\n    String textFieldName = \"textField\";\r\n    FileItem item = factory.createItem(textFieldName, textContentType, true, null);\r\n    assertNotNull(item);\r\n    assertEquals(item.getFieldName(), textFieldName);\r\n    assertEquals(item.getContentType(), textContentType);\r\n    assertTrue(item.isFormField());\r\n    assertNull(item.getName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\DefaultFileItemTest.java",
+  "methodName" : "testFileFieldConstruction",
+  "sourceCode" : "/**\r\n * Test construction of a file field.\r\n */\r\n@Test\r\npublic void testFileFieldConstruction() {\r\n    FileItemFactory factory = createFactory(null);\r\n    String fileFieldName = \"fileField\";\r\n    String fileName = \"originalFileName\";\r\n    FileItem item = factory.createItem(fileFieldName, fileContentType, false, fileName);\r\n    assertNotNull(item);\r\n    assertEquals(item.getFieldName(), fileFieldName);\r\n    assertEquals(item.getContentType(), fileContentType);\r\n    assertFalse(item.isFormField());\r\n    assertEquals(item.getName(), fileName);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\DefaultFileItemTest.java",
+  "methodName" : "testBelowThreshold",
+  "sourceCode" : "/**\r\n * Test creation of a field for which the amount of data falls below the\r\n * configured threshold.\r\n */\r\n@Test\r\npublic void testBelowThreshold() {\r\n    FileItemFactory factory = createFactory(null);\r\n    String textFieldName = \"textField\";\r\n    String textFieldValue = \"0123456789\";\r\n    byte[] testFieldValueBytes = textFieldValue.getBytes();\r\n    FileItem item = factory.createItem(textFieldName, textContentType, true, null);\r\n    assertNotNull(item);\r\n    try {\r\n        OutputStream os = item.getOutputStream();\r\n        os.write(testFieldValueBytes);\r\n        os.close();\r\n    } catch (IOException e) {\r\n        fail(\"Unexpected IOException\");\r\n    }\r\n    assertTrue(item.isInMemory());\r\n    assertEquals(item.getSize(), testFieldValueBytes.length);\r\n    assertTrue(Arrays.equals(item.get(), testFieldValueBytes));\r\n    assertEquals(item.getString(), textFieldValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\DefaultFileItemTest.java",
+  "methodName" : "testAboveThresholdDefaultRepository",
+  "sourceCode" : "/**\r\n * Test creation of a field for which the amount of data falls above the\r\n * configured threshold, where no specific repository is configured.\r\n */\r\n@Test\r\npublic void testAboveThresholdDefaultRepository() {\r\n    doTestAboveThreshold(null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\DefaultFileItemTest.java",
+  "methodName" : "testAboveThresholdSpecifiedRepository",
+  "sourceCode" : "/**\r\n * Test creation of a field for which the amount of data falls above the\r\n * configured threshold, where a specific repository is configured.\r\n */\r\n@Test\r\npublic void testAboveThresholdSpecifiedRepository() throws IOException {\r\n    String tempPath = System.getProperty(\"java.io.tmpdir\");\r\n    String tempDirName = \"testAboveThresholdSpecifiedRepository\";\r\n    File tempDir = new File(tempPath, tempDirName);\r\n    FileUtils.forceMkdir(tempDir);\r\n    doTestAboveThreshold(tempDir);\r\n    assertTrue(tempDir.delete());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\DiskFileItemSerializeTest.java",
+  "methodName" : "testBelowThreshold",
+  "sourceCode" : "/**\r\n * Test creation of a field for which the amount of data falls below the\r\n * configured threshold.\r\n */\r\n@Test\r\npublic void testBelowThreshold() {\r\n    // Create the FileItem\r\n    byte[] testFieldValueBytes = createContentBytes(threshold - 1);\r\n    testInMemoryObject(testFieldValueBytes);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\DiskFileItemSerializeTest.java",
+  "methodName" : "testThreshold",
+  "sourceCode" : "/**\r\n * Test creation of a field for which the amount of data equals the\r\n * configured threshold.\r\n */\r\n@Test\r\npublic void testThreshold() {\r\n    // Create the FileItem\r\n    byte[] testFieldValueBytes = createContentBytes(threshold);\r\n    testInMemoryObject(testFieldValueBytes);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\DiskFileItemSerializeTest.java",
+  "methodName" : "testAboveThreshold",
+  "sourceCode" : "/**\r\n * Test creation of a field for which the amount of data falls above the\r\n * configured threshold.\r\n */\r\n@Test\r\npublic void testAboveThreshold() {\r\n    // Create the FileItem\r\n    byte[] testFieldValueBytes = createContentBytes(threshold + 1);\r\n    FileItem item = createFileItem(testFieldValueBytes);\r\n    // Check state is as expected\r\n    assertFalse(item.isInMemory(), \"Initial: in memory\");\r\n    assertEquals(item.getSize(), testFieldValueBytes.length, \"Initial: size\");\r\n    compareBytes(\"Initial\", item.get(), testFieldValueBytes);\r\n    item.delete();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\DiskFileItemSerializeTest.java",
+  "methodName" : "testValidRepository",
+  "sourceCode" : "/**\r\n * Test serialization and deserialization when repository is not null.\r\n */\r\n@Test\r\npublic void testValidRepository() {\r\n    // Create the FileItem\r\n    byte[] testFieldValueBytes = createContentBytes(threshold);\r\n    testInMemoryObject(testFieldValueBytes, REPO);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\DiskFileItemSerializeTest.java",
+  "methodName" : "testInvalidRepository",
+  "sourceCode" : "/**\r\n * Test deserialization fails when repository is not valid.\r\n */\r\n@Test\r\npublic void testInvalidRepository() {\r\n    // Create the FileItem\r\n    byte[] testFieldValueBytes = createContentBytes(threshold);\r\n    File repository = new File(System.getProperty(\"java.io.tmpdir\"), \"file\");\r\n    FileItem item = createFileItem(testFieldValueBytes, repository);\r\n    assertThrows(IOException.class, () -> deserialize(serialize(item)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\DiskFileItemSerializeTest.java",
+  "methodName" : "testInvalidRepositoryWithNullChar",
+  "sourceCode" : "/**\r\n * Test deserialization fails when repository contains a null character.\r\n */\r\n@Test\r\npublic void testInvalidRepositoryWithNullChar() {\r\n    // Create the FileItem\r\n    byte[] testFieldValueBytes = createContentBytes(threshold);\r\n    File repository = new File(System.getProperty(\"java.io.tmpdir\"), \"\\0\");\r\n    FileItem item = createFileItem(testFieldValueBytes, repository);\r\n    assertThrows(IOException.class, () -> deserialize(serialize(item)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\DiskFileUploadTest.java",
+  "methodName" : "testWithInvalidRequest",
+  "sourceCode" : "@Test\r\npublic void testWithInvalidRequest() {\r\n    HttpServletRequest req = HttpServletRequestFactory.createInvalidHttpServletRequest();\r\n    try {\r\n        upload.parseRequest(req);\r\n        fail(\"testWithInvalidRequest: expected exception was not thrown\");\r\n    } catch (FileUploadException expected) {\r\n        // this exception is expected\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\DiskFileUploadTest.java",
+  "methodName" : "testWithNullContentType",
+  "sourceCode" : "@Test\r\npublic void testWithNullContentType() {\r\n    HttpServletRequest req = HttpServletRequestFactory.createHttpServletRequestWithNullContentType();\r\n    try {\r\n        upload.parseRequest(req);\r\n        fail(\"testWithNullContentType: expected exception was not thrown\");\r\n    } catch (InvalidContentTypeException expected) {\r\n        // this exception is expected\r\n    } catch (FileUploadException unexpected) {\r\n        fail(\"testWithNullContentType: unexpected exception was thrown\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\DiskFileUploadTest.java",
+  "methodName" : "testMoveFile",
+  "sourceCode" : "/**\r\n * Proposed test for FILEUPLOAD-293. As of yet, doesn't reproduce the problem.\r\n */\r\n@Test\r\npublic void testMoveFile() throws Exception {\r\n    DiskFileUpload myUpload = new DiskFileUpload();\r\n    myUpload.setSizeThreshold(0);\r\n    final String content = \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"file\\\";\" + \"filename=\\\"foo.tab\\\"\\r\\n\" + \"Content-Type: text/whatever\\r\\n\" + \"\\r\\n\" + \"This is the content of the file\\n\" + \"\\r\\n\" + \"-----1234--\\r\\n\";\r\n    final byte[] contentBytes = content.getBytes(\"US-ASCII\");\r\n    final HttpServletRequest request = new MockHttpServletRequest(contentBytes, Constants.CONTENT_TYPE);\r\n    final List<FileItem> items = myUpload.parseRequest(request);\r\n    assertNotNull(items);\r\n    assertFalse(items.isEmpty());\r\n    final DiskFileItem dfi = (DiskFileItem) items.get(0);\r\n    final File out = File.createTempFile(\"install\", \".tmp\");\r\n    dfi.write(out);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\FileItemHeadersTest.java",
+  "methodName" : "testFileItemHeaders",
+  "sourceCode" : "/**\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testFileItemHeaders() throws Exception {\r\n    FileItemHeadersImpl aMutableFileItemHeaders = new FileItemHeadersImpl();\r\n    aMutableFileItemHeaders.addHeader(\"Content-Disposition\", \"form-data; name=\\\"FileItem\\\"; filename=\\\"file1.txt\\\"\");\r\n    aMutableFileItemHeaders.addHeader(\"Content-Type\", \"text/plain\");\r\n    aMutableFileItemHeaders.addHeader(\"TestHeader\", \"headerValue1\");\r\n    aMutableFileItemHeaders.addHeader(\"TestHeader\", \"headerValue2\");\r\n    aMutableFileItemHeaders.addHeader(\"TestHeader\", \"headerValue3\");\r\n    aMutableFileItemHeaders.addHeader(\"testheader\", \"headerValue4\");\r\n    Iterator<String> headerNameEnumeration = aMutableFileItemHeaders.getHeaderNames();\r\n    assertEquals(\"content-disposition\", headerNameEnumeration.next());\r\n    assertEquals(\"content-type\", headerNameEnumeration.next());\r\n    assertEquals(\"testheader\", headerNameEnumeration.next());\r\n    assertFalse(headerNameEnumeration.hasNext());\r\n    assertEquals(aMutableFileItemHeaders.getHeader(\"Content-Disposition\"), \"form-data; name=\\\"FileItem\\\"; filename=\\\"file1.txt\\\"\");\r\n    assertEquals(aMutableFileItemHeaders.getHeader(\"Content-Type\"), \"text/plain\");\r\n    assertEquals(aMutableFileItemHeaders.getHeader(\"content-type\"), \"text/plain\");\r\n    assertEquals(aMutableFileItemHeaders.getHeader(\"TestHeader\"), \"headerValue1\");\r\n    assertNull(aMutableFileItemHeaders.getHeader(\"DummyHeader\"));\r\n    Iterator<String> headerValueEnumeration;\r\n    headerValueEnumeration = aMutableFileItemHeaders.getHeaders(\"Content-Type\");\r\n    assertTrue(headerValueEnumeration.hasNext());\r\n    assertEquals(headerValueEnumeration.next(), \"text/plain\");\r\n    assertFalse(headerValueEnumeration.hasNext());\r\n    headerValueEnumeration = aMutableFileItemHeaders.getHeaders(\"content-type\");\r\n    assertTrue(headerValueEnumeration.hasNext());\r\n    assertEquals(headerValueEnumeration.next(), \"text/plain\");\r\n    assertFalse(headerValueEnumeration.hasNext());\r\n    headerValueEnumeration = aMutableFileItemHeaders.getHeaders(\"TestHeader\");\r\n    assertTrue(headerValueEnumeration.hasNext());\r\n    assertEquals(headerValueEnumeration.next(), \"headerValue1\");\r\n    assertTrue(headerValueEnumeration.hasNext());\r\n    assertEquals(headerValueEnumeration.next(), \"headerValue2\");\r\n    assertTrue(headerValueEnumeration.hasNext());\r\n    assertEquals(headerValueEnumeration.next(), \"headerValue3\");\r\n    assertTrue(headerValueEnumeration.hasNext());\r\n    assertEquals(headerValueEnumeration.next(), \"headerValue4\");\r\n    assertFalse(headerValueEnumeration.hasNext());\r\n    headerValueEnumeration = aMutableFileItemHeaders.getHeaders(\"DummyHeader\");\r\n    assertFalse(headerValueEnumeration.hasNext());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\FileUploadTest.java",
+  "methodName" : "testFileUpload",
+  "sourceCode" : "// --- Test methods common to all implementations of a FileUpload\r\n@ParameterizedTest\r\n@MethodSource(\"data\")\r\npublic void testFileUpload(FileUpload upload) throws IOException, FileUploadException {\r\n    List<FileItem> fileItems = Util.parseUpload(upload, \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"file\\\"; filename=\\\"foo.tab\\\"\\r\\n\" + \"Content-Type: text/whatever\\r\\n\" + \"\\r\\n\" + \"This is the content of the file\\n\" + \"\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"field\\\"\\r\\n\" + \"\\r\\n\" + \"fieldValue\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"multi\\\"\\r\\n\" + \"\\r\\n\" + \"value1\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"multi\\\"\\r\\n\" + \"\\r\\n\" + \"value2\\r\\n\" + \"-----1234--\\r\\n\");\r\n    assertEquals(4, fileItems.size());\r\n    FileItem file = fileItems.get(0);\r\n    assertEquals(\"file\", file.getFieldName());\r\n    assertFalse(file.isFormField());\r\n    assertEquals(\"This is the content of the file\\n\", file.getString());\r\n    assertEquals(\"text/whatever\", file.getContentType());\r\n    assertEquals(\"foo.tab\", file.getName());\r\n    FileItem field = fileItems.get(1);\r\n    assertEquals(\"field\", field.getFieldName());\r\n    assertTrue(field.isFormField());\r\n    assertEquals(\"fieldValue\", field.getString());\r\n    FileItem multi0 = fileItems.get(2);\r\n    assertEquals(\"multi\", multi0.getFieldName());\r\n    assertTrue(multi0.isFormField());\r\n    assertEquals(\"value1\", multi0.getString());\r\n    FileItem multi1 = fileItems.get(3);\r\n    assertEquals(\"multi\", multi1.getFieldName());\r\n    assertTrue(multi1.isFormField());\r\n    assertEquals(\"value2\", multi1.getString());\r\n}",
+  "annotations" : [ "ParameterizedTest", "MethodSource" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\FileUploadTest.java",
+  "methodName" : "testFilenameCaseSensitivity",
+  "sourceCode" : "@ParameterizedTest\r\n@MethodSource(\"data\")\r\npublic void testFilenameCaseSensitivity(FileUpload upload) throws IOException, FileUploadException {\r\n    List<FileItem> fileItems = Util.parseUpload(upload, \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"FiLe\\\"; filename=\\\"FOO.tab\\\"\\r\\n\" + \"Content-Type: text/whatever\\r\\n\" + \"\\r\\n\" + \"This is the content of the file\\n\" + \"\\r\\n\" + \"-----1234--\\r\\n\");\r\n    assertEquals(1, fileItems.size());\r\n    FileItem file = fileItems.get(0);\r\n    assertEquals(\"FiLe\", file.getFieldName());\r\n    assertEquals(\"FOO.tab\", file.getName());\r\n}",
+  "annotations" : [ "ParameterizedTest", "MethodSource" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\FileUploadTest.java",
+  "methodName" : "testEmptyFile",
+  "sourceCode" : "/**\r\n * This is what the browser does if you submit the form without choosing a file.\r\n */\r\n@ParameterizedTest\r\n@MethodSource(\"data\")\r\npublic void testEmptyFile(FileUpload upload) throws UnsupportedEncodingException, FileUploadException {\r\n    List<FileItem> fileItems = Util.parseUpload(upload, \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"file\\\"; filename=\\\"\\\"\\r\\n\" + \"\\r\\n\" + \"\\r\\n\" + \"-----1234--\\r\\n\");\r\n    assertEquals(1, fileItems.size());\r\n    FileItem file = fileItems.get(0);\r\n    assertFalse(file.isFormField());\r\n    assertEquals(\"\", file.getString());\r\n    assertEquals(\"\", file.getName());\r\n}",
+  "annotations" : [ "ParameterizedTest", "MethodSource" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\FileUploadTest.java",
+  "methodName" : "testIE5MacBug",
+  "sourceCode" : "/**\r\n * Internet Explorer 5 for the Mac has a bug where the carriage\r\n * return is missing on any boundary line immediately preceding\r\n * an input with type=image. (type=submit does not have the bug.)\r\n */\r\n@ParameterizedTest\r\n@MethodSource(\"data\")\r\npublic void testIE5MacBug(FileUpload upload) throws UnsupportedEncodingException, FileUploadException {\r\n    List<FileItem> fileItems = Util.parseUpload(upload, \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"field1\\\"\\r\\n\" + \"\\r\\n\" + \"fieldValue\\r\\n\" + // NOTE \\r missing\r\n    \"-----1234\\n\" + \"Content-Disposition: form-data; name=\\\"submitName.x\\\"\\r\\n\" + \"\\r\\n\" + \"42\\r\\n\" + // NOTE \\r missing\r\n    \"-----1234\\n\" + \"Content-Disposition: form-data; name=\\\"submitName.y\\\"\\r\\n\" + \"\\r\\n\" + \"21\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"field2\\\"\\r\\n\" + \"\\r\\n\" + \"fieldValue2\\r\\n\" + \"-----1234--\\r\\n\");\r\n    assertEquals(4, fileItems.size());\r\n    FileItem field1 = fileItems.get(0);\r\n    assertEquals(\"field1\", field1.getFieldName());\r\n    assertTrue(field1.isFormField());\r\n    assertEquals(\"fieldValue\", field1.getString());\r\n    FileItem submitX = fileItems.get(1);\r\n    assertEquals(\"submitName.x\", submitX.getFieldName());\r\n    assertTrue(submitX.isFormField());\r\n    assertEquals(\"42\", submitX.getString());\r\n    FileItem submitY = fileItems.get(2);\r\n    assertEquals(\"submitName.y\", submitY.getFieldName());\r\n    assertTrue(submitY.isFormField());\r\n    assertEquals(\"21\", submitY.getString());\r\n    FileItem field2 = fileItems.get(3);\r\n    assertEquals(\"field2\", field2.getFieldName());\r\n    assertTrue(field2.isFormField());\r\n    assertEquals(\"fieldValue2\", field2.getString());\r\n}",
+  "annotations" : [ "ParameterizedTest", "MethodSource" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\FileUploadTest.java",
+  "methodName" : "testFILEUPLOAD62",
+  "sourceCode" : "/**\r\n * Test for <a href=\"https://issues.apache.org/jira/browse/FILEUPLOAD-62\">FILEUPLOAD-62</a>\r\n */\r\n@ParameterizedTest\r\n@MethodSource(\"data\")\r\npublic void testFILEUPLOAD62(FileUpload upload) throws Exception {\r\n    final String contentType = \"multipart/form-data; boundary=AaB03x\";\r\n    final String request = \"--AaB03x\\r\\n\" + \"content-disposition: form-data; name=\\\"field1\\\"\\r\\n\" + \"\\r\\n\" + \"Joe Blow\\r\\n\" + \"--AaB03x\\r\\n\" + \"content-disposition: form-data; name=\\\"pics\\\"\\r\\n\" + \"Content-type: multipart/mixed; boundary=BbC04y\\r\\n\" + \"\\r\\n\" + \"--BbC04y\\r\\n\" + \"Content-disposition: attachment; filename=\\\"file1.txt\\\"\\r\\n\" + \"Content-Type: text/plain\\r\\n\" + \"\\r\\n\" + \"... contents of file1.txt ...\\r\\n\" + \"--BbC04y\\r\\n\" + \"Content-disposition: attachment; filename=\\\"file2.gif\\\"\\r\\n\" + \"Content-type: image/gif\\r\\n\" + \"Content-Transfer-Encoding: binary\\r\\n\" + \"\\r\\n\" + \"...contents of file2.gif...\\r\\n\" + \"--BbC04y--\\r\\n\" + \"--AaB03x--\";\r\n    List<FileItem> fileItems = Util.parseUpload(upload, request.getBytes(\"US-ASCII\"), contentType);\r\n    assertEquals(3, fileItems.size());\r\n    FileItem item0 = fileItems.get(0);\r\n    assertEquals(\"field1\", item0.getFieldName());\r\n    assertNull(item0.getName());\r\n    assertEquals(\"Joe Blow\", new String(item0.get()));\r\n    FileItem item1 = fileItems.get(1);\r\n    assertEquals(\"pics\", item1.getFieldName());\r\n    assertEquals(\"file1.txt\", item1.getName());\r\n    assertEquals(\"... contents of file1.txt ...\", new String(item1.get()));\r\n    FileItem item2 = fileItems.get(2);\r\n    assertEquals(\"pics\", item2.getFieldName());\r\n    assertEquals(\"file2.gif\", item2.getName());\r\n    assertEquals(\"...contents of file2.gif...\", new String(item2.get()));\r\n}",
+  "annotations" : [ "ParameterizedTest", "MethodSource" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\FileUploadTest.java",
+  "methodName" : "testFoldedHeaders",
+  "sourceCode" : "/**\r\n * Test for <a href=\"https://issues.apache.org/jira/browse/FILEUPLOAD-111\">FILEUPLOAD-111</a>\r\n */\r\n@ParameterizedTest\r\n@MethodSource(\"data\")\r\npublic void testFoldedHeaders(FileUpload upload) throws IOException, FileUploadException {\r\n    List<FileItem> fileItems = Util.parseUpload(upload, \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"file\\\"; filename=\\\"foo.tab\\\"\\r\\n\" + \"Content-Type: text/whatever\\r\\n\" + \"\\r\\n\" + \"This is the content of the file\\n\" + \"\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; \\r\\n\" + \"\\tname=\\\"field\\\"\\r\\n\" + \"\\r\\n\" + \"fieldValue\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data;\\r\\n\" + \"     name=\\\"multi\\\"\\r\\n\" + \"\\r\\n\" + \"value1\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"multi\\\"\\r\\n\" + \"\\r\\n\" + \"value2\\r\\n\" + \"-----1234--\\r\\n\");\r\n    assertEquals(4, fileItems.size());\r\n    FileItem file = fileItems.get(0);\r\n    assertEquals(\"file\", file.getFieldName());\r\n    assertFalse(file.isFormField());\r\n    assertEquals(\"This is the content of the file\\n\", file.getString());\r\n    assertEquals(\"text/whatever\", file.getContentType());\r\n    assertEquals(\"foo.tab\", file.getName());\r\n    FileItem field = fileItems.get(1);\r\n    assertEquals(\"field\", field.getFieldName());\r\n    assertTrue(field.isFormField());\r\n    assertEquals(\"fieldValue\", field.getString());\r\n    FileItem multi0 = fileItems.get(2);\r\n    assertEquals(\"multi\", multi0.getFieldName());\r\n    assertTrue(multi0.isFormField());\r\n    assertEquals(\"value1\", multi0.getString());\r\n    FileItem multi1 = fileItems.get(3);\r\n    assertEquals(\"multi\", multi1.getFieldName());\r\n    assertTrue(multi1.isFormField());\r\n    assertEquals(\"value2\", multi1.getString());\r\n}",
+  "annotations" : [ "ParameterizedTest", "MethodSource" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\FileUploadTest.java",
+  "methodName" : "testFileUpload130",
+  "sourceCode" : "/**\r\n * Test case for <a href=\"https://issues.apache.org/jira/browse/FILEUPLOAD-130\">\r\n */\r\n@ParameterizedTest\r\n@MethodSource(\"data\")\r\npublic void testFileUpload130(FileUpload upload) throws Exception {\r\n    final String[] headerNames = new String[] { \"SomeHeader\", \"OtherHeader\", \"YetAnotherHeader\", \"WhatAHeader\" };\r\n    final String[] headerValues = new String[] { \"present\", \"Is there\", \"Here\", \"Is That\" };\r\n    List<FileItem> fileItems = Util.parseUpload(upload, \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"file\\\"; filename=\\\"foo.tab\\\"\\r\\n\" + \"Content-Type: text/whatever\\r\\n\" + headerNames[0] + \": \" + headerValues[0] + \"\\r\\n\" + \"\\r\\n\" + \"This is the content of the file\\n\" + \"\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; \\r\\n\" + \"\\tname=\\\"field\\\"\\r\\n\" + headerNames[1] + \": \" + headerValues[1] + \"\\r\\n\" + \"\\r\\n\" + \"fieldValue\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data;\\r\\n\" + \"     name=\\\"multi\\\"\\r\\n\" + headerNames[2] + \": \" + headerValues[2] + \"\\r\\n\" + \"\\r\\n\" + \"value1\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"multi\\\"\\r\\n\" + headerNames[3] + \": \" + headerValues[3] + \"\\r\\n\" + \"\\r\\n\" + \"value2\\r\\n\" + \"-----1234--\\r\\n\");\r\n    assertEquals(4, fileItems.size());\r\n    FileItem file = fileItems.get(0);\r\n    assertHeaders(headerNames, headerValues, file, 0);\r\n    FileItem field = fileItems.get(1);\r\n    assertHeaders(headerNames, headerValues, field, 1);\r\n    FileItem multi0 = fileItems.get(2);\r\n    assertHeaders(headerNames, headerValues, multi0, 2);\r\n    FileItem multi1 = fileItems.get(3);\r\n    assertHeaders(headerNames, headerValues, multi1, 3);\r\n}",
+  "annotations" : [ "ParameterizedTest", "MethodSource" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\FileUploadTest.java",
+  "methodName" : "testContentTypeAttachment",
+  "sourceCode" : "/**\r\n * Test for <a href=\"https://issues.apache.org/jira/browse/FILEUPLOAD-239\">FILEUPLOAD-239</a>\r\n */\r\n@ParameterizedTest\r\n@MethodSource(\"data\")\r\npublic void testContentTypeAttachment(FileUpload upload) throws IOException, FileUploadException {\r\n    List<FileItem> fileItems = Util.parseUpload(upload, \"-----1234\\r\\n\" + \"content-disposition: form-data; name=\\\"field1\\\"\\r\\n\" + \"\\r\\n\" + \"Joe Blow\\r\\n\" + \"-----1234\\r\\n\" + \"content-disposition: form-data; name=\\\"pics\\\"\\r\\n\" + \"Content-type: multipart/mixed, boundary=---9876\\r\\n\" + \"\\r\\n\" + \"-----9876\\r\\n\" + \"Content-disposition: attachment; filename=\\\"file1.txt\\\"\\r\\n\" + \"Content-Type: text/plain\\r\\n\" + \"\\r\\n\" + \"... contents of file1.txt ...\\r\\n\" + \"-----9876--\\r\\n\" + \"-----1234--\\r\\n\");\r\n    assertEquals(2, fileItems.size());\r\n    FileItem field = fileItems.get(0);\r\n    assertEquals(\"field1\", field.getFieldName());\r\n    assertTrue(field.isFormField());\r\n    assertEquals(\"Joe Blow\", field.getString());\r\n    FileItem file = fileItems.get(1);\r\n    assertEquals(\"pics\", file.getFieldName());\r\n    assertFalse(file.isFormField());\r\n    assertEquals(\"... contents of file1.txt ...\", file.getString());\r\n    assertEquals(\"text/plain\", file.getContentType());\r\n    assertEquals(\"file1.txt\", file.getName());\r\n}",
+  "annotations" : [ "ParameterizedTest", "MethodSource" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\jaksrvlt\\JakSrvltFileUploadTest.java",
+  "methodName" : "parseParameterMap",
+  "sourceCode" : "/**\r\n * Test case for <a href=\"https://issues.apache.org/jira/browse/FILEUPLOAD-210\">\r\n */\r\n@Test\r\npublic void parseParameterMap() throws Exception {\r\n    String text = \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"file\\\"; filename=\\\"foo.tab\\\"\\r\\n\" + \"Content-Type: text/whatever\\r\\n\" + \"\\r\\n\" + \"This is the content of the file\\n\" + \"\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"field\\\"\\r\\n\" + \"\\r\\n\" + \"fieldValue\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"multi\\\"\\r\\n\" + \"\\r\\n\" + \"value1\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"multi\\\"\\r\\n\" + \"\\r\\n\" + \"value2\\r\\n\" + \"-----1234--\\r\\n\";\r\n    byte[] bytes = text.getBytes(\"US-ASCII\");\r\n    HttpServletRequest request = new MockJakSrvltHttpRequest(bytes, Constants.CONTENT_TYPE);\r\n    JakSrvltFileUpload upload = new JakSrvltFileUpload(new DiskFileItemFactory());\r\n    Map<String, List<FileItem>> mappedParameters = upload.parseParameterMap(request);\r\n    assertTrue(mappedParameters.containsKey(\"file\"));\r\n    assertEquals(1, mappedParameters.get(\"file\").size());\r\n    assertTrue(mappedParameters.containsKey(\"field\"));\r\n    assertEquals(1, mappedParameters.get(\"field\").size());\r\n    assertTrue(mappedParameters.containsKey(\"multi\"));\r\n    assertEquals(2, mappedParameters.get(\"multi\").size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\jaksrvlt\\JakSrvltFileUploadTest.java",
+  "methodName" : "parseImpliedUtf8",
+  "sourceCode" : "@Test\r\npublic void parseImpliedUtf8() throws Exception {\r\n    // utf8 encoded form-data without explicit content-type encoding\r\n    String text = \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"utf8Html\\\"\\r\\n\" + \"\\r\\n\" + \"Th�s �s the co�te�t of the f�le\\n\" + \"\\r\\n\" + \"-----1234--\\r\\n\";\r\n    byte[] bytes = text.getBytes(\"UTF-8\");\r\n    HttpServletRequest request = new MockJakSrvltHttpRequest(bytes, Constants.CONTENT_TYPE);\r\n    DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();\r\n    fileItemFactory.setDefaultCharset(\"UTF-8\");\r\n    JakSrvltFileUpload upload = new JakSrvltFileUpload(fileItemFactory);\r\n    List<FileItem> fileItems = upload.parseRequest(request);\r\n    FileItem fileItem = fileItems.get(0);\r\n    assertTrue(fileItem.getString().contains(\"co�te�t\"), fileItem.getString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\MultipartStreamTest.java",
+  "methodName" : "testThreeParamConstructor",
+  "sourceCode" : "@Test\r\npublic void testThreeParamConstructor() throws Exception {\r\n    final String strData = \"foobar\";\r\n    final byte[] contents = strData.getBytes();\r\n    InputStream input = new ByteArrayInputStream(contents);\r\n    byte[] boundary = BOUNDARY_TEXT.getBytes();\r\n    int iBufSize = boundary.length + MultipartStream.BOUNDARY_PREFIX.length + 1;\r\n    MultipartStream ms = new MultipartStream(input, boundary, iBufSize, new MultipartStream.ProgressNotifier(null, contents.length));\r\n    assertNotNull(ms);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\MultipartStreamTest.java",
+  "methodName" : "testSmallBuffer",
+  "sourceCode" : "@Test\r\npublic void testSmallBuffer() {\r\n    final String strData = \"foobar\";\r\n    final byte[] contents = strData.getBytes();\r\n    InputStream input = new ByteArrayInputStream(contents);\r\n    byte[] boundary = BOUNDARY_TEXT.getBytes();\r\n    int iBufSize = 1;\r\n    assertThrows(IllegalArgumentException.class, () -> new MultipartStream(input, boundary, iBufSize, new MultipartStream.ProgressNotifier(null, contents.length)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\MultipartStreamTest.java",
+  "methodName" : "testTwoParamConstructor",
+  "sourceCode" : "@Test\r\npublic void testTwoParamConstructor() throws Exception {\r\n    final String strData = \"foobar\";\r\n    final byte[] contents = strData.getBytes();\r\n    InputStream input = new ByteArrayInputStream(contents);\r\n    byte[] boundary = BOUNDARY_TEXT.getBytes();\r\n    MultipartStream ms = new MultipartStream(input, boundary, new MultipartStream.ProgressNotifier(null, contents.length));\r\n    assertNotNull(ms);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\ParameterParserTest.java",
+  "methodName" : "testParsing",
+  "sourceCode" : "@Test\r\npublic void testParsing() {\r\n    String s = \"test; test1 =  stuff   ; test2 =  \\\"stuff; stuff\\\"; test3=\\\"stuff\";\r\n    ParameterParser parser = new ParameterParser();\r\n    Map<String, String> params = parser.parse(s, ';');\r\n    assertEquals(null, params.get(\"test\"));\r\n    assertEquals(\"stuff\", params.get(\"test1\"));\r\n    assertEquals(\"stuff; stuff\", params.get(\"test2\"));\r\n    assertEquals(\"\\\"stuff\", params.get(\"test3\"));\r\n    params = parser.parse(s, new char[] { ',', ';' });\r\n    assertEquals(null, params.get(\"test\"));\r\n    assertEquals(\"stuff\", params.get(\"test1\"));\r\n    assertEquals(\"stuff; stuff\", params.get(\"test2\"));\r\n    assertEquals(\"\\\"stuff\", params.get(\"test3\"));\r\n    s = \"  test  , test1=stuff   ,  , test2=, test3, \";\r\n    params = parser.parse(s, ',');\r\n    assertEquals(null, params.get(\"test\"));\r\n    assertEquals(\"stuff\", params.get(\"test1\"));\r\n    assertEquals(null, params.get(\"test2\"));\r\n    assertEquals(null, params.get(\"test3\"));\r\n    s = \"  test\";\r\n    params = parser.parse(s, ';');\r\n    assertEquals(null, params.get(\"test\"));\r\n    s = \"  \";\r\n    params = parser.parse(s, ';');\r\n    assertEquals(0, params.size());\r\n    s = \" = stuff \";\r\n    params = parser.parse(s, ';');\r\n    assertEquals(0, params.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\ParameterParserTest.java",
+  "methodName" : "testContentTypeParsing",
+  "sourceCode" : "@Test\r\npublic void testContentTypeParsing() {\r\n    String s = \"text/plain; Charset=UTF-8\";\r\n    ParameterParser parser = new ParameterParser();\r\n    parser.setLowerCaseNames(true);\r\n    Map<String, String> params = parser.parse(s, ';');\r\n    assertEquals(\"UTF-8\", params.get(\"charset\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\ParameterParserTest.java",
+  "methodName" : "testParsingEscapedChars",
+  "sourceCode" : "@Test\r\npublic void testParsingEscapedChars() {\r\n    String s = \"param = \\\"stuff\\\\\\\"; more stuff\\\"\";\r\n    ParameterParser parser = new ParameterParser();\r\n    Map<String, String> params = parser.parse(s, ';');\r\n    assertEquals(1, params.size());\r\n    assertEquals(\"stuff\\\\\\\"; more stuff\", params.get(\"param\"));\r\n    s = \"param = \\\"stuff\\\\\\\\\\\"; anotherparam\";\r\n    params = parser.parse(s, ';');\r\n    assertEquals(2, params.size());\r\n    assertEquals(\"stuff\\\\\\\\\", params.get(\"param\"));\r\n    assertNull(params.get(\"anotherparam\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\ParameterParserTest.java",
+  "methodName" : "testFileUpload139",
+  "sourceCode" : "// See: https://issues.apache.org/jira/browse/FILEUPLOAD-139\r\n@Test\r\npublic void testFileUpload139() {\r\n    ParameterParser parser = new ParameterParser();\r\n    String s = \"Content-type: multipart/form-data , boundary=AaB03x\";\r\n    Map<String, String> params = parser.parse(s, new char[] { ',', ';' });\r\n    assertEquals(\"AaB03x\", params.get(\"boundary\"));\r\n    s = \"Content-type: multipart/form-data, boundary=AaB03x\";\r\n    params = parser.parse(s, new char[] { ';', ',' });\r\n    assertEquals(\"AaB03x\", params.get(\"boundary\"));\r\n    s = \"Content-type: multipart/mixed, boundary=BbC04y\";\r\n    params = parser.parse(s, new char[] { ',', ';' });\r\n    assertEquals(\"BbC04y\", params.get(\"boundary\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\ParameterParserTest.java",
+  "methodName" : "testFileUpload199",
+  "sourceCode" : "/**\r\n * Test for <a href=\"https://issues.apache.org/jira/browse/FILEUPLOAD-199\">FILEUPLOAD-199</a>\r\n */\r\n@Test\r\npublic void testFileUpload199() {\r\n    ParameterParser parser = new ParameterParser();\r\n    String s = \"Content-Disposition: form-data; name=\\\"file\\\"; filename=\\\"=?ISO-8859-1?B?SWYgeW91IGNhbiByZWFkIHRoaXMgeW8=?= =?ISO-8859-2?B?dSB1bmRlcnN0YW5kIHRoZSBleGFtcGxlLg==?=\\\"\\r\\n\";\r\n    Map<String, String> params = parser.parse(s, new char[] { ',', ';' });\r\n    assertEquals(\"If you can read this you understand the example.\", params.get(\"filename\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\ParameterParserTest.java",
+  "methodName" : "testFileUpload274",
+  "sourceCode" : "/**\r\n * Test for <a href=\"https://issues.apache.org/jira/browse/FILEUPLOAD-274\">FILEUPLOAD-274</a>\r\n * @throws UnsupportedEncodingException\r\n */\r\n@Test\r\npublic void testFileUpload274() {\r\n    ParameterParser parser = new ParameterParser();\r\n    // Should parse a UTF-8 charset\r\n    String s = \"Content-Disposition: form-data; name=\\\"file\\\"; filename*=UTF-8\\'\\'%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF\\r\\n\";\r\n    Map<String, String> params = parser.parse(s, new char[] { ',', ';' });\r\n    //filename = \"こんにちは\" in japanese\r\n    assertEquals(\"\\u3053\\u3093\\u306B\\u3061\\u306F\", params.get(\"filename\"));\r\n    // Should parse ISO-8859-1 charset\r\n    s = \"Content-Disposition: form-data; name=\\\"file\\\"; filename*=UTF-8\\'\\'%70%C3%A2%74%C3%A9\\r\\n\";\r\n    params = parser.parse(s, new char[] { ',', ';' });\r\n    //filename = \"pâté\" in french\r\n    assertEquals(\"\\u0070\\u00e2\\u0074\\u00e9\", params.get(\"filename\"));\r\n    // Should not decode if '*' is not at the end of param-name\r\n    s = \"Content-Disposition: form-data; name=\\\"file\\\"; file*name=UTF-8\\'\\'%61%62%63\\r\\n\";\r\n    params = parser.parse(s, new char[] { ',', ';' });\r\n    assertEquals(\"UTF-8\\'\\'%61%62%63\", params.get(\"file*name\"));\r\n    // Should not decode if param-value does not follow <charset>'<lang>'<encoded>\r\n    s = \"Content-Disposition: form-data; name=\\\"file\\\"; filename*=a\\'bc\\r\\n\";\r\n    params = parser.parse(s, new char[] { ',', ';' });\r\n    assertEquals(\"a\\'bc\", params.get(\"filename\"));\r\n    // Should not decode if param-name doesn't have '*' at end\r\n    s = \"Content-Disposition: form-data; name=\\\"file\\\"; filename=a\\'b\\'c\\r\\n\";\r\n    params = parser.parse(s, new char[] { ',', ';' });\r\n    assertEquals(\"a\\'b\\'c\", params.get(\"filename\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\portlet\\PortletFileUploadTest.java",
+  "methodName" : "parseParameterMap",
+  "sourceCode" : "@Test\r\npublic void parseParameterMap() throws Exception {\r\n    String text = \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"file\\\"; filename=\\\"foo.tab\\\"\\r\\n\" + \"Content-Type: text/whatever\\r\\n\" + \"\\r\\n\" + \"This is the content of the file\\n\" + \"\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"field\\\"\\r\\n\" + \"\\r\\n\" + \"fieldValue\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"multi\\\"\\r\\n\" + \"\\r\\n\" + \"value1\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"multi\\\"\\r\\n\" + \"\\r\\n\" + \"value2\\r\\n\" + \"-----1234--\\r\\n\";\r\n    byte[] bytes = text.getBytes(\"US-ASCII\");\r\n    ActionRequest request = new MockPortletActionRequest(bytes, Constants.CONTENT_TYPE);\r\n    Map<String, List<FileItem>> mappedParameters = upload.parseParameterMap(request);\r\n    assertTrue(mappedParameters.containsKey(\"file\"));\r\n    assertEquals(1, mappedParameters.get(\"file\").size());\r\n    assertTrue(mappedParameters.containsKey(\"field\"));\r\n    assertEquals(1, mappedParameters.get(\"field\").size());\r\n    assertTrue(mappedParameters.containsKey(\"multi\"));\r\n    assertEquals(2, mappedParameters.get(\"multi\").size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\ProgressListenerTest.java",
+  "methodName" : "testProgressListener",
+  "sourceCode" : "/**\r\n * Parse a very long file upload by using a progress listener.\r\n */\r\n@Test\r\npublic void testProgressListener() throws Exception {\r\n    final int NUM_ITEMS = 512;\r\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    for (int i = 0; i < NUM_ITEMS; i++) {\r\n        String header = \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"field\" + (i + 1) + \"\\\"\\r\\n\" + \"\\r\\n\";\r\n        baos.write(header.getBytes(\"US-ASCII\"));\r\n        for (int j = 0; j < 16384 + i; j++) {\r\n            baos.write((byte) j);\r\n        }\r\n        baos.write(\"\\r\\n\".getBytes(\"US-ASCII\"));\r\n    }\r\n    baos.write(\"-----1234--\\r\\n\".getBytes(\"US-ASCII\"));\r\n    byte[] contents = baos.toByteArray();\r\n    MockHttpServletRequest request = new MockHttpServletRequest(contents, Constants.CONTENT_TYPE);\r\n    runTest(NUM_ITEMS, contents.length, request);\r\n    request = new MockHttpServletRequest(contents, Constants.CONTENT_TYPE) {\r\n\r\n        @Override\r\n        public int getContentLength() {\r\n            return -1;\r\n        }\r\n    };\r\n    runTest(NUM_ITEMS, contents.length, request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\servlet\\ServletFileUploadTest.java",
+  "methodName" : "parseParameterMap",
+  "sourceCode" : "/**\r\n * Test case for <a href=\"https://issues.apache.org/jira/browse/FILEUPLOAD-210\">\r\n */\r\n@Test\r\npublic void parseParameterMap() throws Exception {\r\n    String text = \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"file\\\"; filename=\\\"foo.tab\\\"\\r\\n\" + \"Content-Type: text/whatever\\r\\n\" + \"\\r\\n\" + \"This is the content of the file\\n\" + \"\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"field\\\"\\r\\n\" + \"\\r\\n\" + \"fieldValue\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"multi\\\"\\r\\n\" + \"\\r\\n\" + \"value1\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"multi\\\"\\r\\n\" + \"\\r\\n\" + \"value2\\r\\n\" + \"-----1234--\\r\\n\";\r\n    byte[] bytes = text.getBytes(\"US-ASCII\");\r\n    HttpServletRequest request = new MockHttpServletRequest(bytes, Constants.CONTENT_TYPE);\r\n    ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());\r\n    Map<String, List<FileItem>> mappedParameters = upload.parseParameterMap(request);\r\n    assertTrue(mappedParameters.containsKey(\"file\"));\r\n    assertEquals(1, mappedParameters.get(\"file\").size());\r\n    assertTrue(mappedParameters.containsKey(\"field\"));\r\n    assertEquals(1, mappedParameters.get(\"field\").size());\r\n    assertTrue(mappedParameters.containsKey(\"multi\"));\r\n    assertEquals(2, mappedParameters.get(\"multi\").size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\servlet\\ServletFileUploadTest.java",
+  "methodName" : "parseImpliedUtf8",
+  "sourceCode" : "@Test\r\npublic void parseImpliedUtf8() throws Exception {\r\n    // utf8 encoded form-data without explicit content-type encoding\r\n    String text = \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"utf8Html\\\"\\r\\n\" + \"\\r\\n\" + \"Th�s �s the co�te�t of the f�le\\n\" + \"\\r\\n\" + \"-----1234--\\r\\n\";\r\n    byte[] bytes = text.getBytes(\"UTF-8\");\r\n    HttpServletRequest request = new MockHttpServletRequest(bytes, Constants.CONTENT_TYPE);\r\n    DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();\r\n    fileItemFactory.setDefaultCharset(\"UTF-8\");\r\n    ServletFileUpload upload = new ServletFileUpload(fileItemFactory);\r\n    List<FileItem> fileItems = upload.parseRequest(request);\r\n    FileItem fileItem = fileItems.get(0);\r\n    assertTrue(fileItem.getString().contains(\"co�te�t\"), fileItem.getString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\SizesTest.java",
+  "methodName" : "testFileUpload",
+  "sourceCode" : "/**\r\n * Runs a test with varying file sizes.\r\n */\r\n@Test\r\npublic void testFileUpload() throws IOException, FileUploadException {\r\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    int add = 16;\r\n    int num = 0;\r\n    for (int i = 0; i < 16384; i += add) {\r\n        if (++add == 32) {\r\n            add = 16;\r\n        }\r\n        String header = \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"field\" + (num++) + \"\\\"\\r\\n\" + \"\\r\\n\";\r\n        baos.write(header.getBytes(\"US-ASCII\"));\r\n        for (int j = 0; j < i; j++) {\r\n            baos.write((byte) j);\r\n        }\r\n        baos.write(\"\\r\\n\".getBytes(\"US-ASCII\"));\r\n    }\r\n    baos.write(\"-----1234--\\r\\n\".getBytes(\"US-ASCII\"));\r\n    List<FileItem> fileItems = Util.parseUpload(new ServletFileUpload(new DiskFileItemFactory()), baos.toByteArray());\r\n    Iterator<FileItem> fileIter = fileItems.iterator();\r\n    add = 16;\r\n    num = 0;\r\n    for (int i = 0; i < 16384; i += add) {\r\n        if (++add == 32) {\r\n            add = 16;\r\n        }\r\n        FileItem item = fileIter.next();\r\n        assertEquals(\"field\" + (num++), item.getFieldName());\r\n        byte[] bytes = item.get();\r\n        assertEquals(i, bytes.length);\r\n        for (int j = 0; j < i; j++) {\r\n            assertEquals((byte) j, bytes[j]);\r\n        }\r\n    }\r\n    assertTrue(!fileIter.hasNext());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\SizesTest.java",
+  "methodName" : "testFileSizeLimit",
+  "sourceCode" : "/**\r\n * Checks, whether limiting the file size works.\r\n */\r\n@Test\r\npublic void testFileSizeLimit() throws IOException, FileUploadException {\r\n    final String request = \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"file\\\"; filename=\\\"foo.tab\\\"\\r\\n\" + \"Content-Type: text/whatever\\r\\n\" + \"\\r\\n\" + \"This is the content of the file\\n\" + \"\\r\\n\" + \"-----1234--\\r\\n\";\r\n    ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());\r\n    upload.setFileSizeMax(-1);\r\n    HttpServletRequest req = new MockHttpServletRequest(request.getBytes(\"US-ASCII\"), Constants.CONTENT_TYPE);\r\n    List<FileItem> fileItems = upload.parseRequest(req);\r\n    assertEquals(1, fileItems.size());\r\n    FileItem item = fileItems.get(0);\r\n    assertEquals(\"This is the content of the file\\n\", new String(item.get()));\r\n    upload = new ServletFileUpload(new DiskFileItemFactory());\r\n    upload.setFileSizeMax(40);\r\n    req = new MockHttpServletRequest(request.getBytes(\"US-ASCII\"), Constants.CONTENT_TYPE);\r\n    fileItems = upload.parseRequest(req);\r\n    assertEquals(1, fileItems.size());\r\n    item = fileItems.get(0);\r\n    assertEquals(\"This is the content of the file\\n\", new String(item.get()));\r\n    upload = new ServletFileUpload(new DiskFileItemFactory());\r\n    upload.setFileSizeMax(30);\r\n    req = new MockHttpServletRequest(request.getBytes(\"US-ASCII\"), Constants.CONTENT_TYPE);\r\n    try {\r\n        upload.parseRequest(req);\r\n        fail(\"Expected exception.\");\r\n    } catch (FileSizeLimitExceededException e) {\r\n        assertEquals(30, e.getPermittedSize());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\SizesTest.java",
+  "methodName" : "testFileSizeLimitWithFakedContentLength",
+  "sourceCode" : "/**\r\n * Checks, whether a faked Content-Length header is detected.\r\n */\r\n@Test\r\npublic void testFileSizeLimitWithFakedContentLength() throws IOException, FileUploadException {\r\n    final String request = \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"file\\\"; filename=\\\"foo.tab\\\"\\r\\n\" + \"Content-Type: text/whatever\\r\\n\" + \"Content-Length: 10\\r\\n\" + \"\\r\\n\" + \"This is the content of the file\\n\" + \"\\r\\n\" + \"-----1234--\\r\\n\";\r\n    ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());\r\n    upload.setFileSizeMax(-1);\r\n    HttpServletRequest req = new MockHttpServletRequest(request.getBytes(\"US-ASCII\"), Constants.CONTENT_TYPE);\r\n    List<FileItem> fileItems = upload.parseRequest(req);\r\n    assertEquals(1, fileItems.size());\r\n    FileItem item = fileItems.get(0);\r\n    assertEquals(\"This is the content of the file\\n\", new String(item.get()));\r\n    upload = new ServletFileUpload(new DiskFileItemFactory());\r\n    upload.setFileSizeMax(40);\r\n    req = new MockHttpServletRequest(request.getBytes(\"US-ASCII\"), Constants.CONTENT_TYPE);\r\n    fileItems = upload.parseRequest(req);\r\n    assertEquals(1, fileItems.size());\r\n    item = fileItems.get(0);\r\n    assertEquals(\"This is the content of the file\\n\", new String(item.get()));\r\n    // provided Content-Length is larger than the FileSizeMax -> handled by ctor\r\n    upload = new ServletFileUpload(new DiskFileItemFactory());\r\n    upload.setFileSizeMax(5);\r\n    req = new MockHttpServletRequest(request.getBytes(\"US-ASCII\"), Constants.CONTENT_TYPE);\r\n    try {\r\n        upload.parseRequest(req);\r\n        fail(\"Expected exception.\");\r\n    } catch (FileSizeLimitExceededException e) {\r\n        assertEquals(5, e.getPermittedSize());\r\n    }\r\n    // provided Content-Length is wrong, actual content is larger -> handled by LimitedInputStream\r\n    upload = new ServletFileUpload(new DiskFileItemFactory());\r\n    upload.setFileSizeMax(15);\r\n    req = new MockHttpServletRequest(request.getBytes(\"US-ASCII\"), Constants.CONTENT_TYPE);\r\n    try {\r\n        upload.parseRequest(req);\r\n        fail(\"Expected exception.\");\r\n    } catch (FileSizeLimitExceededException e) {\r\n        assertEquals(15, e.getPermittedSize());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\SizesTest.java",
+  "methodName" : "testMaxSizeLimit",
+  "sourceCode" : "/**\r\n * Checks, whether the maxSize works.\r\n */\r\n@Test\r\npublic void testMaxSizeLimit() throws IOException, FileUploadException {\r\n    final String request = \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"file1\\\"; filename=\\\"foo1.tab\\\"\\r\\n\" + \"Content-Type: text/whatever\\r\\n\" + \"Content-Length: 10\\r\\n\" + \"\\r\\n\" + \"This is the content of the file\\n\" + \"\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"file2\\\"; filename=\\\"foo2.tab\\\"\\r\\n\" + \"Content-Type: text/whatever\\r\\n\" + \"\\r\\n\" + \"This is the content of the file\\n\" + \"\\r\\n\" + \"-----1234--\\r\\n\";\r\n    ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());\r\n    upload.setFileSizeMax(-1);\r\n    upload.setSizeMax(200);\r\n    MockHttpServletRequest req = new MockHttpServletRequest(request.getBytes(\"US-ASCII\"), Constants.CONTENT_TYPE);\r\n    try {\r\n        upload.parseRequest(req);\r\n        fail(\"Expected exception.\");\r\n    } catch (SizeLimitExceededException e) {\r\n        assertEquals(200, e.getPermittedSize());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\SizesTest.java",
+  "methodName" : "testMaxSizeLimitUnknownContentLength",
+  "sourceCode" : "@Test\r\npublic void testMaxSizeLimitUnknownContentLength() throws IOException, FileUploadException {\r\n    final String request = \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"file1\\\"; filename=\\\"foo1.tab\\\"\\r\\n\" + \"Content-Type: text/whatever\\r\\n\" + \"Content-Length: 10\\r\\n\" + \"\\r\\n\" + \"This is the content of the file\\n\" + \"\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"file2\\\"; filename=\\\"foo2.tab\\\"\\r\\n\" + \"Content-Type: text/whatever\\r\\n\" + \"\\r\\n\" + \"This is the content of the file\\n\" + \"\\r\\n\" + \"-----1234--\\r\\n\";\r\n    ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());\r\n    upload.setFileSizeMax(-1);\r\n    upload.setSizeMax(300);\r\n    // the first item should be within the max size limit\r\n    // set the read limit to 10 to simulate a \"real\" stream\r\n    // otherwise the buffer would be immediately filled\r\n    MockHttpServletRequest req = new MockHttpServletRequest(request.getBytes(\"US-ASCII\"), Constants.CONTENT_TYPE);\r\n    req.setContentLength(-1);\r\n    req.setReadLimit(10);\r\n    FileItemIterator it = upload.getItemIterator(req);\r\n    assertTrue(it.hasNext());\r\n    FileItemStream item = it.next();\r\n    assertFalse(item.isFormField());\r\n    assertEquals(\"file1\", item.getFieldName());\r\n    assertEquals(\"foo1.tab\", item.getName());\r\n    {\r\n        InputStream stream = item.openStream();\r\n        ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n        Streams.copy(stream, baos, true);\r\n    }\r\n    // the second item is over the size max, thus we expect an error\r\n    try {\r\n        // the header is still within size max -> this shall still succeed\r\n        assertTrue(it.hasNext());\r\n    } catch (SizeLimitExceededException e) {\r\n        fail();\r\n    }\r\n    item = it.next();\r\n    try {\r\n        InputStream stream = item.openStream();\r\n        ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n        Streams.copy(stream, baos, true);\r\n        fail();\r\n    } catch (FileUploadIOException e) {\r\n        // expected\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\StreamingTest.java",
+  "methodName" : "testFileUpload",
+  "sourceCode" : "/**\r\n * Tests a file upload with varying file sizes.\r\n */\r\n@Test\r\npublic void testFileUpload() throws IOException, FileUploadException {\r\n    byte[] request = newRequest();\r\n    List<FileItem> fileItems = parseUpload(request);\r\n    Iterator<FileItem> fileIter = fileItems.iterator();\r\n    int add = 16;\r\n    int num = 0;\r\n    for (int i = 0; i < 16384; i += add) {\r\n        if (++add == 32) {\r\n            add = 16;\r\n        }\r\n        FileItem item = fileIter.next();\r\n        assertEquals(\"field\" + (num++), item.getFieldName());\r\n        byte[] bytes = item.get();\r\n        assertEquals(i, bytes.length);\r\n        for (int j = 0; j < i; j++) {\r\n            assertEquals((byte) j, bytes[j]);\r\n        }\r\n    }\r\n    assertTrue(!fileIter.hasNext());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\StreamingTest.java",
+  "methodName" : "testFileUploadException",
+  "sourceCode" : "/**\r\n * Tests, whether an invalid request throws a proper\r\n * exception.\r\n */\r\n@Test\r\npublic void testFileUploadException() throws IOException, FileUploadException {\r\n    byte[] request = newRequest();\r\n    byte[] invalidRequest = new byte[request.length - 11];\r\n    System.arraycopy(request, 0, invalidRequest, 0, request.length - 11);\r\n    try {\r\n        parseUpload(invalidRequest);\r\n        fail(\"Expected EndOfStreamException\");\r\n    } catch (IOFileUploadException e) {\r\n        assertTrue(e.getCause() instanceof MultipartStream.MalformedStreamException);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\StreamingTest.java",
+  "methodName" : "testIOException",
+  "sourceCode" : "/**\r\n * Tests, whether an IOException is properly delegated.\r\n */\r\n@Test\r\npublic void testIOException() throws IOException {\r\n    byte[] request = newRequest();\r\n    InputStream stream = new FilterInputStream(new ByteArrayInputStream(request)) {\r\n\r\n        private int num;\r\n\r\n        @Override\r\n        public int read() throws IOException {\r\n            if (++num > 123) {\r\n                throw new IOException(\"123\");\r\n            }\r\n            return super.read();\r\n        }\r\n\r\n        @Override\r\n        public int read(byte[] pB, int pOff, int pLen) throws IOException {\r\n            for (int i = 0; i < pLen; i++) {\r\n                int res = read();\r\n                if (res == -1) {\r\n                    return i == 0 ? -1 : i;\r\n                }\r\n                pB[pOff + i] = (byte) res;\r\n            }\r\n            return pLen;\r\n        }\r\n    };\r\n    try {\r\n        parseUpload(stream, request.length);\r\n        fail(\"Expected IOException\");\r\n    } catch (FileUploadException e) {\r\n        assertTrue(e.getCause() instanceof IOException);\r\n        assertEquals(\"123\", e.getCause().getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\StreamingTest.java",
+  "methodName" : "testFILEUPLOAD135",
+  "sourceCode" : "/**\r\n * Test for FILEUPLOAD-135\r\n */\r\n@Test\r\npublic void testFILEUPLOAD135() throws IOException, FileUploadException {\r\n    byte[] request = newShortRequest();\r\n    final ByteArrayInputStream bais = new ByteArrayInputStream(request);\r\n    List<FileItem> fileItems = parseUpload(new InputStream() {\r\n\r\n        @Override\r\n        public int read() throws IOException {\r\n            return bais.read();\r\n        }\r\n\r\n        @Override\r\n        public int read(byte[] b, int off, int len) throws IOException {\r\n            return bais.read(b, off, Math.min(len, 3));\r\n        }\r\n    }, request.length);\r\n    Iterator<FileItem> fileIter = fileItems.iterator();\r\n    assertTrue(fileIter.hasNext());\r\n    FileItem item = fileIter.next();\r\n    assertEquals(\"field\", item.getFieldName());\r\n    byte[] bytes = item.get();\r\n    assertEquals(3, bytes.length);\r\n    assertEquals((byte) '1', bytes[0]);\r\n    assertEquals((byte) '2', bytes[1]);\r\n    assertEquals((byte) '3', bytes[2]);\r\n    assertTrue(!fileIter.hasNext());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\StreamingTest.java",
+  "methodName" : "testInvalidFileNameException",
+  "sourceCode" : "/**\r\n * Tests, whether an {@link InvalidFileNameException} is thrown.\r\n */\r\n@Test\r\npublic void testInvalidFileNameException() throws Exception {\r\n    final String fileName = \"foo.exe\\u0000.png\";\r\n    final String request = \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"file\\\"; filename=\\\"\" + fileName + \"\\\"\\r\\n\" + \"Content-Type: text/whatever\\r\\n\" + \"\\r\\n\" + \"This is the content of the file\\n\" + \"\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"field\\\"\\r\\n\" + \"\\r\\n\" + \"fieldValue\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"multi\\\"\\r\\n\" + \"\\r\\n\" + \"value1\\r\\n\" + \"-----1234\\r\\n\" + \"Content-Disposition: form-data; name=\\\"multi\\\"\\r\\n\" + \"\\r\\n\" + \"value2\\r\\n\" + \"-----1234--\\r\\n\";\r\n    final byte[] reqBytes = request.getBytes(\"US-ASCII\");\r\n    FileItemIterator fileItemIter = parseUpload(reqBytes.length, new ByteArrayInputStream(reqBytes));\r\n    final FileItemStream fileItemStream = fileItemIter.next();\r\n    try {\r\n        fileItemStream.getName();\r\n        fail(\"Expected exception\");\r\n    } catch (InvalidFileNameException e) {\r\n        assertEquals(fileName, e.getName());\r\n        assertTrue(e.getMessage().indexOf(fileName) == -1);\r\n        assertTrue(e.getMessage().indexOf(\"foo.exe\\\\0.png\") != -1);\r\n    }\r\n    try {\r\n        List<FileItem> fileItems = parseUpload(reqBytes);\r\n        fail(\"Expected exception\");\r\n    } catch (InvalidFileNameException e) {\r\n        assertEquals(fileName, e.getName());\r\n        assertTrue(e.getMessage().indexOf(fileName) == -1);\r\n        assertTrue(e.getMessage().indexOf(\"foo.exe\\\\0.png\") != -1);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\Base64DecoderTestCase.java",
+  "methodName" : "rfc4648Section10Decode",
+  "sourceCode" : "/**\r\n * Tests RFC 4648 section 10 test vectors.\r\n * <ul>\r\n * <li>BASE64(\"\") = \"\"</li>\r\n * <li>BASE64(\"f\") = \"Zg==\"</li>\r\n * <li>BASE64(\"fo\") = \"Zm8=\"</li>\r\n * <li>BASE64(\"foo\") = \"Zm9v\"</li>\r\n * <li>BASE64(\"foob\") = \"Zm9vYg==\"</li>\r\n * <li>BASE64(\"fooba\") = \"Zm9vYmE=\"</li>\r\n * <li>BASE64(\"foobar\") = \"Zm9vYmFy\"</li>\r\n * </ul>\r\n *\r\n * @see <a href=\"http://tools.ietf.org/html/rfc4648\">http://tools.ietf.org/html/rfc4648</a>\r\n */\r\n@Test\r\npublic void rfc4648Section10Decode() throws Exception {\r\n    assertEncoded(\"\", \"\");\r\n    assertEncoded(\"f\", \"Zg==\");\r\n    assertEncoded(\"fo\", \"Zm8=\");\r\n    assertEncoded(\"foo\", \"Zm9v\");\r\n    assertEncoded(\"foob\", \"Zm9vYg==\");\r\n    assertEncoded(\"fooba\", \"Zm9vYmE=\");\r\n    assertEncoded(\"foobar\", \"Zm9vYmFy\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\Base64DecoderTestCase.java",
+  "methodName" : "decodeWithInnerPad",
+  "sourceCode" : "/**\r\n * Test our decode with pad character in the middle.\r\n * Continues provided that the padding is in the correct place,\r\n * i.e. concatenated valid strings decode OK.\r\n */\r\n@Test\r\npublic void decodeWithInnerPad() throws Exception {\r\n    assertEncoded(\"Hello WorldHello World\", \"SGVsbG8gV29ybGQ=SGVsbG8gV29ybGQ=\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\Base64DecoderTestCase.java",
+  "methodName" : "nonBase64Bytes",
+  "sourceCode" : "/**\r\n * Ignores non-BASE64 bytes.\r\n */\r\n@Test\r\npublic void nonBase64Bytes() throws Exception {\r\n    assertEncoded(\"Hello World\", \"S?G!V%sbG 8g\\rV\\t\\n29ybGQ*=\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\Base64DecoderTestCase.java",
+  "methodName" : "truncatedString",
+  "sourceCode" : "@Test\r\npublic void truncatedString() {\r\n    final byte[] x = new byte[] { 'n' };\r\n    assertThrows(IOException.class, () -> Base64Decoder.decode(x, new ByteArrayOutputStream()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\Base64DecoderTestCase.java",
+  "methodName" : "decodeTrailingJunk",
+  "sourceCode" : "@Test\r\npublic void decodeTrailingJunk() throws Exception {\r\n    assertEncoded(\"foobar\", \"Zm9vYmFy!!!\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\Base64DecoderTestCase.java",
+  "methodName" : "decodeTrailing1",
+  "sourceCode" : "// If there are valid trailing Base64 chars, complain\r\n@Test\r\npublic void decodeTrailing1() throws Exception {\r\n    assertIOException(\"truncated\", \"Zm9vYmFy1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\Base64DecoderTestCase.java",
+  "methodName" : "decodeTrailing2",
+  "sourceCode" : "// If there are valid trailing Base64 chars, complain\r\n@Test\r\npublic void decodeTrailing2() throws Exception {\r\n    assertIOException(\"truncated\", \"Zm9vYmFy12\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\Base64DecoderTestCase.java",
+  "methodName" : "decodeTrailing3",
+  "sourceCode" : "// If there are valid trailing Base64 chars, complain\r\n@Test\r\npublic void decodeTrailing3() throws Exception {\r\n    assertIOException(\"truncated\", \"Zm9vYmFy123\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\Base64DecoderTestCase.java",
+  "methodName" : "badPadding",
+  "sourceCode" : "@Test\r\npublic void badPadding() throws Exception {\r\n    assertIOException(\"incorrect padding, 4th byte\", \"Zg=a\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\Base64DecoderTestCase.java",
+  "methodName" : "badPaddingLeading1",
+  "sourceCode" : "@Test\r\npublic void badPaddingLeading1() throws Exception {\r\n    assertIOException(\"incorrect padding, first two bytes cannot be padding\", \"=A==\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\Base64DecoderTestCase.java",
+  "methodName" : "badPaddingLeading2",
+  "sourceCode" : "@Test\r\npublic void badPaddingLeading2() throws Exception {\r\n    assertIOException(\"incorrect padding, first two bytes cannot be padding\", \"====\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\Base64DecoderTestCase.java",
+  "methodName" : "badLength",
+  "sourceCode" : "// This input causes java.lang.ArrayIndexOutOfBoundsException: 1\r\n// in the Java 6 method DatatypeConverter.parseBase64Binary(String)\r\n// currently reported as truncated (the last chunk consists just of '=')\r\n@Test\r\npublic void badLength() throws Exception {\r\n    assertIOException(\"truncated\", \"Zm8==\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\Base64DecoderTestCase.java",
+  "methodName" : "nonASCIIcharacter",
+  "sourceCode" : "// These inputs cause java.lang.ArrayIndexOutOfBoundsException\r\n// in the Java 6 method DatatypeConverter.parseBase64Binary(String)\r\n// The non-ASCII characters should just be ignored\r\n@Test\r\npublic void nonASCIIcharacter() throws Exception {\r\n    // A-grave\r\n    assertEncoded(\"f\", \"Zg=�=\");\r\n    assertEncoded(\"f\", \"Zg=\\u0100=\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\MimeUtilityTestCase.java",
+  "methodName" : "noNeedToDecode",
+  "sourceCode" : "@Test\r\npublic void noNeedToDecode() throws Exception {\r\n    assertEncoded(\"abc\", \"abc\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\MimeUtilityTestCase.java",
+  "methodName" : "decodeUtf8QuotedPrintableEncoded",
+  "sourceCode" : "@Test\r\npublic void decodeUtf8QuotedPrintableEncoded() throws Exception {\r\n    assertEncoded(\" h�! ���u !!!\", \"=?UTF-8?Q?_h=C3=A9!_=C3=A0=C3=A8=C3=B4u_!!!?=\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\MimeUtilityTestCase.java",
+  "methodName" : "decodeUtf8Base64Encoded",
+  "sourceCode" : "@Test\r\npublic void decodeUtf8Base64Encoded() throws Exception {\r\n    assertEncoded(\" h�! ���u !!!\", \"=?UTF-8?B?IGjDqSEgw6DDqMO0dSAhISE=?=\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\MimeUtilityTestCase.java",
+  "methodName" : "decodeIso88591Base64Encoded",
+  "sourceCode" : "@Test\r\npublic void decodeIso88591Base64Encoded() throws Exception {\r\n    assertEncoded(\"If you can read this you understand the example.\", \"=?ISO-8859-1?B?SWYgeW91IGNhbiByZWFkIHRoaXMgeW8=?= =?ISO-8859-2?B?dSB1bmRlcnN0YW5kIHRoZSBleGFtcGxlLg==?=\\\"\\r\\n\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\MimeUtilityTestCase.java",
+  "methodName" : "decodeIso88591Base64EncodedWithWhiteSpace",
+  "sourceCode" : "@Test\r\npublic void decodeIso88591Base64EncodedWithWhiteSpace() throws Exception {\r\n    assertEncoded(\"If you can read this you understand the example.\", \"=?ISO-8859-1?B?SWYgeW91IGNhbiByZWFkIHRoaXMgeW8=?=\\t  \\r\\n   =?ISO-8859-2?B?dSB1bmRlcnN0YW5kIHRoZSBleGFtcGxlLg==?=\\\"\\r\\n\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\MimeUtilityTestCase.java",
+  "methodName" : "decodeInvalidEncoding",
+  "sourceCode" : "@Test\r\npublic void decodeInvalidEncoding() {\r\n    assertThrows(UnsupportedEncodingException.class, () -> MimeUtility.decodeText(\"=?invalid?B?xyz-?=\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\QuotedPrintableDecoderTestCase.java",
+  "methodName" : "emptyDecode",
+  "sourceCode" : "@Test\r\npublic void emptyDecode() throws Exception {\r\n    assertEncoded(\"\", \"\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\QuotedPrintableDecoderTestCase.java",
+  "methodName" : "plainDecode",
+  "sourceCode" : "@Test\r\npublic void plainDecode() throws Exception {\r\n    // spaces are allowed in encoded data\r\n    // There are special rules for trailing spaces; these are not currently implemented.\r\n    assertEncoded(\"The quick brown fox jumps over the lazy dog.\", \"The quick brown fox jumps over the lazy dog.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\QuotedPrintableDecoderTestCase.java",
+  "methodName" : "basicEncodeDecode",
+  "sourceCode" : "@Test\r\npublic void basicEncodeDecode() throws Exception {\r\n    assertEncoded(\"= Hello there =\\r\\n\", \"=3D Hello there =3D=0D=0A\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\QuotedPrintableDecoderTestCase.java",
+  "methodName" : "invalidQuotedPrintableEncoding",
+  "sourceCode" : "@Test\r\npublic void invalidQuotedPrintableEncoding() throws Exception {\r\n    assertIOException(\"truncated escape sequence\", \"YWJjMTIzXy0uKn4hQCMkJV4mKCkre31cIlxcOzpgLC9bXQ==\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\QuotedPrintableDecoderTestCase.java",
+  "methodName" : "unsafeDecode",
+  "sourceCode" : "@Test\r\npublic void unsafeDecode() throws Exception {\r\n    assertEncoded(\"=\\r\\n\", \"=3D=0D=0A\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\QuotedPrintableDecoderTestCase.java",
+  "methodName" : "unsafeDecodeLowerCase",
+  "sourceCode" : "@Test\r\npublic void unsafeDecodeLowerCase() throws Exception {\r\n    assertEncoded(\"=\\r\\n\", \"=3d=0d=0a\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\QuotedPrintableDecoderTestCase.java",
+  "methodName" : "invalidCharDecode",
+  "sourceCode" : "@Test\r\npublic void invalidCharDecode() {\r\n    assertThrows(IOException.class, () -> assertEncoded(\"=\\r\\n\", \"=3D=XD=XA\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\QuotedPrintableDecoderTestCase.java",
+  "methodName" : "softLineBreakDecode",
+  "sourceCode" : "/**\r\n * This is NOT supported by Commons-Codec, see CODEC-121.\r\n *\r\n * @throws Exception\r\n * @see <a href=\"https://issues.apache.org/jira/browse/CODEC-121\">CODEC-121</a>\r\n */\r\n@Test\r\npublic void softLineBreakDecode() throws Exception {\r\n    assertEncoded(\"If you believe that truth=beauty, then surely mathematics is the most beautiful branch of philosophy.\", \"If you believe that truth=3Dbeauty, then surely=20=\\r\\nmathematics is the most beautiful branch of philosophy.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\QuotedPrintableDecoderTestCase.java",
+  "methodName" : "invalidSoftBreak1",
+  "sourceCode" : "@Test\r\npublic void invalidSoftBreak1() throws Exception {\r\n    assertIOException(\"CR must be followed by LF\", \"=\\r\\r\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\QuotedPrintableDecoderTestCase.java",
+  "methodName" : "invalidSoftBreak2",
+  "sourceCode" : "@Test\r\npublic void invalidSoftBreak2() throws Exception {\r\n    assertIOException(\"CR must be followed by LF\", \"=\\rn\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\QuotedPrintableDecoderTestCase.java",
+  "methodName" : "truncatedEscape",
+  "sourceCode" : "@Test\r\npublic void truncatedEscape() throws Exception {\r\n    assertIOException(\"truncated\", \"=1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\RFC2231UtilityTestCase.java",
+  "methodName" : "testHasEncodedValue",
+  "sourceCode" : "@Test\r\npublic void testHasEncodedValue() {\r\n    String nameWithAsteriskAtEnd = \"paramname*\";\r\n    assertTrue(RFC2231Utility.hasEncodedValue(nameWithAsteriskAtEnd));\r\n    String nameWithAsteriskNotAtEnd = \"param*name\";\r\n    assertFalse(RFC2231Utility.hasEncodedValue(nameWithAsteriskNotAtEnd));\r\n    String nameWithoutAsterisk = \"paramname\";\r\n    assertFalse(RFC2231Utility.hasEncodedValue(nameWithoutAsterisk));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\RFC2231UtilityTestCase.java",
+  "methodName" : "testStripDelimiter",
+  "sourceCode" : "@Test\r\npublic void testStripDelimiter() {\r\n    String nameWithAsteriskAtEnd = \"paramname*\";\r\n    assertEquals(\"paramname\", RFC2231Utility.stripDelimiter(nameWithAsteriskAtEnd));\r\n    String nameWithAsteriskNotAtEnd = \"param*name\";\r\n    assertEquals(\"param*name\", RFC2231Utility.stripDelimiter(nameWithAsteriskNotAtEnd));\r\n    String nameWithTwoAsterisks = \"param*name*\";\r\n    assertEquals(\"param*name\", RFC2231Utility.stripDelimiter(nameWithTwoAsterisks));\r\n    String nameWithoutAsterisk = \"paramname\";\r\n    assertEquals(\"paramname\", RFC2231Utility.stripDelimiter(nameWithoutAsterisk));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\RFC2231UtilityTestCase.java",
+  "methodName" : "noNeedToDecode",
+  "sourceCode" : "@Test\r\npublic void noNeedToDecode() throws Exception {\r\n    assertEncoded(\"abc\", \"abc\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\RFC2231UtilityTestCase.java",
+  "methodName" : "decodeUtf8",
+  "sourceCode" : "@Test\r\npublic void decodeUtf8() throws Exception {\r\n    //\"£ and € rates\"\r\n    assertEncoded(\"\\u00a3 \\u0061\\u006e\\u0064 \\u20ac \\u0072\\u0061\\u0074\\u0065\\u0073\", \"UTF-8''%c2%a3%20and%20%e2%82%ac%20rates\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\RFC2231UtilityTestCase.java",
+  "methodName" : "decodeIso88591",
+  "sourceCode" : "@Test\r\npublic void decodeIso88591() throws Exception {\r\n    //\"£ rate\"\r\n    assertEncoded(\"\\u00A3 rate\", \"iso-8859-1'en'%A3%20rate\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-FileUpload\\src\\test\\java\\org\\apache\\commons\\fileupload2\\util\\mime\\RFC2231UtilityTestCase.java",
+  "methodName" : "decodeInvalidEncoding",
+  "sourceCode" : "@Test\r\npublic void decodeInvalidEncoding() throws Exception {\r\n    assertThrows(UnsupportedEncodingException.class, () -> {\r\n        RFC2231Utility.decodeText(\"abc'en'hello\");\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+} ]

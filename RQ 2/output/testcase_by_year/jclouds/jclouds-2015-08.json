@@ -1,0 +1,379 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\blobstore\\integration\\GoogleCloudStorageBlobIntegrationLiveTest.java",
+  "methodName" : "testGetTwoRanges",
+  "sourceCode" : "@Override\r\n@Test(enabled = false)\r\npublic void testGetTwoRanges() throws SkipException {\r\n    // not supported in GoogleCloudStorage\r\n}",
+  "annotations" : [ "Override", "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\blobstore\\integration\\GoogleCloudStorageBlobIntegrationLiveTest.java",
+  "methodName" : "testGetRange",
+  "sourceCode" : "@Override\r\n@Test(enabled = false)\r\npublic void testGetRange() throws SkipException {\r\n    // not supported in GoogleCloudStorage\r\n}",
+  "annotations" : [ "Override", "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\blobstore\\integration\\GoogleCloudStorageBlobIntegrationLiveTest.java",
+  "methodName" : "testCreateBlobWithExpiry",
+  "sourceCode" : "@Override\r\n@Test(enabled = false)\r\npublic void testCreateBlobWithExpiry() throws SkipException {\r\n    // not supported in object level.\r\n}",
+  "annotations" : [ "Override", "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\blobstore\\integration\\GoogleCloudStorageBlobIntegrationLiveTest.java",
+  "methodName" : "testPutObject",
+  "sourceCode" : "@Override\r\n@Test(groups = { \"integration\", \"live\" }, dataProvider = \"gcsPutTest\")\r\npublic void testPutObject(String name, String type, Object content, Object realObject) throws InterruptedException, IOException {\r\n    PayloadBlobBuilder blobBuilder = view.getBlobStore().blobBuilder(name).payload(Payloads.newPayload(content)).contentType(type);\r\n    addContentMetadata(blobBuilder);\r\n    Blob blob = blobBuilder.build();\r\n    blob.getPayload().setContentMetadata(blob.getMetadata().getContentMetadata());\r\n    String container = getContainerName();\r\n    try {\r\n        assertNotNull(view.getBlobStore().putBlob(container, blob));\r\n        blob = view.getBlobStore().getBlob(container, blob.getMetadata().getName());\r\n        validateMetadata(blob.getMetadata(), container, name);\r\n        checkContentMetadata(blob);\r\n        String returnedString = getContentAsStringOrNullAndClose(blob);\r\n        assertEquals(returnedString, realObject);\r\n        PageSet<? extends StorageMetadata> set = view.getBlobStore().list(container);\r\n        assertThat(set).isNotEmpty();\r\n    } finally {\r\n        returnContainer(container);\r\n    }\r\n}",
+  "annotations" : [ "Override", "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\blobstore\\integration\\GoogleCloudStorageBlobIntegrationLiveTest.java",
+  "methodName" : "testMultipartChunkedFileStream",
+  "sourceCode" : "@Test(groups = { \"integration\", \"live\" })\r\npublic void testMultipartChunkedFileStream() throws IOException, InterruptedException {\r\n    String containerName = getContainerName();\r\n    try {\r\n        BlobStore blobStore = view.getBlobStore();\r\n        long countBefore = blobStore.countBlobs(containerName);\r\n        addMultipartBlobToContainer(containerName, \"const.txt\");\r\n        long countAfter = blobStore.countBlobs(containerName);\r\n        assertNotEquals(countBefore, countAfter, \"No blob was created\");\r\n        assertTrue(countAfter - countBefore > 1, \"A multipart blob wasn't actually created - \" + \"there was only 1 extra blob but there should be one manifest blob and multiple chunk blobs\");\r\n    } finally {\r\n        returnContainer(containerName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\blobstore\\integration\\GoogleCloudStorageBlobIntegrationLiveTest.java",
+  "methodName" : "deleteObject",
+  "sourceCode" : "// Remove \"unic₪de\" from DataProvider\r\n@Override\r\n@Test(groups = { \"integration\", \"live\" }, dataProvider = \"delete\")\r\npublic void deleteObject(String name) throws InterruptedException {\r\n    super.deleteObject(name);\r\n}",
+  "annotations" : [ "Override", "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\blobstore\\integration\\GoogleCloudStorageBlobLiveTest.java",
+  "methodName" : "testPutBlobWithMd5",
+  "sourceCode" : "@Test(groups = \"live\")\r\npublic void testPutBlobWithMd5() throws IOException, InterruptedException {\r\n    String containerName = getContainerName();\r\n    String blobName = \"md5test\";\r\n    try {\r\n        long contentLength = 32 * 1024L;\r\n        ByteSource byteSource = TestUtils.randomByteSource().slice(0, contentLength);\r\n        ByteSourcePayload payload = Payloads.newByteSourcePayload(byteSource);\r\n        PayloadEnclosingImpl payloadImpl = new PayloadEnclosingImpl(payload);\r\n        BlobStore blobStore = view.getBlobStore();\r\n        // This would trigger server side validation of md5\r\n        HashCode hcMd5 = byteSource.hash(Hashing.md5());\r\n        Blob blob = blobStore.blobBuilder(blobName).payload(payloadImpl.getPayload()).contentType(\"image/jpeg\").contentLength(contentLength).contentLanguage(\"en\").contentDisposition(\"attachment\").contentMD5(hcMd5).userMetadata(ImmutableMap.of(\"Adrian\", \"powderpuff\")).build();\r\n        blobStore.putBlob(containerName, blob);\r\n        checkMD5(containerName, blobName, hcMd5.asBytes());\r\n    } finally {\r\n        returnContainer(containerName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\blobstore\\integration\\GoogleCloudStorageContainerIntegrationLiveTest.java",
+  "methodName" : "testWithDetails",
+  "sourceCode" : "@Override\r\n@Test(groups = { \"integration\", \"live\" })\r\npublic void testWithDetails() throws InterruptedException, IOException {\r\n    String key = \"hello\";\r\n    String containerName = getContainerName();\r\n    try {\r\n        addBlobToContainer(containerName, view.getBlobStore().blobBuilder(key).userMetadata(ImmutableMap.of(\"adrian\", \"powderpuff\")).payload(TEST_STRING).contentType(MediaType.TEXT_PLAIN).contentMD5(Hashing.md5().newHasher().putString(TEST_STRING, Charsets.UTF_8).hash()).build());\r\n        validateContent(containerName, key);\r\n        PageSet<? extends StorageMetadata> container = view.getBlobStore().list(containerName, maxResults(1).withDetails());\r\n        BlobMetadata metadata = BlobMetadata.class.cast(get(container, 0));\r\n        assert metadata.getContentMetadata().getContentType().startsWith(\"text/plain\") : metadata.getContentMetadata().getContentType();\r\n        assertEquals(metadata.getContentMetadata().getContentLength(), Long.valueOf(TEST_STRING.length()));\r\n        assertEquals(metadata.getUserMetadata().get(\"adrian\"), \"powderpuff\");\r\n        checkMD5(metadata);\r\n    } finally {\r\n        returnContainer(containerName);\r\n    }\r\n}",
+  "annotations" : [ "Override", "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketAccessControlsApiLiveTest.java",
+  "methodName" : "testCreateBucketAcl",
+  "sourceCode" : "@Test(groups = \"live\")\r\npublic void testCreateBucketAcl() {\r\n    createBucket(BUCKET_NAME);\r\n    BucketAccessControlsTemplate bucketAcl = BucketAccessControlsTemplate.create(\"allUsers\", Role.READER);\r\n    BucketAccessControls response = api().createBucketAccessControls(BUCKET_NAME, bucketAcl);\r\n    assertNotNull(response);\r\n    assertEquals(response.id(), BUCKET_NAME + \"/allUsers\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketAccessControlsApiLiveTest.java",
+  "methodName" : "testUpdateBucketAcl",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testCreateBucketAcl\")\r\npublic void testUpdateBucketAcl() {\r\n    BucketAccessControlsTemplate template = BucketAccessControlsTemplate.create(\"allUsers\", Role.WRITER);\r\n    BucketAccessControls response = api().updateBucketAccessControls(BUCKET_NAME, \"allUsers\", template);\r\n    assertNotNull(response);\r\n    assertEquals(response.id(), BUCKET_NAME + \"/allUsers\");\r\n    assertEquals(response.role(), Role.WRITER);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketAccessControlsApiLiveTest.java",
+  "methodName" : "testGetBucketAcl",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testUpdateBucketAcl\")\r\npublic void testGetBucketAcl() {\r\n    BucketAccessControls response = api().getBucketAccessControls(BUCKET_NAME, \"allUsers\");\r\n    assertNotNull(response);\r\n    assertEquals(response.id(), BUCKET_NAME + \"/allUsers\");\r\n    assertEquals(response.role(), Role.WRITER);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketAccessControlsApiLiveTest.java",
+  "methodName" : "testListBucketAcl",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testUpdateBucketAcl\")\r\npublic void testListBucketAcl() {\r\n    List<BucketAccessControls> response = api().listBucketAccessControls(BUCKET_NAME);\r\n    assertNotNull(response);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketAccessControlsApiLiveTest.java",
+  "methodName" : "testPatchBucketAcl",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testUpdateBucketAcl\")\r\npublic void testPatchBucketAcl() {\r\n    BucketAccessControlsTemplate template = BucketAccessControlsTemplate.create(\"allUsers\", Role.READER);\r\n    BucketAccessControls response = api().patchBucketAccessControls(BUCKET_NAME, \"allUsers\", template);\r\n    assertNotNull(response);\r\n    assertEquals(response.id(), BUCKET_NAME + \"/allUsers\");\r\n    assertEquals(response.role(), Role.READER);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketAccessControlsApiLiveTest.java",
+  "methodName" : "testDeleteBucketAcl",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testPatchBucketAcl\")\r\npublic void testDeleteBucketAcl() {\r\n    api().deleteBucketAccessControls(BUCKET_NAME, \"allUsers\");\r\n    deleteBucket(BUCKET_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketAccessControlsApiLiveTest.java",
+  "methodName" : "testDeleteNotExistingBucketAccessControls",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testDeleteBucketAcl\")\r\npublic void testDeleteNotExistingBucketAccessControls() {\r\n    api().deleteBucketAccessControls(BUCKET_NAME, \"allUsers\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketApiExpectTest.java",
+  "methodName" : "listBucketEmpty",
+  "sourceCode" : "@Test(enabled = false)\r\npublic void listBucketEmpty() throws Exception {\r\n    // TODO: get a copy of an empty bucket response\r\n    HttpResponse listResponse = null;\r\n    BucketApi api = requestsSendResponses(requestForScopes(STORAGE_READONLY_SCOPE), TOKEN_RESPONSE, LIST_BUCKET_REQUEST, listResponse).getBucketApi();\r\n    assertTrue(api.listBucket(EXPECTED_TEST_PROJECT_NUMBER).isEmpty());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketApiLiveTest.java",
+  "methodName" : "testCreateBucket",
+  "sourceCode" : "// TODO: should this test use STANDARD storage class?\r\n@Test(groups = \"live\")\r\npublic void testCreateBucket() {\r\n    BucketTemplate logTemplate = new BucketTemplate().name(LOG_BUCKET_NAME);\r\n    Bucket logResponse = api().createBucket(PROJECT_NUMBER, logTemplate);\r\n    assertNotNull(logResponse);\r\n    BucketAccessControls acl = BucketAccessControls.builder().bucket(BUCKET_NAME).entity(\"allUsers\").role(Role.OWNER).build();\r\n    ObjectAccessControls oac = ObjectAccessControls.builder().bucket(BUCKET_NAME).entity(\"allUsers\").role(ObjectRole.OWNER).build();\r\n    Cors cors = Cors.create(Arrays.asList(\"http://example.appspot.com\"), Arrays.asList(\"GET\", \"HEAD\"), Arrays.asList(\"x-meta-goog-custom\"), 10);\r\n    Versioning version = Versioning.create(true);\r\n    Logging log = Logging.create(LOG_BUCKET_NAME, BUCKET_NAME);\r\n    BucketTemplate template = new BucketTemplate().name(BUCKET_NAME).addAcl(acl).addDefaultObjectAccessControls(oac).versioning(version).location(Location.US_CENTRAL2).logging(log).storageClass(StorageClass.DURABLE_REDUCED_AVAILABILITY).addCORS(cors);\r\n    Bucket response = api().createBucket(PROJECT_NUMBER, template);\r\n    assertNotNull(response);\r\n    assertNotNull(response.cors());\r\n    assertTrue(response.cors().size() == 1);\r\n    assertEquals(response.name(), BUCKET_NAME);\r\n    assertEquals(response.location(), Location.US_CENTRAL2);\r\n    assertThat(response.storageClass()).isEqualTo(StorageClass.DURABLE_REDUCED_AVAILABILITY);\r\n    assertTrue(response.versioning().enabled());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketApiLiveTest.java",
+  "methodName" : "testCreateBucketStandard",
+  "sourceCode" : "@Test(groups = \"live\")\r\npublic void testCreateBucketStandard() {\r\n    BucketTemplate template = new BucketTemplate().name(BUCKET_NAME_STANDARD).location(Location.US).storageClass(StorageClass.STANDARD);\r\n    Bucket response = api().createBucket(PROJECT_NUMBER, template);\r\n    assertNotNull(response);\r\n    assertEquals(response.name(), BUCKET_NAME_STANDARD);\r\n    assertEquals(response.location(), Location.US);\r\n    assertThat(response.storageClass()).isEqualTo(StorageClass.STANDARD);\r\n    api().deleteBucket(BUCKET_NAME_STANDARD);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketApiLiveTest.java",
+  "methodName" : "testCreateBucketNearline",
+  "sourceCode" : "@Test(groups = \"live\")\r\npublic void testCreateBucketNearline() {\r\n    BucketTemplate template = new BucketTemplate().name(BUCKET_NAME_NEARLINE).location(Location.US).storageClass(StorageClass.NEARLINE);\r\n    Bucket response = api().createBucket(PROJECT_NUMBER, template);\r\n    assertNotNull(response);\r\n    assertEquals(response.name(), BUCKET_NAME_NEARLINE);\r\n    assertEquals(response.location(), Location.US);\r\n    assertThat(response.storageClass()).isEqualTo(StorageClass.NEARLINE);\r\n    api().deleteBucket(BUCKET_NAME_NEARLINE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketApiLiveTest.java",
+  "methodName" : "testCreateAlreadyExistBucket",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = { \"testCreateBucket\" })\r\npublic void testCreateAlreadyExistBucket() {\r\n    BucketTemplate template = new BucketTemplate().name(BUCKET_NAME).location(Location.US_CENTRAL2).storageClass(StorageClass.DURABLE_REDUCED_AVAILABILITY);\r\n    assertNull(api().createBucket(PROJECT_NUMBER, template));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketApiLiveTest.java",
+  "methodName" : "testCreateBucketWithOptions",
+  "sourceCode" : "@Test(groups = \"live\")\r\npublic void testCreateBucketWithOptions() {\r\n    ObjectAccessControls oac = ObjectAccessControls.builder().bucket(BUCKET_NAME_WITHOPTIONS).entity(\"allUsers\").role(ObjectRole.OWNER).build();\r\n    Cors cors = Cors.create(Arrays.asList(\"http://example.appspot.com\"), Arrays.asList(\"GET\", \"HEAD\"), Arrays.asList(\"x-meta-goog-custom\"), 10);\r\n    Versioning version = Versioning.create(true);\r\n    BucketTemplate template = new BucketTemplate().name(BUCKET_NAME_WITHOPTIONS).addDefaultObjectAccessControls(oac).versioning(version).location(Location.US_CENTRAL2).storageClass(StorageClass.DURABLE_REDUCED_AVAILABILITY).addCORS(cors);\r\n    InsertBucketOptions options = new InsertBucketOptions().projection(Projection.FULL);\r\n    Bucket response = api().createBucket(PROJECT_NUMBER, template, options);\r\n    assertNotNull(response);\r\n    assertNotNull(response.cors());\r\n    assertEquals(response.name(), BUCKET_NAME_WITHOPTIONS);\r\n    assertEquals(response.location(), Location.US_CENTRAL2);\r\n    assertTrue(response.versioning().enabled());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketApiLiveTest.java",
+  "methodName" : "testUpdateBucket",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testCreateBucket\")\r\npublic void testUpdateBucket() {\r\n    BucketAccessControls bucketacl = BucketAccessControls.builder().bucket(BUCKET_NAME).entity(\"allAuthenticatedUsers\").role(Role.OWNER).build();\r\n    BucketTemplate template = new BucketTemplate().name(BUCKET_NAME).addAcl(bucketacl);\r\n    Bucket response = api().updateBucket(BUCKET_NAME, template);\r\n    assertNotNull(response);\r\n    assertEquals(response.name(), BUCKET_NAME);\r\n    assertNotNull(response.acl());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketApiLiveTest.java",
+  "methodName" : "testUpdateBucketWithOptions",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testCreateBucketWithOptions\")\r\npublic void testUpdateBucketWithOptions() {\r\n    BucketAccessControls bucketacl = BucketAccessControls.builder().bucket(BUCKET_NAME_WITHOPTIONS).entity(\"allAuthenticatedUsers\").role(Role.OWNER).build();\r\n    UpdateBucketOptions options = new UpdateBucketOptions().projection(Projection.FULL);\r\n    BucketTemplate template = new BucketTemplate().name(BUCKET_NAME_WITHOPTIONS).addAcl(bucketacl);\r\n    Bucket response = api().updateBucket(BUCKET_NAME_WITHOPTIONS, template, options);\r\n    assertNotNull(response);\r\n    metageneration = response.metageneration();\r\n    assertEquals(response.name(), BUCKET_NAME_WITHOPTIONS);\r\n    assertNotNull(response.acl());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketApiLiveTest.java",
+  "methodName" : "testGetBucket",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testCreateBucket\")\r\npublic void testGetBucket() {\r\n    Bucket response = api().getBucket(BUCKET_NAME);\r\n    assertNotNull(response);\r\n    assertEquals(response.name(), BUCKET_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketApiLiveTest.java",
+  "methodName" : "testGetBucketWithOptions",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testUpdateBucketWithOptions\")\r\npublic void testGetBucketWithOptions() {\r\n    GetBucketOptions options = new GetBucketOptions().ifMetagenerationMatch(metageneration);\r\n    Bucket response = api().getBucket(BUCKET_NAME_WITHOPTIONS, options);\r\n    assertNotNull(response);\r\n    assertEquals(response.name(), BUCKET_NAME_WITHOPTIONS);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketApiLiveTest.java",
+  "methodName" : "testListBucket",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testCreateBucket\")\r\npublic void testListBucket() {\r\n    ListPage<Bucket> bucket = api().listBucket(PROJECT_NUMBER);\r\n    Iterator<Bucket> pageIterator = bucket.iterator();\r\n    assertTrue(pageIterator.hasNext());\r\n    Bucket iteratedBucket = pageIterator.next();\r\n    List<Bucket> bucketAsList = Lists.newArrayList(iteratedBucket);\r\n    assertNotNull(iteratedBucket);\r\n    assertSame(bucketAsList.size(), 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketApiLiveTest.java",
+  "methodName" : "testPatchBucket",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testCreateBucket\")\r\npublic void testPatchBucket() {\r\n    Logging logging = Logging.create(LOG_BUCKET_NAME, BUCKET_NAME);\r\n    BucketTemplate template = new BucketTemplate().name(BUCKET_NAME).logging(logging);\r\n    Bucket response = api().patchBucket(BUCKET_NAME, template);\r\n    assertNotNull(response);\r\n    assertEquals(response.name(), BUCKET_NAME);\r\n    assertEquals(response.logging().logBucket(), LOG_BUCKET_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketApiLiveTest.java",
+  "methodName" : "testDeleteBucket",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = { \"testListBucket\", \"testGetBucket\", \"testUpdateBucket\" })\r\npublic void testDeleteBucket() {\r\n    assertTrue(api().deleteBucket(BUCKET_NAME));\r\n    assertTrue(api().deleteBucket(LOG_BUCKET_NAME));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketApiLiveTest.java",
+  "methodName" : "testDeleteNotExistingBucket",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = { \"testDeleteBucket\" })\r\npublic void testDeleteNotExistingBucket() {\r\n    assertFalse(api().deleteBucket(BUCKET_NAME));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\BucketApiLiveTest.java",
+  "methodName" : "testDeleteBucketWithOptions",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = { \"testGetBucketWithOptions\" })\r\npublic void testDeleteBucketWithOptions() {\r\n    DeleteBucketOptions options = new DeleteBucketOptions().ifMetagenerationMatch(metageneration).ifMetagenerationNotMatch(metageneration + 1);\r\n    api().deleteBucket(BUCKET_NAME_WITHOPTIONS, options);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\DefaultObjectAccessControlsApiLiveTest.java",
+  "methodName" : "testCreateDefaultObjectAcl",
+  "sourceCode" : "@Test(groups = \"live\")\r\npublic void testCreateDefaultObjectAcl() {\r\n    createBucket(BUCKET_NAME);\r\n    ObjectAccessControlsTemplate template = ObjectAccessControlsTemplate.create(\"allUsers\", ObjectRole.READER);\r\n    ObjectAccessControls response = api().createDefaultObjectAccessControls(BUCKET_NAME, template);\r\n    assertNotNull(response);\r\n    assertEquals(response.entity(), \"allUsers\");\r\n    assertEquals(response.role(), ObjectRole.READER);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\DefaultObjectAccessControlsApiLiveTest.java",
+  "methodName" : "testUpdateDefaultObjectAcl",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testCreateDefaultObjectAcl\")\r\npublic void testUpdateDefaultObjectAcl() {\r\n    ObjectAccessControls defaultObjectAcl = ObjectAccessControls.builder().bucket(BUCKET_NAME).entity(\"allUsers\").role(ObjectRole.OWNER).build();\r\n    ObjectAccessControls response = api().updateDefaultObjectAccessControls(BUCKET_NAME, \"allUsers\", defaultObjectAcl);\r\n    assertNotNull(response);\r\n    assertEquals(response.entity(), \"allUsers\");\r\n    assertEquals(response.role(), ObjectRole.OWNER);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\DefaultObjectAccessControlsApiLiveTest.java",
+  "methodName" : "testGetDefaultObjectAcl",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testUpdateDefaultObjectAcl\")\r\npublic void testGetDefaultObjectAcl() {\r\n    ObjectAccessControls response = api().getDefaultObjectAccessControls(BUCKET_NAME, \"allUsers\");\r\n    assertNotNull(response);\r\n    assertEquals(response.entity(), \"allUsers\");\r\n    assertEquals(response.role(), ObjectRole.OWNER);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\DefaultObjectAccessControlsApiLiveTest.java",
+  "methodName" : "testListDefaultObjectAcl",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testUpdateDefaultObjectAcl\")\r\npublic void testListDefaultObjectAcl() {\r\n    List<ObjectAccessControls> response = api().listDefaultObjectAccessControls(BUCKET_NAME);\r\n    assertNotNull(response);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\DefaultObjectAccessControlsApiLiveTest.java",
+  "methodName" : "testPatchDefaultObjectAcl",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testUpdateDefaultObjectAcl\")\r\npublic void testPatchDefaultObjectAcl() {\r\n    ObjectAccessControls defaultObjectAcl = ObjectAccessControls.builder().bucket(BUCKET_NAME).entity(\"allUsers\").role(ObjectRole.READER).build();\r\n    ObjectAccessControls response = api().patchDefaultObjectAccessControls(BUCKET_NAME, \"allUsers\", defaultObjectAcl);\r\n    assertNotNull(response);\r\n    assertEquals(response.entity(), \"allUsers\");\r\n    assertEquals(response.role(), ObjectRole.READER);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\DefaultObjectAccessControlsApiLiveTest.java",
+  "methodName" : "testDeleteBucketAcl",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testPatchDefaultObjectAcl\")\r\npublic void testDeleteBucketAcl() {\r\n    api().deleteDefaultObjectAccessControls(BUCKET_NAME, \"allUsers\");\r\n    deleteBucket(BUCKET_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\DefaultObjectAccessControlsApiLiveTest.java",
+  "methodName" : "testDeleteNotExistingBucketAccessControls",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testDeleteBucketAcl\")\r\npublic void testDeleteNotExistingBucketAccessControls() {\r\n    api().deleteDefaultObjectAccessControls(BUCKET_NAME, \"allUsers\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testSimpleUpload",
+  "sourceCode" : "// Object Operations\r\n@Test(groups = \"live\")\r\npublic void testSimpleUpload() throws IOException {\r\n    long contentLength = 512L;\r\n    ByteSource byteSource = TestUtils.randomByteSource().slice(0, contentLength);\r\n    ByteSourcePayload byteSourcePayload = Payloads.newByteSourcePayload(byteSource);\r\n    PayloadEnclosing payload = new PayloadEnclosingImpl(byteSourcePayload);\r\n    payload.getPayload().getContentMetadata().setContentLength(contentLength);\r\n    this.testPayload = payload;\r\n    InsertObjectOptions options = new InsertObjectOptions().name(UPLOAD_OBJECT_NAME);\r\n    GoogleCloudStorageObject gcsObject = api().simpleUpload(BUCKET_NAME, \"text/plain\", payload.getPayload().getContentMetadata().getContentLength(), payload.getPayload(), options);\r\n    assertNotNull(gcsObject);\r\n    assertEquals(gcsObject.bucket(), BUCKET_NAME);\r\n    assertEquals(gcsObject.name(), UPLOAD_OBJECT_NAME);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testRewrite",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testSimpleUpload\")\r\npublic void testRewrite() throws IOException {\r\n    GoogleCloudStorageObject gcsObject = api().getObject(BUCKET_NAME, UPLOAD_OBJECT_NAME);\r\n    System.out.println(gcsObject);\r\n    RewriteResponse response = api().rewriteObjects(BUCKET_NAME, REWRITE_OBJECT_NAME, BUCKET_NAME, UPLOAD_OBJECT_NAME);\r\n    assertNotNull(response);\r\n    assertTrue(response.done());\r\n    assertEquals(response.objectSize(), 512);\r\n    assertEquals(response.totalBytesRewritten(), 512);\r\n    assertEquals(response.rewriteToken(), null);\r\n    assertNotNull(response.resource());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testDownload",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testRewrite\")\r\npublic void testDownload() throws IOException {\r\n    PayloadEnclosing impl = api().download(BUCKET_NAME, UPLOAD_OBJECT_NAME);\r\n    ContentMetadata meta = impl.getPayload().getContentMetadata();\r\n    assertNotNull(impl);\r\n    assertNotNull(impl.getPayload());\r\n    assertNotNull(meta);\r\n    assertEquals(meta.getContentType(), \"text/plain\");\r\n    testPayload.getPayload().getContentMetadata().setContentDisposition(\"attachment\");\r\n    assertEquals(ByteStreams2.toByteArrayAndClose(impl.getPayload().openStream()), ByteStreams2.toByteArrayAndClose(testPayload.getPayload().openStream()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testSimpleJpegUpload",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testSimpleUpload\")\r\npublic void testSimpleJpegUpload() throws IOException {\r\n    long contentLength = 2 * 1024L;\r\n    ByteSource testSource = TestUtils.randomByteSource().slice(0, contentLength);\r\n    ByteSourcePayload payload = Payloads.newByteSourcePayload(testSource);\r\n    InsertObjectOptions options = new InsertObjectOptions().name(UPLOAD_OBJECT_NAME2);\r\n    GoogleCloudStorageObject gcsObject = api().simpleUpload(BUCKET_NAME, \"image/jpeg\", contentLength, payload, options);\r\n    assertNotNull(gcsObject);\r\n    assertEquals(gcsObject.bucket(), BUCKET_NAME);\r\n    assertEquals(gcsObject.name(), UPLOAD_OBJECT_NAME2);\r\n    // This is a client side validation of md5\r\n    md5Hash = base64().encode(testSource.hash(Hashing.md5()).asBytes());\r\n    // TODO: crc32c = without making a compile dep on guava 18.\r\n    checkHashCodes(gcsObject);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testGetObject",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testSimpleUpload\")\r\npublic void testGetObject() {\r\n    GoogleCloudStorageObject gcsObject = api().getObject(BUCKET_NAME, UPLOAD_OBJECT_NAME);\r\n    assertNotNull(gcsObject);\r\n    metageneration = gcsObject.metageneration();\r\n    generation = gcsObject.generation();\r\n    assertEquals(gcsObject.bucket(), BUCKET_NAME);\r\n    assertEquals(gcsObject.name(), UPLOAD_OBJECT_NAME);\r\n    assertEquals(gcsObject.contentType(), \"text/plain\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testGetObjectWithOptions",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testGetObject\")\r\npublic void testGetObjectWithOptions() {\r\n    GetObjectOptions options = new GetObjectOptions().ifGenerationMatch(generation).ifMetagenerationMatch(metageneration).ifGenerationNotMatch(generation + 1).projection(Projection.FULL);\r\n    GoogleCloudStorageObject gcsObject = api().getObject(BUCKET_NAME, UPLOAD_OBJECT_NAME, options);\r\n    assertNotNull(gcsObject);\r\n    assertNotNull(gcsObject.acl());\r\n    assertEquals(gcsObject.bucket(), BUCKET_NAME);\r\n    assertEquals(gcsObject.name(), UPLOAD_OBJECT_NAME);\r\n    assertEquals(gcsObject.contentType(), \"text/plain\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testCopyObject",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testGetObject\")\r\npublic void testCopyObject() throws IOException {\r\n    GoogleCloudStorageObject gcsObject = api().copyObject(BUCKET_NAME2, COPIED_OBJECT_NAME, BUCKET_NAME, UPLOAD_OBJECT_NAME);\r\n    assertNotNull(gcsObject);\r\n    assertEquals(gcsObject.bucket(), BUCKET_NAME2);\r\n    assertEquals(gcsObject.name(), COPIED_OBJECT_NAME);\r\n    assertEquals(gcsObject.contentType(), \"text/plain\");\r\n    // Test for data\r\n    PayloadEnclosing impl = api().download(BUCKET_NAME2, COPIED_OBJECT_NAME);\r\n    assertNotNull(impl);\r\n    assertEquals(ByteStreams2.toByteArrayAndClose(impl.getPayload().openStream()), ByteStreams2.toByteArrayAndClose(testPayload.getPayload().openStream()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testCopyObjectWithUpdatedMetadata",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testGetObject\")\r\npublic void testCopyObjectWithUpdatedMetadata() throws IOException {\r\n    String METADATA_KEY = \"key1\";\r\n    String METADATA_VALUE = \"value1\";\r\n    ObjectTemplate template = new ObjectTemplate().contentLanguage(\"fr\").contentType(\"text/plain\").contentDisposition(\"attachment\").customMetadata(METADATA_KEY, METADATA_VALUE);\r\n    GoogleCloudStorageObject gcsObject = api().copyObject(BUCKET_NAME2, COPIED_OBJECT_NAME2, BUCKET_NAME, UPLOAD_OBJECT_NAME, template);\r\n    assertNotNull(gcsObject);\r\n    assertEquals(gcsObject.bucket(), BUCKET_NAME2);\r\n    assertEquals(gcsObject.name(), COPIED_OBJECT_NAME2);\r\n    assertNotNull(gcsObject.acl());\r\n    assertEquals(gcsObject.contentType(), \"text/plain\");\r\n    assertEquals(gcsObject.metadata().get(METADATA_KEY), METADATA_VALUE);\r\n    assertEquals(gcsObject.contentLanguage(), \"fr\");\r\n    // Test for data\r\n    PayloadEnclosing impl = api().download(BUCKET_NAME2, COPIED_OBJECT_NAME2);\r\n    assertNotNull(impl);\r\n    assertEquals(ByteStreams2.toByteArrayAndClose(impl.getPayload().openStream()), ByteStreams2.toByteArrayAndClose(testPayload.getPayload().openStream()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testCopyObjectWithOptions",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testCopyObject\")\r\npublic void testCopyObjectWithOptions() {\r\n    CopyObjectOptions options = new CopyObjectOptions().ifSourceGenerationMatch(generation).ifSourceMetagenerationMatch(metageneration).projection(Projection.FULL);\r\n    GoogleCloudStorageObject gcsObject = api().copyObject(BUCKET_NAME2, UPLOAD_OBJECT_NAME, BUCKET_NAME, UPLOAD_OBJECT_NAME, options);\r\n    assertNotNull(gcsObject);\r\n    assertNotNull(gcsObject.acl());\r\n    assertEquals(gcsObject.bucket(), BUCKET_NAME2);\r\n    assertEquals(gcsObject.name(), UPLOAD_OBJECT_NAME);\r\n    assertEquals(gcsObject.contentType(), \"text/plain\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testComposeObject",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testCopyObjectWithOptions\")\r\npublic void testComposeObject() {\r\n    ObjectAccessControls oacl = ObjectAccessControls.builder().bucket(BUCKET_NAME).entity(\"allUsers\").role(ObjectRole.OWNER).build();\r\n    ObjectTemplate destination = new ObjectTemplate().contentType(\"text/plain\").addAcl(oacl);\r\n    List<GoogleCloudStorageObject> sourceList = Lists.newArrayList();\r\n    sourceList.add(api().getObject(BUCKET_NAME2, UPLOAD_OBJECT_NAME));\r\n    sourceList.add(api().getObject(BUCKET_NAME2, COPIED_OBJECT_NAME));\r\n    ComposeObjectTemplate requestTemplate = ComposeObjectTemplate.builder().fromGoogleCloudStorageObject(sourceList).destination(destination).build();\r\n    GoogleCloudStorageObject gcsObject = api().composeObjects(BUCKET_NAME2, COMPOSED_OBJECT, requestTemplate);\r\n    assertNotNull(gcsObject);\r\n    assertNotNull(gcsObject.acl());\r\n    assertEquals(gcsObject.bucket(), BUCKET_NAME2);\r\n    assertEquals(gcsObject.name(), COMPOSED_OBJECT);\r\n    assertEquals(gcsObject.contentType(), \"text/plain\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testComposeObjectWithOptions",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testComposeObject\")\r\npublic void testComposeObjectWithOptions() {\r\n    ObjectTemplate destination = new ObjectTemplate().contentType(MediaType.APPLICATION_JSON);\r\n    List<GoogleCloudStorageObject> sourceList = Lists.newArrayList();\r\n    sourceList.add(api().getObject(BUCKET_NAME2, UPLOAD_OBJECT_NAME));\r\n    sourceList.add(api().getObject(BUCKET_NAME2, COPIED_OBJECT_NAME));\r\n    ComposeObjectTemplate requestTemplate = ComposeObjectTemplate.builder().fromGoogleCloudStorageObject(sourceList).destination(destination).build();\r\n    ComposeObjectOptions options = new ComposeObjectOptions().destinationPredefinedAcl(DestinationPredefinedAcl.BUCKET_OWNER_READ).ifMetagenerationNotMatch(RANDOM_LONG);\r\n    GoogleCloudStorageObject gcsObject = api().composeObjects(BUCKET_NAME2, COMPOSED_OBJECT2, requestTemplate, options);\r\n    assertNotNull(gcsObject);\r\n    assertNotNull(gcsObject.acl());\r\n    assertEquals(gcsObject.bucket(), BUCKET_NAME2);\r\n    assertEquals(gcsObject.name(), COMPOSED_OBJECT2);\r\n    assertEquals(gcsObject.contentType(), MediaType.APPLICATION_JSON);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "listObjects",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testComposeObjectWithOptions\")\r\npublic void listObjects() {\r\n    ListPageWithPrefixes<GoogleCloudStorageObject> list = api().listObjects(BUCKET_NAME);\r\n    assertNotNull(list);\r\n    assertEquals(list.get(0) instanceof GoogleCloudStorageObject, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testListObjectsWithOptions",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testComposeObjectWithOptions\")\r\npublic void testListObjectsWithOptions() {\r\n    ListObjectOptions options = new ListObjectOptions().maxResults(1);\r\n    ListPageWithPrefixes<GoogleCloudStorageObject> list = api().listObjects(BUCKET_NAME, options);\r\n    while (list.nextPageToken() != null) {\r\n        assertNotNull(list);\r\n        assertEquals(list.get(0) instanceof GoogleCloudStorageObject, true);\r\n        assertEquals(list.size(), 1);\r\n        options = new ListObjectOptions().maxResults(1).pageToken(list.nextPageToken());\r\n        list = api().listObjects(BUCKET_NAME, options);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testUpdateObject",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testComposeObjectWithOptions\")\r\npublic void testUpdateObject() {\r\n    ObjectAccessControls oacl = ObjectAccessControls.builder().bucket(BUCKET_NAME).entity(\"allUsers\").role(ObjectRole.OWNER).build();\r\n    ObjectTemplate template = new ObjectTemplate().addAcl(oacl).contentType(\"image/jpeg\");\r\n    GoogleCloudStorageObject gcsObject = api().updateObject(BUCKET_NAME, UPLOAD_OBJECT_NAME2, template);\r\n    assertNotNull(gcsObject);\r\n    assertNotNull(gcsObject.acl());\r\n    assertEquals(gcsObject.bucket(), BUCKET_NAME);\r\n    assertEquals(gcsObject.name(), UPLOAD_OBJECT_NAME2);\r\n    assertEquals(gcsObject.contentType(), \"image/jpeg\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testUpdateObjectWithOptions",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testUpdateObject\")\r\npublic void testUpdateObjectWithOptions() {\r\n    String METADATA_KEY = \"key1\";\r\n    String METADATA_VALUE = \"value1\";\r\n    ObjectAccessControls oacl = ObjectAccessControls.builder().bucket(BUCKET_NAME).entity(\"allUsers\").role(ObjectRole.OWNER).build();\r\n    UpdateObjectOptions options = new UpdateObjectOptions().ifMetagenerationNotMatch(RANDOM_LONG).ifGenerationNotMatch(RANDOM_LONG);\r\n    ObjectTemplate template = new ObjectTemplate().addAcl(oacl).contentType(\"image/jpeg\").contentDisposition(\"attachment\").customMetadata(METADATA_KEY, METADATA_VALUE);\r\n    GoogleCloudStorageObject gcsObject = api().updateObject(BUCKET_NAME, UPLOAD_OBJECT_NAME2, template, options);\r\n    assertNotNull(gcsObject);\r\n    assertNotNull(gcsObject.acl());\r\n    assertEquals(gcsObject.bucket(), BUCKET_NAME);\r\n    assertEquals(gcsObject.name(), UPLOAD_OBJECT_NAME2);\r\n    assertEquals(gcsObject.contentType(), \"image/jpeg\");\r\n    assertNotNull(gcsObject.metadata());\r\n    assertNotNull(gcsObject.metadata().get(METADATA_KEY), METADATA_VALUE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testPatchObject",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testUpdateObjectWithOptions\")\r\npublic void testPatchObject() {\r\n    ObjectAccessControls oacl = ObjectAccessControls.builder().bucket(BUCKET_NAME).entity(\"allUsers\").role(ObjectRole.READER).build();\r\n    ObjectTemplate template = new ObjectTemplate().addAcl(oacl).contentType(\"image/jpeg\");\r\n    GoogleCloudStorageObject gcsObject = api().patchObject(BUCKET_NAME, UPLOAD_OBJECT_NAME2, template);\r\n    assertNotNull(gcsObject);\r\n    assertNotNull(gcsObject.acl());\r\n    assertEquals(gcsObject.bucket(), BUCKET_NAME);\r\n    assertEquals(gcsObject.name(), UPLOAD_OBJECT_NAME2);\r\n    assertEquals(gcsObject.contentType(), \"image/jpeg\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testPatchObjectsWithOptions",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testPatchObject\")\r\npublic void testPatchObjectsWithOptions() {\r\n    ObjectAccessControls oacl = ObjectAccessControls.builder().bucket(BUCKET_NAME).entity(\"allUsers\").role(ObjectRole.OWNER).build();\r\n    UpdateObjectOptions options = new UpdateObjectOptions().ifMetagenerationNotMatch(RANDOM_LONG).ifGenerationNotMatch(RANDOM_LONG);\r\n    ObjectTemplate template = new ObjectTemplate().addAcl(oacl).contentType(\"image/jpeg\").contentDisposition(\"attachment\");\r\n    GoogleCloudStorageObject gcsObject = api().patchObject(BUCKET_NAME, UPLOAD_OBJECT_NAME2, template, options);\r\n    assertNotNull(gcsObject);\r\n    assertNotNull(gcsObject.acl());\r\n    assertEquals(gcsObject.bucket(), BUCKET_NAME);\r\n    assertEquals(gcsObject.name(), UPLOAD_OBJECT_NAME2);\r\n    assertEquals(gcsObject.contentType(), \"image/jpeg\");\r\n    assertEquals(gcsObject.contentDisposition(), \"attachment\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testMultipartJpegUpload",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testPatchObjectsWithOptions\")\r\npublic void testMultipartJpegUpload() throws IOException {\r\n    long contentLength = 32 * 1024L;\r\n    ByteSource byteSource = TestUtils.randomByteSource().slice(0, contentLength);\r\n    ByteSourcePayload payload = Payloads.newByteSourcePayload(byteSource);\r\n    PayloadEnclosing payloadImpl = new PayloadEnclosingImpl(payload);\r\n    ObjectTemplate template = new ObjectTemplate();\r\n    ObjectAccessControls oacl = ObjectAccessControls.builder().bucket(BUCKET_NAME).entity(\"allUsers\").role(ObjectRole.OWNER).build();\r\n    // This would trigger server side validation of md5\r\n    md5Hash = base64().encode(byteSource.hash(Hashing.md5()).asBytes());\r\n    // TODO: crc32c = without making a compile dep on guava 18\r\n    template.contentType(\"image/jpeg\").addAcl(oacl).size(contentLength).name(MULTIPART_UPLOAD_OBJECT).contentLanguage(\"en\").contentDisposition(\"attachment\").md5Hash(md5Hash).customMetadata(\"custommetakey1\", \"custommetavalue1\").crc32c(crc32c).customMetadata(ImmutableMap.of(\"Adrian\", \"powderpuff\"));\r\n    GoogleCloudStorageObject gcsObject = api().multipartUpload(BUCKET_NAME, template, payloadImpl.getPayload());\r\n    assertThat(gcsObject.bucket()).isEqualTo(BUCKET_NAME);\r\n    assertThat(gcsObject.name()).isEqualTo(MULTIPART_UPLOAD_OBJECT);\r\n    checkHashCodes(gcsObject);\r\n    assertThat(gcsObject.metadata()).contains(entry(\"custommetakey1\", \"custommetavalue1\"), entry(\"Adrian\", \"powderpuff\")).doesNotContainKey(\"adrian\");\r\n    PayloadEnclosing impl = api().download(BUCKET_NAME, MULTIPART_UPLOAD_OBJECT);\r\n    assertThat(ByteStreams2.toByteArrayAndClose(impl.getPayload().openStream())).isEqualTo(ByteStreams2.toByteArrayAndClose(payloadImpl.getPayload().openStream()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testDeleteObject",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testMultipartJpegUpload\")\r\npublic void testDeleteObject() {\r\n    assertTrue(api().deleteObject(BUCKET_NAME2, UPLOAD_OBJECT_NAME));\r\n    assertTrue(api().deleteObject(BUCKET_NAME2, COMPOSED_OBJECT2));\r\n    assertTrue(api().deleteObject(BUCKET_NAME2, COMPOSED_OBJECT));\r\n    assertTrue(api().deleteObject(BUCKET_NAME2, COPIED_OBJECT_NAME));\r\n    assertTrue(api().deleteObject(BUCKET_NAME2, COPIED_OBJECT_NAME2));\r\n    assertFalse(api().deleteObject(BUCKET_NAME, UPLOAD_OBJECT_NAME));\r\n    assertTrue(api().deleteObject(BUCKET_NAME, UPLOAD_OBJECT_NAME2));\r\n    assertTrue(api().deleteObject(BUCKET_NAME, MULTIPART_UPLOAD_OBJECT));\r\n    assertTrue(api().deleteObject(BUCKET_NAME, REWRITE_OBJECT_NAME));\r\n    assertFalse(api().deleteObject(BUCKET_NAME, NONEXISTENT_OBJECT_NAME));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ObjectApiLiveTest.java",
+  "methodName" : "testDeleteObjectWithOptions",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"testPatchObjectsWithOptions\")\r\npublic void testDeleteObjectWithOptions() {\r\n    DeleteObjectOptions options = new DeleteObjectOptions().ifGenerationMatch(generation).ifMetagenerationMatch(metageneration);\r\n    api().deleteObject(BUCKET_NAME, UPLOAD_OBJECT_NAME, options);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ResumableUploadApiLiveTest.java",
+  "methodName" : "testResumableJpegUpload",
+  "sourceCode" : "@Test(groups = \"live\")\r\npublic void testResumableJpegUpload() throws IOException {\r\n    // Read Object\r\n    long contentLength = MIN_CHUNK_SIZE * 4;\r\n    ByteSource byteSource = TestUtils.randomByteSource().slice(0, contentLength);\r\n    // Initialize resumableUpload with metadata. ObjectTemaplete must provide the name\r\n    ObjectAccessControls oacl = ObjectAccessControls.builder().bucket(BUCKET_NAME).entity(\"allUsers\").role(ObjectRole.OWNER).build();\r\n    ObjectTemplate template = new ObjectTemplate();\r\n    template.contentType(\"image/jpeg\").addAcl(oacl).size(contentLength).name(UPLOAD_OBJECT_NAME).contentLanguage(\"en\").contentDisposition(\"attachment\");\r\n    ResumableUpload initResponse = api().initResumableUpload(BUCKET_NAME, \"image/jpeg\", contentLength, template);\r\n    assertNotNull(initResponse);\r\n    assertEquals(initResponse.statusCode(), OK.getStatusCode());\r\n    assertNotNull(initResponse.uploadId());\r\n    String uploadId = initResponse.uploadId();\r\n    // Upload the payload\r\n    ByteSourcePayload payload = Payloads.newByteSourcePayload(byteSource);\r\n    ResumableUpload uploadResponse = api().upload(BUCKET_NAME, uploadId, \"image/jpeg\", byteSource.read().length + \"\", payload);\r\n    assertEquals(uploadResponse.statusCode(), OK.getStatusCode());\r\n    // CheckStatus\r\n    ResumableUpload status = api().checkStatus(BUCKET_NAME, uploadId, \"bytes */*\");\r\n    int code = status.statusCode();\r\n    assertNotEquals(code, INCOMPLETE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\features\\ResumableUploadApiLiveTest.java",
+  "methodName" : "testResumableChunkedUpload",
+  "sourceCode" : "@Test(groups = \"live\")\r\npublic void testResumableChunkedUpload() throws IOException, InterruptedException {\r\n    // Read Object\r\n    long contentLength = MIN_CHUNK_SIZE * 3;\r\n    ByteSource byteSource = TestUtils.randomByteSource().slice(0, contentLength);\r\n    // Initialize resumableUpload with metadata. ObjectTemaplete must provide the name\r\n    ObjectAccessControls oacl = ObjectAccessControls.builder().bucket(BUCKET_NAME).entity(\"allUsers\").role(ObjectRole.OWNER).build();\r\n    ObjectTemplate template = new ObjectTemplate();\r\n    template.contentType(\"application/pdf\").addAcl(oacl).size(contentLength).name(CHUNKED_OBJECT_NAME).contentLanguage(\"en\").contentDisposition(\"attachment\");\r\n    ResumableUpload initResponse = api().initResumableUpload(BUCKET_NAME, \"application/pdf\", contentLength, template);\r\n    assertNotNull(initResponse);\r\n    assertEquals(initResponse.statusCode(), OK.getStatusCode());\r\n    assertNotNull(initResponse.uploadId());\r\n    // Get the upload_id for the session\r\n    String uploadId = initResponse.uploadId();\r\n    // Check the status first\r\n    ResumableUpload status = api().checkStatus(BUCKET_NAME, uploadId, \"bytes */*\");\r\n    int code = status.statusCode();\r\n    assertEquals(code, INCOMPLETE);\r\n    // Uploads in 2 chunks.\r\n    long totalSize = byteSource.read().length;\r\n    long offset = 0;\r\n    // Size of the first chunk\r\n    long chunkSize = MIN_CHUNK_SIZE * 2;\r\n    // Uploading First chunk\r\n    ByteSourcePayload payload = Payloads.newByteSourcePayload(byteSource.slice(offset, chunkSize));\r\n    long length = byteSource.slice(offset, chunkSize).size();\r\n    String Content_Range = generateContentRange(0L, length - 1, totalSize);\r\n    ResumableUpload uploadResponse = api().chunkUpload(BUCKET_NAME, uploadId, \"application/pdf\", length, Content_Range, payload);\r\n    int code2 = uploadResponse.statusCode();\r\n    assertEquals(code2, INCOMPLETE);\r\n    // Read uploaded length\r\n    long lowerValue = uploadResponse.rangeLowerValue();\r\n    long uploaded = uploadResponse.rangeUpperValue();\r\n    assertThat(lowerValue).isEqualTo(0);\r\n    // confirms chunk is totally uploaded\r\n    assertThat(uploaded).isEqualTo(chunkSize - 1);\r\n    long resumeLength = totalSize - (uploaded + 1);\r\n    // 2nd chunk\r\n    ByteSourcePayload payload2 = Payloads.newByteSourcePayload(byteSource.slice(uploaded + 1, byteSource.read().length - uploaded - 1));\r\n    // Upload the 2nd chunk\r\n    String Content_Range2 = generateContentRange(uploaded + 1, totalSize - 1, totalSize);\r\n    ResumableUpload resumeResponse = api().chunkUpload(BUCKET_NAME, uploadId, \"application/pdf\", resumeLength, Content_Range2, payload2);\r\n    int code3 = resumeResponse.statusCode();\r\n    // 200 or 201 if upload succeeded\r\n    assertThat(code3).isIn(OK.getStatusCode(), CREATED.getStatusCode());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\handlers\\GoogleCloudStorageErrorHandlerTest.java",
+  "methodName" : "test409MakesIllegalStateException",
+  "sourceCode" : "@Test\r\npublic void test409MakesIllegalStateException() {\r\n    assertCodeMakes(\"POST\", URI.create(\"https://www.googleapis.com/storage/v1\"), 409, \"HTTP/1.1 409 Conflict\", \"\\\"{\\\"code\\\":\\\"InvalidState\\\",\\\"message\\\":\\\"An incompatible transition has already been queued for this\" + \" resource\\\"}\\\"\", IllegalStateException.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\handlers\\GoogleCloudStorageErrorHandlerTest.java",
+  "methodName" : "test401MakesAuthorizationException",
+  "sourceCode" : "@Test\r\npublic void test401MakesAuthorizationException() {\r\n    assertCodeMakes(\"POST\", URI.create(\"https://www.googleapis.com/storage/v1\"), 401, \"HTTP/1.1 401 Unauthorized\", \"Login Required\", AuthorizationException.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\handlers\\GoogleCloudStorageErrorHandlerTest.java",
+  "methodName" : "test403MakesAuthorizationException",
+  "sourceCode" : "@Test\r\npublic void test403MakesAuthorizationException() {\r\n    assertCodeMakes(\"POST\", URI.create(\"https://www.googleapis.com/storage/v1\"), 403, \"HTTP/1.1 403 Forbidden\", \"Login Required\", AuthorizationException.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\google-cloud-storage\\src\\test\\java\\org\\jclouds\\googlecloudstorage\\handlers\\GoogleCloudStorageErrorHandlerTest.java",
+  "methodName" : "test404MakesResourceNotFoundException",
+  "sourceCode" : "@Test\r\npublic void test404MakesResourceNotFoundException() {\r\n    assertCodeMakes(\"POST\", URI.create(\"https://www.googleapis.com/storage/v1\"), 404, \"HTTP/1.1 404 Not Found\", \"Not Found\", ResourceNotFoundException.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+} ]

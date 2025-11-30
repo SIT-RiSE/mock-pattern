@@ -1,0 +1,55 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BSF\\src\\test\\java\\org\\apache\\bsf\\engines\\JaclTest.java",
+  "methodName" : "testExec",
+  "sourceCode" : "@Test\r\npublic void testExec() {\r\n    try {\r\n        jaclEngine.exec(\"Test.jacl\", 0, 0, \"puts -nonewline \\\"PASSED\\\"\");\r\n    } catch (final Exception e) {\r\n        fail(failMessage(\"exec() test failed\", e));\r\n    }\r\n    assertEquals(\"PASSED\", getTmpOutStr());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BSF\\src\\test\\java\\org\\apache\\bsf\\engines\\JaclTest.java",
+  "methodName" : "testEval",
+  "sourceCode" : "@Test\r\npublic void testEval() {\r\n    Integer retval = null;\r\n    try {\r\n        retval = (Integer) jaclEngine.eval(\"Test.jacl\", 0, 0, \"expr 1 + 1\");\r\n    } catch (final Exception e) {\r\n        fail(failMessage(\"eval() test failed\", e));\r\n    }\r\n    assertEquals(new Integer(2), retval);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BSF\\src\\test\\java\\org\\apache\\bsf\\engines\\JaclTest.java",
+  "methodName" : "testCall",
+  "sourceCode" : "@Test\r\npublic void testCall() {\r\n    final Object[] args = { new Integer(1) };\r\n    Integer retval = null;\r\n    try {\r\n        jaclEngine.exec(\"Test.jacl\", 0, 0, \"proc addOne {f} {\\n return [expr $f + 1]\\n}\");\r\n        retval = (Integer) jaclEngine.call(null, \"addOne\", args);\r\n    } catch (final Exception e) {\r\n        fail(failMessage(\"call() test failed\", e));\r\n    }\r\n    assertEquals(new Integer(2), retval);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BSF\\src\\test\\java\\org\\apache\\bsf\\engines\\JaclTest.java",
+  "methodName" : "testIexec",
+  "sourceCode" : "@Test\r\npublic void testIexec() {\r\n    try {\r\n        jaclEngine.iexec(\"Test.jacl\", 0, 0, \"puts -nonewline \\\"PASSED\\\"\");\r\n    } catch (final Exception e) {\r\n        fail(failMessage(\"iexec() test failed\", e));\r\n    }\r\n    assertEquals(\"PASSED\", getTmpOutStr());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BSF\\src\\test\\java\\org\\apache\\bsf\\engines\\JaclTest.java",
+  "methodName" : "testBSFManagerEval",
+  "sourceCode" : "@Test\r\npublic void testBSFManagerEval() {\r\n    Integer retval = null;\r\n    try {\r\n        retval = (Integer) bsfManager.eval(\"jacl\", \"Test.jacl\", 0, 0, \"expr 1 + 1\");\r\n    } catch (final Exception e) {\r\n        fail(failMessage(\"BSFManager eval() test failed\", e));\r\n    }\r\n    assertEquals(new Integer(2), retval);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BSF\\src\\test\\java\\org\\apache\\bsf\\engines\\JaclTest.java",
+  "methodName" : "testRegisterBean",
+  "sourceCode" : "@Test\r\npublic void testRegisterBean() {\r\n    final Integer foo = new Integer(1);\r\n    Integer bar = null;\r\n    try {\r\n        bsfManager.registerBean(\"foo\", foo);\r\n        bar = (Integer) jaclEngine.eval(\"Test.jacl\", 0, 0, \"bsf lookupBean \\\"foo\\\"\");\r\n    } catch (final Exception e) {\r\n        fail(failMessage(\"registerBean() test failed\", e));\r\n    }\r\n    assertEquals(foo, bar);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BSF\\src\\test\\java\\org\\apache\\bsf\\engines\\JaclTest.java",
+  "methodName" : "testUnregisterBean",
+  "sourceCode" : "@Test\r\npublic void testUnregisterBean() {\r\n    final Integer foo = new Integer(1);\r\n    Integer bar = null;\r\n    try {\r\n        bsfManager.registerBean(\"foo\", foo);\r\n        bsfManager.unregisterBean(\"foo\");\r\n        bar = (Integer) jaclEngine.eval(\"Test.jacl\", 0, 0, \"bsf lookupBean \\\"foo\\\"\");\r\n    } catch (final BSFException bsfE) {\r\n        // Do nothing. This is the expected case.\r\n    } catch (final Exception e) {\r\n        fail(failMessage(\"unregisterBean() test failed\", e));\r\n    }\r\n    assertNull(bar);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BSF\\src\\test\\java\\org\\apache\\bsf\\engines\\JaclTest.java",
+  "methodName" : "testDeclareBean",
+  "sourceCode" : "@Test\r\npublic void testDeclareBean() {\r\n    final Integer foo = new Integer(1);\r\n    Integer bar = null;\r\n    try {\r\n        bsfManager.declareBean(\"foo\", foo, Integer.class);\r\n        bar = (Integer) jaclEngine.eval(\"Test.jacl\", 0, 0, \"proc ret {} {\\n upvar 1 foo lfoo\\n \" + \"return $lfoo\\n }\\n ret\");\r\n    } catch (final Exception e) {\r\n        fail(failMessage(\"declareBean() test failed\", e));\r\n    }\r\n    assertEquals(foo, bar);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Commons-BSF\\src\\test\\java\\org\\apache\\bsf\\engines\\JaclTest.java",
+  "methodName" : "testUndeclareBean",
+  "sourceCode" : "@Test\r\npublic void testUndeclareBean() {\r\n    final Integer foo = new Integer(1);\r\n    Integer bar = null;\r\n    try {\r\n        bsfManager.declareBean(\"foo\", foo, Integer.class);\r\n        bsfManager.undeclareBean(\"foo\");\r\n        bar = (Integer) jaclEngine.eval(\"Test.jacl\", 0, 0, \"expr $foo + 1\");\r\n    } catch (final Exception e) {\r\n        fail(failMessage(\"undeclareBean() test failed\", e));\r\n    }\r\n    assertEquals(foo, bar);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+} ]

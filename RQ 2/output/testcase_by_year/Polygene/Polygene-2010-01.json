@@ -1,0 +1,727 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-hazelcast\\src\\test\\java\\org\\qi4j\\entitystore\\hazelcast\\HazelcastEntityStoreTest.java",
+  "methodName" : "givenConcurrentUnitOfWorksWhenUoWCompletesThenCheckConcurrentModification",
+  "sourceCode" : "@Test\r\n@Override\r\npublic void givenConcurrentUnitOfWorksWhenUoWCompletesThenCheckConcurrentModification() throws UnitOfWorkCompletionException {\r\n    super.givenConcurrentUnitOfWorksWhenUoWCompletesThenCheckConcurrentModification();\r\n}",
+  "annotations" : [ "Test", "Override" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-jdbm\\src\\test\\java\\org\\qi4j\\entitystore\\jdbm\\JdbmEntityStoreTest.java",
+  "methodName" : "givenConcurrentUnitOfWorksWhenUoWCompletesThenCheckConcurrentModification",
+  "sourceCode" : "@Test\r\n@Override\r\npublic void givenConcurrentUnitOfWorksWhenUoWCompletesThenCheckConcurrentModification() throws UnitOfWorkCompletionException {\r\n    super.givenConcurrentUnitOfWorksWhenUoWCompletesThenCheckConcurrentModification();\r\n}",
+  "annotations" : [ "Test", "Override" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\CRUDTests.java",
+  "methodName" : "retrieve",
+  "sourceCode" : "@Test\r\npublic void retrieve() throws Exception {\r\n    dbHandler.executeUpdate(\"insert into account (account_id, version, name, balance) \" + \"values ('org.qi4j.entitystore.qrm.entity.Account:23', 0, 'Test account 23', 3909.54)\");\r\n    System.err.println(\"====================================== retrieve test ======================================\");\r\n    UnitOfWork uow = null;\r\n    try {\r\n        uow = moduleInstance.unitOfWorkFactory().newUnitOfWork();\r\n        Account acc = uow.get(Account.class, \"org.qi4j.entitystore.qrm.entity.Account:23\");\r\n        Assert.assertEquals(\"Test account 23\", acc.name().get());\r\n        Assert.assertEquals(new BigDecimal(\"3909.54\"), acc.balance().get());\r\n    } catch (EntityNotFoundException enfe) {\r\n    } finally {\r\n        uow.discard();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\CRUDTests.java",
+  "methodName" : "create",
+  "sourceCode" : "@Test\r\npublic void create() throws Exception {\r\n    dbHandler.executeUpdate(\"delete from account\");\r\n    System.err.println(\"====================================== create test ======================================\");\r\n    UnitOfWork uow = null;\r\n    Account account = null;\r\n    String newId = Account.class.getName() + \":\" + UUID.randomUUID();\r\n    try {\r\n        uow = moduleInstance.unitOfWorkFactory().newUnitOfWork();\r\n        EntityBuilder<Account> eBuilder = uow.newEntityBuilder(Account.class, newId);\r\n        Account instance = eBuilder.instance();\r\n        instance.balance().set(new BigDecimal(\"323423.87\"));\r\n        instance.name().set(\"Big account.\");\r\n        account = eBuilder.newInstance();\r\n        uow.apply();\r\n    } catch (EntityNotFoundException enfe) {\r\n    } finally {\r\n        uow.discard();\r\n    }\r\n    try {\r\n        uow = moduleInstance.unitOfWorkFactory().newUnitOfWork();\r\n        Account acc_after = uow.get(Account.class, newId);\r\n        Assert.assertNotSame(account, acc_after);\r\n        Assert.assertEquals(\"Big account.\", acc_after.name().get());\r\n        Assert.assertEquals(new BigDecimal(\"323423.87\"), acc_after.balance().get());\r\n    } catch (EntityNotFoundException enfe) {\r\n    } finally {\r\n        uow.discard();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\CRUDTests.java",
+  "methodName" : "delete",
+  "sourceCode" : "@Test\r\npublic void delete() throws Exception {\r\n    dbHandler.executeUpdate(\"delete from account\");\r\n    System.err.println(\"====================================== delete test ======================================\");\r\n    UnitOfWork uow = null;\r\n    Account account = null;\r\n    String newId = Account.class.getName() + \":\" + UUID.randomUUID();\r\n    try {\r\n        uow = moduleInstance.unitOfWorkFactory().newUnitOfWork();\r\n        EntityBuilder<Account> eBuilder = uow.newEntityBuilder(Account.class, newId);\r\n        Account instance = eBuilder.instance();\r\n        instance.balance().set(new BigDecimal(\"323423.87\"));\r\n        instance.name().set(\"Big account.\");\r\n        account = eBuilder.newInstance();\r\n        uow.apply();\r\n    } catch (Throwable enfe) {\r\n    } finally {\r\n        uow.discard();\r\n    }\r\n    // make sure we can find it.\r\n    try {\r\n        uow = moduleInstance.unitOfWorkFactory().newUnitOfWork();\r\n        Account acc_after = uow.get(Account.class, newId);\r\n        Assert.assertNotSame(account, acc_after);\r\n        Assert.assertEquals(\"Big account.\", acc_after.name().get());\r\n        Assert.assertEquals(new BigDecimal(\"323423.87\"), acc_after.balance().get());\r\n    } catch (EntityNotFoundException enfe) {\r\n    } finally {\r\n        uow.discard();\r\n    }\r\n    try {\r\n        uow = moduleInstance.unitOfWorkFactory().newUnitOfWork();\r\n        Account acc_after = uow.get(Account.class, newId);\r\n        uow.remove(acc_after);\r\n        uow.apply();\r\n    } catch (Throwable enfe) {\r\n    } finally {\r\n        uow.discard();\r\n    }\r\n    // make sure we can not find it.\r\n    try {\r\n        uow = moduleInstance.unitOfWorkFactory().newUnitOfWork();\r\n        Account acc_after = uow.get(Account.class, newId);\r\n        if (acc_after != null) {\r\n            Assert.fail(\"should nnot have found anything\");\r\n        }\r\n    } catch (NoSuchEntityException nsee) {\r\n        System.err.println(\"NoSuchEntityException is thrown. Correct behavior.\");\r\n    } finally {\r\n        uow.discard();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\CRUDTests.java",
+  "methodName" : "update",
+  "sourceCode" : "@Test\r\npublic void update() throws Exception {\r\n    dbHandler.executeUpdate(\"delete from account\");\r\n    System.err.println(\"====================================== update test ======================================\");\r\n    UnitOfWork uow = null;\r\n    Account account = null;\r\n    String newId = Account.class.getName() + \":\" + UUID.randomUUID();\r\n    try {\r\n        uow = moduleInstance.unitOfWorkFactory().newUnitOfWork();\r\n        EntityBuilder<Account> eBuilder = uow.newEntityBuilder(Account.class, newId);\r\n        Account instance = eBuilder.instance();\r\n        instance.balance().set(new BigDecimal(\"323423.87\"));\r\n        instance.name().set(\"Big account.\");\r\n        account = eBuilder.newInstance();\r\n        uow.apply();\r\n    } catch (Throwable enfe) {\r\n    } finally {\r\n        uow.discard();\r\n    }\r\n    // find and update it.\r\n    Account acc_after = null;\r\n    try {\r\n        uow = moduleInstance.unitOfWorkFactory().newUnitOfWork();\r\n        acc_after = uow.get(Account.class, newId);\r\n        Assert.assertNotSame(account, acc_after);\r\n        Assert.assertEquals(\"Big account.\", acc_after.name().get());\r\n        Assert.assertEquals(new BigDecimal(\"323423.87\"), acc_after.balance().get());\r\n        acc_after.balance().set(new BigDecimal(\"23.45\"));\r\n        acc_after.name().set(\"Small Account\");\r\n        uow.apply();\r\n    } catch (EntityNotFoundException enfe) {\r\n    } finally {\r\n        uow.discard();\r\n    }\r\n    // make sure we can not find it and changes are persisted.\r\n    Account updatedAcc = null;\r\n    try {\r\n        uow = moduleInstance.unitOfWorkFactory().newUnitOfWork();\r\n        updatedAcc = uow.get(Account.class, newId);\r\n        Assert.assertNotSame(acc_after, updatedAcc);\r\n        Assert.assertEquals(\"Small Account\", updatedAcc.name().get());\r\n        Assert.assertEquals(new BigDecimal(\"23.45\"), updatedAcc.balance().get());\r\n    } catch (NoSuchEntityException nsee) {\r\n        System.err.println(\"NoSuchEntityException is thrown. Correct behavior.\");\r\n    } finally {\r\n        uow.discard();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\dbInitializer\\DBInitializerTest.java",
+  "methodName" : "testInitializer",
+  "sourceCode" : "/**\r\n * Tests the initializer.\r\n *\r\n * @throws Exception Thrown if initialization failed.\r\n */\r\n@Test\r\n@Ignore(\"The entire QRM is buggered.\")\r\npublic void testInitializer() throws Exception {\r\n    final DBInitializerConfiguration info = derbyDatabaseHandler.createDbInitializerConfigMock();\r\n    final DBInitializer initializer = new DBInitializer();\r\n    Properties connectionProperties = info.connectionProperties().get();\r\n    String schemaUrl = info.schemaUrl().get();\r\n    String dataUrl = info.dataUrl().get();\r\n    String dbUrl = info.dbUrl().get();\r\n    initializer.initialize(schemaUrl, dataUrl, dbUrl, connectionProperties);\r\n    derbyDatabaseHandler.checkDataInitialization();\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\DerbyDatabaseHandlerTest.java",
+  "methodName" : "testInitDerby",
+  "sourceCode" : "@Test\r\n@Ignore(\"The entire QRM is buggered.\")\r\npublic void testInitDerby() throws SQLException {\r\n    final Connection connection = derbyDatabaseHandler.getJDBCConnection();\r\n    final DatabaseMetaData databaseMetaData = connection.getMetaData();\r\n    assertNotNull(\"DataBaseMetaData from initialized DB\", databaseMetaData);\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\IBatisClientTest.java",
+  "methodName" : "loadExistingPerson",
+  "sourceCode" : "@Test\r\n@Ignore(\"The entire QRM is buggered.\")\r\npublic void loadExistingPerson() throws Exception {\r\n    final QualifiedIdentity id = new QualifiedIdentity(TEST_ID, PersonComposite.class);\r\n    assertEquals(\"id\", TEST_ID, id.identity());\r\n    final Map<String, Object> rawData = client.executeLoad(id);\r\n    System.out.println(\"rawData = \" + rawData);\r\n    assertEquals(\"id gefunden\", TEST_ID, rawData.get(\"id\"));\r\n    assertEquals(\"last name\", \"Smith\", rawData.get(\"lastName\"));\r\n    final Object accountsValue = rawData.get(\"accounts\");\r\n    assertTrue(\"accounts\", accountsValue instanceof Collection);\r\n    final Collection accounts = (Collection) accountsValue;\r\n    assertEquals(\"one account \", 2, accounts.size());\r\n    assertEquals(\"accounts\", asList(\"1\", \"2\"), accounts);\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\IBatisEntityStoreTest.java",
+  "methodName" : "isThereDataInTheDatabaseAfterInitialization",
+  "sourceCode" : "@Test\r\npublic void isThereDataInTheDatabaseAfterInitialization() throws Exception {\r\n    //        entityStore.iterator();\r\n    derbyDatabaseHandler.checkDataInitialization();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\IBatisEntityStoreTest.java",
+  "methodName" : "newEntityStateIsPersistedToDatabase",
+  "sourceCode" : "@Test\r\npublic final void newEntityStateIsPersistedToDatabase() throws SQLException, UnitOfWorkCompletionException {\r\n    final Map<String, String> data = createTestData(\"Edward\", \"Yakop\");\r\n    final UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();\r\n    final EntityBuilder<PersonComposite> builder = uow.newEntityBuilder(PersonComposite.class);\r\n    PersonComposite person = builder.instance();\r\n    person.firstName().set(data.get(\"FIRST_NAME\"));\r\n    person.lastName().set(data.get(\"LAST_NAME\"));\r\n    person = builder.newInstance();\r\n    final String newId = person.identity().get();\r\n    uow.complete();\r\n    assertPersonEqualsInDatabase(newId, data);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\IBatisEntityStoreTest.java",
+  "methodName" : "existingEntityIsDeletedFromPersistentStore",
+  "sourceCode" : "@Test\r\npublic final void existingEntityIsDeletedFromPersistentStore() throws SQLException, UnitOfWorkCompletionException {\r\n    final UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();\r\n    final PersonComposite john = uow.get(PersonComposite.class, TestConfig.JOHN_SMITH_ID);\r\n    uow.remove(john);\r\n    uow.complete();\r\n    derbyDatabaseHandler.executeStatement(\"select count(*) CNT from person where ID= '\" + TestConfig.JOHN_SMITH_ID + \"'\", new DerbyDatabaseHandler.ResultSetCallback() {\r\n\r\n        public void row(final ResultSet rs) throws SQLException {\r\n            assertEquals(0, rs.getInt(\"CNT\"));\r\n        }\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\IBatisEntityStoreTest.java",
+  "methodName" : "completeThrowsNPE",
+  "sourceCode" : "@Test\r\npublic final void completeThrowsNPE() throws UnitOfWorkCompletionException {\r\n    final UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();\r\n    uow.get(PersonComposite.class, TestConfig.JOHN_SMITH_ID);\r\n    uow.complete();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\IBatisEntityStoreTest.java",
+  "methodName" : "existingEntityIsUpdatedInPersistentStore",
+  "sourceCode" : "@Test\r\npublic final void existingEntityIsUpdatedInPersistentStore() throws SQLException, UnitOfWorkCompletionException {\r\n    final UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();\r\n    final PersonComposite john = uow.get(PersonComposite.class, TestConfig.JOHN_SMITH_ID);\r\n    john.lastName().set(\"Doe\");\r\n    uow.complete();\r\n    derbyDatabaseHandler.executeStatement(\"select LAST_NAME from person where ID= '\" + TestConfig.JOHN_SMITH_ID + \"'\", new DerbyDatabaseHandler.ResultSetCallback() {\r\n\r\n        public void row(final ResultSet rs) throws SQLException {\r\n            assertEquals(\"Doe\", rs.getString(\"LAST_NAME\"));\r\n        }\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\IBatisEntityStoreTest.java",
+  "methodName" : "associationIsPersistedToDatabase",
+  "sourceCode" : "@Test\r\npublic final void associationIsPersistedToDatabase() throws SQLException, UnitOfWorkCompletionException {\r\n    UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();\r\n    final PersonComposite john = uow.get(PersonComposite.class, TestConfig.JOHN_SMITH_ID);\r\n    assertNotNull(\"john\", john);\r\n    final AccountComposite johnsAccount = uow.newEntity(AccountComposite.class);\r\n    final String accountId = johnsAccount.identity().get();\r\n    johnsAccount.name().set(JOHNS_ACCOUNT);\r\n    johnsAccount.primaryContactPerson().set(john);\r\n    uow.complete();\r\n    uow = unitOfWorkFactory.newUnitOfWork();\r\n    final AccountComposite account = uow.get(AccountComposite.class, accountId);\r\n    assertEquals(\"account name\", JOHNS_ACCOUNT, account.name().get());\r\n    final Person contactPerson = account.primaryContactPerson().get();\r\n    assertEquals(\"john is contact\", john, contactPerson);\r\n    uow.discard();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\IBatisEntityStoreTest.java",
+  "methodName" : "loadOfNonExistingEntityFails",
+  "sourceCode" : "@Test(expected = EntityStoreException.class)\r\npublic void loadOfNonExistingEntityFails() {\r\n    loadEntity(\"1123123\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\IBatisEntityStoreTest.java",
+  "methodName" : "loadExistingEntity",
+  "sourceCode" : "@Test\r\npublic void loadExistingEntity() {\r\n    final EntityState state = loadEntity(TestConfig.JOHN_SMITH_ID);\r\n    assertPersonEntityStateEquals(TestConfig.JOHN_SMITH_ID, \"John\", \"Smith\", state);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\IBatisEntityStoreTest.java",
+  "methodName" : "loadExistingEntityWithAccounts",
+  "sourceCode" : "@Test\r\npublic void loadExistingEntityWithAccounts() {\r\n    final EntityState state = loadEntity(TestConfig.JANE_SMITH_ID);\r\n    assertPersonEntityStateEquals(TestConfig.JANE_SMITH_ID, \"Jane\", \"Smith\", state);\r\n    //        assertEquals( \"ACCOUNTS\", state.manyAssociationNames().iterator().next() );\r\n    assertEquals(\"no association accounts\", null, state.getAssociation(QualifiedName.fromQN(\"ACCOUNTS\")));\r\n    final ManyAssociationState manyAssociation = state.getManyAssociation(QualifiedName.fromQN(\"ACCOUNTS\"));\r\n    assertEquals(\"many association accounts\", 2, manyAssociation.count());\r\n    //        assertTrue( \"account reference 1\", manyAssociation.contains( createId( \"1\", Account.class ) ) );\r\n    //        assertTrue( \"account reference 2\", manyAssociation.contains( createId( \"2\", Account.class ) ) );\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\IBatisEntityStoreTest.java",
+  "methodName" : "findExistingPersonComposite",
+  "sourceCode" : "@Test\r\npublic void findExistingPersonComposite() throws UnitOfWorkCompletionException {\r\n    final UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();\r\n    final PersonComposite person = uow.get(PersonComposite.class, TestConfig.JOHN_SMITH_ID);\r\n    assertPersonEquals(TestConfig.JOHN_SMITH_ID, \"John\", \"Smith\", person);\r\n    uow.complete();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\internal\\CapitalizingIdentifierConverterTest.java",
+  "methodName" : "convertToUpperCase",
+  "sourceCode" : "@Test\r\npublic void convertToUpperCase() {\r\n    assertEquals(\"identity -> ID\", \"ID\", converter.convertIdentifier(QualifiedName.fromQN(\"abc:identity\")));\r\n    assertEquals(\"uppercase ABC\", \"ABC\", converter.convertIdentifier(QualifiedName.fromQN(\"abc:abc\")));\r\n    assertEquals(\"removed qualified prefix\", \"ABC\", converter.convertIdentifier(QualifiedName.fromQN(\"aaa:abc\")));\r\n    assertEquals(\"removed qualified prefixes\", \"ABC\", converter.convertIdentifier(QualifiedName.fromQN(\"aaa:bbb:abc\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\internal\\CapitalizingIdentifierConverterTest.java",
+  "methodName" : "removeFromMap",
+  "sourceCode" : "@Test\r\npublic void removeFromMap() {\r\n    Map<String, Object> rawData = new HashMap<String, Object>();\r\n    rawData.put(\"ABC\", \"test\");\r\n    assertEquals(\"converted key and found value\", \"test\", converter.getValueFromData(rawData, QualifiedName.fromQN(\"aaa:abc\")));\r\n    assertEquals(\"entry removed\", 0, rawData.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\internal\\CapitalizingIdentifierConverterTest.java",
+  "methodName" : "nullIfNotFound",
+  "sourceCode" : "@Test\r\npublic void nullIfNotFound() {\r\n    Map<String, Object> rawData = new HashMap<String, Object>();\r\n    assertEquals(\"converted key and found value\", null, converter.getValueFromData(rawData, QualifiedName.fromQN(\"aaa:abc\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\internal\\CapitalizingIdentifierConverterTest.java",
+  "methodName" : "convertMapKeys",
+  "sourceCode" : "@Test\r\npublic void convertMapKeys() {\r\n    Map<QualifiedName, Object> rawData = new HashMap<QualifiedName, Object>();\r\n    rawData.put(QualifiedName.fromQN(\"abc:abc\"), \"test1\");\r\n    rawData.put(QualifiedName.fromQN(\"abc:DEF\"), \"test2\");\r\n    rawData.put(QualifiedName.fromQN(\"aaa:GHI\"), \"test3\");\r\n    rawData.put(QualifiedName.fromQN(\"aaa:bbb:JKL\"), \"test4\");\r\n    final Map<String, Object> convertedData = converter.convertKeys(rawData);\r\n    assertEquals(\"all entries remained\", 4, convertedData.size());\r\n    assertEquals(\"converted key and found value ABC\", \"test1\", convertedData.get(\"ABC\"));\r\n    assertEquals(\"converted key and found value DEF\", \"test2\", convertedData.get(\"DEF\"));\r\n    assertEquals(\"converted key and found value GHI\", \"test3\", convertedData.get(\"GHI\"));\r\n    assertEquals(\"converted key and found value JKL\", \"test4\", convertedData.get(\"JKL\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\internal\\CapitalizingIdentifierConverterTest.java",
+  "methodName" : "failDuplicateKeys",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void failDuplicateKeys() {\r\n    Map<QualifiedName, Object> rawData = new HashMap<QualifiedName, Object>();\r\n    rawData.put(QualifiedName.fromQN(\"abc\"), \"test1\");\r\n    rawData.put(QualifiedName.fromQN(\"ABC\"), \"test2\");\r\n    converter.convertKeys(rawData);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\internal\\CapitalizingIdentifierConverterTest.java",
+  "methodName" : "failDuplicateQualfiedKeys",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void failDuplicateQualfiedKeys() {\r\n    Map<QualifiedName, Object> rawData = new HashMap<QualifiedName, Object>();\r\n    rawData.put(QualifiedName.fromQN(\"abc\"), \"test1\");\r\n    rawData.put(QualifiedName.fromQN(\"aaa:abc\"), \"test2\");\r\n    converter.convertKeys(rawData);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-qrm\\src\\test\\java\\org\\qi4j\\entitystore\\qrm\\internal\\IBatisEntityStateTest.java",
+  "methodName" : "usesGivenFirstNameProperty",
+  "sourceCode" : "@Test\r\npublic void usesGivenFirstNameProperty() throws NoSuchMethodException {\r\n    final Map<QualifiedName, Object> janeValues = Collections.<QualifiedName, Object>singletonMap(QualifiedName.fromQN(\"person:firstName\"), \"Jane\");\r\n    final EntityState jane = newPersonEntityState(janeValues);\r\n    final String firstNameProperty = getPropertyValue(jane, HasFirstName.class, \"firstName\");\r\n    assertNotNull(firstNameProperty);\r\n    assertEquals(janeValues.get(QualifiedName.fromQN(\"person:firstName\")), firstNameProperty);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-rest\\src\\test\\java\\org\\qi4j\\rest\\client\\RESTEntityStoreTest.java",
+  "methodName" : "testEntityStore",
+  "sourceCode" : "@Test\r\n@Ignore(\"I can't get this test to run reliably on the SRV03 release machine. Broken Pipe as a SocketException.\")\r\npublic void testEntityStore() throws UnitOfWorkCompletionException {\r\n    // Create state\r\n    {\r\n        UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();\r\n        TestEntity entity = unitOfWork.newEntity(TestEntity.class, \"test4\");\r\n        entity.name().set(\"Rickard\");\r\n        entity.age().set(42);\r\n        unitOfWork.complete();\r\n    }\r\n    // Load state\r\n    {\r\n        UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();\r\n        try {\r\n            TestEntity entity = unitOfWork.get(TestEntity.class, \"test2\");\r\n            System.out.println(entity.name().get());\r\n            TestEntity testEntity = entity.association().get();\r\n            System.out.println(testEntity.name().get());\r\n        } finally {\r\n            unitOfWork.discard();\r\n        }\r\n    }\r\n    // Change state\r\n    {\r\n        UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();\r\n        try {\r\n            TestEntity entity = unitOfWork.get(TestEntity.class, \"test2\");\r\n            entity.name().set(\"Foo bar\");\r\n            System.out.println(entity.rdfAssociation().contains(entity));\r\n            entity.rdfAssociation().add(0, entity);\r\n            unitOfWork.complete();\r\n        } finally {\r\n            unitOfWork.discard();\r\n        }\r\n    }\r\n    // Load it again\r\n    {\r\n        UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();\r\n        try {\r\n            TestEntity entity = unitOfWork.get(TestEntity.class, \"test2\");\r\n            System.out.println(entity.name().get());\r\n            System.out.println(entity.association().get().name().get());\r\n            System.out.println(entity.rdfAssociation().contains(entity));\r\n        } finally {\r\n            unitOfWork.discard();\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-rest\\src\\test\\java\\org\\qi4j\\rest\\client\\SPARQLEntityFinderTest.java",
+  "methodName" : "testEntityFinder",
+  "sourceCode" : "@Test\r\n@Ignore\r\npublic void testEntityFinder() {\r\n    {\r\n        UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();\r\n        try {\r\n            Query<Named> query = queryBuilderFactory.newQueryBuilder(Named.class).newQuery(unitOfWork);\r\n            for (Named testEntity : query) {\r\n                System.out.println(testEntity.name().get());\r\n            }\r\n            Assert.assertThat(\"result size is correct\", query.count(), equalTo(3L));\r\n        } finally {\r\n            unitOfWork.discard();\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-rest\\src\\test\\java\\org\\qi4j\\rest\\RestTest.java",
+  "methodName" : "givenAnIdentityWhenExecutingGetCommandThenExpectTheCorrectXml",
+  "sourceCode" : "@Test\r\npublic void givenAnIdentityWhenExecutingGetCommandThenExpectTheCorrectXml() throws Exception {\r\n    RestTester restTester = objectBuilderFactory.newObject(RestTester.class);\r\n    String xml = restTester.getEntity(\"P1\");\r\n    assertEquals(\"Incorrect XML produced\", \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?><entity><type>org.qi4j.rest.RestTest$PersonEntity</type><identity>P1</identity><properties><identity>P1</identity><firstname>Joe</firstname><lastname>Doe</lastname></properties><manyAssociations><mother href=\\\"/entity/org.qi4j.rest.RestTest$PersonEntity/P2\\\">P2</mother></manyAssociations></entity>\", xml);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-rest\\src\\test\\java\\org\\qi4j\\rest\\RestTest.java",
+  "methodName" : "givenExistingIdentityWhenExecutingPutCommandThenNewValuesInEntity",
+  "sourceCode" : "@Test\r\npublic void givenExistingIdentityWhenExecutingPutCommandThenNewValuesInEntity() throws Throwable {\r\n    RestTester restTester = objectBuilderFactory.newObject(RestTester.class);\r\n    restTester.putEntity(\"P1\", \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?><entity><identity>P1</identity><properties><identity>P1</identity><firstname>Jack</firstname><lastname>Doe</lastname></properties></entity>\");\r\n    UnitOfWork work = unitOfWorkFactory.newUnitOfWork();\r\n    try {\r\n        PersonEntity entity = work.get(PersonEntity.class, \"P1\");\r\n        assertEquals(\"FirstName not changed.\", \"Jack\", entity.firstname().get());\r\n        assertEquals(\"LastName not changed.\", \"Doe\", entity.lastname().get());\r\n        work.complete();\r\n    } catch (Throwable e) {\r\n        work.discard();\r\n        throw e;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-rest\\src\\test\\java\\org\\qi4j\\rest\\RestTest.java",
+  "methodName" : "givenExistingIdentityWhenExecutingDeleteCommandThenEntityIsRemoved",
+  "sourceCode" : "@Test\r\npublic void givenExistingIdentityWhenExecutingDeleteCommandThenEntityIsRemoved() throws Throwable {\r\n    RestTester restTester = objectBuilderFactory.newObject(RestTester.class);\r\n    restTester.deleteEntity(\"P1\");\r\n    UnitOfWork work = unitOfWorkFactory.newUnitOfWork();\r\n    try {\r\n        PersonEntity entity = null;\r\n        try {\r\n            entity = work.get(PersonEntity.class, \"P1\");\r\n        } catch (NoSuchEntityException expected) {\r\n            // expected\r\n        }\r\n        assertNull(\"Entity not removed.\", entity);\r\n        work.complete();\r\n    } catch (Throwable e) {\r\n        work.discard();\r\n        throw e;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\entitystore-rest\\src\\test\\java\\org\\qi4j\\rest\\RestTest.java",
+  "methodName" : "givenAnTypeWhenExecutingGetCommandThenExpectTheCorrectXml",
+  "sourceCode" : "@Test\r\npublic void givenAnTypeWhenExecutingGetCommandThenExpectTheCorrectXml() throws Exception {\r\n    final RestTester restTester = objectBuilderFactory.newObject(RestTester.class);\r\n    final String result = restTester.getEntities(PersonEntity.class);\r\n    assertThat(\"Returned XML\", result, anyOf(equalTo(\"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?><entities><entity href=\\\"/entity/org.qi4j.rest.RestTest$PersonEntity/P1\\\">P1</entity><entity href=\\\"/entity/org.qi4j.rest.RestTest$PersonEntity/P2\\\">P2</entity></entities>\"), equalTo(\"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"no\\\"?><entities><entity href=\\\"/entity/org.qi4j.rest.RestTest$PersonEntity/P1\\\">P1</entity><entity href=\\\"/entity/org.qi4j.rest.RestTest$PersonEntity/P2\\\">P2</entity></entities>\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "showNetwork",
+  "sourceCode" : "@Test\r\npublic void showNetwork() throws IOException {\r\n    final ServiceReference<RdfIndexerExporterComposite> indexerService = assembler.serviceFinder().findService(RdfIndexerExporterComposite.class);\r\n    final RdfIndexerExporterComposite exporter = indexerService.get();\r\n    exporter.toRDF(System.out, RDFFormat.RDFXML);\r\n    // todo asserts\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script01",
+  "sourceCode" : "@Test\r\npublic void script01() throws EntityFinderException {\r\n    // should return all persons (Joe, Ann, Jack Doe)\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Person.class.getName(), ALL, NO_SORTING, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(entities, JOE, JACK, ANN);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script02",
+  "sourceCode" : "@Test\r\npublic void script02() throws EntityFinderException {\r\n    Nameable nameable = templateFor(Nameable.class);\r\n    // should return Gaming domain\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Domain.class.getName(), eq(nameable.name(), \"Gaming\"), NO_SORTING, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(entities, \"Gaming\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script03",
+  "sourceCode" : "@Test\r\npublic void script03() throws EntityFinderException {\r\n    // should return all entities\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Nameable.class.getName(), ALL, NO_SORTING, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(entities, NameableAssert.allNames());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script04",
+  "sourceCode" : "@Test\r\npublic void script04() throws EntityFinderException {\r\n    Person person = templateFor(Person.class);\r\n    // should return Joe and Ann Doe\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Person.class.getName(), eq(person.placeOfBirth().get().name(), \"Kuala Lumpur\"), NO_SORTING, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(entities, JOE, ANN);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script05",
+  "sourceCode" : "@Test\r\npublic void script05() throws EntityFinderException {\r\n    Person person = templateFor(Person.class);\r\n    // should return Joe Doe\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Person.class.getName(), eq(person.mother().get().placeOfBirth().get().name(), \"Kuala Lumpur\"), NO_SORTING, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(entities, JOE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script06",
+  "sourceCode" : "@Test\r\npublic void script06() throws EntityFinderException {\r\n    Person person = templateFor(Person.class);\r\n    // should return Joe and Ann Doe\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Person.class.getName(), ge(person.yearOfBirth(), 1973), NO_SORTING, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(entities, JOE, ANN);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script07",
+  "sourceCode" : "@Test\r\npublic void script07() throws EntityFinderException {\r\n    Person person = templateFor(Person.class);\r\n    // should return Jack Doe\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Nameable.class.getName(), and(ge(person.yearOfBirth(), 1900), eq(person.placeOfBirth().get().name(), \"Penang\")), NO_SORTING, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(entities, JACK);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script08",
+  "sourceCode" : "@Test\r\npublic void script08() throws EntityFinderException {\r\n    Person person = templateFor(Person.class);\r\n    // should return Jack and Ann Doe\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Person.class.getName(), or(eq(person.yearOfBirth(), 1970), eq(person.yearOfBirth(), 1975)), NO_SORTING, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(entities, JACK, ANN);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script09",
+  "sourceCode" : "@Test\r\npublic void script09() throws EntityFinderException {\r\n    Person person = templateFor(Person.class);\r\n    // should return Ann Doe\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Female.class.getName(), or(eq(person.yearOfBirth(), 1970), eq(person.yearOfBirth(), 1975)), NO_SORTING, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(entities, ANN);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script10",
+  "sourceCode" : "@Test\r\npublic void script10() throws EntityFinderException {\r\n    Person person = templateFor(Person.class);\r\n    // should return Joe and Jack Doe\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Person.class.getName(), not(eq(person.yearOfBirth(), 1975)), NO_SORTING, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(entities, JOE, JACK);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script11",
+  "sourceCode" : "@Test\r\npublic void script11() throws EntityFinderException {\r\n    Person person = templateFor(Person.class);\r\n    // should return Joe Doe\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Person.class.getName(), isNotNull(person.email()), NO_SORTING, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(entities, JOE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script12",
+  "sourceCode" : "@Test\r\npublic void script12() throws EntityFinderException {\r\n    Person person = templateFor(Person.class);\r\n    // should return Ann and Jack Doe\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Person.class.getName(), isNull(person.email()), NO_SORTING, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(entities, ANN, JACK);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script13",
+  "sourceCode" : "@Test\r\npublic void script13() throws EntityFinderException {\r\n    Male person = templateFor(Male.class);\r\n    // should return Jack Doe\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Person.class.getName(), isNotNull(person.wife()), NO_SORTING, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(entities, JACK);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script14",
+  "sourceCode" : "@Test\r\npublic void script14() throws EntityFinderException {\r\n    Male person = templateFor(Male.class);\r\n    // should return Joe Doe\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Male.class.getName(), isNull(person.wife()), NO_SORTING, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(entities, JOE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script15",
+  "sourceCode" : "@Test\r\npublic void script15() throws EntityFinderException {\r\n    Male person = templateFor(Male.class);\r\n    // should return Ann and Joe Doe\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Person.class.getName(), isNull(person.wife()), NO_SORTING, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(entities, ANN, JOE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script16",
+  "sourceCode" : "@Test\r\npublic void script16() throws EntityFinderException {\r\n    // should return only 2 entities\r\n    final List<EntityReference> references = toList(entityFinder.findEntities(Nameable.class.getName(), ALL, NO_SORTING, NO_FIRST_RESULT, 2));\r\n    assertEquals(\"2 identitities\", 2, references.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script17",
+  "sourceCode" : "@Test\r\npublic void script17() throws EntityFinderException {\r\n    // should return only 2 entities starting with third one\r\n    final List<EntityReference> references = toList(entityFinder.findEntities(Nameable.class.getName(), ALL, NO_SORTING, 3, 2));\r\n    assertEquals(\"2 identitities\", 2, references.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script18",
+  "sourceCode" : "@Test\r\npublic void script18() throws EntityFinderException {\r\n    // should return all Nameable entities sorted by name\r\n    Nameable nameable = templateFor(Nameable.class);\r\n    final String[] allNames = NameableAssert.allNames();\r\n    Arrays.sort(allNames);\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Nameable.class.getName(), ALL, new OrderBy[] { orderBy(nameable.name()) }, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(false, entities, allNames);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script19",
+  "sourceCode" : "@Test\r\npublic void script19() throws EntityFinderException {\r\n    // should return all Nameable entities with a name > \"B\" sorted by name\r\n    Nameable nameable = templateFor(Nameable.class);\r\n    List<String> largerThanB = new ArrayList<String>();\r\n    for (String name : NameableAssert.allNames()) {\r\n        if (name.compareTo(\"B\") > 0) {\r\n            largerThanB.add(name);\r\n        }\r\n    }\r\n    Collections.sort(largerThanB);\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Nameable.class.getName(), gt(nameable.name(), \"B\"), new OrderBy[] { orderBy(nameable.name()) }, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(false, entities, largerThanB.toArray(new String[largerThanB.size()]));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script20",
+  "sourceCode" : "@Test\r\npublic void script20() throws EntityFinderException {\r\n    // should return all Persons born after 1973 (Ann and Joe Doe) sorted descending by name\r\n    Person person = templateFor(Person.class);\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Person.class.getName(), gt(person.yearOfBirth(), 1973), new OrderBy[] { orderBy(person.name(), OrderBy.Order.DESCENDING) }, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(false, entities, JOE, ANN);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script21",
+  "sourceCode" : "@Test\r\npublic void script21() throws EntityFinderException {\r\n    // should return all Persons sorted name of the city they were born\r\n    Person person = templateFor(Person.class);\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Person.class.getName(), ALL, new OrderBy[] { orderBy(person.placeOfBirth().get().name()), orderBy(person.name()) }, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(false, entities, ANN, JOE, JACK);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityFinderTest.java",
+  "methodName" : "script22",
+  "sourceCode" : "@Test\r\npublic void script22() throws EntityFinderException {\r\n    Nameable nameable = templateFor(Nameable.class);\r\n    // should return Jack and Joe Doe\r\n    Iterable<EntityReference> entities = entityFinder.findEntities(Nameable.class.getName(), matches(nameable.name(), \"J.*Doe\"), NO_SORTING, NO_FIRST_RESULT, NO_MAX_RESULTS);\r\n    assertNames(entities, JACK, JOE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfEntityIndexerTest.java",
+  "methodName" : "script01",
+  "sourceCode" : "@Test\r\npublic void script01() throws UnitOfWorkCompletionException, IOException {\r\n    SingletonAssembler assembler = new SingletonAssembler() {\r\n\r\n        public void assemble(ModuleAssembly module) throws AssemblyException {\r\n            module.addObjects(EntityStateSerializer.class, EntityTypeSerializer.class);\r\n            module.addEntities(MaleEntity.class, FemaleEntity.class, CityEntity.class, DomainEntity.class, AccountEntity.class, CatEntity.class);\r\n            module.addValues(URL.class, Address.class, Protocol.class, Host.class, Port.class, File.class, QueryParam.class);\r\n            module.addServices(MemoryEntityStoreService.class, UuidIdentityGeneratorService.class, RdfIndexerExporterComposite.class, RdfFactoryService.class, MemoryRepositoryService.class);\r\n        }\r\n    };\r\n    populate(assembler);\r\n    assembler.serviceFinder().<RdfIndexerExporterComposite>findService(RdfIndexerExporterComposite.class).get().toRDF(System.out, RDFFormat.RDFXML);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "showNetwork",
+  "sourceCode" : "@Test\r\npublic void showNetwork() throws IOException {\r\n    ServiceFinder serviceFinder = assembler.serviceFinder();\r\n    RdfIndexerExporterComposite rdfIndexerExporter = serviceFinder.<RdfIndexerExporterComposite>findService(RdfIndexerExporterComposite.class).get();\r\n    rdfIndexerExporter.toRDF(System.out, RDFFormat.RDFXML);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script01",
+  "sourceCode" : "@Test\r\npublic void script01() throws EntityFinderException {\r\n    final Query<Person> query = qbf.newNamedQuery(Person.class, unitOfWork, \"script01\");\r\n    System.out.println(\"*** script01: \" + query);\r\n    verifyUnorderedResults(query, \"Joe Doe\", \"Ann Doe\", \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script02",
+  "sourceCode" : "@Test\r\npublic void script02() throws EntityFinderException {\r\n    final Query<Domain> query = qbf.newNamedQuery(Domain.class, unitOfWork, \"script02\");\r\n    System.out.println(\"*** script02: \" + query);\r\n    verifyUnorderedResults(query, \"Gaming\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script03",
+  "sourceCode" : "@Test\r\npublic void script03() throws EntityFinderException {\r\n    final Query<Nameable> query = qbf.newNamedQuery(Nameable.class, unitOfWork, \"script03\");\r\n    System.out.println(\"*** script03: \" + query);\r\n    verifyUnorderedResults(query, \"Joe Doe\", \"Ann Doe\", \"Jack Doe\", \"Penang\", \"Kuala Lumpur\", \"Cooking\", \"Gaming\", \"Programming\", \"Cars\", \"Felix\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script04",
+  "sourceCode" : "@Test\r\npublic void script04() throws EntityFinderException {\r\n    final Query<Person> query = qbf.newNamedQuery(Person.class, unitOfWork, \"script04\");\r\n    System.out.println(\"*** script04: \" + query);\r\n    verifyUnorderedResults(query, \"Joe Doe\", \"Ann Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script05",
+  "sourceCode" : "@Test\r\npublic void script05() throws EntityFinderException {\r\n    final Query<Person> query = qbf.newNamedQuery(Person.class, unitOfWork, \"script05\");\r\n    System.out.println(\"*** script05: \" + query);\r\n    verifyUnorderedResults(query, \"Joe Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script06",
+  "sourceCode" : "@Test\r\npublic void script06() throws EntityFinderException {\r\n    final Query<Person> query = qbf.newNamedQuery(Person.class, unitOfWork, \"script06\");\r\n    System.out.println(\"*** script06: \" + query);\r\n    verifyUnorderedResults(query, \"Joe Doe\", \"Ann Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script07",
+  "sourceCode" : "@Test\r\npublic void script07() throws EntityFinderException {\r\n    final Query<Nameable> query = qbf.newNamedQuery(Nameable.class, unitOfWork, \"script07\");\r\n    System.out.println(\"*** script07: \" + query);\r\n    verifyUnorderedResults(query, \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script08",
+  "sourceCode" : "@Test\r\npublic void script08() throws EntityFinderException {\r\n    final Query<Person> query = qbf.newNamedQuery(Person.class, unitOfWork, \"script08\");\r\n    System.out.println(\"*** script08: \" + query);\r\n    verifyUnorderedResults(query, \"Jack Doe\", \"Ann Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script09",
+  "sourceCode" : "@Test\r\npublic void script09() throws EntityFinderException {\r\n    final Query<Female> query = qbf.newNamedQuery(Female.class, unitOfWork, \"script09\");\r\n    System.out.println(\"*** script09: \" + query);\r\n    verifyUnorderedResults(query, \"Ann Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script10",
+  "sourceCode" : "@Test\r\npublic void script10() throws EntityFinderException {\r\n    final Query<Person> query = qbf.newNamedQuery(Person.class, unitOfWork, \"script10\");\r\n    System.out.println(\"*** script10: \" + query);\r\n    verifyUnorderedResults(query, \"Jack Doe\", \"Joe Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script11",
+  "sourceCode" : "@Test\r\npublic void script11() throws EntityFinderException {\r\n    final Query<Person> query = qbf.newNamedQuery(Person.class, unitOfWork, \"script11\");\r\n    System.out.println(\"*** script11: \" + query);\r\n    verifyUnorderedResults(query, \"Joe Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script12",
+  "sourceCode" : "@Test\r\npublic void script12() throws EntityFinderException {\r\n    final Query<Person> query = qbf.newNamedQuery(Person.class, unitOfWork, \"script12\");\r\n    System.out.println(\"*** script12: \" + query);\r\n    verifyUnorderedResults(query, \"Ann Doe\", \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script13",
+  "sourceCode" : "@Test\r\npublic void script13() throws EntityFinderException {\r\n    final Query<Person> query = qbf.newNamedQuery(Person.class, unitOfWork, \"script13\");\r\n    System.out.println(\"*** script13: \" + query);\r\n    verifyUnorderedResults(query, \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script14",
+  "sourceCode" : "@Test\r\npublic void script14() throws EntityFinderException {\r\n    final Query<Male> query = qbf.newNamedQuery(Male.class, unitOfWork, \"script14\");\r\n    System.out.println(\"*** script14: \" + query);\r\n    verifyUnorderedResults(query, \"Joe Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script15",
+  "sourceCode" : "@Test\r\npublic void script15() throws EntityFinderException {\r\n    final Query<Person> query = qbf.newNamedQuery(Person.class, unitOfWork, \"script15\");\r\n    System.out.println(\"*** script15: \" + query);\r\n    verifyUnorderedResults(query, \"Joe Doe\", \"Ann Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script16",
+  "sourceCode" : "@Test\r\npublic void script16() throws EntityFinderException {\r\n    Nameable nameable = templateFor(Nameable.class);\r\n    final Query<Nameable> query = qbf.newNamedQuery(Nameable.class, unitOfWork, \"script16\");\r\n    query.orderBy(orderBy(nameable.name()));\r\n    query.maxResults(2);\r\n    System.out.println(\"*** script16: \" + query);\r\n    verifyOrderedResults(query, \"Ann Doe\", \"Cars\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script17",
+  "sourceCode" : "@Test\r\npublic void script17() throws EntityFinderException {\r\n    Nameable nameable = templateFor(Nameable.class);\r\n    final Query<Nameable> query = qbf.newNamedQuery(Nameable.class, unitOfWork, \"script17\");\r\n    query.orderBy(orderBy(nameable.name()));\r\n    query.firstResult(3);\r\n    query.maxResults(3);\r\n    System.out.println(\"*** script17: \" + query);\r\n    verifyOrderedResults(query, \"Felix\", \"Gaming\", \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script18",
+  "sourceCode" : "@Test\r\npublic void script18() throws EntityFinderException {\r\n    Nameable nameable = templateFor(Nameable.class);\r\n    final Query<Nameable> query = qbf.newNamedQuery(Nameable.class, unitOfWork, \"script18\");\r\n    query.orderBy(orderBy(nameable.name()));\r\n    System.out.println(\"*** script18: \" + query);\r\n    verifyOrderedResults(query, \"Ann Doe\", \"Cars\", \"Cooking\", \"Felix\", \"Gaming\", \"Jack Doe\", \"Joe Doe\", \"Kuala Lumpur\", \"Penang\", \"Programming\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script19",
+  "sourceCode" : "@Test\r\npublic void script19() throws EntityFinderException {\r\n    Nameable nameable = templateFor(Nameable.class);\r\n    final Query<Nameable> query = qbf.newNamedQuery(Nameable.class, unitOfWork, \"script19\");\r\n    query.orderBy(orderBy(nameable.name()));\r\n    System.out.println(\"*** script19: \" + query);\r\n    verifyOrderedResults(query, \"Felix\", \"Gaming\", \"Jack Doe\", \"Joe Doe\", \"Kuala Lumpur\", \"Penang\", \"Programming\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script20",
+  "sourceCode" : "@Test\r\npublic void script20() throws EntityFinderException {\r\n    Person person = templateFor(Person.class);\r\n    final Query<Person> query = qbf.newNamedQuery(Person.class, unitOfWork, \"script20\");\r\n    query.orderBy(orderBy(person.name(), OrderBy.Order.DESCENDING));\r\n    System.out.println(\"*** script20: \" + query);\r\n    verifyOrderedResults(query, \"Joe Doe\", \"Ann Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script21",
+  "sourceCode" : "@Test\r\npublic void script21() throws EntityFinderException {\r\n    Person person = templateFor(Person.class);\r\n    final Query<Person> query = qbf.newNamedQuery(Person.class, unitOfWork, \"script21\");\r\n    query.orderBy(orderBy(person.placeOfBirth().get().name()), orderBy(person.yearOfBirth()));\r\n    System.out.println(\"*** script21: \" + query);\r\n    verifyOrderedResults(query, \"Ann Doe\", \"Joe Doe\", \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script22",
+  "sourceCode" : "@Test\r\npublic void script22() throws EntityFinderException {\r\n    final Query<Nameable> query = qbf.newNamedQuery(Nameable.class, unitOfWork, \"script22\");\r\n    System.out.println(\"*** script22: \" + query);\r\n    verifyUnorderedResults(query, \"Jack Doe\", \"Joe Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script23",
+  "sourceCode" : "@Ignore(\"Skip this one for now. It sporadically fails sometimes.\")\r\n@Test\r\npublic void script23() throws EntityFinderException {\r\n    final Query<Person> query = qbf.newNamedQuery(Person.class, unitOfWork, \"script23\");\r\n    System.out.println(\"*** script23: \" + query);\r\n    verifyOrderedResults(query, \"Jack Doe\");\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script24",
+  "sourceCode" : "@Test\r\npublic void script24() throws EntityFinderException {\r\n    final Query<Domain> query = qbf.newNamedQuery(Domain.class, unitOfWork, \"script24\");\r\n    System.out.println(\"*** script24: \" + query);\r\n    assertThat(query.find().name().get(), is(equalTo(\"Gaming\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script29",
+  "sourceCode" : "@Test\r\n@Ignore(\"Wait until indexing of complex values is implemented\")\r\npublic void script29() {\r\n    final Query<Person> query = qbf.newNamedQuery(Person.class, unitOfWork, \"script29\");\r\n    System.out.println(\"*** script29: \" + query);\r\n    verifyUnorderedResults(query, \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script30",
+  "sourceCode" : "@Test\r\n@Ignore(\"Wait till 0.7.0?\")\r\npublic void script30() {\r\n    final Query<Nameable> query = qbf.newNamedQuery(Nameable.class, unitOfWork, \"script30\");\r\n    System.out.println(\"*** script30: \" + query);\r\n    verifyUnorderedResults(query, \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfNamedQueryTest.java",
+  "methodName" : "script31",
+  "sourceCode" : "@Test\r\n@Ignore(\"Wait till 0.7.0?\")\r\npublic void script31() {\r\n    final Query<Person> query = qbf.newNamedQuery(Person.class, unitOfWork, \"script31\");\r\n    System.out.println(\"*** script31: \" + query);\r\n    verifyUnorderedResults(query, \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "showNetwork",
+  "sourceCode" : "@Test\r\npublic void showNetwork() throws IOException {\r\n    ServiceFinder serviceFinder = assembler.serviceFinder();\r\n    RdfIndexerExporterComposite rdfIndexerExporter = serviceFinder.<RdfIndexerExporterComposite>findService(RdfIndexerExporterComposite.class).get();\r\n    rdfIndexerExporter.toRDF(System.out, RDFFormat.RDFXML);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script01",
+  "sourceCode" : "@Test\r\npublic void script01() throws EntityFinderException {\r\n    final QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    final Query<Person> query = qb.newQuery(unitOfWork);\r\n    System.out.println(\"*** script01: \" + query);\r\n    verifyUnorderedResults(query, \"Joe Doe\", \"Ann Doe\", \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script02",
+  "sourceCode" : "@Test\r\npublic void script02() throws EntityFinderException {\r\n    final QueryBuilder<Domain> qb = qbf.newQueryBuilder(Domain.class);\r\n    final Nameable nameable = templateFor(Nameable.class);\r\n    final Query<Domain> query = qb.where(eq(nameable.name(), \"Gaming\")).newQuery(unitOfWork);\r\n    System.out.println(\"*** script02: \" + query);\r\n    verifyUnorderedResults(query, \"Gaming\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script03",
+  "sourceCode" : "@Test\r\npublic void script03() throws EntityFinderException {\r\n    QueryBuilder<Nameable> qb = qbf.newQueryBuilder(Nameable.class);\r\n    Query<Nameable> query = qb.newQuery(unitOfWork);\r\n    verifyUnorderedResults(query, \"Joe Doe\", \"Ann Doe\", \"Jack Doe\", \"Penang\", \"Kuala Lumpur\", \"Cooking\", \"Gaming\", \"Programming\", \"Cars\", \"Felix\");\r\n    System.out.println(\"*** script03: \" + query);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script04",
+  "sourceCode" : "@Test\r\npublic void script04() throws EntityFinderException {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Person personTemplate = templateFor(Person.class);\r\n    City placeOfBirth = personTemplate.placeOfBirth().get();\r\n    Query<Person> query = qb.where(eq(placeOfBirth.name(), \"Kuala Lumpur\")).newQuery(unitOfWork);\r\n    System.out.println(\"*** script04: \" + query);\r\n    verifyUnorderedResults(query, \"Joe Doe\", \"Ann Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script05",
+  "sourceCode" : "@Test\r\npublic void script05() throws EntityFinderException {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Person person = templateFor(Person.class);\r\n    Query<Person> query = qb.where(eq(person.mother().get().placeOfBirth().get().name(), \"Kuala Lumpur\")).newQuery(unitOfWork);\r\n    System.out.println(\"*** script05: \" + query);\r\n    verifyUnorderedResults(query, \"Joe Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script06",
+  "sourceCode" : "@Test\r\npublic void script06() throws EntityFinderException {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Person person = templateFor(Person.class);\r\n    Query<Person> query = qb.where(ge(person.yearOfBirth(), 1973)).newQuery(unitOfWork);\r\n    System.out.println(\"*** script06: \" + query);\r\n    verifyUnorderedResults(query, \"Joe Doe\", \"Ann Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script07",
+  "sourceCode" : "@Test\r\npublic void script07() throws EntityFinderException {\r\n    QueryBuilder<Nameable> qb = qbf.newQueryBuilder(Nameable.class);\r\n    Person person = templateFor(Person.class);\r\n    Query<Nameable> query = qb.where(and(ge(person.yearOfBirth(), 1900), eq(person.placeOfBirth().get().name(), \"Penang\"))).newQuery(unitOfWork);\r\n    System.out.println(\"*** script07: \" + query);\r\n    verifyUnorderedResults(query, \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script08",
+  "sourceCode" : "@Test\r\npublic void script08() throws EntityFinderException {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Person person = templateFor(Person.class);\r\n    Query<Person> query = qb.where(or(eq(person.yearOfBirth(), 1970), eq(person.yearOfBirth(), 1975))).newQuery(unitOfWork);\r\n    System.out.println(\"*** script08: \" + query);\r\n    verifyUnorderedResults(query, \"Jack Doe\", \"Ann Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script09",
+  "sourceCode" : "@Test\r\npublic void script09() throws EntityFinderException {\r\n    QueryBuilder<Female> qb = qbf.newQueryBuilder(Female.class);\r\n    Person person = templateFor(Person.class);\r\n    Query<Female> query = qb.where(or(eq(person.yearOfBirth(), 1970), eq(person.yearOfBirth(), 1975))).newQuery(unitOfWork);\r\n    System.out.println(\"*** script09: \" + query);\r\n    verifyUnorderedResults(query, \"Ann Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script10",
+  "sourceCode" : "@Test\r\npublic void script10() throws EntityFinderException {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Person person = templateFor(Person.class);\r\n    Query<Person> query = qb.where(not(eq(person.yearOfBirth(), 1975))).newQuery(unitOfWork);\r\n    System.out.println(\"*** script10: \" + query);\r\n    verifyUnorderedResults(query, \"Jack Doe\", \"Joe Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script11",
+  "sourceCode" : "@Test\r\npublic void script11() throws EntityFinderException {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Person person = templateFor(Person.class);\r\n    Query<Person> query = qb.where(isNotNull(person.email())).newQuery(unitOfWork);\r\n    System.out.println(\"*** script11: \" + query);\r\n    verifyUnorderedResults(query, \"Joe Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script12",
+  "sourceCode" : "@Test\r\npublic void script12() throws EntityFinderException {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Person person = templateFor(Person.class);\r\n    Query<Person> query = qb.where(isNull(person.email())).newQuery(unitOfWork);\r\n    System.out.println(\"*** script12: \" + query);\r\n    verifyUnorderedResults(query, \"Ann Doe\", \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script13",
+  "sourceCode" : "@Test\r\npublic void script13() throws EntityFinderException {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Male person = templateFor(Male.class);\r\n    Query<Person> query = qb.where(isNotNull(person.wife())).newQuery(unitOfWork);\r\n    System.out.println(\"*** script13: \" + query);\r\n    verifyUnorderedResults(query, \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script14",
+  "sourceCode" : "@Test\r\npublic void script14() throws EntityFinderException {\r\n    QueryBuilder<Male> qb = qbf.newQueryBuilder(Male.class);\r\n    Male person = templateFor(Male.class);\r\n    Query<Male> query = qb.where(isNull(person.wife())).newQuery(unitOfWork);\r\n    System.out.println(\"*** script14: \" + query);\r\n    verifyUnorderedResults(query, \"Joe Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script15",
+  "sourceCode" : "@Test\r\npublic void script15() throws EntityFinderException {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Male person = templateFor(Male.class);\r\n    Query<Person> query = qb.where(isNull(person.wife())).newQuery(unitOfWork);\r\n    System.out.println(\"*** script15: \" + query);\r\n    verifyUnorderedResults(query, \"Joe Doe\", \"Ann Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script16",
+  "sourceCode" : "@Test\r\npublic void script16() throws EntityFinderException {\r\n    QueryBuilder<Nameable> qb = qbf.newQueryBuilder(Nameable.class);\r\n    // should return only 2 entities\r\n    Nameable nameable = templateFor(Nameable.class);\r\n    Query<Nameable> query = qb.newQuery(unitOfWork);\r\n    query.orderBy(orderBy(nameable.name()));\r\n    query.maxResults(2);\r\n    System.out.println(\"*** script16: \" + query);\r\n    verifyOrderedResults(query, \"Ann Doe\", \"Cars\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script17",
+  "sourceCode" : "@Test\r\npublic void script17() throws EntityFinderException {\r\n    QueryBuilder<Nameable> qb = qbf.newQueryBuilder(Nameable.class);\r\n    // should return only 3 entities starting with forth one\r\n    Nameable nameable = templateFor(Nameable.class);\r\n    Query<Nameable> query = qb.newQuery(unitOfWork);\r\n    query.orderBy(orderBy(nameable.name()));\r\n    query.firstResult(3);\r\n    query.maxResults(3);\r\n    System.out.println(\"*** script17: \" + query);\r\n    verifyOrderedResults(query, \"Felix\", \"Gaming\", \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script18",
+  "sourceCode" : "@Test\r\npublic void script18() throws EntityFinderException {\r\n    QueryBuilder<Nameable> qb = qbf.newQueryBuilder(Nameable.class);\r\n    // should return all Nameable entities sorted by name\r\n    Nameable nameable = templateFor(Nameable.class);\r\n    Query<Nameable> query = qb.newQuery(unitOfWork);\r\n    query.orderBy(orderBy(nameable.name()));\r\n    System.out.println(\"*** script18: \" + query);\r\n    verifyOrderedResults(query, \"Ann Doe\", \"Cars\", \"Cooking\", \"Felix\", \"Gaming\", \"Jack Doe\", \"Joe Doe\", \"Kuala Lumpur\", \"Penang\", \"Programming\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script19",
+  "sourceCode" : "@Test\r\npublic void script19() throws EntityFinderException {\r\n    QueryBuilder<Nameable> qb = qbf.newQueryBuilder(Nameable.class);\r\n    // should return all Nameable entities with a name > \"D\" sorted by name\r\n    Nameable nameable = templateFor(Nameable.class);\r\n    Query<Nameable> query = qb.where(gt(nameable.name(), \"D\")).newQuery(unitOfWork);\r\n    query.orderBy(orderBy(nameable.name()));\r\n    System.out.println(\"*** script19: \" + query);\r\n    verifyOrderedResults(query, \"Felix\", \"Gaming\", \"Jack Doe\", \"Joe Doe\", \"Kuala Lumpur\", \"Penang\", \"Programming\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script20",
+  "sourceCode" : "@Test\r\npublic void script20() throws EntityFinderException {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    // should return all Persons born after 1973 (Ann and Joe Doe) sorted descending by name\r\n    Person person = templateFor(Person.class);\r\n    Query<Person> query = qb.where(gt(person.yearOfBirth(), 1973)).newQuery(unitOfWork);\r\n    query.orderBy(orderBy(person.name(), OrderBy.Order.DESCENDING));\r\n    System.out.println(\"*** script20: \" + query);\r\n    verifyOrderedResults(query, \"Joe Doe\", \"Ann Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script21",
+  "sourceCode" : "@Test\r\npublic void script21() throws EntityFinderException {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    // should return all Persons sorted by name of the city they were born, and then by year they were born\r\n    Person person = templateFor(Person.class);\r\n    Query<Person> query = qb.newQuery(unitOfWork);\r\n    query.orderBy(orderBy(person.placeOfBirth().get().name()), orderBy(person.yearOfBirth()));\r\n    System.out.println(\"*** script21: \" + query);\r\n    verifyOrderedResults(query, \"Ann Doe\", \"Joe Doe\", \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script22",
+  "sourceCode" : "@Test\r\npublic void script22() throws EntityFinderException {\r\n    QueryBuilder<Nameable> qb = qbf.newQueryBuilder(Nameable.class);\r\n    Nameable nameable = templateFor(Nameable.class);\r\n    // should return Jack and Joe Doe\r\n    Query<Nameable> query = qb.where(matches(nameable.name(), \"J.*Doe\")).newQuery(unitOfWork);\r\n    System.out.println(\"*** script22: \" + query);\r\n    verifyUnorderedResults(query, \"Jack Doe\", \"Joe Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script23",
+  "sourceCode" : "@Ignore(\"Skip this one for now. It sporadically fails sometimes.\")\r\n@Test\r\npublic void script23() throws EntityFinderException {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Person person = templateFor(Person.class);\r\n    Domain interests = oneOf(person.interests());\r\n    Query<Person> query = qb.where(eq(interests.name(), \"Cars\")).newQuery(unitOfWork);\r\n    System.out.println(\"*** script23: \" + query);\r\n    verifyOrderedResults(query, \"Jack Doe\");\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script24",
+  "sourceCode" : "@Test\r\npublic void script24() throws EntityFinderException {\r\n    final QueryBuilder<Domain> qb = qbf.newQueryBuilder(Domain.class);\r\n    final Nameable nameable = templateFor(Nameable.class);\r\n    final Query<Domain> query = qb.where(eq(nameable.name(), \"Gaming\")).newQuery(unitOfWork);\r\n    System.out.println(\"*** script24: \" + query);\r\n    assertThat(query.find().name().get(), is(equalTo(\"Gaming\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script25",
+  "sourceCode" : "@Test(expected = NotQueryableException.class)\r\npublic void script25() {\r\n    qbf.newQueryBuilder(File.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script26",
+  "sourceCode" : "@Test(expected = NotQueryableException.class)\r\npublic void script26() {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Person person = templateFor(Person.class);\r\n    qb.where(eq(person.personalWebsite().get().file().get().value(), \"some/path\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script27",
+  "sourceCode" : "@Test(expected = NotQueryableException.class)\r\npublic void script27() {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Person person = templateFor(Person.class);\r\n    qb.where(eq(person.personalWebsite().get().host().get().value(), \"www.qi4j.org\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script28",
+  "sourceCode" : "@Test(expected = NotQueryableException.class)\r\npublic void script28() {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Person person = templateFor(Person.class);\r\n    qb.where(eq(person.personalWebsite().get().port().get().value(), 8080));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script29",
+  "sourceCode" : "@Test\r\n@Ignore(\"Wait until indexing of complex values is implemented\")\r\npublic void script29() {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Person person = templateFor(Person.class);\r\n    Query<Person> query = qb.where(eq(person.personalWebsite().get().protocol().get().value(), \"http\")).newQuery(unitOfWork);\r\n    System.out.println(\"*** script29: \" + query);\r\n    verifyUnorderedResults(query, \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script30",
+  "sourceCode" : "@Test\r\n@Ignore(\"Wait till 0.7.0?\")\r\npublic void script30() {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Person person = templateFor(Person.class);\r\n    //oneOf( person.personalWebsite().get().queryParams() );\r\n    QueryParam queryParam = null;\r\n    Query<Person> query = qb.where(and(eq(queryParam.name(), \"foo\"), eq(queryParam.value(), \"bar\"))).newQuery(unitOfWork);\r\n    System.out.println(\"*** script30: \" + query);\r\n    verifyUnorderedResults(query, \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script31",
+  "sourceCode" : "@Test\r\n@Ignore(\"Wait till 0.7.0?\")\r\npublic void script31() {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Person person = templateFor(Person.class);\r\n    Map<String, String> info = new HashMap<String, String>();\r\n    Query<Person> query = qb.where(eq(person.additionalInfo(), info)).newQuery(unitOfWork);\r\n    System.out.println(\"*** script31: \" + query);\r\n    verifyUnorderedResults(query, \"Jack Doe\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script32",
+  "sourceCode" : "@Test\r\n@Ignore(\"Wait for QI-58\")\r\npublic void script32() {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Person person = templateFor(Person.class);\r\n    Map<String, String> info = new HashMap<String, String>();\r\n    Query<Person> query = qb.where(eq(person.address().get().line2(), \"Qi Alley 4j\")).newQuery(unitOfWork);\r\n    System.out.println(\"*** script32: \" + query);\r\n    verifyUnorderedResults(query, \"Joe Doe\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script33",
+  "sourceCode" : "@Test\r\npublic void script33() {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Person person = templateFor(Person.class);\r\n    Domain gaming = unitOfWork.get(Domain.class, \"Gaming\");\r\n    Query<Person> query = qb.where(contains(person.interests(), gaming)).newQuery(unitOfWork);\r\n    System.out.println(\"*** script33: \" + query);\r\n    verifyUnorderedResults(query, \"Joe Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\indexing-rdf\\src\\test\\java\\org\\qi4j\\index\\rdf\\RdfQueryTest.java",
+  "methodName" : "script34",
+  "sourceCode" : "@Test\r\npublic void script34() {\r\n    QueryBuilder<Person> qb = qbf.newQueryBuilder(Person.class);\r\n    Person person = templateFor(Person.class);\r\n    Female annDoe = unitOfWork.get(Female.class, \"anndoe\");\r\n    Query<Person> query = qb.where(eq(person.mother(), annDoe)).newQuery(unitOfWork);\r\n    verifyUnorderedResults(query, \"Joe Doe\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\migration\\src\\test\\java\\org\\qi4j\\migration\\MigrationTest.java",
+  "methodName" : "testMigration",
+  "sourceCode" : "@Test\r\npublic void testMigration() throws UnitOfWorkCompletionException, IOException {\r\n    // Set up version 1\r\n    String id;\r\n    String data_v1;\r\n    {\r\n        SingletonAssembler v1 = new SingletonAssembler() {\r\n\r\n            public void assemble(ModuleAssembly module) throws AssemblyException {\r\n                MigrationTest.this.assemble(module);\r\n                module.layerAssembly().applicationAssembly().setVersion(\"1.0\");\r\n            }\r\n        };\r\n        UnitOfWork uow = v1.unitOfWorkFactory().newUnitOfWork();\r\n        TestEntity1_0 entity = uow.newEntity(TestEntity1_0.class);\r\n        entity.foo().set(\"Some value\");\r\n        entity.fooManyAssoc().add(entity);\r\n        entity.fooAssoc().set(entity);\r\n        id = entity.identity().get();\r\n        uow.complete();\r\n        TestData testData = (TestData) v1.module().serviceFinder().findService(TestData.class).get();\r\n        data_v1 = testData.exportData();\r\n    }\r\n    // Set up version 1.1\r\n    String data_v1_1;\r\n    {\r\n        SingletonAssembler v1_1 = new SingletonAssembler() {\r\n\r\n            public void assemble(ModuleAssembly module) throws AssemblyException {\r\n                MigrationTest.this.assemble(module);\r\n                module.layerAssembly().applicationAssembly().setVersion(\"1.1\");\r\n            }\r\n        };\r\n        TestData testData = (TestData) v1_1.serviceFinder().findService(TestData.class).get();\r\n        testData.importData(data_v1);\r\n        UnitOfWork uow = v1_1.unitOfWorkFactory().newUnitOfWork();\r\n        TestEntity1_1 entity = uow.get(TestEntity1_1.class, id);\r\n        assertThat(\"Property has been renamed\", entity.newFoo().get(), CoreMatchers.equalTo(\"Some value\"));\r\n        assertThat(\"ManyAssociation has been renamed\", entity.newFooManyAssoc().count(), CoreMatchers.equalTo(1));\r\n        assertThat(\"Association has been renamed\", entity.newFooAssoc().get(), CoreMatchers.equalTo(entity));\r\n        uow.complete();\r\n        data_v1_1 = testData.exportData();\r\n    }\r\n    // Set up version 2.0\r\n    {\r\n        SingletonAssembler v2_0 = new SingletonAssembler() {\r\n\r\n            public void assemble(ModuleAssembly module) throws AssemblyException {\r\n                MigrationTest.this.assemble(module);\r\n                module.layerAssembly().applicationAssembly().setVersion(\"2.0\");\r\n            }\r\n        };\r\n        TestData testData = (TestData) v2_0.serviceFinder().findService(TestData.class).get();\r\n        // Test migration from 1.0 -> 2.0\r\n        {\r\n            testData.importData(data_v1);\r\n            UnitOfWork uow = v2_0.unitOfWorkFactory().newUnitOfWork();\r\n            TestEntity2_0 entity = uow.get(TestEntity2_0.class, id);\r\n            assertThat(\"Property has been created\", entity.bar().get(), CoreMatchers.equalTo(\"Some value\"));\r\n            assertThat(\"Custom Property has been created\", entity.customBar().get(), CoreMatchers.equalTo(\"Hello Some value\"));\r\n            assertThat(\"ManyAssociation has been renamed\", entity.newFooManyAssoc().count(), CoreMatchers.equalTo(1));\r\n            assertThat(\"Association has been renamed\", entity.newFooAssoc().get(), CoreMatchers.equalTo(entity));\r\n            uow.complete();\r\n        }\r\n    }\r\n    // Set up version 3.0\r\n    {\r\n        SingletonAssembler v3_0 = new SingletonAssembler() {\r\n\r\n            public void assemble(ModuleAssembly module) throws AssemblyException {\r\n                MigrationTest.this.assemble(module);\r\n                module.layerAssembly().applicationAssembly().setVersion(\"3.0\");\r\n            }\r\n        };\r\n        TestData testData = (TestData) v3_0.serviceFinder().findService(TestData.class).get();\r\n        testData.importData(data_v1_1);\r\n        // Test migration from 1.0 -> 3.0\r\n        {\r\n            testData.importData(data_v1);\r\n            UnitOfWork uow = v3_0.unitOfWorkFactory().newUnitOfWork();\r\n            org.qi4j.migration.moved.TestEntity2_0 entity = uow.get(org.qi4j.migration.moved.TestEntity2_0.class, id);\r\n            uow.complete();\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Polygene\\reindexer\\src\\test\\java\\org\\qi4j\\index\\reindexer\\ReindexerTest.java",
+  "methodName" : "dummyTest",
+  "sourceCode" : "//TODO\r\n@Test\r\npublic void dummyTest() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

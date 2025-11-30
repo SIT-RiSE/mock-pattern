@@ -1,0 +1,175 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\core\\src\\test\\java\\org\\apache\\metamodel\\query\\DefaultCompiledQueryTest.java",
+  "methodName" : "testGetParameterLogic",
+  "sourceCode" : "@Test\r\npublic void testGetParameterLogic() {\r\n    DefaultCompiledQuery defaultCompiledQuery = new DefaultCompiledQuery(query);\r\n    Assert.assertEquals(3, defaultCompiledQuery.getParameters().size());\r\n    Assert.assertEquals(\"DefaultCompiledQuery[\" + \"SELECT changeSetColumn FROM (SELECT dataSourceIdColumn AS innerDataSourceRecordId FROM datastore WHERE dataSourceNameColumn = ? GROUP BY dataSourceIdColumn HAVING COUNT(dataSourceIdColumn) = 2) innerDS, datastore \" + \"WHERE versionColumn = 2 AND changeSetColumn = ? AND innerDS.innerDataSourceRecordId = dataSourceIdColumn AND dataSourceNameColumn = ?]\", defaultCompiledQuery.toString());\r\n    defaultCompiledQuery.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\core\\src\\test\\java\\org\\apache\\metamodel\\query\\DefaultCompiledQueryTest.java",
+  "methodName" : "testCloneWithParameterValues",
+  "sourceCode" : "@Test\r\npublic void testCloneWithParameterValues() {\r\n    DefaultCompiledQuery defaultCompiledQuery = new DefaultCompiledQuery(query);\r\n    Query resultQuery = defaultCompiledQuery.cloneWithParameterValues(new Object[] { \"BE\", 1, \"BE\" });\r\n    defaultCompiledQuery.close();\r\n    defaultCompiledQuery = new DefaultCompiledQuery(resultQuery);\r\n    Assert.assertEquals(0, defaultCompiledQuery.getParameters().size());\r\n    defaultCompiledQuery.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\csv\\src\\test\\java\\org\\apache\\metamodel\\csv\\UnicodeWriterTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() throws IOException {\r\n    File file = new File(\"target/unicodeWriterTest.txt\");\r\n    Writer writer = new UnicodeWriter(file, \"UTF-8\");\r\n    writer.write(\"Hello\");\r\n    writer.close();\r\n    FileInputStream is = new FileInputStream(file);\r\n    byte[] bytes = new byte[100];\r\n    assertEquals(8, is.read(bytes));\r\n    assertEquals(UnicodeWriter.UTF8_BOM[0], bytes[0]);\r\n    assertEquals(UnicodeWriter.UTF8_BOM[1], bytes[1]);\r\n    assertEquals(UnicodeWriter.UTF8_BOM[2], bytes[2]);\r\n    assertEquals((byte) 'H', bytes[3]);\r\n    is.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testSimpleQuery",
+  "sourceCode" : "@Test\r\npublic void testSimpleQuery() throws Exception {\r\n    assertEquals(\"[bulktype, peopletype, tweet1, tweet2]\", Arrays.toString(dataContext.getDefaultSchema().getTableNames()));\r\n    Table table = dataContext.getDefaultSchema().getTableByName(\"tweet1\");\r\n    assertEquals(\"[_id, message, postDate, user]\", Arrays.toString(table.getColumnNames()));\r\n    assertEquals(ColumnType.STRING, table.getColumnByName(\"user\").getType());\r\n    assertEquals(ColumnType.DATE, table.getColumnByName(\"postDate\").getType());\r\n    assertEquals(ColumnType.BIGINT, table.getColumnByName(\"message\").getType());\r\n    DataSet ds = dataContext.query().from(indexType1).select(\"user\").and(\"message\").execute();\r\n    assertEquals(ElasticSearchDataSet.class, ds.getClass());\r\n    try {\r\n        assertTrue(ds.next());\r\n        assertEquals(\"Row[values=[user1, 1]]\", ds.getRow().toString());\r\n    } finally {\r\n        ds.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testDocumentIdAsPrimaryKey",
+  "sourceCode" : "@Test\r\npublic void testDocumentIdAsPrimaryKey() throws Exception {\r\n    Table table = dataContext.getDefaultSchema().getTableByName(\"tweet2\");\r\n    Column[] pks = table.getPrimaryKeys();\r\n    assertEquals(1, pks.length);\r\n    assertEquals(\"_id\", pks[0].getName());\r\n    DataSet ds = dataContext.query().from(table).select(\"user\", \"_id\").orderBy(\"_id\").asc().execute();\r\n    try {\r\n        assertTrue(ds.next());\r\n        assertEquals(\"Row[values=[user1, tweet_tweet2_1]]\", ds.getRow().toString());\r\n    } finally {\r\n        ds.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testExecutePrimaryKeyLookupQuery",
+  "sourceCode" : "@Test\r\npublic void testExecutePrimaryKeyLookupQuery() throws Exception {\r\n    Table table = dataContext.getDefaultSchema().getTableByName(\"tweet2\");\r\n    Column[] pks = table.getPrimaryKeys();\r\n    DataSet ds = dataContext.query().from(table).selectAll().where(pks[0]).eq(\"tweet_tweet2_1\").execute();\r\n    try {\r\n        assertTrue(ds.next());\r\n        Object dateValue = ds.getRow().getValue(2);\r\n        assertEquals(\"Row[values=[tweet_tweet2_1, 1, \" + dateValue + \", user1]]\", ds.getRow().toString());\r\n        assertFalse(ds.next());\r\n        assertEquals(InMemoryDataSet.class, ds.getClass());\r\n    } finally {\r\n        ds.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testDateIsHandledAsDate",
+  "sourceCode" : "// TODO: Un-ignore this test, and it wil fail - needs fixin'\r\n@Test\r\n@Ignore\r\npublic void testDateIsHandledAsDate() throws Exception {\r\n    Table table = dataContext.getDefaultSchema().getTableByName(\"tweet1\");\r\n    Column column = table.getColumnByName(\"postDate\");\r\n    ColumnType type = column.getType();\r\n    assertEquals(ColumnType.DATE, type);\r\n    DataSet dataSet = dataContext.query().from(table).select(column).execute();\r\n    while (dataSet.next()) {\r\n        Object value = dataSet.getRow().getValue(column);\r\n        assertTrue(\"Got class: \" + value.getClass() + \", expected Date (or subclass)\", value instanceof Date);\r\n    }\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testNumberIsHandledAsNumber",
+  "sourceCode" : "@Test\r\npublic void testNumberIsHandledAsNumber() throws Exception {\r\n    Table table = dataContext.getDefaultSchema().getTableByName(peopleIndexType);\r\n    Column column = table.getColumnByName(\"age\");\r\n    ColumnType type = column.getType();\r\n    assertEquals(ColumnType.BIGINT, type);\r\n    DataSet dataSet = dataContext.query().from(table).select(column).execute();\r\n    while (dataSet.next()) {\r\n        Object value = dataSet.getRow().getValue(column);\r\n        assertTrue(\"Got class: \" + value.getClass() + \", expected Number (or subclass)\", value instanceof Number);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testCreateTableInsertQueryAndDrop",
+  "sourceCode" : "@Test\r\npublic void testCreateTableInsertQueryAndDrop() throws Exception {\r\n    final Schema schema = dataContext.getDefaultSchema();\r\n    final CreateTable createTable = new CreateTable(schema, \"testCreateTable\");\r\n    createTable.withColumn(\"foo\").ofType(ColumnType.STRING);\r\n    createTable.withColumn(\"bar\").ofType(ColumnType.NUMBER);\r\n    dataContext.executeUpdate(createTable);\r\n    final Table table = schema.getTableByName(\"testCreateTable\");\r\n    assertEquals(\"[\" + ElasticSearchDataContext.FIELD_ID + \", foo, bar]\", Arrays.toString(table.getColumnNames()));\r\n    final Column fooColumn = table.getColumnByName(\"foo\");\r\n    final Column idColumn = table.getPrimaryKeys()[0];\r\n    assertEquals(\"Column[name=_id,columnNumber=0,type=STRING,nullable=null,nativeType=null,columnSize=null]\", idColumn.toString());\r\n    dataContext.executeUpdate(new UpdateScript() {\r\n\r\n        @Override\r\n        public void run(UpdateCallback callback) {\r\n            callback.insertInto(table).value(\"foo\", \"hello\").value(\"bar\", 42).execute();\r\n            callback.insertInto(table).value(\"foo\", \"world\").value(\"bar\", 43).execute();\r\n        }\r\n    });\r\n    final DataSet ds = dataContext.query().from(table).selectAll().orderBy(\"bar\").execute();\r\n    try {\r\n        assertTrue(ds.next());\r\n        assertEquals(\"hello\", ds.getRow().getValue(fooColumn).toString());\r\n        assertNotNull(ds.getRow().getValue(idColumn));\r\n        assertTrue(ds.next());\r\n        assertEquals(\"world\", ds.getRow().getValue(fooColumn).toString());\r\n        assertNotNull(ds.getRow().getValue(idColumn));\r\n        assertFalse(ds.next());\r\n    } finally {\r\n        ds.close();\r\n    }\r\n    dataContext.executeUpdate(new DropTable(table));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testDeleteAll",
+  "sourceCode" : "@Test\r\npublic void testDeleteAll() throws Exception {\r\n    final Schema schema = dataContext.getDefaultSchema();\r\n    final CreateTable createTable = new CreateTable(schema, \"testCreateTable\");\r\n    createTable.withColumn(\"foo\").ofType(ColumnType.STRING);\r\n    createTable.withColumn(\"bar\").ofType(ColumnType.NUMBER);\r\n    dataContext.executeUpdate(createTable);\r\n    final Table table = schema.getTableByName(\"testCreateTable\");\r\n    dataContext.executeUpdate(new UpdateScript() {\r\n\r\n        @Override\r\n        public void run(UpdateCallback callback) {\r\n            callback.insertInto(table).value(\"foo\", \"hello\").value(\"bar\", 42).execute();\r\n            callback.insertInto(table).value(\"foo\", \"world\").value(\"bar\", 43).execute();\r\n        }\r\n    });\r\n    dataContext.executeUpdate(new DeleteFrom(table));\r\n    Row row = MetaModelHelper.executeSingleRowQuery(dataContext, dataContext.query().from(table).selectCount().toQuery());\r\n    assertEquals(\"Row[values=[0]]\", row.toString());\r\n    dataContext.executeUpdate(new DropTable(table));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testDeleteByQuery",
+  "sourceCode" : "@Test\r\npublic void testDeleteByQuery() throws Exception {\r\n    final Schema schema = dataContext.getDefaultSchema();\r\n    final CreateTable createTable = new CreateTable(schema, \"testCreateTable\");\r\n    createTable.withColumn(\"foo\").ofType(ColumnType.STRING);\r\n    createTable.withColumn(\"bar\").ofType(ColumnType.NUMBER);\r\n    dataContext.executeUpdate(createTable);\r\n    final Table table = schema.getTableByName(\"testCreateTable\");\r\n    dataContext.executeUpdate(new UpdateScript() {\r\n\r\n        @Override\r\n        public void run(UpdateCallback callback) {\r\n            callback.insertInto(table).value(\"foo\", \"hello\").value(\"bar\", 42).execute();\r\n            callback.insertInto(table).value(\"foo\", \"world\").value(\"bar\", 43).execute();\r\n        }\r\n    });\r\n    dataContext.executeUpdate(new DeleteFrom(table).where(\"foo\").eq(\"hello\").where(\"bar\").eq(42));\r\n    Row row = MetaModelHelper.executeSingleRowQuery(dataContext, dataContext.query().from(table).select(\"foo\", \"bar\").toQuery());\r\n    assertEquals(\"Row[values=[world, 43]]\", row.toString());\r\n    dataContext.executeUpdate(new DropTable(table));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testDeleteUnsupportedQueryType",
+  "sourceCode" : "@Test\r\npublic void testDeleteUnsupportedQueryType() throws Exception {\r\n    final Schema schema = dataContext.getDefaultSchema();\r\n    final CreateTable createTable = new CreateTable(schema, \"testCreateTable\");\r\n    createTable.withColumn(\"foo\").ofType(ColumnType.STRING);\r\n    createTable.withColumn(\"bar\").ofType(ColumnType.NUMBER);\r\n    dataContext.executeUpdate(createTable);\r\n    final Table table = schema.getTableByName(\"testCreateTable\");\r\n    try {\r\n        dataContext.executeUpdate(new UpdateScript() {\r\n\r\n            @Override\r\n            public void run(UpdateCallback callback) {\r\n                callback.insertInto(table).value(\"foo\", \"hello\").value(\"bar\", 42).execute();\r\n                callback.insertInto(table).value(\"foo\", \"world\").value(\"bar\", 43).execute();\r\n            }\r\n        });\r\n        // greater than is not yet supported\r\n        try {\r\n            dataContext.executeUpdate(new DeleteFrom(table).where(\"bar\").gt(40));\r\n            fail(\"Exception expected\");\r\n        } catch (UnsupportedOperationException e) {\r\n            assertEquals(\"Could not push down WHERE items to delete by query request: [testCreateTable.bar > 40]\", e.getMessage());\r\n        }\r\n    } finally {\r\n        dataContext.executeUpdate(new DropTable(table));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testUpdateRow",
+  "sourceCode" : "@Test\r\npublic void testUpdateRow() throws Exception {\r\n    final Schema schema = dataContext.getDefaultSchema();\r\n    final CreateTable createTable = new CreateTable(schema, \"testCreateTable\");\r\n    createTable.withColumn(\"foo\").ofType(ColumnType.STRING);\r\n    createTable.withColumn(\"bar\").ofType(ColumnType.NUMBER);\r\n    dataContext.executeUpdate(createTable);\r\n    final Table table = schema.getTableByName(\"testCreateTable\");\r\n    try {\r\n        dataContext.executeUpdate(new UpdateScript() {\r\n\r\n            @Override\r\n            public void run(UpdateCallback callback) {\r\n                callback.insertInto(table).value(\"foo\", \"hello\").value(\"bar\", 42).execute();\r\n                callback.insertInto(table).value(\"foo\", \"world\").value(\"bar\", 43).execute();\r\n            }\r\n        });\r\n        dataContext.executeUpdate(new Update(table).value(\"foo\", \"howdy\").where(\"bar\").eq(42));\r\n        DataSet dataSet = dataContext.query().from(table).select(\"foo\", \"bar\").orderBy(\"bar\").execute();\r\n        assertTrue(dataSet.next());\r\n        assertEquals(\"Row[values=[howdy, 42]]\", dataSet.getRow().toString());\r\n        assertTrue(dataSet.next());\r\n        assertEquals(\"Row[values=[world, 43]]\", dataSet.getRow().toString());\r\n        assertFalse(dataSet.next());\r\n        dataSet.close();\r\n    } finally {\r\n        dataContext.executeUpdate(new DropTable(table));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testDropTable",
+  "sourceCode" : "@Test\r\npublic void testDropTable() throws Exception {\r\n    Table table = dataContext.getDefaultSchema().getTableByName(peopleIndexType);\r\n    // assert that the table was there to begin with\r\n    {\r\n        DataSet ds = dataContext.query().from(table).selectCount().execute();\r\n        ds.next();\r\n        assertEquals(\"Row[values=[9]]\", ds.getRow().toString());\r\n        ds.close();\r\n    }\r\n    dataContext.executeUpdate(new DropTable(table));\r\n    try {\r\n        DataSet ds = dataContext.query().from(table).selectCount().execute();\r\n        ds.next();\r\n        assertEquals(\"Row[values=[0]]\", ds.getRow().toString());\r\n        ds.close();\r\n    } finally {\r\n        // restore the people documents for the next tests\r\n        insertPeopleDocuments();\r\n        client.admin().indices().prepareRefresh().execute().actionGet();\r\n        dataContext = new ElasticSearchDataContext(client, indexName);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testWhereColumnEqualsValues",
+  "sourceCode" : "@Test\r\npublic void testWhereColumnEqualsValues() throws Exception {\r\n    DataSet ds = dataContext.query().from(bulkIndexType).select(\"user\").and(\"message\").where(\"user\").isEquals(\"user4\").execute();\r\n    assertEquals(ElasticSearchDataSet.class, ds.getClass());\r\n    try {\r\n        assertTrue(ds.next());\r\n        assertEquals(\"Row[values=[user4, 4]]\", ds.getRow().toString());\r\n        assertFalse(ds.next());\r\n    } finally {\r\n        ds.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testWhereMultiColumnsEqualValues",
+  "sourceCode" : "@Test\r\npublic void testWhereMultiColumnsEqualValues() throws Exception {\r\n    DataSet ds = dataContext.query().from(bulkIndexType).select(\"user\").and(\"message\").where(\"user\").isEquals(\"user4\").and(\"message\").ne(5).execute();\r\n    assertEquals(ElasticSearchDataSet.class, ds.getClass());\r\n    try {\r\n        assertTrue(ds.next());\r\n        assertEquals(\"Row[values=[user4, 4]]\", ds.getRow().toString());\r\n        assertFalse(ds.next());\r\n    } finally {\r\n        ds.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testWhereColumnInValues",
+  "sourceCode" : "@Test\r\npublic void testWhereColumnInValues() throws Exception {\r\n    DataSet ds = dataContext.query().from(bulkIndexType).select(\"user\").and(\"message\").where(\"user\").in(\"user4\", \"user5\").orderBy(\"message\").execute();\r\n    try {\r\n        assertTrue(ds.next());\r\n        String row1 = ds.getRow().toString();\r\n        assertEquals(\"Row[values=[user4, 4]]\", row1);\r\n        assertTrue(ds.next());\r\n        String row2 = ds.getRow().toString();\r\n        assertEquals(\"Row[values=[user5, 5]]\", row2);\r\n        assertFalse(ds.next());\r\n    } finally {\r\n        ds.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testGroupByQuery",
+  "sourceCode" : "@Test\r\npublic void testGroupByQuery() throws Exception {\r\n    Table table = dataContext.getDefaultSchema().getTableByName(peopleIndexType);\r\n    Query q = new Query();\r\n    q.from(table);\r\n    q.groupBy(table.getColumnByName(\"gender\"));\r\n    q.select(new SelectItem(table.getColumnByName(\"gender\")), new SelectItem(FunctionType.MAX, table.getColumnByName(\"age\")), new SelectItem(FunctionType.MIN, table.getColumnByName(\"age\")), new SelectItem(FunctionType.COUNT, \"*\", \"total\"), new SelectItem(FunctionType.MIN, table.getColumnByName(\"id\")).setAlias(\"firstId\"));\r\n    q.orderBy(\"gender\");\r\n    DataSet data = dataContext.executeQuery(q);\r\n    assertEquals(\"[peopletype.gender, MAX(peopletype.age), MIN(peopletype.age), COUNT(*) AS total, MIN(peopletype.id) AS firstId]\", Arrays.toString(data.getSelectItems()));\r\n    assertTrue(data.next());\r\n    assertEquals(\"Row[values=[female, 20, 17, 5, 5]]\", data.getRow().toString());\r\n    assertTrue(data.next());\r\n    assertEquals(\"Row[values=[male, 19, 17, 4, 1]]\", data.getRow().toString());\r\n    assertFalse(data.next());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testFilterOnNumberColumn",
+  "sourceCode" : "@Test\r\npublic void testFilterOnNumberColumn() {\r\n    Table table = dataContext.getDefaultSchema().getTableByName(bulkIndexType);\r\n    Query q = dataContext.query().from(table).select(\"user\").where(\"message\").greaterThan(7).toQuery();\r\n    DataSet data = dataContext.executeQuery(q);\r\n    String[] expectations = new String[] { \"Row[values=[user8]]\", \"Row[values=[user9]]\" };\r\n    assertTrue(data.next());\r\n    assertTrue(Arrays.asList(expectations).contains(data.getRow().toString()));\r\n    assertTrue(data.next());\r\n    assertTrue(Arrays.asList(expectations).contains(data.getRow().toString()));\r\n    assertFalse(data.next());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testMaxRows",
+  "sourceCode" : "@Test\r\npublic void testMaxRows() throws Exception {\r\n    Table table = dataContext.getDefaultSchema().getTableByName(peopleIndexType);\r\n    Query query = new Query().from(table).select(table.getColumns()).setMaxRows(5);\r\n    DataSet dataSet = dataContext.executeQuery(query);\r\n    TableModel tableModel = new DataSetTableModel(dataSet);\r\n    assertEquals(5, tableModel.getRowCount());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testCountQuery",
+  "sourceCode" : "@Test\r\npublic void testCountQuery() throws Exception {\r\n    Table table = dataContext.getDefaultSchema().getTableByName(bulkIndexType);\r\n    Query q = new Query().selectCount().from(table);\r\n    List<Object[]> data = dataContext.executeQuery(q).toObjectArrays();\r\n    assertEquals(1, data.size());\r\n    Object[] row = data.get(0);\r\n    assertEquals(1, row.length);\r\n    assertEquals(\"[10]\", Arrays.toString(row));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testQueryForANonExistingTable",
+  "sourceCode" : "@Test\r\npublic void testQueryForANonExistingTable() throws Exception {\r\n    boolean thrown = false;\r\n    try {\r\n        dataContext.query().from(\"nonExistingTable\").select(\"user\").and(\"message\").execute();\r\n    } catch (IllegalArgumentException IAex) {\r\n        thrown = true;\r\n    }\r\n    assertTrue(thrown);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testQueryForAnExistingTableAndNonExistingField",
+  "sourceCode" : "@Test\r\npublic void testQueryForAnExistingTableAndNonExistingField() throws Exception {\r\n    indexOneTweeterDocumentPerIndex(indexType1, 1);\r\n    boolean thrown = false;\r\n    try {\r\n        dataContext.query().from(indexType1).select(\"nonExistingField\").execute();\r\n    } catch (IllegalArgumentException IAex) {\r\n        thrown = true;\r\n    } finally {\r\n        // ds.close();\r\n    }\r\n    assertTrue(thrown);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\elasticsearch\\src\\test\\java\\org\\apache\\metamodel\\elasticsearch\\ElasticSearchDataContextTest.java",
+  "methodName" : "testNonDynamicMapingTableNames",
+  "sourceCode" : "@Test\r\npublic void testNonDynamicMapingTableNames() throws Exception {\r\n    if (Version.CURRENT.major == 0) {\r\n        // this test is omitted on v. 0.x versions of ElasticSearch since\r\n        // the put mapping API is incompatible with 1.x so we cannot create\r\n        // the same prerequisites in the test.\r\n        return;\r\n    }\r\n    createIndex();\r\n    ElasticSearchDataContext dataContext2 = new ElasticSearchDataContext(client, indexName2);\r\n    assertEquals(\"[tweet3]\", Arrays.toString(dataContext2.getDefaultSchema().getTableNames()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\salesforce\\src\\test\\java\\org\\apache\\metamodel\\salesforce\\SalesforceDataSetTest.java",
+  "methodName" : "testQuery",
+  "sourceCode" : "@Test\r\npublic void testQuery() throws Exception {\r\n    QueryResult qr = queryResult(\"/result/double-value.xml\");\r\n    MutableColumn version = new MutableColumn(\"Version\", ColumnType.DOUBLE);\r\n    SalesforceDataSet dataSet = new SalesforceDataSet(new Column[] { version }, qr, null);\r\n    List<Row> rows = dataSet.toRows();\r\n    assertEquals(5386.21, rows.get(0).getValue(version));\r\n    assertEquals(53.0, rows.get(1).getValue(version));\r\n    dataSet.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\spring\\src\\test\\java\\org\\apache\\metamodel\\spring\\CsvDefaultConfigurationFromResourceTest.java",
+  "methodName" : "testReadDataContext",
+  "sourceCode" : "@Test\r\npublic void testReadDataContext() {\r\n    assertEquals(CsvDataContext.class, dataContext.getClass());\r\n    CsvDataContext csv = (CsvDataContext) dataContext;\r\n    Resource resource = csv.getResource();\r\n    assertEquals(SpringResource.class, resource.getClass());\r\n    SpringResource springResource = (SpringResource) resource;\r\n    Assert.assertTrue(springResource.isExists());\r\n    assertEquals(\"example.csv\", resource.getName());\r\n    assertEquals(\"[foo, bar]\", Arrays.toString(csv.getDefaultSchema().getTable(0).getColumnNames()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\spring\\src\\test\\java\\org\\apache\\metamodel\\spring\\CsvSpecifiedConfigurationFromFilenameTest.java",
+  "methodName" : "testReadDataContext",
+  "sourceCode" : "@Test\r\npublic void testReadDataContext() {\r\n    assertEquals(CsvDataContext.class, dataContext.getClass());\r\n    CsvDataContext csv = (CsvDataContext) dataContext;\r\n    Resource resource = csv.getResource();\r\n    assertEquals(FileResource.class, resource.getClass());\r\n    assertEquals(\"example.csv\", resource.getName());\r\n    assertEquals(\"[\\\"foo\\\", bar]\", Arrays.toString(csv.getDefaultSchema().getTable(0).getColumnNames()));\r\n    Assert.assertFalse(csv.getConfiguration().isMultilineValues());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\spring\\src\\test\\java\\org\\apache\\metamodel\\spring\\ExcelSpecifiedConfigurationFromFilenameTest.java",
+  "methodName" : "testReadDataContext",
+  "sourceCode" : "@Test\r\npublic void testReadDataContext() {\r\n    assertEquals(ExcelDataContext.class, dataContext.getClass());\r\n    ExcelDataContext excel = (ExcelDataContext) dataContext;\r\n    Resource resource = excel.getResource();\r\n    assertEquals(FileResource.class, resource.getClass());\r\n    assertEquals(\"example.xlsx\", resource.getName());\r\n    assertEquals(\"[hello, world]\", Arrays.toString(excel.getDefaultSchema().getTable(0).getColumnNames()));\r\n    Assert.assertTrue(excel.getConfiguration().isSkipEmptyLines());\r\n    Assert.assertTrue(excel.getConfiguration().isSkipEmptyColumns());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MetaModel\\spring\\src\\test\\java\\org\\apache\\metamodel\\spring\\MockDataContextTypeTest.java",
+  "methodName" : "testReadDataContext",
+  "sourceCode" : "@Test\r\npublic void testReadDataContext() {\r\n    assertEquals(PojoDataContext.class, dataContext.getClass());\r\n    assertEquals(\"here's a value from springs XML file\", dataContext.getDefaultSchema().getName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

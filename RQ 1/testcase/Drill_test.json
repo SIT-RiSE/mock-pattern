@@ -1,0 +1,253 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\exceptions\\TestUserException.java",
+  "methodName" : "testBuildSystemException",
+  "sourceCode" : "// make sure system exceptions are created properly\r\n@Test\r\npublic void testBuildSystemException() {\r\n    String message = \"This is an exception\";\r\n    UserException uex = UserException.systemError(new Exception(new RuntimeException(message))).build(logger);\r\n    Assert.assertTrue(uex.getOriginalMessage().contains(message));\r\n    Assert.assertTrue(uex.getOriginalMessage().contains(\"RuntimeException\"));\r\n    DrillPBError error = uex.getOrCreatePBError(true);\r\n    Assert.assertEquals(ErrorType.SYSTEM, error.getErrorType());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\exceptions\\TestUserException.java",
+  "methodName" : "testBuildUserExceptionWithMessage",
+  "sourceCode" : "@Test\r\npublic void testBuildUserExceptionWithMessage() {\r\n    String message = \"Test message\";\r\n    UserException uex = UserException.dataWriteError().message(message).build(logger);\r\n    DrillPBError error = uex.getOrCreatePBError(false);\r\n    Assert.assertEquals(ErrorType.DATA_WRITE, error.getErrorType());\r\n    Assert.assertEquals(message, uex.getOriginalMessage());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\exceptions\\TestUserException.java",
+  "methodName" : "testBuildUserExceptionWithCause",
+  "sourceCode" : "@Test\r\npublic void testBuildUserExceptionWithCause() {\r\n    String message = \"Test message\";\r\n    UserException uex = UserException.dataWriteError(new RuntimeException(message)).build(logger);\r\n    DrillPBError error = uex.getOrCreatePBError(false);\r\n    // cause message should be used\r\n    Assert.assertEquals(ErrorType.DATA_WRITE, error.getErrorType());\r\n    Assert.assertEquals(message, uex.getOriginalMessage());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\exceptions\\TestUserException.java",
+  "methodName" : "testBuildUserExceptionWithCauseAndMessage",
+  "sourceCode" : "@Test\r\npublic void testBuildUserExceptionWithCauseAndMessage() {\r\n    String messageA = \"Test message A\";\r\n    String messageB = \"Test message B\";\r\n    UserException uex = UserException.dataWriteError(new RuntimeException(messageA)).message(messageB).build(logger);\r\n    DrillPBError error = uex.getOrCreatePBError(false);\r\n    // passed message should override the cause message\r\n    Assert.assertEquals(ErrorType.DATA_WRITE, error.getErrorType());\r\n    // messageA should not be part of the context\r\n    Assert.assertFalse(error.getMessage().contains(messageA));\r\n    Assert.assertEquals(messageB, uex.getOriginalMessage());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\exceptions\\TestUserException.java",
+  "methodName" : "testBuildUserExceptionWithUserExceptionCauseAndMessage",
+  "sourceCode" : "@Test\r\npublic void testBuildUserExceptionWithUserExceptionCauseAndMessage() {\r\n    String messageA = \"Test message A\";\r\n    String messageB = \"Test message B\";\r\n    UserException original = UserException.connectionError().message(messageA).build(logger);\r\n    UserException uex = UserException.dataWriteError(wrap(original, 5)).message(messageB).build(logger);\r\n    //builder should return the unwrapped original user exception and not build a new one\r\n    Assert.assertEquals(original, uex);\r\n    DrillPBError error = uex.getOrCreatePBError(false);\r\n    Assert.assertEquals(messageA, uex.getOriginalMessage());\r\n    // messageB should not be part of the context\r\n    Assert.assertFalse(error.getMessage().contains(messageB));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\exceptions\\TestUserException.java",
+  "methodName" : "testBuildUserExceptionWithFormattedMessage",
+  "sourceCode" : "@Test\r\npublic void testBuildUserExceptionWithFormattedMessage() {\r\n    String format = \"This is test #%d\";\r\n    UserException uex = UserException.connectionError().message(format, 5).build(logger);\r\n    DrillPBError error = uex.getOrCreatePBError(false);\r\n    Assert.assertEquals(ErrorType.CONNECTION, error.getErrorType());\r\n    Assert.assertEquals(String.format(format, 5), uex.getOriginalMessage());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\exceptions\\TestUserException.java",
+  "methodName" : "testWrapUserException",
+  "sourceCode" : "// make sure wrapped user exceptions are retrieved properly when calling ErrorHelper.wrap()\r\n@Test\r\npublic void testWrapUserException() {\r\n    UserException uex = UserException.dataReadError().message(\"this is a data read exception\").build(logger);\r\n    Exception wrapped = wrap(uex, 3);\r\n    Assert.assertEquals(uex, UserException.systemError(wrapped).build(logger));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\map\\TestCaseInsensitiveMap.java",
+  "methodName" : "putAndGet",
+  "sourceCode" : "@Test\r\npublic void putAndGet() {\r\n    final CaseInsensitiveMap<Integer> map = CaseInsensitiveMap.newConcurrentMap();\r\n    assertTrue(map.isEmpty());\r\n    map.put(\"DRILL\", 1);\r\n    map.put(\"bABy\", 2);\r\n    map.put(\"drill!\", 3);\r\n    assertTrue(!map.isEmpty());\r\n    assertEquals(3, map.size());\r\n    assertTrue(map.containsKey(\"drill\"));\r\n    assertEquals(2, (long) map.get(\"BabY\"));\r\n    assertNull(map.get(2));\r\n    assertEquals(3, (long) map.remove(\"DriLl!\"));\r\n    assertEquals(2, map.size());\r\n    assertTrue(map.containsValue(1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\map\\TestCaseInsensitiveMap.java",
+  "methodName" : "addAllFromAnother",
+  "sourceCode" : "@Test\r\npublic void addAllFromAnother() {\r\n    final Map<String, Integer> another = new HashMap<>();\r\n    another.put(\"JuSt\", 1);\r\n    another.put(\"DRILL\", 2);\r\n    another.put(\"it\", 3);\r\n    final Map<String, Integer> map = CaseInsensitiveMap.newConcurrentMap();\r\n    map.putAll(another);\r\n    assertEquals(3, map.size());\r\n    assertTrue(map.containsKey(\"just\"));\r\n    assertEquals(2, (long) map.get(\"drill\"));\r\n    assertEquals(3, (long) map.remove(\"IT\"));\r\n    final Set<Map.Entry<String, Integer>> entrySet = map.entrySet();\r\n    assertEquals(2, entrySet.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\map\\TestCaseInsensitiveMap.java",
+  "methodName" : "checkEquals",
+  "sourceCode" : "@Test\r\npublic void checkEquals() {\r\n    Map<String, String> map1 = CaseInsensitiveMap.newHashMap();\r\n    map1.put(\"key_1\", \"value_1\");\r\n    Map<String, String> map2 = CaseInsensitiveMap.newHashMap();\r\n    map2.put(\"KEY_1\", \"value_1\");\r\n    assertEquals(map1, map2);\r\n    map2.put(\"key_2\", \"value_2\");\r\n    assertNotEquals(map1, map2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\TestVersion.java",
+  "methodName" : "testSnapshotVersion",
+  "sourceCode" : "@Test\r\npublic void testSnapshotVersion() {\r\n    Version version = new Version(\"1.2.3-SNAPSHOT\", 1, 2, 3, 0, \"SNAPSHOT\");\r\n    assertEquals(\"1.2.3-SNAPSHOT\", version.getVersion());\r\n    assertEquals(1, version.getMajorVersion());\r\n    assertEquals(2, version.getMinorVersion());\r\n    assertEquals(3, version.getPatchVersion());\r\n    assertEquals(0, version.getBuildNumber());\r\n    assertEquals(\"SNAPSHOT\", version.getQualifier());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\TestVersion.java",
+  "methodName" : "testReleaseVersion",
+  "sourceCode" : "@Test\r\npublic void testReleaseVersion() {\r\n    Version version = new Version(\"2.1.4\", 2, 1, 4, 0, \"\");\r\n    assertEquals(\"2.1.4\", version.getVersion());\r\n    assertEquals(2, version.getMajorVersion());\r\n    assertEquals(1, version.getMinorVersion());\r\n    assertEquals(4, version.getPatchVersion());\r\n    assertEquals(0, version.getBuildNumber());\r\n    assertEquals(\"\", version.getQualifier());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\TestVersion.java",
+  "methodName" : "testBuildNumberVersion",
+  "sourceCode" : "@Test\r\npublic void testBuildNumberVersion() {\r\n    Version version = new Version(\"3.1.5-2-BUGFIX\", 3, 1, 5, 2, \"BUGFIX\");\r\n    assertEquals(\"3.1.5-2-BUGFIX\", version.getVersion());\r\n    assertEquals(3, version.getMajorVersion());\r\n    assertEquals(1, version.getMinorVersion());\r\n    assertEquals(5, version.getPatchVersion());\r\n    assertEquals(2, version.getBuildNumber());\r\n    assertEquals(\"BUGFIX\", version.getQualifier());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\TestVersion.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "@Test\r\npublic void testEquals() {\r\n    assertEquals(v1, v1);\r\n    assertNotEquals(v1, v2);\r\n    assertNotEquals(v1, v3);\r\n    assertEquals(v1, v4);\r\n    assertNotEquals(v1, v5);\r\n    assertNotEquals(v1, null);\r\n    assertNotEquals(v1, new Object());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\TestVersion.java",
+  "methodName" : "testHashcode",
+  "sourceCode" : "@Test\r\npublic void testHashcode() {\r\n    assertEquals(v1.hashCode(), v1.hashCode());\r\n    assertNotEquals(v1.hashCode(), v2.hashCode());\r\n    assertNotEquals(v1.hashCode(), v3.hashCode());\r\n    assertEquals(v1.hashCode(), v4.hashCode());\r\n    assertNotEquals(v1.hashCode(), v5.hashCode());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\TestVersion.java",
+  "methodName" : "testCompareTo",
+  "sourceCode" : "@Test\r\npublic void testCompareTo() {\r\n    assertTrue(v1.compareTo(v1) == 0);\r\n    assertTrue(v1.compareTo(v2) < 0);\r\n    assertTrue(v1.compareTo(v3) < 0);\r\n    assertTrue(v1.compareTo(v4) == 0);\r\n    assertTrue(v1.compareTo(v5) < 0);\r\n    assertTrue(v1.compareTo(new Version(\"1.2\", 1, 2, 0, 0, \"\")) > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\util\\function\\TestCheckedFunction.java",
+  "methodName" : "testComputeIfAbsentWithCheckedFunction",
+  "sourceCode" : "@Test\r\npublic void testComputeIfAbsentWithCheckedFunction() {\r\n    ExceptionProducer producer = new ExceptionProducer();\r\n    Map<String, String> map = new HashMap<>();\r\n    String message = \"Exception message\";\r\n    CheckedFunction<String, String, Exception> function = producer::failWithMessage;\r\n    Exception exception = Assert.assertThrows(Exception.class, () -> map.computeIfAbsent(message, function));\r\n    MatcherAssert.assertThat(exception.getMessage(), containsString(message));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\util\\TestGuavaPatcher.java",
+  "methodName" : "checkSuccessfulPatching",
+  "sourceCode" : "@Test\r\npublic void checkSuccessfulPatching() {\r\n    // Catch-all test to see if Guava patching was successful\r\n    assertTrue(\"Guava Patcher ran with errors, check error log messages\", GuavaPatcher.isPatchingSuccessful());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\util\\TestGuavaPatcher.java",
+  "methodName" : "checkStopwatchEllapsedMillis",
+  "sourceCode" : "@Test\r\npublic void checkStopwatchEllapsedMillis() throws Exception {\r\n    long[] currentTimeMillis = new long[] { 0L };\r\n    final Ticker ticker = new Ticker() {\r\n\r\n        @Override\r\n        public long read() {\r\n            return TimeUnit.MILLISECONDS.toNanos(currentTimeMillis[0]);\r\n        }\r\n    };\r\n    final Stopwatch stopwatch = Stopwatch.createStarted(ticker);\r\n    currentTimeMillis[0] = 12345L;\r\n    stopwatch.stop();\r\n    assertEquals(currentTimeMillis[0], stopwatch.elapsed(TimeUnit.MILLISECONDS));\r\n    assertEquals(currentTimeMillis[0], (long) invokeMethod(Stopwatch.class, \"elapsedMillis\", new Class[] {}, stopwatch));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\util\\TestGuavaPatcher.java",
+  "methodName" : "checkCloseablesCloseQuietly",
+  "sourceCode" : "@Test\r\npublic void checkCloseablesCloseQuietly() throws Exception {\r\n    final Closeable alwaysThrows = () -> {\r\n        throw new IOException(\"Always fail\");\r\n    };\r\n    invokeMethod(Closeables.class, \"closeQuietly\", new Class[] { Closeable.class }, null, alwaysThrows);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\util\\TestGuavaPatcher.java",
+  "methodName" : "checkPreconditionsCheckArgumentIntParam",
+  "sourceCode" : "// All the preconditions checks are method which were previously added for\r\n// compatibility with Apache Iceberg but are not necessary anymore because\r\n// Guava's version has been updated since.\r\n@Test\r\npublic void checkPreconditionsCheckArgumentIntParam() throws Exception {\r\n    invokeMethod(Preconditions.class, \"checkArgument\", new Class[] { boolean.class, String.class, int.class }, null, true, \"Error Message %s\", 1);\r\n    try {\r\n        invokeMethod(Preconditions.class, \"checkArgument\", new Class[] { boolean.class, String.class, int.class }, null, false, \"Error Message %s\", 1);\r\n        fail();\r\n    } catch (InvocationTargetException e) {\r\n        Throwable cause = e.getCause();\r\n        assertEquals(IllegalArgumentException.class, cause.getClass());\r\n        assertEquals(\"Error Message 1\", cause.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\util\\TestGuavaPatcher.java",
+  "methodName" : "checkPreconditionsCheckArgumentLongParam",
+  "sourceCode" : "@Test\r\npublic void checkPreconditionsCheckArgumentLongParam() throws Exception {\r\n    invokeMethod(Preconditions.class, \"checkArgument\", new Class[] { boolean.class, String.class, long.class }, null, true, \"Error Message %s\", 2L);\r\n    try {\r\n        invokeMethod(Preconditions.class, \"checkArgument\", new Class[] { boolean.class, String.class, long.class }, null, false, \"Error Message %s\", 2L);\r\n        fail();\r\n    } catch (InvocationTargetException e) {\r\n        Throwable cause = e.getCause();\r\n        assertEquals(IllegalArgumentException.class, cause.getClass());\r\n        assertEquals(\"Error Message 2\", cause.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\util\\TestGuavaPatcher.java",
+  "methodName" : "checkPreconditionsCheckArgumentLongLongParam",
+  "sourceCode" : "@Test\r\npublic void checkPreconditionsCheckArgumentLongLongParam() throws Exception {\r\n    invokeMethod(Preconditions.class, \"checkArgument\", new Class[] { boolean.class, String.class, long.class, long.class }, null, true, \"Error Message %s %s\", 3L, 4L);\r\n    try {\r\n        invokeMethod(Preconditions.class, \"checkArgument\", new Class[] { boolean.class, String.class, long.class, long.class }, null, false, \"Error Message %s %s\", 3L, 4L);\r\n        fail();\r\n    } catch (InvocationTargetException e) {\r\n        Throwable cause = e.getCause();\r\n        assertEquals(IllegalArgumentException.class, cause.getClass());\r\n        assertEquals(\"Error Message 3 4\", cause.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\util\\TestGuavaPatcher.java",
+  "methodName" : "checkPreconditionsCheckNotNullIntParam",
+  "sourceCode" : "@Test\r\npublic void checkPreconditionsCheckNotNullIntParam() throws Exception {\r\n    invokeMethod(Preconditions.class, \"checkNotNull\", new Class[] { Object.class, String.class, int.class }, null, this, \"Error Message %s\", 5);\r\n    try {\r\n        invokeMethod(Preconditions.class, \"checkNotNull\", new Class[] { Object.class, String.class, int.class }, null, null, \"Error Message %s\", 5);\r\n        fail();\r\n    } catch (InvocationTargetException e) {\r\n        Throwable cause = e.getCause();\r\n        assertEquals(NullPointerException.class, cause.getClass());\r\n        assertEquals(\"Error Message 5\", cause.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\util\\TestGuavaPatcher.java",
+  "methodName" : "checkPreconditionsCheckStateIntParam",
+  "sourceCode" : "@Test\r\npublic void checkPreconditionsCheckStateIntParam() throws Exception {\r\n    invokeMethod(Preconditions.class, \"checkState\", new Class[] { boolean.class, String.class, int.class }, null, true, \"Error Message %s\", 6);\r\n    try {\r\n        invokeMethod(Preconditions.class, \"checkState\", new Class[] { boolean.class, String.class, int.class }, null, false, \"Error Message %s\", 6);\r\n        fail();\r\n    } catch (InvocationTargetException e) {\r\n        Throwable cause = e.getCause();\r\n        assertEquals(IllegalStateException.class, cause.getClass());\r\n        assertEquals(\"Error Message 6\", cause.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\util\\TestGuavaPatcher.java",
+  "methodName" : "checkPreconditionsCheckNotNullVarargs",
+  "sourceCode" : "@Test\r\npublic void checkPreconditionsCheckNotNullVarargs() throws Exception {\r\n    checkPreconditionsCheckVarargMethod(\"checkNotNull\", Object.class, this, null, NullPointerException.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\util\\TestGuavaPatcher.java",
+  "methodName" : "checkPreconditionsCheckArgumentVarargs",
+  "sourceCode" : "@Test\r\npublic void checkPreconditionsCheckArgumentVarargs() throws Exception {\r\n    checkPreconditionsCheckVarargMethod(\"checkArgument\", boolean.class, true, false, IllegalArgumentException.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\common\\util\\TestGuavaPatcher.java",
+  "methodName" : "checkPreconditionsCheckStateVarargs",
+  "sourceCode" : "@Test\r\npublic void checkPreconditionsCheckStateVarargs() throws Exception {\r\n    checkPreconditionsCheckVarargMethod(\"checkState\", boolean.class, true, false, IllegalStateException.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\common\\src\\test\\java\\org\\apache\\drill\\test\\Drill2130CommonHamcrestConfigurationTest.java",
+  "methodName" : "testJUnitHamcrestMatcherFailureWorks",
+  "sourceCode" : "@Test\r\nvoid testJUnitHamcrestMatcherFailureWorks() {\r\n    try {\r\n        assertThat(1, equalTo(2));\r\n    } catch (NoSuchMethodError e) {\r\n        fail(\"Class search path seems broken re new JUnit and old Hamcrest.\" + \"  Got NoSuchMethodError;  e: \" + e);\r\n    } catch (AssertionError e) {\r\n        logger.info(\"Class path seems fine re new JUnit vs. old Hamcrest. (Got AssertionError, not NoSuchMethodError.)\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\contrib\\format-access\\src\\test\\java\\org\\apache\\drill\\exec\\store\\msaccess\\TestMSAccessReader.java",
+  "methodName" : "testStarQuery",
+  "sourceCode" : "@Test\r\npublic void testStarQuery() throws Exception {\r\n    String sql = \"SELECT * FROM table(cp.`data/V2019/extDateTestV2019.accdb` (type=> 'msaccess', tableName => 'Table1')) LIMIT 5\";\r\n    RowSet results = client.queryBuilder().sql(sql).rowSet();\r\n    TupleMetadata expectedSchema = new SchemaBuilder().addNullable(\"ID\", MinorType.INT).addNullable(\"Field1\", MinorType.VARCHAR).addNullable(\"DateExt\", MinorType.TIMESTAMP).addNullable(\"DateNormal\", MinorType.TIMESTAMP).addNullable(\"DateExtStr\", MinorType.VARCHAR).addNullable(\"DateNormalCalc\", MinorType.TIMESTAMP).buildSchema();\r\n    RowSet expected = new RowSetBuilder(client.allocator(), expectedSchema).addRow(1, \"row1\", QueryTestUtil.ConvertDateToLong(\"2020-06-17T00:00:00Z\"), QueryTestUtil.ConvertDateToLong(\"2020-06-17T00:00:00Z\"), \"6/17/2020\", QueryTestUtil.ConvertDateToLong(\"2020-06-17T00:00:00Z\")).addRow(2, \"row2\", QueryTestUtil.ConvertDateToLong(\"2021-06-14T00:00:00Z\"), QueryTestUtil.ConvertDateToLong(\"2021-06-14T00:00:00Z\"), \"6/14/2021\", QueryTestUtil.ConvertDateToLong(\"2021-06-14T00:00:00Z\")).addRow(3, \"row3\", QueryTestUtil.ConvertDateToLong(\"2021-06-14T12:45:00Z\"), QueryTestUtil.ConvertDateToLong(\"2021-06-14T12:45:00Z\"), \"6/14/2021 12:45:00.0000000 PM\", QueryTestUtil.ConvertDateToLong(\"2021-06-14T12:45:00Z\")).addRow(4, \"row4\", QueryTestUtil.ConvertDateToLong(\"2021-06-14T01:45:00Z\"), QueryTestUtil.ConvertDateToLong(\"2021-06-14T01:45:00Z\"), \"6/14/2021 1:45:00.0000000 AM\", QueryTestUtil.ConvertDateToLong(\"2021-06-14T01:45:00Z\")).addRow(5, \"row5\", null, null, null, null).build();\r\n    new RowSetComparison(expected).verifyAndClearAll(results);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\contrib\\format-access\\src\\test\\java\\org\\apache\\drill\\exec\\store\\msaccess\\TestMSAccessReader.java",
+  "methodName" : "testExplicitQuery",
+  "sourceCode" : "@Test\r\npublic void testExplicitQuery() throws Exception {\r\n    String sql = \"SELECT ID, Field1, DateExt, DateNormal, DateExtStr, DateNormalCalc \" + \"FROM table(cp.`data/V2019/extDateTestV2019.accdb` (type=> 'msaccess', tableName => 'Table1')) LIMIT 5\";\r\n    RowSet results = client.queryBuilder().sql(sql).rowSet();\r\n    TupleMetadata expectedSchema = new SchemaBuilder().addNullable(\"ID\", MinorType.INT).addNullable(\"Field1\", MinorType.VARCHAR).addNullable(\"DateExt\", MinorType.TIMESTAMP).addNullable(\"DateNormal\", MinorType.TIMESTAMP).addNullable(\"DateExtStr\", MinorType.VARCHAR).addNullable(\"DateNormalCalc\", MinorType.TIMESTAMP).buildSchema();\r\n    RowSet expected = new RowSetBuilder(client.allocator(), expectedSchema).addRow(1, \"row1\", QueryTestUtil.ConvertDateToLong(\"2020-06-17T00:00:00Z\"), QueryTestUtil.ConvertDateToLong(\"2020-06-17T00:00:00Z\"), \"6/17/2020\", QueryTestUtil.ConvertDateToLong(\"2020-06-17T00:00:00Z\")).addRow(2, \"row2\", QueryTestUtil.ConvertDateToLong(\"2021-06-14T00:00:00Z\"), QueryTestUtil.ConvertDateToLong(\"2021-06-14T00:00:00Z\"), \"6/14/2021\", QueryTestUtil.ConvertDateToLong(\"2021-06-14T00:00:00Z\")).addRow(3, \"row3\", QueryTestUtil.ConvertDateToLong(\"2021-06-14T12:45:00Z\"), QueryTestUtil.ConvertDateToLong(\"2021-06-14T12:45:00Z\"), \"6/14/2021 12:45:00.0000000 PM\", QueryTestUtil.ConvertDateToLong(\"2021-06-14T12:45:00Z\")).addRow(4, \"row4\", QueryTestUtil.ConvertDateToLong(\"2021-06-14T01:45:00Z\"), QueryTestUtil.ConvertDateToLong(\"2021-06-14T01:45:00Z\"), \"6/14/2021 1:45:00.0000000 AM\", QueryTestUtil.ConvertDateToLong(\"2021-06-14T01:45:00Z\")).addRow(5, \"row5\", null, null, null, null).build();\r\n    new RowSetComparison(expected).verifyAndClearAll(results);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\contrib\\format-access\\src\\test\\java\\org\\apache\\drill\\exec\\store\\msaccess\\TestMSAccessReader.java",
+  "methodName" : "testStarQueryWithDataTypes",
+  "sourceCode" : "@Test\r\npublic void testStarQueryWithDataTypes() throws Exception {\r\n    String sql = \"SELECT * \" + \"FROM table(cp.`data/V2010/testV2010.accdb` (type=> 'msaccess', tableName => 'Table1')) LIMIT 5\";\r\n    RowSet results = client.queryBuilder().sql(sql).rowSet();\r\n    TupleMetadata expectedSchema = new SchemaBuilder().addNullable(\"A\", MinorType.VARCHAR).addNullable(\"B\", MinorType.VARCHAR).addNullable(\"C\", MinorType.TINYINT).addNullable(\"D\", MinorType.SMALLINT).addNullable(\"E\", MinorType.INT).addNullable(\"F\", MinorType.FLOAT8).addNullable(\"G\", MinorType.TIMESTAMP).addNullable(\"H\", MinorType.VARDECIMAL).addNullable(\"I\", MinorType.BIT).buildSchema();\r\n    RowSet expected = new RowSetBuilder(client.allocator(), expectedSchema).addRow(\"a\", \"b\", 0, 0, 0, 0.0, QueryTestUtil.ConvertDateToLong(\"1981-12-12T00:00:00Z\"), 0, false).addRow(\"abcdefg\", \"hijklmnop\", 2, 222, 333333333, 444.555, QueryTestUtil.ConvertDateToLong(\"1974-09-21T00:00:00Z\"), 4, true).build();\r\n    new RowSetComparison(expected).verifyAndClearAll(results);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\contrib\\format-access\\src\\test\\java\\org\\apache\\drill\\exec\\store\\msaccess\\TestMSAccessReader.java",
+  "methodName" : "testMetadataStarQuery",
+  "sourceCode" : "@Test\r\npublic void testMetadataStarQuery() throws Exception {\r\n    String sql = \"SELECT * FROM cp.`data/V2019/extDateTestV2019.accdb`\";\r\n    RowSet results = client.queryBuilder().sql(sql).rowSet();\r\n    TupleMetadata expectedSchema = new SchemaBuilder().add(\"table\", MinorType.VARCHAR).add(\"created_date\", MinorType.TIMESTAMP).add(\"updated_date\", MinorType.TIMESTAMP).add(\"row_count\", MinorType.INT).add(\"col_count\", MinorType.INT).addArray(\"columns\", MinorType.VARCHAR).buildSchema();\r\n    RowSet expected = new RowSetBuilder(client.allocator(), expectedSchema).addRow(\"Table1\", QueryTestUtil.ConvertDateToLong(\"2021-06-03T20:09:56.993Z\"), QueryTestUtil.ConvertDateToLong(\"2021-06-03T20:09:56.993Z\"), 9, 6, strArray(\"ID\", \"Field1\", \"DateExt\", \"DateNormal\", \"DateExtStr\", \"DateNormalCalc\")).build();\r\n    new RowSetComparison(expected).verifyAndClearAll(results);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\contrib\\format-access\\src\\test\\java\\org\\apache\\drill\\exec\\store\\msaccess\\TestMSAccessReader.java",
+  "methodName" : "testSerDe",
+  "sourceCode" : "@Test\r\npublic void testSerDe() throws Exception {\r\n    String sql = \"SELECT COUNT(*) AS cnt FROM \" + \"table(cp.`data/V2019/extDateTestV2019.accdb` (type=> 'msaccess', tableName => 'Table1'))\";\r\n    String plan = queryBuilder().sql(sql).explainJson();\r\n    long cnt = queryBuilder().physical(plan).singletonLong();\r\n    assertEquals(\"Counts should match\", 9L, cnt);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\contrib\\format-deltalake\\src\\test\\java\\org\\apache\\drill\\exec\\store\\delta\\DeltaQueriesTest.java",
+  "methodName" : "testSerDe",
+  "sourceCode" : "@Test\r\npublic void testSerDe() throws Exception {\r\n    client.alterSession(ExecConstants.SLICE_TARGET, 1);\r\n    String plan = queryBuilder().sql(\"select * from table(dfs.`data-reader-partition-values` (type => 'delta'))\").explainJson();\r\n    long count = queryBuilder().physical(plan).run().recordCount();\r\n    assertEquals(3, count);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\contrib\\format-deltalake\\src\\test\\java\\org\\apache\\drill\\exec\\store\\delta\\DeltaQueriesTest.java",
+  "methodName" : "testAllPrimitives",
+  "sourceCode" : "@Test\r\npublic void testAllPrimitives() throws Exception {\r\n    testBuilder().sqlQuery(\"select * from dfs.`data-reader-primitives`\").ordered().baselineColumns(\"as_int\", \"as_long\", \"as_byte\", \"as_short\", \"as_boolean\", \"as_float\", \"as_double\", \"as_string\", \"as_binary\", \"as_big_decimal\").baselineValues(null, null, null, null, null, null, null, null, null, null).baselineValues(0, 0L, 0, 0, true, 0.0f, 0.0, \"0\", new byte[] { 0, 0 }, BigDecimal.valueOf(0)).baselineValues(1, 1L, 1, 1, false, 1.0f, 1.0, \"1\", new byte[] { 1, 1 }, BigDecimal.valueOf(1)).baselineValues(2, 2L, 2, 2, true, 2.0f, 2.0, \"2\", new byte[] { 2, 2 }, BigDecimal.valueOf(2)).baselineValues(3, 3L, 3, 3, false, 3.0f, 3.0, \"3\", new byte[] { 3, 3 }, BigDecimal.valueOf(3)).baselineValues(4, 4L, 4, 4, true, 4.0f, 4.0, \"4\", new byte[] { 4, 4 }, BigDecimal.valueOf(4)).baselineValues(5, 5L, 5, 5, false, 5.0f, 5.0, \"5\", new byte[] { 5, 5 }, BigDecimal.valueOf(5)).baselineValues(6, 6L, 6, 6, true, 6.0f, 6.0, \"6\", new byte[] { 6, 6 }, BigDecimal.valueOf(6)).baselineValues(7, 7L, 7, 7, false, 7.0f, 7.0, \"7\", new byte[] { 7, 7 }, BigDecimal.valueOf(7)).baselineValues(8, 8L, 8, 8, true, 8.0f, 8.0, \"8\", new byte[] { 8, 8 }, BigDecimal.valueOf(8)).baselineValues(9, 9L, 9, 9, false, 9.0f, 9.0, \"9\", new byte[] { 9, 9 }, BigDecimal.valueOf(9)).go();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\contrib\\format-deltalake\\src\\test\\java\\org\\apache\\drill\\exec\\store\\delta\\DeltaQueriesTest.java",
+  "methodName" : "testProjectingColumns",
+  "sourceCode" : "@Test\r\npublic void testProjectingColumns() throws Exception {\r\n    String query = \"select as_int, as_string from dfs.`data-reader-primitives`\";\r\n    queryBuilder().sql(query).planMatcher().include(\"columns=\\\\[`as_int`, `as_string`\\\\]\").match();\r\n    testBuilder().sqlQuery(query).unOrdered().baselineColumns(\"as_int\", \"as_string\").baselineValues(null, null).baselineValues(0, \"0\").baselineValues(1, \"1\").baselineValues(2, \"2\").baselineValues(3, \"3\").baselineValues(4, \"4\").baselineValues(5, \"5\").baselineValues(6, \"6\").baselineValues(7, \"7\").baselineValues(8, \"8\").baselineValues(9, \"9\").go();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\contrib\\format-deltalake\\src\\test\\java\\org\\apache\\drill\\exec\\store\\delta\\DeltaQueriesTest.java",
+  "methodName" : "testProjectNestedColumn",
+  "sourceCode" : "@Test\r\npublic void testProjectNestedColumn() throws Exception {\r\n    String query = \"select t.a.ac.acb as acb, b from dfs.`data-reader-nested-struct` t\";\r\n    queryBuilder().sql(query).planMatcher().include(\"columns=\\\\[`a`.`ac`.`acb`, `b`\\\\]\").match();\r\n    testBuilder().sqlQuery(query).unOrdered().baselineColumns(\"acb\", \"b\").baselineValues(0L, 0).baselineValues(1L, 1).baselineValues(2L, 2).baselineValues(3L, 3).baselineValues(4L, 4).baselineValues(5L, 5).baselineValues(6L, 6).baselineValues(7L, 7).baselineValues(8L, 8).baselineValues(9L, 9).go();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\contrib\\format-deltalake\\src\\test\\java\\org\\apache\\drill\\exec\\store\\delta\\DeltaQueriesTest.java",
+  "methodName" : "testPartitionPruning",
+  "sourceCode" : "@Test\r\npublic void testPartitionPruning() throws Exception {\r\n    String query = \"select as_int, as_string from dfs.`data-reader-partition-values` where as_long = 1\";\r\n    queryBuilder().sql(query).planMatcher().include(\"numFiles\\\\=1\").match();\r\n    testBuilder().sqlQuery(query).ordered().baselineColumns(\"as_int\", \"as_string\").baselineValues(\"1\", \"1\").go();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\contrib\\format-deltalake\\src\\test\\java\\org\\apache\\drill\\exec\\store\\delta\\DeltaQueriesTest.java",
+  "methodName" : "testEmptyResults",
+  "sourceCode" : "@Test\r\npublic void testEmptyResults() throws Exception {\r\n    String query = \"select as_int, as_string from dfs.`data-reader-partition-values` where as_long = 101\";\r\n    queryBuilder().sql(query).planMatcher().include(\"numFiles\\\\=1\").match();\r\n    testBuilder().sqlQuery(query).ordered().expectsEmptyResultSet().go();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\contrib\\format-deltalake\\src\\test\\java\\org\\apache\\drill\\exec\\store\\delta\\DeltaQueriesTest.java",
+  "methodName" : "testLimit",
+  "sourceCode" : "@Test\r\npublic void testLimit() throws Exception {\r\n    String query = \"select as_int, as_string from dfs.`data-reader-partition-values` limit 1\";\r\n    // Note that both of the following two limits are expected because this format plugin supports an \"artificial\" limit.\r\n    queryBuilder().sql(query).planMatcher().include(\"Limit\\\\(fetch\\\\=\\\\[1\\\\]\\\\)\").include(\"limit\\\\=1\").match();\r\n    long count = queryBuilder().sql(query).run().recordCount();\r\n    assertEquals(1, count);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Drill\\contrib\\format-deltalake\\src\\test\\java\\org\\apache\\drill\\exec\\store\\delta\\DeltaQueriesTest.java",
+  "methodName" : "testSnapshotVersion",
+  "sourceCode" : "@Test\r\npublic void testSnapshotVersion() throws Exception {\r\n    String query = \"select as_int, as_string \" + \"from table(dfs.`data-reader-partition-values`(type => 'delta', version => 0))  where as_long = 1\";\r\n    testBuilder().sqlQuery(query).ordered().baselineColumns(\"as_int\", \"as_string\").baselineValues(\"1\", \"1\").go();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

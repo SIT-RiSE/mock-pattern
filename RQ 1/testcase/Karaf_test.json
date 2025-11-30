@@ -1,0 +1,451 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\audit\\src\\test\\java\\org\\apache\\karaf\\audit\\logger\\EventLoggerTest.java",
+  "methodName" : "testUdp",
+  "sourceCode" : "@Test\r\npublic void testUdp() throws Exception {\r\n    Map<String, Object> map = new HashMap<>();\r\n    map.put(\"type\", Event.TYPE_JMX);\r\n    map.put(\"subtype\", INVOKE);\r\n    map.put(\"method\", INVOKE);\r\n    map.put(\"signature\", INVOKE_SIG);\r\n    map.put(\"params\", new Object[] { new ObjectName(\"org.apache.karaf.Mbean:type=foo\"), \"myMethod\", new Object[] { String.class.getName() }, new String[] { \"the-param \" } });\r\n    Event event = new MapEvent(map, 1510902000000L);\r\n    int port = getNewPort();\r\n    DatagramSocket socket = new DatagramSocket(port);\r\n    List<DatagramPacket> packets = new ArrayList<>();\r\n    new Thread(() -> {\r\n        try {\r\n            DatagramPacket dp = new DatagramPacket(new byte[1024], 1024);\r\n            socket.receive(dp);\r\n            packets.add(dp);\r\n        } catch (IOException e) {\r\n            e.printStackTrace();\r\n        }\r\n    }).start();\r\n    Thread.sleep(100);\r\n    EventLayout layout = new Rfc3164Layout(16, 5, Rfc5424Layout.DEFAULT_ENTERPRISE_NUMBER, TimeZone.getTimeZone(\"GMT+01:00\"), Locale.ENGLISH);\r\n    EventLogger logger = new UdpEventLogger(\"localhost\", port, \"UTF-8\", layout);\r\n    logger.write(event);\r\n    Thread.sleep(100);\r\n    assertEquals(1, packets.size());\r\n    DatagramPacket p = packets.get(0);\r\n    String str = new String(p.getData(), 0, p.getLength(), StandardCharsets.UTF_8);\r\n    assertTrue(str.startsWith(\"<133>Nov 17 08:00:00 \"));\r\n    assertTrue(str.endsWith(\" jmx [jmx@18060 type=\\\"jmx\\\" subtype=\\\"invoke\\\" method=\\\"invoke\\\" signature=\\\"[javax.management.ObjectName, java.lang.String, [Ljava.lang.Object;, [Ljava.lang.String;\\\\]\\\" params=\\\"[org.apache.karaf.Mbean:type=foo, myMethod, [java.lang.String\\\\], [the-param \\\\]\\\\]\\\"]\"));\r\n    System.out.println(str);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\audit\\src\\test\\java\\org\\apache\\karaf\\audit\\logger\\EventLoggerTest.java",
+  "methodName" : "testTcp",
+  "sourceCode" : "@Test\r\npublic void testTcp() throws Exception {\r\n    Map<String, Object> map = new HashMap<>();\r\n    map.put(\"type\", Event.TYPE_JMX);\r\n    map.put(\"subtype\", INVOKE);\r\n    map.put(\"method\", INVOKE);\r\n    map.put(\"signature\", INVOKE_SIG);\r\n    map.put(\"params\", new Object[] { new ObjectName(\"org.apache.karaf.Mbean:type=foo\"), \"myMethod\", new Object[] { String.class.getName() }, new String[] { \"the-param \" } });\r\n    Event event = new MapEvent(map, 1510902000000L);\r\n    int port = getNewPort();\r\n    List<String> packets = new ArrayList<>();\r\n    new Thread(() -> {\r\n        try (ServerSocket ssocket = new ServerSocket(port)) {\r\n            ssocket.setReuseAddress(true);\r\n            try (Socket socket = ssocket.accept()) {\r\n                byte[] buffer = new byte[1024];\r\n                int nb = socket.getInputStream().read(buffer);\r\n                packets.add(new String(buffer, 0, nb, StandardCharsets.UTF_8));\r\n            }\r\n        } catch (IOException e) {\r\n            e.printStackTrace();\r\n        }\r\n    }).start();\r\n    Thread.sleep(100);\r\n    EventLayout layout = new Rfc5424Layout(16, 5, Rfc5424Layout.DEFAULT_ENTERPRISE_NUMBER, TimeZone.getTimeZone(\"GMT+01:00\"));\r\n    EventLogger logger = new TcpEventLogger(\"localhost\", port, \"UTF-8\", layout);\r\n    logger.write(event);\r\n    logger.flush();\r\n    Thread.sleep(100);\r\n    assertEquals(1, packets.size());\r\n    String str = packets.get(0);\r\n    System.out.println(str);\r\n    assertTrue(str.startsWith(\"<133>1 2017-11-17T08:00:00.000+01:00 \"));\r\n    assertTrue(str.indexOf(\" jmx [jmx@18060 type=\\\"jmx\\\" subtype=\\\"invoke\\\" method=\\\"invoke\\\" signature=\\\"[javax.management.ObjectName, java.lang.String, [Ljava.lang.Object;, [Ljava.lang.String;\\\\]\\\" params=\\\"[org.apache.karaf.Mbean:type=foo, myMethod, [java.lang.String\\\\], [the-param \\\\]\\\\]\\\"]\") > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\audit\\src\\test\\java\\org\\apache\\karaf\\audit\\logger\\EventLoggerTest.java",
+  "methodName" : "testFile",
+  "sourceCode" : "@Test\r\npublic void testFile() throws Exception {\r\n    Map<String, Object> map = new HashMap<>();\r\n    map.put(\"type\", Event.TYPE_JMX);\r\n    map.put(\"subtype\", INVOKE);\r\n    map.put(\"method\", INVOKE);\r\n    map.put(\"signature\", INVOKE_SIG);\r\n    map.put(\"params\", new Object[] { new ObjectName(\"org.apache.karaf.Mbean:type=foo\"), \"myMethod\", new Object[] { String.class.getName() }, new String[] { \"the-param \" } });\r\n    EventLayout layout = new GelfLayout();\r\n    Path path = Files.createTempDirectory(\"file-logger\");\r\n    String file = path.resolve(\"file.log\").toString();\r\n    EventLogger logger = new FileEventLogger(file, \"UTF-8\", \"daily\", 2, false, Executors.defaultThreadFactory(), layout, TimeZone.getTimeZone(\"GMT+01:00\"));\r\n    logger.write(new MapEvent(map, 1510902000000L));\r\n    logger.write(new MapEvent(map, 1510984800000L));\r\n    logger.close();\r\n    Thread.sleep(100);\r\n    List<Path> paths = Files.list(path).sorted().collect(Collectors.toList());\r\n    Collections.sort(paths);\r\n    assertEquals(2, paths.size());\r\n    assertEquals(\"file-2017-11-18.log\", paths.get(0).getFileName().toString());\r\n    assertEquals(\"file.log\", paths.get(1).getFileName().toString());\r\n    List<String> lines = Files.readAllLines(paths.get(0), StandardCharsets.UTF_8);\r\n    assertEquals(1, lines.size());\r\n    String str = lines.get(0);\r\n    System.out.println(str);\r\n    assertTrue(str.startsWith(\"{ version=\\\"1.1\\\" host=\\\"\"));\r\n    assertTrue(str.endsWith(\"timestamp=1510902000.000 short_message=\\\"jmx.invoke\\\" _type=\\\"jmx\\\" _subtype=\\\"invoke\\\" _method=\\\"invoke\\\" _signature=\\\"[javax.management.ObjectName, java.lang.String, [Ljava.lang.Object;, [Ljava.lang.String;]\\\" _params=\\\"[org.apache.karaf.Mbean:type=foo, myMethod, [java.lang.String], [the-param ]]\\\" }\"));\r\n    lines = Files.readAllLines(paths.get(1), StandardCharsets.UTF_8);\r\n    assertEquals(1, lines.size());\r\n    str = lines.get(0);\r\n    System.out.println(str);\r\n    assertTrue(str.startsWith(\"{ version=\\\"1.1\\\" host=\\\"\"));\r\n    assertTrue(str.endsWith(\"timestamp=1510984800.000 short_message=\\\"jmx.invoke\\\" _type=\\\"jmx\\\" _subtype=\\\"invoke\\\" _method=\\\"invoke\\\" _signature=\\\"[javax.management.ObjectName, java.lang.String, [Ljava.lang.Object;, [Ljava.lang.String;]\\\" _params=\\\"[org.apache.karaf.Mbean:type=foo, myMethod, [java.lang.String], [the-param ]]\\\" }\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\audit\\src\\test\\java\\org\\apache\\karaf\\audit\\logger\\EventLoggerTest.java",
+  "methodName" : "testFileMaxFiles",
+  "sourceCode" : "@Test\r\npublic void testFileMaxFiles() throws Exception {\r\n    Map<String, Object> map = new HashMap<>();\r\n    map.put(\"type\", Event.TYPE_SHELL);\r\n    map.put(\"subtype\", \"executed\");\r\n    map.put(\"script\", \"a-script\");\r\n    EventLayout layout = new GelfLayout();\r\n    Path path = Files.createTempDirectory(\"file-logger\");\r\n    String file = path.resolve(\"file.log\").toString();\r\n    EventLogger logger = new FileEventLogger(file, \"UTF-8\", \"daily\", 2, false, Executors.defaultThreadFactory(), layout, TimeZone.getTimeZone(\"GMT+01:00\"));\r\n    for (int i = 0; i < 10; i++) {\r\n        logger.write(new MapEvent(map, 1510902000000L + TimeUnit.DAYS.toMillis(i)));\r\n    }\r\n    logger.close();\r\n    Thread.sleep(100);\r\n    List<String> paths = Files.list(path).map(Path::getFileName).map(Path::toString).sorted().collect(Collectors.toList());\r\n    assertEquals(Arrays.asList(\"file-2017-11-25.log\", \"file-2017-11-26.log\", \"file.log\"), paths);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\audit\\src\\test\\java\\org\\apache\\karaf\\audit\\logger\\EventLoggerTest.java",
+  "methodName" : "testFileSize",
+  "sourceCode" : "@Test\r\npublic void testFileSize() throws Exception {\r\n    Map<String, Object> map = new HashMap<>();\r\n    map.put(\"type\", Event.TYPE_SHELL);\r\n    map.put(\"subtype\", \"executed\");\r\n    map.put(\"script\", \"a-script\");\r\n    EventLayout layout = new GelfLayout();\r\n    Path path = Files.createTempDirectory(\"file-logger\");\r\n    String file = path.resolve(\"file.log\").toString();\r\n    EventLogger logger = new FileEventLogger(file, \"UTF-8\", \"size(10)\", 2, false, Executors.defaultThreadFactory(), layout, TimeZone.getTimeZone(\"GMT+01:00\"));\r\n    for (int i = 0; i < 10; i++) {\r\n        logger.write(new MapEvent(map, LocalDateTime.of(2017, 11, 17, 7, 0).toInstant(ZoneOffset.of(\"+01:00\")).toEpochMilli() + TimeUnit.HOURS.toMillis(i)));\r\n    }\r\n    logger.close();\r\n    Thread.sleep(100);\r\n    List<String> paths = Files.list(path).map(Path::getFileName).map(Path::toString).sorted().collect(Collectors.toList());\r\n    assertEquals(Arrays.asList(\"file-2017-11-17-2.log\", \"file-2017-11-17.log\", \"file.log\"), paths);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\audit\\src\\test\\java\\org\\apache\\karaf\\audit\\logger\\EventLoggerTest.java",
+  "methodName" : "testFileSizeCompress",
+  "sourceCode" : "@Test\r\npublic void testFileSizeCompress() throws Exception {\r\n    Map<String, Object> map = new HashMap<>();\r\n    map.put(\"type\", Event.TYPE_SHELL);\r\n    map.put(\"subtype\", \"executed\");\r\n    map.put(\"script\", \"a-script\");\r\n    EventLayout layout = new GelfLayout();\r\n    Path path = Files.createTempDirectory(\"file-logger\");\r\n    String file = path.resolve(\"file.log\").toString();\r\n    EventLogger logger = new FileEventLogger(file, \"UTF-8\", \"size(10)\", 2, true, Executors.defaultThreadFactory(), layout, TimeZone.getTimeZone(\"GMT+01:00\"));\r\n    for (int i = 0; i < 10; i++) {\r\n        logger.write(new MapEvent(map, LocalDateTime.of(2017, 11, 17, 7, 0).toInstant(ZoneOffset.of(\"+01:00\")).toEpochMilli() + TimeUnit.HOURS.toMillis(i)));\r\n    }\r\n    logger.close();\r\n    Thread.sleep(100);\r\n    List<String> paths = Files.list(path).map(Path::getFileName).map(Path::toString).sorted().collect(Collectors.toList());\r\n    assertEquals(Arrays.asList(\"file-2017-11-17-2.log.gz\", \"file-2017-11-17.log.gz\", \"file.log\"), paths);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\audit\\src\\test\\java\\org\\apache\\karaf\\audit\\TestPerf.java",
+  "methodName" : "testFormatString",
+  "sourceCode" : "@Test\r\npublic void testFormatString() throws Exception {\r\n    int iterations = 10000000;\r\n    for (int i = 0; i < 10; i++) {\r\n        final Buffer buffer0 = new Buffer(Buffer.Format.Json);\r\n        long t0 = measure(() -> {\r\n            buffer0.clear();\r\n            buffer0.format(\"This is \\\"\\n\\tquite\\n\\tq\\n\\ta\\n\\tlong\\n\\tquote.\\\"\\nIndeed !\\n\");\r\n            return null;\r\n        }, iterations);\r\n        System.out.println(\"json = \" + t0);\r\n        final Buffer buffer1 = new Buffer(Buffer.Format.Syslog);\r\n        long t1 = measure(() -> {\r\n            buffer1.clear();\r\n            buffer1.format(\"This is \\\"\\n\\tquite\\n\\tq\\n\\ta\\n\\tlong\\n\\tquote.\\\"\\nIndeed !\\n\");\r\n            return null;\r\n        }, iterations);\r\n        System.out.println(\"syslog = \" + t1);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\audit\\src\\test\\java\\org\\apache\\karaf\\audit\\TestPerf.java",
+  "methodName" : "testGelfTimestamp",
+  "sourceCode" : "@Test\r\npublic void testGelfTimestamp() throws Exception {\r\n    long timestamp = System.currentTimeMillis();\r\n    int iterations = 1000000;\r\n    for (int p = 0; p < 10; p++) {\r\n        Buffer buffer = new Buffer(Buffer.Format.Json);\r\n        long t0 = measure(() -> {\r\n            buffer.clear();\r\n            long secs = timestamp / 1000;\r\n            int ms = (int) (timestamp - secs * 1000);\r\n            buffer.format(secs);\r\n            buffer.append('.');\r\n            int temp = ms / 100;\r\n            buffer.append((char) (temp + '0'));\r\n            ms -= 100 * temp;\r\n            temp = ms / 10;\r\n            buffer.append((char) (temp + '0'));\r\n            ms -= 10 * temp;\r\n            buffer.append((char) (ms + '0'));\r\n            return null;\r\n        }, iterations);\r\n        System.out.println(\"t0 = \" + t0);\r\n        long t1 = measure(() -> {\r\n            buffer.clear();\r\n            long secs = timestamp / 1000;\r\n            int ms = (int) (timestamp - secs * 1000);\r\n            buffer.format(Long.toString(secs));\r\n            buffer.append('.');\r\n            int temp = ms / 100;\r\n            buffer.append((char) (temp + '0'));\r\n            ms -= 100 * temp;\r\n            temp = ms / 10;\r\n            buffer.append((char) (temp + '0'));\r\n            ms -= 10 * temp;\r\n            buffer.append((char) (ms + '0'));\r\n            return null;\r\n        }, iterations);\r\n        System.out.println(\"t1 = \" + t1);\r\n        long t2 = measure(() -> {\r\n            buffer.clear();\r\n            new Formatter(buffer).format(\"%.3f\", ((double) timestamp) / 1000.0);\r\n            return null;\r\n        }, iterations);\r\n        System.out.println(\"t2 = \" + t2);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\audit\\src\\test\\java\\org\\apache\\karaf\\audit\\TestPerf.java",
+  "methodName" : "testSerialize",
+  "sourceCode" : "@Test\r\npublic void testSerialize() throws Exception {\r\n    Map<String, Object> map = new HashMap<>();\r\n    map.put(\"type\", Event.TYPE_JMX);\r\n    map.put(\"subtype\", INVOKE);\r\n    map.put(\"method\", INVOKE);\r\n    map.put(\"signature\", INVOKE_SIG);\r\n    map.put(\"params\", new Object[] { new ObjectName(\"org.apache.karaf.Mbean:type=foo\"), \"myMethod\", new Object[] { String.class.getName() }, new String[] { \"the-param \" } });\r\n    Event event = new MapEvent(map);\r\n    EventLayout layout = new Rfc3164Layout(16, 5, Rfc5424Layout.DEFAULT_ENTERPRISE_NUMBER, TimeZone.getTimeZone(\"CET\"), Locale.ENGLISH);\r\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    Writer writer = new BufferedWriter(new OutputStreamWriter(baos, StandardCharsets.UTF_8));\r\n    long dt0 = measure(() -> {\r\n        baos.reset();\r\n        layout.format(event, writer);\r\n        writer.flush();\r\n        return null;\r\n    }, 10000000);\r\n    System.out.println(dt0);\r\n    long dt1 = measure(() -> {\r\n        baos.reset();\r\n        layout.format(event, writer);\r\n        writer.flush();\r\n        return null;\r\n    }, 10000000);\r\n    System.out.println(dt1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\audit\\src\\test\\java\\org\\apache\\karaf\\audit\\util\\FastDateFormatTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() throws Exception {\r\n    FastDateFormat cal = new FastDateFormat();\r\n    long time = new SimpleDateFormat(\"yyyy-MM-dd\").parse(\"2017-11-05\").getTime();\r\n    assertEquals(\"Nov  5\", cal.getDate(time, FastDateFormat.MMM_D2));\r\n    assertEquals(\"2017-11-05\", cal.getDate(time, FastDateFormat.YYYY_MM_DD));\r\n    time += TimeUnit.DAYS.toMillis(5) + TimeUnit.HOURS.toMillis(1);\r\n    assertEquals(\"Nov 10\", cal.getDate(time, FastDateFormat.MMM_D2));\r\n    assertEquals(\"2017-11-10\", cal.getDate(time, FastDateFormat.YYYY_MM_DD));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\audit\\src\\test\\java\\org\\apache\\karaf\\audit\\util\\FastDateFormatTest.java",
+  "methodName" : "testTimeZone",
+  "sourceCode" : "@Test\r\npublic void testTimeZone() throws Exception {\r\n    long time = new SimpleDateFormat(\"yyyy-MM-dd\").parse(\"2017-11-05\").getTime();\r\n    FastDateFormat cal = new FastDateFormat(TimeZone.getTimeZone(\"GMT+5\"), Locale.ENGLISH);\r\n    assertEquals(\"+05:00\", cal.getDate(time, FastDateFormat.XXX));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\bundle\\core\\src\\test\\java\\org\\apache\\karaf\\bundle\\command\\bundletree\\TreeTest.java",
+  "methodName" : "writeTreeWithOneChild",
+  "sourceCode" : "@Test\r\npublic void writeTreeWithOneChild() throws IOException {\r\n    Tree<String> tree = new Tree<>(\"root\");\r\n    tree.addChild(\"child\");\r\n    BufferedReader reader = read(tree);\r\n    assertEquals(\"root\", reader.readLine());\r\n    assertEquals(\"+- child\", reader.readLine());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\bundle\\core\\src\\test\\java\\org\\apache\\karaf\\bundle\\command\\bundletree\\TreeTest.java",
+  "methodName" : "writeTreeWithOneChildAndNodeConverter",
+  "sourceCode" : "@Test\r\npublic void writeTreeWithOneChildAndNodeConverter() throws IOException {\r\n    Tree<String> tree = new Tree<>(\"root\");\r\n    tree.addChild(\"child\");\r\n    StringWriter writer = new StringWriter();\r\n    tree.write(new PrintWriter(writer), node -> \"my \" + node.getValue());\r\n    BufferedReader reader = new BufferedReader(new StringReader(writer.getBuffer().toString()));\r\n    assertEquals(\"my root\", reader.readLine());\r\n    assertEquals(\"+- my child\", reader.readLine());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\bundle\\core\\src\\test\\java\\org\\apache\\karaf\\bundle\\command\\bundletree\\TreeTest.java",
+  "methodName" : "writeTreeWithChildAndGrandChild",
+  "sourceCode" : "@Test\r\npublic void writeTreeWithChildAndGrandChild() throws IOException {\r\n    Tree<String> tree = new Tree<>(\"root\");\r\n    Node<String> node = tree.addChild(\"child\");\r\n    node.addChild(\"grandchild\");\r\n    BufferedReader reader = read(tree);\r\n    assertEquals(\"root\", reader.readLine());\r\n    assertEquals(\"+- child\", reader.readLine());\r\n    assertEquals(\"   +- grandchild\", reader.readLine());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\bundle\\core\\src\\test\\java\\org\\apache\\karaf\\bundle\\command\\bundletree\\TreeTest.java",
+  "methodName" : "writeTreeWithTwoChildrenAndOneGrandchild",
+  "sourceCode" : "@Test\r\npublic void writeTreeWithTwoChildrenAndOneGrandchild() throws IOException {\r\n    Tree<String> tree = new Tree<>(\"root\");\r\n    Node<String> child = tree.addChild(\"child1\");\r\n    child.addChild(\"grandchild\");\r\n    tree.addChild(\"child2\");\r\n    BufferedReader reader = read(tree);\r\n    assertEquals(\"root\", reader.readLine());\r\n    assertEquals(\"+- child1\", reader.readLine());\r\n    assertEquals(\"|  +- grandchild\", reader.readLine());\r\n    assertEquals(\"+- child2\", reader.readLine());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\bundle\\core\\src\\test\\java\\org\\apache\\karaf\\bundle\\command\\bundletree\\TreeTest.java",
+  "methodName" : "flattenTree",
+  "sourceCode" : "@Test\r\npublic void flattenTree() throws IOException {\r\n    Tree<String> tree = new Tree<>(\"root\");\r\n    Node<String> child1 = tree.addChild(\"child1\");\r\n    child1.addChild(\"grandchild\");\r\n    Node<String> child2 = tree.addChild(\"child2\");\r\n    child2.addChild(\"grandchild\");\r\n    Set<String> elements = tree.flatten();\r\n    assertNotNull(elements);\r\n    assertEquals(4, elements.size());\r\n    assertTrue(elements.contains(\"root\"));\r\n    assertTrue(elements.contains(\"child1\"));\r\n    assertTrue(elements.contains(\"child2\"));\r\n    assertTrue(elements.contains(\"grandchild\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\bundle\\core\\src\\test\\java\\org\\apache\\karaf\\bundle\\command\\bundletree\\TreeTest.java",
+  "methodName" : "hasAncestor",
+  "sourceCode" : "@Test\r\npublic void hasAncestor() throws IOException {\r\n    Tree<String> tree = new Tree<>(\"root\");\r\n    Node<String> child1 = tree.addChild(\"child1\");\r\n    child1.addChild(\"grandchild\");\r\n    Node<String> child2 = tree.addChild(\"child2\");\r\n    Node<String> node = child2.addChild(\"grandchild2\");\r\n    assertTrue(node.hasAncestor(\"child2\"));\r\n    assertTrue(node.hasAncestor(\"root\"));\r\n    assertFalse(node.hasAncestor(\"child1\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\bundle\\core\\src\\test\\java\\org\\apache\\karaf\\bundle\\command\\ListServicesTest.java",
+  "methodName" : "listAllShort",
+  "sourceCode" : "@Test\r\npublic void listAllShort() throws Exception {\r\n    System.out.println(\"listAllShort\");\r\n    listServices.execute();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\bundle\\core\\src\\test\\java\\org\\apache\\karaf\\bundle\\command\\ListServicesTest.java",
+  "methodName" : "listAllLong",
+  "sourceCode" : "@Test\r\npublic void listAllLong() throws Exception {\r\n    System.out.println(\"listAllLong\");\r\n    listServices.ids = Arrays.asList(\"1\", \"2\");\r\n    listServices.execute();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\bundle\\core\\src\\test\\java\\org\\apache\\karaf\\bundle\\command\\ListServicesTest.java",
+  "methodName" : "listAllLongServiceUse",
+  "sourceCode" : "@Test\r\npublic void listAllLongServiceUse() throws Exception {\r\n    System.out.println(\"listAllLongServicesUse\");\r\n    listServices.ids = Arrays.asList(\"1\", \"2\");\r\n    listServices.inUse = true;\r\n    listServices.execute();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\bundle\\core\\src\\test\\java\\org\\apache\\karaf\\bundle\\core\\internal\\MavenConfigServiceTest.java",
+  "methodName" : "testLocalRepoEmpty",
+  "sourceCode" : "@Test\r\npublic void testLocalRepoEmpty() throws Exception {\r\n    Hashtable<String, Object> config = new Hashtable<>();\r\n    assertEquals(null, MavenConfigService.getLocalRepoFromConfig(config));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\bundle\\core\\src\\test\\java\\org\\apache\\karaf\\bundle\\core\\internal\\MavenConfigServiceTest.java",
+  "methodName" : "testLocalRepoExplicit",
+  "sourceCode" : "@Test\r\npublic void testLocalRepoExplicit() throws Exception {\r\n    Hashtable<String, Object> config = new Hashtable<>();\r\n    config.put(\"org.ops4j.pax.url.mvn.localRepository\", \"foo/bar\");\r\n    assertEquals(\"foo/bar\", MavenConfigService.getLocalRepoFromConfig(config));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\bundle\\core\\src\\test\\java\\org\\apache\\karaf\\bundle\\core\\internal\\MavenConfigServiceTest.java",
+  "methodName" : "testLocalRepoFromSettings",
+  "sourceCode" : "@Test\r\npublic void testLocalRepoFromSettings() throws Exception {\r\n    Hashtable<String, Object> config = new Hashtable<>();\r\n    config.put(\"org.ops4j.pax.url.mvn.settings\", getClass().getResource(\"/settings.xml\").getPath());\r\n    assertEquals(\"foo/bar\", MavenConfigService.getLocalRepoFromConfig(config));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\bundle\\core\\src\\test\\java\\org\\apache\\karaf\\bundle\\core\\internal\\MavenConfigServiceTest.java",
+  "methodName" : "testLocalRepoFromSettingsNs",
+  "sourceCode" : "@Test\r\npublic void testLocalRepoFromSettingsNs() throws Exception {\r\n    Hashtable<String, Object> config = new Hashtable<>();\r\n    config.put(\"org.ops4j.pax.url.mvn.settings\", getClass().getResource(\"/settings2.xml\").getPath());\r\n    assertEquals(\"foo/bar\", MavenConfigService.getLocalRepoFromConfig(config));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\client\\src\\test\\java\\org\\apache\\karaf\\client\\ClientConfigTest.java",
+  "methodName" : "testDefaultUser",
+  "sourceCode" : "@Test\r\npublic void testDefaultUser() throws Exception {\r\n    String etc = System.getProperty(\"karaf.etc\");\r\n    System.setProperty(\"karaf.etc\", \"src/test/resources/etc1\");\r\n    ClientConfig cc = new ClientConfig(new String[0]);\r\n    assertThat(cc.getUser(), equalTo(\"karaf\"));\r\n    cc = new ClientConfig(new String[] { \"-u\", \"different-one\" });\r\n    assertThat(cc.getUser(), equalTo(\"different-one\"));\r\n    System.setProperty(\"karaf.etc\", \"src/test/resources/etc2\");\r\n    cc = new ClientConfig(new String[0]);\r\n    assertThat(cc.getUser(), equalTo(\"test\"));\r\n    if (etc != null) {\r\n        System.setProperty(\"karaf.etc\", etc);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\config\\core\\src\\test\\java\\org\\apache\\karaf\\config\\core\\impl\\ConfigMBeanImplTest.java",
+  "methodName" : "testInstallWithNonAuthorizePath",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testInstallWithNonAuthorizePath() throws Exception {\r\n    System.setProperty(\"karaf.etc\", \".\");\r\n    ConfigMBeanImpl configMBean = new ConfigMBeanImpl();\r\n    configMBean.install(\"file:foo.cfg\", \"../test.cfg\", false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\config\\core\\src\\test\\java\\org\\apache\\karaf\\config\\core\\impl\\ConfigMBeanImplTest.java",
+  "methodName" : "testInstall",
+  "sourceCode" : "@Test\r\npublic void testInstall() throws Exception {\r\n    System.setProperty(\"karaf.etc\", \"./target/test-classes\");\r\n    ConfigMBeanImpl configMBean = new ConfigMBeanImpl();\r\n    configMBean.install(\"file:./target/test-classes/test.cfg\", \"foo.cfg\", true);\r\n    File output = new File(\"target/test-classes/foo.cfg\");\r\n    Assert.assertTrue(output.exists());\r\n    StringBuilder builder = new StringBuilder();\r\n    BufferedReader reader = new BufferedReader(new FileReader(output));\r\n    String line = null;\r\n    while ((line = reader.readLine()) != null) {\r\n        builder.append(line).append(\"\\n\");\r\n    }\r\n    Assert.assertTrue(builder.toString().contains(\"foo=bar\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\config\\core\\src\\test\\java\\org\\apache\\karaf\\config\\core\\impl\\JsonConfigInstallerTest.java",
+  "methodName" : "KARAF_7097_update_required",
+  "sourceCode" : "@Test\r\npublic void KARAF_7097_update_required() throws Exception {\r\n    final String filename = \"/org.example.Arrays~update_required.cfg.json\";\r\n    final String pid = ConfigurationPID.parseFilename(filename).getPid();\r\n    final String path = getClass().getResource(filename).getPath();\r\n    final File artifact = new File(path);\r\n    final Hashtable<String, Object> properties = new Hashtable<>();\r\n    properties.put(\"a\", a);\r\n    properties.put(\"b\", b);\r\n    properties.put(\"c\", c);\r\n    final Configuration configuration = mock(Configuration.class);\r\n    expect(configuration.getPid()).andReturn(pid);\r\n    expect(configuration.getProperties()).andReturn(properties);\r\n    configuration.update(anyObject());\r\n    final ConfigurationAdmin configurationAdmin = mock(ConfigurationAdmin.class);\r\n    expect(configurationAdmin.listConfigurations(String.format(\"(felix.fileinstall.filename=%s)\", artifact.toURI()))).andReturn(new Configuration[] { configuration });\r\n    expect(configurationAdmin.getConfiguration(pid, null)).andReturn(configuration);\r\n    replay(configuration, configurationAdmin);\r\n    final JsonConfigInstaller installer = new JsonConfigInstaller(configurationAdmin);\r\n    installer.install(artifact);\r\n    verify(configuration, configurationAdmin);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\config\\core\\src\\test\\java\\org\\apache\\karaf\\config\\core\\impl\\JsonConfigInstallerTest.java",
+  "methodName" : "KARAF_7097_no_update_required",
+  "sourceCode" : "@Test\r\npublic void KARAF_7097_no_update_required() throws Exception {\r\n    final String filename = \"/org.example.Arrays~no_update_required.cfg.json\";\r\n    final String pid = ConfigurationPID.parseFilename(filename).getPid();\r\n    final String path = getClass().getResource(filename).getPath();\r\n    final File artifact = new File(path);\r\n    final Hashtable<String, Object> properties = new Hashtable<>();\r\n    properties.put(\"a\", a);\r\n    properties.put(\"b\", b);\r\n    properties.put(\"c\", c);\r\n    final Configuration configuration = mock(Configuration.class);\r\n    expect(configuration.getPid()).andReturn(pid);\r\n    expect(configuration.getProperties()).andReturn(properties);\r\n    final ConfigurationAdmin configurationAdmin = mock(ConfigurationAdmin.class);\r\n    expect(configurationAdmin.listConfigurations(String.format(\"(felix.fileinstall.filename=%s)\", artifact.toURI()))).andReturn(new Configuration[] { configuration });\r\n    expect(configurationAdmin.getConfiguration(pid, null)).andReturn(configuration);\r\n    replay(configuration, configurationAdmin);\r\n    final JsonConfigInstaller installer = new JsonConfigInstaller(configurationAdmin);\r\n    installer.install(artifact);\r\n    verify(configuration, configurationAdmin);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\config\\core\\src\\test\\java\\org\\apache\\karaf\\config\\core\\impl\\KarafConfigurationPluginTest.java",
+  "methodName" : "testSystemProperty",
+  "sourceCode" : "@Test\r\npublic void testSystemProperty() throws Exception {\r\n    System.setProperty(\"org.apache.karaf.shell.sshPort\", \"8102\");\r\n    KarafConfigurationPlugin plugin = new KarafConfigurationPlugin();\r\n    Dictionary<String, Object> properties = new Hashtable<>();\r\n    properties.put(Constants.SERVICE_PID, \"org.apache.karaf.shell\");\r\n    properties.put(\"foo\", \"bar\");\r\n    properties.put(\"sshPort\", 8101);\r\n    plugin.modifyConfiguration(null, properties);\r\n    Assert.assertEquals(8102, properties.get(\"sshPort\"));\r\n    Assert.assertEquals(\"bar\", properties.get(\"foo\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\config\\core\\src\\test\\java\\org\\apache\\karaf\\config\\core\\impl\\KarafConfigurationPluginTest.java",
+  "methodName" : "testAppending",
+  "sourceCode" : "@Test\r\npublic void testAppending() throws Exception {\r\n    System.setProperty(\"org.apache.karaf.features.repositories\", \"${repositories},third\");\r\n    KarafConfigurationPlugin plugin = new KarafConfigurationPlugin();\r\n    Dictionary<String, Object> properties = new Hashtable<>();\r\n    properties.put(Constants.SERVICE_PID, \"org.apache.karaf.features\");\r\n    properties.put(\"repositories\", \"first,second\");\r\n    properties.put(\"foo\", \"bar\");\r\n    plugin.modifyConfiguration(null, properties);\r\n    Assert.assertEquals(\"first,second,third\", properties.get(\"repositories\"));\r\n    Assert.assertEquals(\"bar\", properties.get(\"foo\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\deployer\\kar\\src\\test\\java\\org\\apache\\karaf\\deployer\\kar\\KarArtifactInstallerTest.java",
+  "methodName" : "shouldHandleKarFile",
+  "sourceCode" : "@Test\r\npublic void shouldHandleKarFile() throws Exception {\r\n    assertTrue(karArtifactInstaller.canHandle(new File(goodKarFile)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\deployer\\kar\\src\\test\\java\\org\\apache\\karaf\\deployer\\kar\\KarArtifactInstallerTest.java",
+  "methodName" : "shouldHandleZipFileWithKarafManifest",
+  "sourceCode" : "@Test\r\npublic void shouldHandleZipFileWithKarafManifest() throws Exception {\r\n    assertTrue(karArtifactInstaller.canHandle(new File(zipFileWithKarafManifest)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\deployer\\kar\\src\\test\\java\\org\\apache\\karaf\\deployer\\kar\\KarArtifactInstallerTest.java",
+  "methodName" : "shouldIgnoreZipFileWithoutKarafManifest",
+  "sourceCode" : "@Test\r\npublic void shouldIgnoreZipFileWithoutKarafManifest() throws Exception {\r\n    assertFalse(karArtifactInstaller.canHandle(new File(zipFileWithoutKarafManifest)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\deployer\\kar\\src\\test\\java\\org\\apache\\karaf\\deployer\\kar\\KarArtifactInstallerTest.java",
+  "methodName" : "shouldIgnoreBadZipFile",
+  "sourceCode" : "@Test\r\npublic void shouldIgnoreBadZipFile() throws Exception {\r\n    assertFalse(karArtifactInstaller.canHandle(new File(badZipFile)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\deployer\\kar\\src\\test\\java\\org\\apache\\karaf\\deployer\\kar\\KarArtifactInstallerTest.java",
+  "methodName" : "shouldNotInstallSameFileTwice",
+  "sourceCode" : "/**\r\n * This is test for KARAF-5533. Issue comes from fact that internally KAR service process file in it's own way.\r\n *\r\n * Because of that artifact installer must follow the same logic of service it calls, as returned list of installed.\r\n * KAR files is not list of full file names, but files with stripped extensions.\r\n *\r\n * @throws Exception Any exception causes test failure.\r\n */\r\n@Test\r\npublic void shouldNotInstallSameFileTwice() throws Exception {\r\n    File file = new File(goodKarFile);\r\n    URI uri = file.toURI();\r\n    // make sure we have clean state.\r\n    presentKarList(Collections.emptyList());\r\n    karService.install(uri);\r\n    replay(karService);\r\n    karArtifactInstaller.install(file);\r\n    verify(karService);\r\n    // once again,\r\n    reset(karService);\r\n    presentKarList(Collections.singletonList(karArtifactInstaller.getKarName(file)));\r\n    replay(karService);\r\n    karArtifactInstaller.install(file);\r\n    verify(karService);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testDockerInfo",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testDockerInfo() throws Exception {\r\n    Info info = dockerClient.info();\r\n    System.out.println(\"Info:\");\r\n    System.out.println(\"\\tDriver: \" + info.getDriver());\r\n    System.out.println(\"\\tDriver Status: \" + info.getDriverStatus());\r\n    System.out.println(\"\\tExecution Driver: \" + info.getExecutionDriver());\r\n    System.out.println(\"\\tIndex Server Address: \" + info.getIndexServerAddress());\r\n    System.out.println(\"\\tInit Path: \" + info.getInitPath());\r\n    System.out.println(\"\\tInit SHA1: \" + info.getInitSha1());\r\n    System.out.println(\"\\tKernel Version: \" + info.getKernelVersion());\r\n    System.out.println(\"\\tContainers: \" + info.getContainers());\r\n    System.out.println(\"\\tImages: \" + info.getImages());\r\n    System.out.println(\"\\tNFD: \" + info.getNfd());\r\n    System.out.println(\"\\tNGoRoutines: \" + info.getNgoroutines());\r\n    System.out.println(\"\\tMemory Limit enabled: \" + info.isMemoryLimit());\r\n    System.out.println(\"\\tSwap Limit enabled: \" + info.isSwapLimit());\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testDockerVersion",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testDockerVersion() throws Exception {\r\n    Version version = dockerClient.version();\r\n    System.out.println(\"Version:\");\r\n    System.out.println(\"\\tAPI version: \" + version.getApiVersion());\r\n    System.out.println(\"\\tArch: \" + version.getArch());\r\n    System.out.println(\"\\tBuild Time: \" + version.getBuildTime());\r\n    System.out.println(\"\\tExperimental: \" + version.getExperimental());\r\n    System.out.println(\"\\tGit Commit: \" + version.getGitCommit());\r\n    System.out.println(\"\\tGo Version: \" + version.getGoVersion());\r\n    System.out.println(\"\\tKernel Version: \" + version.getKernelVersion());\r\n    System.out.println(\"\\tOS: \" + version.getOs());\r\n    System.out.println(\"\\tVersion: \" + version.getVersion());\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testListImages",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testListImages() throws Exception {\r\n    for (Image image : dockerClient.images(true)) {\r\n        System.out.println(\"----\");\r\n        System.out.println(\"Image ID: \" + image.getId());\r\n        System.out.println(\"Created: \" + image.getCreated());\r\n        System.out.println(\"Size: \" + image.getSize());\r\n        System.out.println(\"Virtual size: \" + image.getVirtualSize());\r\n        System.out.println(\"RepoTags: \" + image.getRepoTags());\r\n        System.out.println(\"Labels: \" + image.getLabels());\r\n        System.out.println(\"Containers: \" + image.getContainers());\r\n    }\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testHistoryImage",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testHistoryImage() throws Exception {\r\n    for (ImageHistory history : dockerClient.history(\"sha256:f3ea90d50ffd7851cb984764409326b82593c612fe6e6dc7933d9568f735084b\")) {\r\n        System.out.println(\"----\");\r\n        System.out.println(\"ID: \" + history.getId());\r\n        System.out.println(\"Created: \" + history.getCreated());\r\n        System.out.println(\"Created by: \" + history.getCreatedBy());\r\n        System.out.println(\"Comment: \" + history.getComment());\r\n        System.out.println(\"Size: \" + history.getSize());\r\n        System.out.println(\"Tags: \" + history.getTags());\r\n    }\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testSearchImages",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testSearchImages() throws Exception {\r\n    List<ImageSearch> images = dockerClient.search(\"karaf\");\r\n    for (ImageSearch image : images) {\r\n        System.out.println(\"----\");\r\n        System.out.println(\"Image Name: \" + image.getName());\r\n        System.out.println(\"Image Star Count: \" + image.getStarCount());\r\n        System.out.println(\"Image Automated: \" + image.isAutomated());\r\n        System.out.println(\"Image Official: \" + image.isOfficial());\r\n        System.out.println(\"Image Description: \" + image.getDescription());\r\n    }\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testPullImage",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testPullImage() throws Exception {\r\n    dockerClient.pull(\"mkroli/karaf\", \"latest\", true);\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testRemoveImage",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testRemoveImage() throws Exception {\r\n    dockerClient.rmi(\"sha256:f3ea90d50ffd7851cb984764409326b82593c612fe6e6dc7933d9568f735084b\", true, false);\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testContainers",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testContainers() throws Exception {\r\n    for (Container container : dockerClient.ps(true)) {\r\n        System.out.println(\"----\");\r\n        System.out.println(\"Container \" + container.getId());\r\n        System.out.println(\"Command: \" + container.getCommand());\r\n        System.out.println(\"Created: \" + container.getCreated());\r\n        System.out.println(\"Image: \" + container.getImage());\r\n        System.out.println(\"Image ID: \" + container.getImageId());\r\n        System.out.println(\"Names: \" + container.getNames());\r\n        for (Port port : container.getPorts()) {\r\n            System.out.println(\"Port: \" + port.getPublicPort() + \":\" + port.getPrivatePort() + \" (\" + port.getType() + \")\");\r\n        }\r\n        System.out.println(\"Status: \" + container.getStatus());\r\n        System.out.println(\"State: \" + container.getState());\r\n        System.out.println(\"Size: \" + container.getSizeRw());\r\n        System.out.println(\"Size Root: \" + container.getSizeRootFs());\r\n    }\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testCreateContainer",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testCreateContainer() throws Exception {\r\n    ContainerConfig config = new ContainerConfig();\r\n    config.setImage(\"java:8-jre-alpine\");\r\n    config.setAttachStderr(true);\r\n    config.setAttachStdin(true);\r\n    config.setAttachStdout(true);\r\n    config.setTty(true);\r\n    dockerClient.create(config, \"test\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testCreateKarafContainer",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testCreateKarafContainer() throws Exception {\r\n    ContainerConfig config = new ContainerConfig();\r\n    config.setTty(true);\r\n    config.setAttachStdout(true);\r\n    config.setAttachStderr(true);\r\n    config.setAttachStdin(true);\r\n    config.setImage(\"karaf:latest\");\r\n    config.setHostname(\"docker\");\r\n    config.setUser(\"\");\r\n    config.setCmd(new String[] { \"/bin/karaf\" });\r\n    config.setWorkingDir(\"\");\r\n    config.setOpenStdin(true);\r\n    config.setStdinOnce(true);\r\n    Map<String, Map<String, String>> exposedPorts = new HashMap<>();\r\n    Map<String, String> exposedPort = new HashMap<>();\r\n    exposedPorts.put(\"8101/tcp\", exposedPort);\r\n    config.setExposedPorts(exposedPorts);\r\n    HostConfig hostConfig = new HostConfig();\r\n    hostConfig.setPrivileged(false);\r\n    hostConfig.setPublishAllPorts(false);\r\n    // getting the dock\r\n    File dock = new File(\"/tmp/docker\", \"karaf\");\r\n    if (dock.exists()) {\r\n        hostConfig.setBinds(new String[] { dock.getAbsolutePath() + \":/opt/apache-karaf\" });\r\n    }\r\n    hostConfig.setNetworkMode(\"bridge\");\r\n    hostConfig.setLxcConf(new String[] {});\r\n    Map<String, List<HostPortBinding>> portBindings = new HashMap<>();\r\n    List<HostPortBinding> hostPortBindings = new ArrayList<>();\r\n    HostPortBinding hostPortBinding = new HostPortBinding();\r\n    hostPortBinding.setHostIp(\"\");\r\n    hostPortBinding.setHostPort(\"8101\");\r\n    hostPortBindings.add(hostPortBinding);\r\n    portBindings.put(\"8101/tcp\", hostPortBindings);\r\n    hostConfig.setPortBindings(portBindings);\r\n    config.setHostConfig(hostConfig);\r\n    dockerClient.create(config, \"karaf\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testStartContainer",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testStartContainer() throws Exception {\r\n    dockerClient.start(\"test\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testStopContainer",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testStopContainer() throws Exception {\r\n    dockerClient.stop(\"test\", 30);\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testRestartContainer",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testRestartContainer() throws Exception {\r\n    dockerClient.restart(\"test\", 30);\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testKillContainer",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testKillContainer() throws Exception {\r\n    dockerClient.kill(\"test\", \"SIGKILL\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testRemoveContainer",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testRemoveContainer() throws Exception {\r\n    dockerClient.rm(\"test\", true, true);\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testRenameContainer",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testRenameContainer() throws Exception {\r\n    dockerClient.rename(\"test\", \"karaf-test\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testPauseContainer",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testPauseContainer() throws Exception {\r\n    dockerClient.pause(\"test\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testUnpauseContainer",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testUnpauseContainer() throws Exception {\r\n    dockerClient.unpause(\"test\");\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testContainerLog",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testContainerLog() throws Exception {\r\n    System.out.println(dockerClient.logs(\"test\", true, true, true, true));\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\DockerClientTest.java",
+  "methodName" : "testContainerTop",
+  "sourceCode" : "@Test\r\n@Ignore(\"Need a running Docker daemon\")\r\npublic void testContainerTop() throws Exception {\r\n    Top top = dockerClient.top(\"test\");\r\n    for (String title : top.getTitles()) {\r\n        System.out.print(title);\r\n        System.out.print(\"\\t\");\r\n    }\r\n    System.out.println();\r\n    for (List<String> process : top.getProcesses()) {\r\n        for (String p : process) {\r\n            System.out.print(p);\r\n            System.out.print(\"\\t\");\r\n        }\r\n        System.out.println();\r\n    }\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\docker\\src\\test\\java\\org\\apache\\karaf\\docker\\internal\\DockerServiceImplTest.java",
+  "methodName" : "testProvision",
+  "sourceCode" : "@Test\r\n@Ignore(\"Require a running docker daemon\")\r\npublic void testProvision() throws Exception {\r\n    dockerService.provision(\"test\", \"8101\", \"1099\", \"44444\", \"8181\", false, null);\r\n}",
+  "annotations" : [ "Test", "Ignore" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\event\\src\\test\\java\\org\\apache\\karaf\\event\\command\\EventDisplayCommandTest.java",
+  "methodName" : "testExecute",
+  "sourceCode" : "@Test\r\npublic void testExecute() throws Exception {\r\n    IMocksControl c = createControl();\r\n    EventDisplayCommand display = new EventDisplayCommand();\r\n    display.session = c.createMock(Session.class);\r\n    expect(display.session.getConsole()).andReturn(System.out);\r\n    display.collector = new EventCollector();\r\n    display.collector.handleEvent(new Event(\"myTopic\", new HashMap<>()));\r\n    c.replay();\r\n    display.execute();\r\n    c.verify();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\event\\src\\test\\java\\org\\apache\\karaf\\event\\command\\EventPrinterTest.java",
+  "methodName" : "testPrint",
+  "sourceCode" : "@Test\r\npublic void testPrint() throws UnsupportedEncodingException {\r\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    PrintStream out = new PrintStream(baos);\r\n    new EventPrinter(out, false).accept(event());\r\n    String result = baos.toString(\"utf-8\");\r\n    assertThat(result, equalTo(\"2016-01-01 12:00:00 - myTopic\\n\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\event\\src\\test\\java\\org\\apache\\karaf\\event\\command\\EventPrinterTest.java",
+  "methodName" : "testPrintVerbose",
+  "sourceCode" : "@Test\r\npublic void testPrintVerbose() throws UnsupportedEncodingException {\r\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    PrintStream out = new PrintStream(baos);\r\n    new EventPrinter(out, true).accept(event());\r\n    String result = baos.toString(\"utf-8\");\r\n    assertThat(result, equalTo(\"2016-01-01 12:00:00 - myTopic\\n\" + \"a: b\\n\" + \"c: [d, e]\\n\\n\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\event\\src\\test\\java\\org\\apache\\karaf\\event\\command\\EventSendCommandTest.java",
+  "methodName" : "testExecute",
+  "sourceCode" : "@Test\r\npublic void testExecute() throws Exception {\r\n    EventSendCommand send = new EventSendCommand();\r\n    send.eventAdmin = mock(EventAdmin.class);\r\n    Capture<Event> eventCapture = newCapture();\r\n    send.eventAdmin.sendEvent(capture(eventCapture));\r\n    expectLastCall();\r\n    replay(send.eventAdmin);\r\n    send.topic = \"myTopic\";\r\n    send.properties = Collections.singletonList(\"a=b\");\r\n    send.execute();\r\n    verify(send.eventAdmin);\r\n    Event event = eventCapture.getValue();\r\n    assertThat(event.getTopic(), equalTo(\"myTopic\"));\r\n    assertThat(event.getProperty(\"a\"), equalTo(\"b\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\event\\src\\test\\java\\org\\apache\\karaf\\event\\command\\EventSendCommandTest.java",
+  "methodName" : "testParse",
+  "sourceCode" : "@Test\r\npublic void testParse() {\r\n    List<String> propList = Arrays.asList(\"a=b\", \"b=c\");\r\n    Map<String, String> expectedMap = new HashMap<>();\r\n    expectedMap.put(\"a\", \"b\");\r\n    expectedMap.put(\"b\", \"c\");\r\n    Map<String, String> props = EventSendCommand.parse(propList);\r\n    assertThat(props.size(), equalTo(2));\r\n    assertThat(props.get(\"a\"), equalTo(\"b\"));\r\n    assertThat(props.get(\"b\"), equalTo(\"c\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\event\\src\\test\\java\\org\\apache\\karaf\\event\\command\\EventSendCommandTest.java",
+  "methodName" : "testParseNull",
+  "sourceCode" : "@Test\r\npublic void testParseNull() {\r\n    Map<String, String> props = EventSendCommand.parse(null);\r\n    assertNotNull(props);\r\n    assertThat(props.size(), equalTo(0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\event\\src\\test\\java\\org\\apache\\karaf\\event\\command\\EventSendCommandTest.java",
+  "methodName" : "testParseNoKeyValue",
+  "sourceCode" : "@Test\r\npublic void testParseNoKeyValue() {\r\n    assertThrows(IllegalArgumentException.class, () -> {\r\n        EventSendCommand.parse(Collections.singletonList(\"=\"));\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\event\\src\\test\\java\\org\\apache\\karaf\\event\\command\\EventSendCommandTest.java",
+  "methodName" : "testParseNoKey",
+  "sourceCode" : "@Test\r\npublic void testParseNoKey() {\r\n    assertThrows(IllegalArgumentException.class, () -> {\r\n        EventSendCommand.parse(Collections.singletonList(\"=b\"));\r\n    });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\event\\src\\test\\java\\org\\apache\\karaf\\event\\command\\EventSendCommandTest.java",
+  "methodName" : "testParseStrange",
+  "sourceCode" : "@Test\r\npublic void testParseStrange() {\r\n    Map<String, String> props = EventSendCommand.parse(Arrays.asList(\"a=b\", \"c=d=3\", \"e=\"));\r\n    assertThat(props.size(), equalTo(3));\r\n    assertThat(props.get(\"a\"), equalTo(\"b\"));\r\n    assertThat(props.get(\"c\"), equalTo(\"d=3\"));\r\n    assertThat(props.get(\"e\"), equalTo(\"\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\event\\src\\test\\java\\org\\apache\\karaf\\event\\command\\EventTailCommandTest.java",
+  "methodName" : "testTail",
+  "sourceCode" : "@Test\r\npublic void testTail() throws Exception {\r\n    EventTailCommand tail = new EventTailCommand();\r\n    tail.session = mock(Session.class);\r\n    tail.collector = new EventCollector();\r\n    PrintStream out = System.out;\r\n    expect(tail.session.getConsole()).andReturn(out);\r\n    exception = null;\r\n    replay(tail.session);\r\n    ExecutorService executor = Executors.newSingleThreadExecutor();\r\n    executor.execute(() -> {\r\n        try {\r\n            tail.execute();\r\n        } catch (Exception e) {\r\n            exception = e;\r\n        }\r\n    });\r\n    tail.collector.handleEvent(event());\r\n    Thread.sleep(200);\r\n    // Will interrupt the tail\r\n    executor.shutdownNow();\r\n    executor.awaitTermination(10, TimeUnit.SECONDS);\r\n    if (exception != null) {\r\n        throw exception;\r\n    }\r\n    verify(tail.session);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\event\\src\\test\\java\\org\\apache\\karaf\\event\\service\\EventCollectorTest.java",
+  "methodName" : "testHandleEvent",
+  "sourceCode" : "@Test\r\npublic void testHandleEvent() throws Exception {\r\n    EventCollector collector = new EventCollector();\r\n    assertThat(collector.getEvents().count(), equalTo(0l));\r\n    collector.handleEvent(event(\"myTopic\"));\r\n    assertThat(collector.getEvents().count(), equalTo(1l));\r\n    assertThat(collector.getEvents().findFirst().get().getTopic(), equalTo(\"myTopic\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\event\\src\\test\\java\\org\\apache\\karaf\\event\\service\\EventCollectorTest.java",
+  "methodName" : "testLimit",
+  "sourceCode" : "@Test\r\npublic void testLimit() {\r\n    EventCollector collector = new EventCollector();\r\n    collector.handleEvent(event(\"first\"));\r\n    IntStream.rangeClosed(1, 99).forEach(c -> collector.handleEvent(event(\"myTopic\")));\r\n    assertThat(collector.getEvents().count(), equalTo(100l));\r\n    collector.handleEvent(event(\"last\"));\r\n    assertThat(collector.getEvents().count(), equalTo(100l));\r\n    assertTrue(collector.getEvents().noneMatch(event -> event.getTopic().endsWith(\"first\")));\r\n    assertTrue(collector.getEvents().anyMatch(event -> event.getTopic().endsWith(\"last\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\event\\src\\test\\java\\org\\apache\\karaf\\event\\service\\EventCollectorTest.java",
+  "methodName" : "testAddRemoveConsumer",
+  "sourceCode" : "@Test\r\npublic void testAddRemoveConsumer() {\r\n    final AtomicInteger count = new AtomicInteger();\r\n    Consumer<Event> countingConsumer = event -> count.incrementAndGet();\r\n    EventCollector collector = new EventCollector();\r\n    collector.handleEvent(event(\"myTopic\"));\r\n    collector.addConsumer(countingConsumer);\r\n    assertThat(count.get(), equalTo(1));\r\n    collector.handleEvent(event(\"another\"));\r\n    assertThat(count.get(), equalTo(2));\r\n    collector.removeConsumer(countingConsumer);\r\n    collector.handleEvent(event(\"and/another\"));\r\n    assertThat(count.get(), equalTo(2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\event\\src\\test\\java\\org\\apache\\karaf\\event\\service\\TopicPredicateTest.java",
+  "methodName" : "testMatchAll",
+  "sourceCode" : "@Test\r\npublic void testMatchAll() {\r\n    Predicate<Event> matcher = matchTopic(\"*\");\r\n    assertTrue(matcher.test(event(\"myTopic\")));\r\n    assertTrue(matcher.test(event(\"my/other\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\event\\src\\test\\java\\org\\apache\\karaf\\event\\service\\TopicPredicateTest.java",
+  "methodName" : "testMatchSpecific",
+  "sourceCode" : "@Test\r\npublic void testMatchSpecific() {\r\n    Predicate<Event> matcher = matchTopic(\"myTopic\");\r\n    assertTrue(matcher.test(event(\"myTopic\")));\r\n    assertFalse(matcher.test(event(\"myTopic/test\")));\r\n    assertFalse(matcher.test(event(\"my/other\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\event\\src\\test\\java\\org\\apache\\karaf\\event\\service\\TopicPredicateTest.java",
+  "methodName" : "testMatchSubTopics",
+  "sourceCode" : "@Test\r\npublic void testMatchSubTopics() {\r\n    Predicate<Event> matcher = matchTopic(\"myTopic*\");\r\n    assertTrue(matcher.test(event(\"myTopic\")));\r\n    assertTrue(matcher.test(event(\"myTopic/test\")));\r\n    assertFalse(matcher.test(event(\"my/other\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\examples\\karaf-itest-example\\src\\test\\java\\org\\apache\\karaf\\examples\\itests\\ExampleITest.java",
+  "methodName" : "listBundleCommand",
+  "sourceCode" : "@Test\r\npublic void listBundleCommand() throws Exception {\r\n    // assert on an available service\r\n    assertServiceAvailable(FeaturesService.class);\r\n    // installing a feature and verifying that it's correctly installed\r\n    installAndAssertFeature(\"scr\");\r\n    // testing a command execution\r\n    String bundles = executeCommand(\"bundle:list -t 0\");\r\n    System.out.println(bundles);\r\n    assertContains(\"junit\", bundles);\r\n    String features = executeCommand(\"feature:list -i\");\r\n    System.out.print(features);\r\n    assertContains(\"scr\", features);\r\n    // using a service and assert state or result\r\n    FeaturesService featuresService = getOsgiService(FeaturesService.class);\r\n    Feature scr = featuresService.getFeature(\"scr\");\r\n    Assert.assertEquals(\"scr\", scr.getName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Karaf\\examples\\karaf-itest-example\\src\\test\\java\\org\\apache\\karaf\\examples\\itests\\ExampleWithConfigITest.java",
+  "methodName" : "simpleTest",
+  "sourceCode" : "@Test\r\npublic void simpleTest() throws Exception {\r\n    System.out.println(\"==== System Property in probe bundle: \" + System.getProperty(\"my.system.property\"));\r\n    assertContains(\"foo\", System.getProperty(\"my.system.property\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

@@ -1,0 +1,835 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\config\\src\\test\\java\\org\\apache\\oodt\\config\\distributed\\DistributedConfigurationManagerTest.java",
+  "methodName" : "loadConfigurationTest",
+  "sourceCode" : "@Test\r\npublic void loadConfigurationTest() throws Exception {\r\n    for (DistributedConfigurationPublisher publisher : publishers) {\r\n        ConfigurationManager configurationManager = configurationManagers.get(publisher.getComponent());\r\n        configurationManager.loadConfiguration();\r\n        // Checking for configuration files\r\n        for (Map.Entry<String, String> entry : publisher.getPropertiesFiles().entrySet()) {\r\n            File originalFile = new File(entry.getKey());\r\n            Properties properties = new Properties();\r\n            try (InputStream in = new FileInputStream(originalFile)) {\r\n                properties.load(in);\r\n            } catch (Exception e) {\r\n                fail(e.getMessage());\r\n            }\r\n            for (String key : properties.stringPropertyNames()) {\r\n                Assert.assertEquals(properties.getProperty(key), System.getProperty(key));\r\n            }\r\n            String fileName = entry.getValue();\r\n            fileName = ConfigUtils.fixForComponentHome(publisher.getComponent(), fileName);\r\n            File downloadedFile = new File(fileName);\r\n            Assert.assertNotNull(downloadedFile);\r\n            Assert.assertTrue(downloadedFile.exists());\r\n        }\r\n        // Checking for configuration files\r\n        for (Map.Entry<String, String> entry : publisher.getConfigFiles().entrySet()) {\r\n            String fileName = entry.getValue();\r\n            fileName = ConfigUtils.fixForComponentHome(publisher.getComponent(), fileName);\r\n            File file = new File(fileName);\r\n            Assert.assertTrue(file.exists());\r\n        }\r\n        List<String> localFiles = configurationManager.getSavedFiles();\r\n        configurationManager.clearConfiguration();\r\n        for (String localFile : localFiles) {\r\n            File file = new File(localFile);\r\n            Assert.assertFalse(file.exists());\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\config\\src\\test\\java\\org\\apache\\oodt\\config\\distributed\\DistributedConfigurationManagerTest.java",
+  "methodName" : "notifyConfigurationChangeTest",
+  "sourceCode" : "@Test\r\npublic void notifyConfigurationChangeTest() throws Exception {\r\n    // First publish config. Then check if config has downloaded locally.\r\n    ConfigPublisher.main(new String[] { \"-connectString\", zookeeper.getConnectString(), \"-config\", CONFIG_PUBLISHER_XML, \"-notify\", \"-a\", \"publish\" });\r\n    Thread.sleep(5000);\r\n    checkFileExistence(true);\r\n    // Now clear config. Then check if config has deleted locally.\r\n    ConfigPublisher.main(new String[] { \"-connectString\", zookeeper.getConnectString(), \"-config\", CONFIG_PUBLISHER_XML, \"-notify\", \"-a\", \"clear\" });\r\n    Thread.sleep(5000);\r\n    checkFileExistence(false);\r\n    // First publish config. Then check if config has downloaded locally.\r\n    ConfigPublisher.main(new String[] { \"-connectString\", zookeeper.getConnectString(), \"-config\", CONFIG_PUBLISHER_XML, \"-notify\", \"-a\", \"publish\" });\r\n    Thread.sleep(5000);\r\n    checkFileExistence(true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\config\\src\\test\\java\\org\\apache\\oodt\\config\\distributed\\DistributedConfigurationPublisherTest.java",
+  "methodName" : "publishConfigurationTest",
+  "sourceCode" : "@Test\r\npublic void publishConfigurationTest() throws Exception {\r\n    // Publishing configuration through CLI and verifying whether they were stored correctly\r\n    ConfigPublisher.main(new String[] { \"-connectString\", zookeeper.getConnectString(), \"-config\", CONFIG_PUBLISHER_XML, \"-a\", \"publish\" });\r\n    ApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_PUBLISHER_XML);\r\n    Map distributedConfigurationPublishers = applicationContext.getBeansOfType(DistributedConfigurationPublisher.class);\r\n    List<DistributedConfigurationPublisher> publishers = new ArrayList<>(distributedConfigurationPublishers.values().size());\r\n    for (Object bean : distributedConfigurationPublishers.values()) {\r\n        publishers.add((DistributedConfigurationPublisher) bean);\r\n    }\r\n    for (DistributedConfigurationPublisher publisher : publishers) {\r\n        Assert.assertTrue(publisher.verifyPublishedConfiguration());\r\n        ZNodePaths zNodePaths = publisher.getZNodePaths();\r\n        // Checking for configuration files\r\n        for (Map.Entry<String, String> entry : publisher.getPropertiesFiles().entrySet()) {\r\n            String zNodePath = zNodePaths.getPropertiesZNodePath(entry.getValue());\r\n            Assert.assertNotNull(client.checkExists().forPath(zNodePath));\r\n            String storedContent = new String(client.getData().forPath(zNodePath));\r\n            String fileContent = FileUtils.readFileToString(new File(entry.getKey()));\r\n            Assert.assertEquals(fileContent, storedContent);\r\n        }\r\n        // Checking for configuration files\r\n        for (Map.Entry<String, String> entry : publisher.getConfigFiles().entrySet()) {\r\n            String zNodePath = zNodePaths.getConfigurationZNodePath(entry.getValue());\r\n            Assert.assertNotNull(client.checkExists().forPath(zNodePath));\r\n            String storedContent = new String(client.getData().forPath(zNodePath));\r\n            String fileContent = FileUtils.readFileToString(new File(entry.getKey()));\r\n            Assert.assertEquals(fileContent, storedContent);\r\n        }\r\n    }\r\n    // Clearing configuration through CLI and checking whether the configuration has actually been gone\r\n    ConfigPublisher.main(new String[] { \"-connectString\", zookeeper.getConnectString(), \"-config\", CONFIG_PUBLISHER_XML, \"-a\", \"clear\" });\r\n    for (DistributedConfigurationPublisher publisher : publishers) {\r\n        Assert.assertFalse(publisher.verifyPublishedConfiguration());\r\n        ZNodePaths zNodePaths = publisher.getZNodePaths();\r\n        // Checking for configuration files\r\n        for (Map.Entry<String, String> entry : publisher.getPropertiesFiles().entrySet()) {\r\n            String zNodePath = zNodePaths.getPropertiesZNodePath(entry.getValue());\r\n            Assert.assertNull(client.checkExists().forPath(zNodePath));\r\n        }\r\n        // Checking for configuration files\r\n        for (Map.Entry<String, String> entry : publisher.getConfigFiles().entrySet()) {\r\n            String zNodePath = zNodePaths.getConfigurationZNodePath(entry.getValue());\r\n            Assert.assertNull(client.checkExists().forPath(zNodePath));\r\n        }\r\n    }\r\n    for (DistributedConfigurationPublisher publisher : publishers) {\r\n        publisher.destroy();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\datatransfer\\TestS3DataTransferer.java",
+  "methodName" : "testTransferProduct",
+  "sourceCode" : "@Test\r\npublic void testTransferProduct() throws DataTransferException, IOException {\r\n    dataTransferer.transferProduct(product);\r\n    ArgumentCaptor<PutObjectRequest> argument = ArgumentCaptor.forClass(PutObjectRequest.class);\r\n    verify(s3Client).putObject(argument.capture());\r\n    PutObjectRequest request = argument.getValue();\r\n    assertThat(request.getBucketName(), is(S3_BUCKET_NAME));\r\n    assertThat(request.getKey(), is(EXPECTED_DATA_STORE_REF));\r\n    assertThat(request.getFile().getAbsolutePath(), is(EXPECTED_ORGINAL_REF));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\datatransfer\\TestS3DataTransferer.java",
+  "methodName" : "testRetrieveProduct",
+  "sourceCode" : "@Test\r\npublic void testRetrieveProduct() throws DataTransferException, IOException {\r\n    dataTransferer.retrieveProduct(product, stagingDir);\r\n    ArgumentCaptor<GetObjectRequest> argument = ArgumentCaptor.forClass(GetObjectRequest.class);\r\n    verify(s3Client).getObject(argument.capture());\r\n    GetObjectRequest request = argument.getValue();\r\n    assertThat(request.getBucketName(), is(S3_BUCKET_NAME));\r\n    assertThat(request.getKey(), is(EXPECTED_DATA_STORE_REF));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\datatransfer\\TestS3DataTransferer.java",
+  "methodName" : "testDeleteProduct",
+  "sourceCode" : "@Test\r\npublic void testDeleteProduct() throws DataTransferException, IOException {\r\n    dataTransferer.deleteProduct(product);\r\n    ArgumentCaptor<DeleteObjectRequest> argument = ArgumentCaptor.forClass(DeleteObjectRequest.class);\r\n    verify(s3Client).deleteObject(argument.capture());\r\n    DeleteObjectRequest request = argument.getValue();\r\n    assertThat(request.getBucketName(), is(S3_BUCKET_NAME));\r\n    assertThat(request.getKey(), is(EXPECTED_DATA_STORE_REF));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\datatransfer\\TestS3DataTransfererFactory.java",
+  "methodName" : "testCreateDataTransferer",
+  "sourceCode" : "@Test\r\npublic void testCreateDataTransferer() {\r\n    System.setProperty(BUCKET_NAME_PROPERTY, \"test-bucket\");\r\n    System.setProperty(REGION_PROPERTY, \"US_WEST_1\");\r\n    System.setProperty(ACCESS_KEY_PROPERTY, \"23123123123\");\r\n    System.setProperty(SECRET_KEY_PROPERTY, \"00101010101\");\r\n    System.setProperty(ENCRYPT_PROPERTY, \"true\");\r\n    S3DataTransfererFactory factory = new S3DataTransfererFactory();\r\n    S3DataTransferer transferer = factory.createDataTransfer();\r\n    assertThat(transferer, is(not(nullValue())));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\metadata\\extractors\\examples\\TestDateTimeExpandMetExtractor.java",
+  "methodName" : "testExpandAll",
+  "sourceCode" : "@Test\r\npublic void testExpandAll() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);\r\n    when(configuration.containsKey(\"YearKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MonthKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"DayKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"HourKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MinuteKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"SecondKey\")).thenReturn(true);\r\n    extractor.configure(configuration);\r\n    Metadata extractedMetadata = extractor.doExtract(null, metadata);\r\n    assertThat(extractedMetadata.getMetadata(\"StartYear\"), is(\"2013\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMonth\"), is(\"05\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartDay\"), is(\"23\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartHour\"), is(\"03\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMinute\"), is(\"02\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartSecond\"), is(\"01\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\metadata\\extractors\\examples\\TestDateTimeExpandMetExtractor.java",
+  "methodName" : "testExpandSome",
+  "sourceCode" : "@Test\r\npublic void testExpandSome() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);\r\n    when(configuration.containsKey(\"YearKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MonthKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"DayKey\")).thenReturn(true);\r\n    extractor.configure(configuration);\r\n    Metadata extractedMetadata = extractor.doExtract(null, metadata);\r\n    assertThat(extractedMetadata.getMetadata(\"StartYear\"), is(\"2013\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMonth\"), is(\"05\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartDay\"), is(\"23\"));\r\n    assertThat(extractedMetadata.containsKey(\"StartHour\"), is(false));\r\n    assertThat(extractedMetadata.containsKey(\"StartMinute\"), is(false));\r\n    assertThat(extractedMetadata.containsKey(\"StartSecond\"), is(false));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\metadata\\extractors\\examples\\TestDateTimeExpandMetExtractor.java",
+  "methodName" : "testFailure",
+  "sourceCode" : "@Test\r\npublic void testFailure() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(false);\r\n    extractor.configure(configuration);\r\n    expectedException.expect(MetExtractionException.class);\r\n    extractor.doExtract(null, metadata);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\metadata\\extractors\\examples\\TestTikaAutoDetectExtractor.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() throws MetExtractionException {\r\n    TikaAutoDetectExtractor tikaExtractor = new TikaAutoDetectExtractor();\r\n    Metadata emptyMetadata = new Metadata();\r\n    Reference ref = new Reference();\r\n    URL file = this.getClass().getResource(\"/test.txt\");\r\n    ref.setOrigReference(file.toString());\r\n    ref.setDataStoreReference(file.toString());\r\n    Product product = new Product();\r\n    product.getProductReferences().add(ref);\r\n    product.setProductStructure(Product.STRUCTURE_FLAT);\r\n    Metadata outputMetadata = tikaExtractor.doExtract(product, emptyMetadata);\r\n    assertNotNull(outputMetadata);\r\n    assertTrue(outputMetadata.getAllKeys().size() > 0);\r\n    assertTrue(outputMetadata.containsKey(\"X-Parsed-By\"));\r\n    assertFalse(outputMetadata.getMetadata(\"X-Parsed-By\").equals(\"org.apache.tika.parser.EmptyParser\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\system\\distributed\\TestDistributedXmlRpcFileManager.java",
+  "methodName" : "testDistributedConfigurationWithFileManager",
+  "sourceCode" : "@Test\r\npublic void testDistributedConfigurationWithFileManager() {\r\n    XmlRpcFileManagerClient fmc = null;\r\n    try {\r\n        fmc = new XmlRpcFileManagerClient(new URL(\"http://localhost:\" + FM_PORT));\r\n    } catch (Exception e) {\r\n        fail(e.getMessage());\r\n    }\r\n    Metadata met = null;\r\n    try {\r\n        met = fmc.getMetadata(fmc.getProductByName(\"test.txt\"));\r\n    } catch (CatalogException e) {\r\n        fail(e.getMessage());\r\n    }\r\n    assertNotNull(met);\r\n    assertTrue(met.containsKey(ProductMetKeys.PRODUCT_ID));\r\n    assertNotNull(met.getMetadata(ProductMetKeys.PRODUCT_ID));\r\n    assertTrue(met.containsKey(ProductMetKeys.PRODUCT_NAME));\r\n    assertNotNull(met.getMetadata(ProductMetKeys.PRODUCT_NAME));\r\n    assertTrue(met.containsKey(ProductMetKeys.PRODUCT_STRUCTURE));\r\n    assertEquals(\"Flat\", met.getMetadata(ProductMetKeys.PRODUCT_STRUCTURE));\r\n    assertTrue(met.containsKey(ProductMetKeys.PRODUCT_TRANSFER_STATUS));\r\n    assertEquals(Product.STATUS_RECEIVED, met.getMetadata(ProductMetKeys.PRODUCT_TRANSFER_STATUS));\r\n    assertTrue(met.containsKey(ProductMetKeys.PRODUCT_ORIG_REFS));\r\n    assertTrue(met.containsKey(ProductMetKeys.PRODUCT_DATASTORE_REFS));\r\n    assertTrue(met.containsKey(ProductMetKeys.PRODUCT_FILE_SIZES));\r\n    assertTrue(met.containsKey(ProductMetKeys.PRODUCT_MIME_TYPES));\r\n    assertEquals(1, met.getAllMetadata(ProductMetKeys.PRODUCT_ORIG_REFS).size());\r\n    assertEquals(1, met.getAllMetadata(ProductMetKeys.PRODUCT_DATASTORE_REFS).size());\r\n    assertEquals(1, met.getAllMetadata(ProductMetKeys.PRODUCT_FILE_SIZES).size());\r\n    assertEquals(1, met.getAllMetadata(ProductMetKeys.PRODUCT_MIME_TYPES).size());\r\n    URL refUrl = this.getClass().getResource(\"/ingest/test.txt\");\r\n    String origPath = null;\r\n    try {\r\n        origPath = new File(refUrl.getFile()).getCanonicalPath();\r\n    } catch (IOException e) {\r\n        fail(e.getMessage());\r\n    }\r\n    assertEquals(origPath, met.getMetadata(ProductMetKeys.PRODUCT_ORIG_REFS));\r\n    assertEquals(\"/tmp/test.txt/test.txt\", met.getMetadata(ProductMetKeys.PRODUCT_DATASTORE_REFS));\r\n    assertNotNull(met.getMetadata(ProductMetKeys.PRODUCT_FILE_SIZES));\r\n    assertEquals(\"text/plain\", met.getMetadata(ProductMetKeys.PRODUCT_MIME_TYPES));\r\n    try {\r\n        met = fmc.getReducedMetadata(fmc.getProductByName(\"test.txt\"), Collections.EMPTY_LIST);\r\n    } catch (CatalogException e) {\r\n        fail(e.getMessage());\r\n    }\r\n    assertNotNull(met);\r\n    assertTrue(met.containsKey(ProductMetKeys.PRODUCT_ID));\r\n    assertNotNull(met.getMetadata(ProductMetKeys.PRODUCT_ID));\r\n    assertTrue(met.containsKey(ProductMetKeys.PRODUCT_NAME));\r\n    assertNotNull(met.getMetadata(ProductMetKeys.PRODUCT_NAME));\r\n    assertTrue(met.containsKey(ProductMetKeys.PRODUCT_STRUCTURE));\r\n    assertEquals(\"Flat\", met.getMetadata(ProductMetKeys.PRODUCT_STRUCTURE));\r\n    assertTrue(met.containsKey(ProductMetKeys.PRODUCT_TRANSFER_STATUS));\r\n    assertEquals(Product.STATUS_RECEIVED, met.getMetadata(ProductMetKeys.PRODUCT_TRANSFER_STATUS));\r\n    assertTrue(met.containsKey(ProductMetKeys.PRODUCT_ORIG_REFS));\r\n    assertTrue(met.containsKey(ProductMetKeys.PRODUCT_DATASTORE_REFS));\r\n    assertTrue(met.containsKey(ProductMetKeys.PRODUCT_FILE_SIZES));\r\n    assertTrue(met.containsKey(ProductMetKeys.PRODUCT_MIME_TYPES));\r\n    assertEquals(1, met.getAllMetadata(ProductMetKeys.PRODUCT_ORIG_REFS).size());\r\n    assertEquals(1, met.getAllMetadata(ProductMetKeys.PRODUCT_DATASTORE_REFS).size());\r\n    assertEquals(1, met.getAllMetadata(ProductMetKeys.PRODUCT_FILE_SIZES).size());\r\n    assertEquals(1, met.getAllMetadata(ProductMetKeys.PRODUCT_MIME_TYPES).size());\r\n    origPath = null;\r\n    try {\r\n        origPath = new File(refUrl.getFile()).getCanonicalPath();\r\n    } catch (IOException e) {\r\n        fail(e.getMessage());\r\n    }\r\n    assertEquals(origPath, met.getMetadata(ProductMetKeys.PRODUCT_ORIG_REFS));\r\n    assertEquals(\"/tmp/test.txt/test.txt\", met.getMetadata(ProductMetKeys.PRODUCT_DATASTORE_REFS));\r\n    assertNotNull(met.getMetadata(ProductMetKeys.PRODUCT_FILE_SIZES));\r\n    assertEquals(\"text/plain\", met.getMetadata(ProductMetKeys.PRODUCT_MIME_TYPES));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\versioning\\TestConfigurableMetadataBasedFileVersioner.java",
+  "methodName" : "testVersioningForProductType",
+  "sourceCode" : "@Test\r\npublic void testVersioningForProductType() throws VersioningException {\r\n    versioner.createDataStoreReferences(product, metadata);\r\n    assertThat(product.getProductReferences().size(), is(1));\r\n    assertThat(product.getProductReferences().get(0).getDataStoreReference(), is(\"file:/base/path/2013/03/23/test.dat\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\versioning\\TestConfigurableMetadataBasedFileVersioner.java",
+  "methodName" : "testVersioningForProductTypeNotDefined",
+  "sourceCode" : "@Test\r\npublic void testVersioningForProductTypeNotDefined() throws VersioningException {\r\n    ProductType pt = new ProductType();\r\n    pt.setProductRepositoryPath(\"file:/base/path\");\r\n    pt.setName(\"TEST_TYPE2\");\r\n    product.setProductType(pt);\r\n    expectedException.expect(VersioningException.class);\r\n    versioner.createDataStoreReferences(product, metadata);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\versioning\\TestConfigurableMetadataBasedFileVersioner.java",
+  "methodName" : "testVersioningForAllProductTypesDoesntOverrideSpecific",
+  "sourceCode" : "@Test\r\npublic void testVersioningForAllProductTypesDoesntOverrideSpecific() throws VersioningException {\r\n    properties.setProperty(\"org.apache.oodt.cas.filemgr.versioning.configuration.all_product_types\", \"/[Year]/[Month]/[Filename]\");\r\n    versioner.createDataStoreReferences(product, metadata);\r\n    assertThat(product.getProductReferences().size(), is(1));\r\n    assertThat(product.getProductReferences().get(0).getDataStoreReference(), is(\"file:/base/path/2013/03/23/test.dat\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\versioning\\TestConfigurableMetadataBasedFileVersioner.java",
+  "methodName" : "testVersioningForAllProductTypes",
+  "sourceCode" : "@Test\r\npublic void testVersioningForAllProductTypes() throws VersioningException {\r\n    properties.setProperty(\"org.apache.oodt.cas.filemgr.versioning.configuration.all_product_types\", \"/[Year]/[Month]/[Filename]\");\r\n    ProductType pt = new ProductType();\r\n    pt.setProductRepositoryPath(\"file:/base/path\");\r\n    pt.setName(\"TEST_TYPE2\");\r\n    product.setProductType(pt);\r\n    versioner.createDataStoreReferences(product, metadata);\r\n    assertThat(product.getProductReferences().size(), is(1));\r\n    assertThat(product.getProductReferences().get(0).getDataStoreReference(), is(\"file:/base/path/2013/03/test.dat\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\metadata\\src\\test\\java\\org\\apache\\oodt\\cas\\metadata\\extractors\\TestAbstractSAXConfigReader.java",
+  "methodName" : "testParseConfigFile",
+  "sourceCode" : "@Test\r\npublic void testParseConfigFile() throws Exception {\r\n    configReader.parseConfigFile(configFile);\r\n    assertEquals(5, uris.size());\r\n    for (String uri : uris) assertEquals(\"\", uri);\r\n    assertEquals(5, localNames.size());\r\n    for (String local : localNames) assertEquals(\"\", local);\r\n    assertEquals(5, qNames.size());\r\n    assertEquals(\"config\", qNames.get(0));\r\n    assertEquals(\"element\", qNames.get(1));\r\n    assertEquals(\"element\", qNames.get(2));\r\n    assertEquals(\"product-type\", qNames.get(3));\r\n    assertEquals(\"product-type\", qNames.get(4));\r\n    assertEquals(5, attributes.size());\r\n    assertEquals(0, (int) attributes.get(0));\r\n    assertEquals(2, (int) attributes.get(1));\r\n    assertEquals(2, (int) attributes.get(2));\r\n    assertEquals(2, (int) attributes.get(3));\r\n    assertEquals(2, (int) attributes.get(4));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\metadata\\src\\test\\java\\org\\apache\\oodt\\cas\\metadata\\extractors\\TestDataSourceMetExtractor.java",
+  "methodName" : "testGetKey",
+  "sourceCode" : "@Test\r\npublic void testGetKey() {\r\n    assertThat(extractor.getKey(new File(\"Test.csv\")), is(\"Test\"));\r\n    assertThat(extractor.getKey(new File(\"123_sdfwegd_g334g.dat\")), is(\"123_sdfwegd_g334g\"));\r\n    assertThat(extractor.getKey(new File(\"123qweJDKJF-3\")), is(\"123qweJDKJF-3\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\metadata\\src\\test\\java\\org\\apache\\oodt\\cas\\metadata\\extractors\\TestDataSourceMetExtractor.java",
+  "methodName" : "testGetMetadata",
+  "sourceCode" : "@Test\r\npublic void testGetMetadata() throws MetExtractionException {\r\n    Metadata metadata = extractor.getMetadata(dataSource, \"select * from SomeTable where key = '%s'\", \"SomeKey\");\r\n    assertThat(metadata.getAllKeys().size(), is(2));\r\n    assertThat(metadata.getMetadata(DB_COL_NAME_1), is(DB_COL_VALUE_1));\r\n    assertThat(metadata.getMetadata(DB_COL_NAME_2), is(DB_COL_VALUE_2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\metadata\\src\\test\\java\\org\\apache\\oodt\\cas\\metadata\\extractors\\TestProdTypePatternMetExtractor.java",
+  "methodName" : "testExtractMetadata",
+  "sourceCode" : "@Test\r\npublic void testExtractMetadata() throws Exception {\r\n    Metadata met = extractor.extractMetadata(book1);\r\n    assertEquals(2, met.getAllKeys().size());\r\n    assertEquals(\"Book\", met.getMetadata(\"ProductType\"));\r\n    assertEquals(\"1234567890\", met.getMetadata(\"ISBN\"));\r\n    met = extractor.extractMetadata(book2);\r\n    assertEquals(2, met.getAllKeys().size());\r\n    assertEquals(\"Book\", met.getMetadata(\"ProductType\"));\r\n    assertEquals(\"0987654321\", met.getMetadata(\"ISBN\"));\r\n    met = extractor.extractMetadata(page1);\r\n    assertEquals(3, met.getAllKeys().size());\r\n    assertEquals(\"BookPage\", met.getMetadata(\"ProductType\"));\r\n    assertEquals(\"1234567890\", met.getMetadata(\"ISBN\"));\r\n    assertEquals(\"111\", met.getMetadata(\"Page\"));\r\n    met = extractor.extractMetadata(page2);\r\n    assertEquals(3, met.getAllKeys().size());\r\n    assertEquals(\"BookPage\", met.getMetadata(\"ProductType\"));\r\n    assertEquals(\"0987654321\", met.getMetadata(\"ISBN\"));\r\n    assertEquals(\"222\", met.getMetadata(\"Page\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\metadata\\src\\test\\java\\org\\apache\\oodt\\cas\\metadata\\extractors\\TestProdTypePatternMetExtractor.java",
+  "methodName" : "testNewConfigFile",
+  "sourceCode" : "@Test\r\npublic void testNewConfigFile() throws Exception {\r\n    // make sure that duplicate met entries do not exist when re-parsing a new config file\r\n    Metadata met = extractor.extractMetadata(book1, configFile);\r\n    assertEquals(2, met.getAllKeys().size());\r\n    assertEquals(1, met.getAllMetadata(\"ProductType\").size());\r\n    assertEquals(1, met.getAllMetadata(\"ISBN\").size());\r\n    met = extractor.extractMetadata(book2, configFile);\r\n    assertEquals(2, met.getAllKeys().size());\r\n    assertEquals(1, met.getAllMetadata(\"ProductType\").size());\r\n    assertEquals(1, met.getAllMetadata(\"ISBN\").size());\r\n    met = extractor.extractMetadata(page1, configFile);\r\n    assertEquals(3, met.getAllKeys().size());\r\n    assertEquals(1, met.getAllMetadata(\"ProductType\").size());\r\n    assertEquals(1, met.getAllMetadata(\"ISBN\").size());\r\n    assertEquals(1, met.getAllMetadata(\"Page\").size());\r\n    met = extractor.extractMetadata(page2, configFile);\r\n    assertEquals(3, met.getAllKeys().size());\r\n    assertEquals(1, met.getAllMetadata(\"ProductType\").size());\r\n    assertEquals(1, met.getAllMetadata(\"ISBN\").size());\r\n    assertEquals(1, met.getAllMetadata(\"Page\").size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\metadata\\src\\test\\java\\org\\apache\\oodt\\cas\\metadata\\extractors\\TestProdTypePatternMetExtractor.java",
+  "methodName" : "testElementDeclarationOrder",
+  "sourceCode" : "@Test\r\npublic void testElementDeclarationOrder() throws Exception {\r\n    // the relative order of element declarations shouldn't matter\r\n    extractor.setConfigFile(configFile2);\r\n    Metadata met = extractor.extractMetadata(book1);\r\n    assertEquals(2, met.getAllKeys().size());\r\n    assertEquals(\"Book\", met.getMetadata(\"ProductType\"));\r\n    assertEquals(\"1234567890\", met.getMetadata(\"ISBN\"));\r\n    met = extractor.extractMetadata(book2);\r\n    assertEquals(2, met.getAllKeys().size());\r\n    assertEquals(\"Book\", met.getMetadata(\"ProductType\"));\r\n    assertEquals(\"0987654321\", met.getMetadata(\"ISBN\"));\r\n    met = extractor.extractMetadata(page1a);\r\n    assertEquals(3, met.getAllKeys().size());\r\n    assertEquals(\"BookPage\", met.getMetadata(\"ProductType\"));\r\n    assertEquals(\"1234567890\", met.getMetadata(\"ISBN\"));\r\n    assertEquals(\"111\", met.getMetadata(\"Page\"));\r\n    met = extractor.extractMetadata(page2a);\r\n    assertEquals(3, met.getAllKeys().size());\r\n    assertEquals(\"BookPage\", met.getMetadata(\"ProductType\"));\r\n    assertEquals(\"0987654321\", met.getMetadata(\"ISBN\"));\r\n    assertEquals(\"222\", met.getMetadata(\"Page\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\pge\\src\\test\\java\\org\\apache\\oodt\\cas\\pge\\TestPGETaskInstance.java",
+  "methodName" : "testLoadPropertyAdders",
+  "sourceCode" : "@Test\r\npublic void testLoadPropertyAdders() throws Exception {\r\n    PGETaskInstance pgeTask = createTestInstance();\r\n    ConfigFilePropertyAdder propAdder = pgeTask.loadPropertyAdder(MockConfigFilePropertyAdder.class.getCanonicalName());\r\n    assertNotNull(propAdder);\r\n    assertTrue(propAdder instanceof MockConfigFilePropertyAdder);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\pge\\src\\test\\java\\org\\apache\\oodt\\cas\\pge\\TestPGETaskInstance.java",
+  "methodName" : "testRunPropertyAdders",
+  "sourceCode" : "@Test\r\npublic void testRunPropertyAdders() throws Exception {\r\n    PGETaskInstance pgeTask = createTestInstance();\r\n    pgeTask.pgeMetadata.replaceMetadata(PROPERTY_ADDERS, MockConfigFilePropertyAdder.class.getCanonicalName());\r\n    pgeTask.pgeConfig.setPropertyAdderCustomArgs(new Object[] { \"key\", \"value\" });\r\n    pgeTask.runPropertyAdders();\r\n    assertEquals(\"value\", pgeTask.pgeMetadata.getMetadata(\"key\"));\r\n    pgeTask.pgeMetadata.replaceMetadata(MockConfigFilePropertyAdder.RUN_COUNTER, \"0\");\r\n    pgeTask.pgeMetadata.replaceMetadata(PROPERTY_ADDERS, Lists.newArrayList(MockConfigFilePropertyAdder.class.getCanonicalName(), MockConfigFilePropertyAdder.class.getCanonicalName()));\r\n    pgeTask.runPropertyAdders();\r\n    assertEquals(\"value\", pgeTask.pgeMetadata.getMetadata(\"key\"));\r\n    assertEquals(\"2\", pgeTask.pgeMetadata.getMetadata(MockConfigFilePropertyAdder.RUN_COUNTER));\r\n    pgeTask.pgeMetadata.replaceMetadata(MockConfigFilePropertyAdder.RUN_COUNTER, \"0\");\r\n    System.setProperty(PgeTaskMetKeys.USE_LEGACY_PROPERTY, \"true\");\r\n    pgeTask.pgeMetadata.replaceMetadata(PROPERTY_ADDERS.getName(), MockConfigFilePropertyAdder.class.getCanonicalName());\r\n    pgeTask.runPropertyAdders();\r\n    assertEquals(\"value\", pgeTask.pgeMetadata.getMetadata(\"key\"));\r\n    assertEquals(\"1\", pgeTask.pgeMetadata.getMetadata(MockConfigFilePropertyAdder.RUN_COUNTER));\r\n    System.getProperties().remove(PgeTaskMetKeys.USE_LEGACY_PROPERTY);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\pge\\src\\test\\java\\org\\apache\\oodt\\cas\\pge\\TestPGETaskInstance.java",
+  "methodName" : "testCreatePgeMetadata",
+  "sourceCode" : "@Test\r\npublic void testCreatePgeMetadata() throws Exception {\r\n    final String PGE_NAME = \"PGE_Test\";\r\n    final String PGE_REQUIRED_METADATA = \"Filename, FileLocation \";\r\n    final String PROP_ADDERS = \"some.prop.adder.classpath,some.other.classpath\";\r\n    PGETaskInstance pgeTask = createTestInstance();\r\n    Metadata dynMet = new Metadata();\r\n    WorkflowTaskConfiguration config = new WorkflowTaskConfiguration();\r\n    config.addConfigProperty(NAME.getName(), PGE_NAME);\r\n    config.addConfigProperty(REQUIRED_METADATA.getName(), PGE_REQUIRED_METADATA);\r\n    config.addConfigProperty(PROPERTY_ADDERS.getName(), PROP_ADDERS);\r\n    PgeMetadata pgeMet = pgeTask.createPgeMetadata(dynMet, config);\r\n    assertEquals(1, pgeMet.getAllMetadata(NAME).size());\r\n    assertEquals(PGE_NAME, pgeMet.getAllMetadata(NAME).get(0));\r\n    assertEquals(2, pgeMet.getAllMetadata(REQUIRED_METADATA).size());\r\n    assertTrue(pgeMet.getAllMetadata(REQUIRED_METADATA).contains(\"Filename\"));\r\n    assertTrue(pgeMet.getAllMetadata(REQUIRED_METADATA).contains(\"FileLocation\"));\r\n    assertEquals(2, pgeMet.getAllMetadata(PROPERTY_ADDERS).size());\r\n    assertTrue(pgeMet.getAllMetadata(PROPERTY_ADDERS).contains(\"some.prop.adder.classpath\"));\r\n    assertTrue(pgeMet.getAllMetadata(PROPERTY_ADDERS).contains(\"some.other.classpath\"));\r\n    // Verify still works when only one property adder is specified.\r\n    pgeTask = createTestInstance();\r\n    config = new WorkflowTaskConfiguration();\r\n    config.addConfigProperty(PgeTaskMetKeys.PROPERTY_ADDERS.getName(), \"one.prop.adder.only\");\r\n    pgeMet = pgeTask.createPgeMetadata(dynMet, config);\r\n    assertEquals(1, pgeMet.getAllMetadata(PROPERTY_ADDERS).size());\r\n    assertEquals(\"one.prop.adder.only\", pgeMet.getAllMetadata(PROPERTY_ADDERS).get(0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\pge\\src\\test\\java\\org\\apache\\oodt\\cas\\pge\\TestPGETaskInstance.java",
+  "methodName" : "testLogger",
+  "sourceCode" : "@Test\r\n// FileUtils.readLines cast to List<String>\r\n@SuppressWarnings(\"unchecked\")\r\npublic void testLogger() throws Exception {\r\n    PGETaskInstance pgeTask1 = createTestInstance();\r\n    PGETaskInstance pgeTask2 = createTestInstance();\r\n    pgeTask1.julLogger.log(Level.INFO, \"pge1 message1\");\r\n    pgeTask1.julLogger.log(Level.INFO, \"pge1 message2\");\r\n    pgeTask2.julLogger.log(Level.SEVERE, \"pge2 message1\");\r\n    pgeTask1.julLogger.log(Level.INFO, \"pge1 message3\");\r\n    for (Handler handler : pgeTask1.julLogger.getHandlers()) {\r\n        handler.flush();\r\n    }\r\n    for (Handler handler : pgeTask2.julLogger.getHandlers()) {\r\n        handler.flush();\r\n    }\r\n    File logDir = new File(pgeTask1.pgeConfig.getExeDir() + \"/logs\");\r\n    assertTrue(logDir.exists());\r\n    List<String> messages = FileUtils.readLines(logDir.listFiles(new FileFilter() {\r\n\r\n        @Override\r\n        public boolean accept(File pathname) {\r\n            return pathname.getName().endsWith(\".log\");\r\n        }\r\n    })[0], \"UTF-8\");\r\n    assertEquals(Level.INFO.getLocalizedName() + \": pge1 message1\", messages.get(1));\r\n    assertEquals(Level.INFO.getLocalizedName() + \": pge1 message2\", messages.get(3));\r\n    assertEquals(Level.INFO.getLocalizedName() + \": pge1 message3\", messages.get(5));\r\n    logDir = new File(pgeTask2.pgeConfig.getExeDir() + \"/logs\");\r\n    assertTrue(logDir.exists());\r\n    messages = FileUtils.readLines(logDir.listFiles(new FileFilter() {\r\n\r\n        @Override\r\n        public boolean accept(File pathname) {\r\n            return pathname.getName().endsWith(\".log\");\r\n        }\r\n    })[0], \"UTF-8\");\r\n    assertEquals(Level.SEVERE.getLocalizedName() + \": pge2 message1\", messages.get(1));\r\n}",
+  "annotations" : [ "Test", "SuppressWarnings" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\pge\\src\\test\\java\\org\\apache\\oodt\\cas\\pge\\TestPGETaskInstance.java",
+  "methodName" : "testUpdateStatus",
+  "sourceCode" : "@Test\r\npublic void testUpdateStatus() throws Exception {\r\n    final Map<String, String> args = Maps.newHashMap();\r\n    PGETaskInstance pgeTask = createTestInstance();\r\n    pgeTask.setWmClient(new AvroRpcWorkflowManagerClient(new URL(\"http://localhost:9001\")) {\r\n\r\n        @Override\r\n        public boolean updateWorkflowInstanceStatus(String instanceId, String status) {\r\n            args.put(\"InstanceId\", instanceId);\r\n            args.put(\"Status\", status);\r\n            return true;\r\n        }\r\n    });\r\n    String instanceId = \"Test ID\";\r\n    String status = PgeTaskStatus.CRAWLING.getWorkflowStatusName();\r\n    pgeTask.setWorkflowInstId(instanceId);\r\n    pgeTask.updateStatus(status);\r\n    assertEquals(instanceId, args.get(\"InstanceId\"));\r\n    assertEquals(status, args.get(\"Status\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\pge\\src\\test\\java\\org\\apache\\oodt\\cas\\pge\\TestPGETaskInstance.java",
+  "methodName" : "testCreatePgeConfig",
+  "sourceCode" : "@Test\r\npublic void testCreatePgeConfig() throws Exception {\r\n    final String KEY = \"TestKey\";\r\n    final String VALUE = \"TestValue\";\r\n    File pgeConfigFile = new File(createTmpDir(), \"pgeConfig.xml\");\r\n    FileUtils.writeLines(pgeConfigFile, \"UTF-8\", Lists.newArrayList(\"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?>\", \"<pgeConfig>\", \"   <customMetadata>\", \"      <metadata key=\\\"\" + KEY + \"\\\" val=\\\"\" + VALUE + \"\\\"/>\", \"   </customMetadata>\", \"</pgeConfig>\"));\r\n    PGETaskInstance pgeTask = createTestInstance();\r\n    pgeTask.pgeMetadata.replaceMetadata(CONFIG_FILE_PATH, pgeConfigFile.getAbsolutePath());\r\n    PgeConfig pgeConfig = pgeTask.createPgeConfig();\r\n    assertNotNull(pgeConfig);\r\n    assertEquals(VALUE, pgeTask.pgeMetadata.getMetadata(KEY));\r\n    pgeTask = createTestInstance();\r\n    pgeTask.pgeMetadata.replaceMetadata(PGE_CONFIG_BUILDER, MockPgeConfigBuilder.class.getCanonicalName());\r\n    pgeConfig = pgeTask.createPgeConfig();\r\n    assertEquals(MockPgeConfigBuilder.MOCK_EXE_DIR, pgeConfig.getExeDir());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\pge\\src\\test\\java\\org\\apache\\oodt\\cas\\pge\\TestPGETaskInstance.java",
+  "methodName" : "testCreateWorkflowManagerClient",
+  "sourceCode" : "@Test\r\npublic void testCreateWorkflowManagerClient() throws Exception {\r\n    PGETaskInstance pgeTask = createTestInstance();\r\n    pgeTask.pgeMetadata.replaceMetadata(WORKFLOW_MANAGER_URL, \"http://localhost:8888\");\r\n    assertNotNull(pgeTask.getWorkflowManagerClient());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\pge\\src\\test\\java\\org\\apache\\oodt\\cas\\pge\\TestPGETaskInstance.java",
+  "methodName" : "testGetWorkflowInstanceId",
+  "sourceCode" : "@Test\r\npublic void testGetWorkflowInstanceId() throws Exception {\r\n    String workflowInstId = \"12345\";\r\n    PGETaskInstance pgeTask = createTestInstance();\r\n    pgeTask.pgeMetadata.replaceMetadata(CoreMetKeys.WORKFLOW_INST_ID, workflowInstId);\r\n    assertEquals(workflowInstId, pgeTask.getWorkflowInstanceId());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\pge\\src\\test\\java\\org\\apache\\oodt\\cas\\pge\\TestPGETaskInstance.java",
+  "methodName" : "testCreateExeDir",
+  "sourceCode" : "@Test\r\npublic void testCreateExeDir() throws Exception {\r\n    PGETaskInstance pgeTask = createTestInstance();\r\n    File exeDir = new File(pgeTask.pgeConfig.getExeDir());\r\n    FileUtils.deleteDirectory(exeDir);\r\n    assertFalse(exeDir.exists());\r\n    pgeTask.createExeDir();\r\n    assertTrue(exeDir.exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\pge\\src\\test\\java\\org\\apache\\oodt\\cas\\pge\\TestPGETaskInstance.java",
+  "methodName" : "testCreateOuputDirsIfRequested",
+  "sourceCode" : "@Test\r\npublic void testCreateOuputDirsIfRequested() throws Exception {\r\n    PGETaskInstance pgeTask = createTestInstance();\r\n    File outputDir1 = createTmpDir();\r\n    FileUtils.forceDelete(outputDir1);\r\n    File outputDir2 = createTmpDir();\r\n    FileUtils.forceDelete(outputDir2);\r\n    File outputDir3 = new File(\"/some/file/path\");\r\n    assertFalse(outputDir1.exists());\r\n    assertFalse(outputDir2.exists());\r\n    assertFalse(outputDir3.exists());\r\n    pgeTask.pgeConfig.addOuputDirAndExpressions(new OutputDir(outputDir1.getAbsolutePath(), true));\r\n    pgeTask.pgeConfig.addOuputDirAndExpressions(new OutputDir(outputDir2.getAbsolutePath(), true));\r\n    pgeTask.pgeConfig.addOuputDirAndExpressions(new OutputDir(outputDir3.getAbsolutePath(), false));\r\n    pgeTask.createOuputDirsIfRequested();\r\n    assertTrue(outputDir1.exists());\r\n    assertTrue(outputDir2.exists());\r\n    assertFalse(outputDir3.exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\pge\\src\\test\\java\\org\\apache\\oodt\\cas\\pge\\TestPGETaskInstance.java",
+  "methodName" : "testCreateDynamicConfigFile",
+  "sourceCode" : "@Test\r\npublic void testCreateDynamicConfigFile() throws Exception {\r\n    File tmpDir = createTmpDir();\r\n    FileUtils.forceDelete(tmpDir);\r\n    assertFalse(tmpDir.exists());\r\n    PGETaskInstance pgeTask = createTestInstance();\r\n    File dynamicConfigFile = new File(tmpDir, \"DynamicConfig.xml\");\r\n    assertFalse(dynamicConfigFile.exists());\r\n    pgeTask.createDynamicConfigFile(new DynamicConfigFile(dynamicConfigFile.getAbsolutePath(), MockDynamicConfigFileWriter.class.getCanonicalName(), new Object[] {}));\r\n    assertTrue(dynamicConfigFile.exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\pge\\src\\test\\java\\org\\apache\\oodt\\cas\\pge\\TestPGETaskInstance.java",
+  "methodName" : "testDumpMetadataIfRequested",
+  "sourceCode" : "@Test\r\npublic void testDumpMetadataIfRequested() throws Exception {\r\n    PGETaskInstance pgeTask = createTestInstance();\r\n    File dumpMetFile = new File(pgeTask.getDumpMetadataPath());\r\n    pgeTask.dumpMetadataIfRequested();\r\n    assertFalse(dumpMetFile.exists());\r\n    pgeTask.pgeMetadata.replaceMetadata(DUMP_METADATA, \"true\");\r\n    pgeTask.dumpMetadataIfRequested();\r\n    assertTrue(dumpMetFile.exists());\r\n    String expectedMetString = \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?>\" + \"<cas:metadata xmlns:cas=\\\"http://oodt.jpl.nasa.gov/1.0/cas\\\">\" + \"<keyval type=\\\"vector\\\">\" + \"<key>PGETask_Name</key>\" + \"<val>\" + pgeTask.pgeMetadata.getMetadata(NAME) + \"</val>\" + \"</keyval>\" + \"<keyval type=\\\"vector\\\">\" + \"<key>PGETask_DumpMetadata</key>\" + \"<val>\" + pgeTask.pgeMetadata.getMetadata(DUMP_METADATA) + \"</val>\" + \"</keyval>\" + \"</cas:metadata>\";\r\n    Document dumpMetDoc = parseXmlFile(dumpMetFile);\r\n    Document expectedMetDoc = parseXmlString(expectedMetString);\r\n    Element dumpMetRoot, expectedMetRoot;\r\n    dumpMetRoot = dumpMetDoc.getDocumentElement();\r\n    expectedMetRoot = expectedMetDoc.getDocumentElement();\r\n    NodeList dumpKeyList = dumpMetRoot.getElementsByTagName(\"key\");\r\n    NodeList expectedKeyList = expectedMetRoot.getElementsByTagName(\"key\");\r\n    NodeList dumpValList = dumpMetRoot.getElementsByTagName(\"val\");\r\n    NodeList expectedValList = expectedMetRoot.getElementsByTagName(\"val\");\r\n    assertEquals(dumpKeyList.getLength(), expectedKeyList.getLength());\r\n    assertEquals(dumpValList.getLength(), expectedValList.getLength());\r\n    Map<String, String> dumpKeyValMap = new ConcurrentHashMap<String, String>();\r\n    Map<String, String> expectedKeyValMap = new ConcurrentHashMap<String, String>();\r\n    for (int i = 0; i < dumpKeyList.getLength(); i++) {\r\n        Node k1 = dumpKeyList.item(i);\r\n        Node k2 = expectedKeyList.item(i);\r\n        Node v1 = dumpValList.item(i);\r\n        Node v2 = expectedValList.item(i);\r\n        dumpKeyValMap.put(k1.getFirstChild().getNodeValue(), v1.getFirstChild().getNodeValue());\r\n        expectedKeyValMap.put(k2.getFirstChild().getNodeValue(), v2.getFirstChild().getNodeValue());\r\n    }\r\n    assumeTrue(dumpKeyValMap.equals(expectedKeyValMap));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\pge\\src\\test\\java\\org\\apache\\oodt\\cas\\pge\\TestPGETaskInstance.java",
+  "methodName" : "testCreateProductCrawler",
+  "sourceCode" : "@Test\r\npublic void testCreateProductCrawler() throws Exception {\r\n    PGETaskInstance pgeTask = createTestInstance();\r\n    pgeTask.pgeMetadata.replaceMetadata(MIME_EXTRACTOR_REPO, \"src/main/resources/examples/Crawler/mime-extractor-map.xml\");\r\n    pgeTask.pgeMetadata.replaceMetadata(INGEST_CLIENT_TRANSFER_SERVICE_FACTORY, \"org.apache.oodt.cas.filemgr.datatransfer.LocalDataTransferFactory\");\r\n    pgeTask.pgeMetadata.replaceMetadata(INGEST_FILE_MANAGER_URL, \"http://localhost:9000\");\r\n    pgeTask.pgeMetadata.replaceMetadata(CRAWLER_CONFIG_FILE, \"src/main/resources/examples/Crawler/crawler-config.xml\");\r\n    pgeTask.pgeMetadata.replaceMetadata(ACTION_IDS, Lists.newArrayList(\"DeleteDataFile\", \"MoveMetadataFileToFailureDir\"));\r\n    pgeTask.pgeMetadata.replaceMetadata(REQUIRED_METADATA, Lists.newArrayList(\"Owners\"));\r\n    pgeTask.pgeMetadata.replaceMetadata(CRAWLER_CRAWL_FOR_DIRS, Boolean.toString(false));\r\n    pgeTask.pgeMetadata.replaceMetadata(CRAWLER_RECUR, Boolean.toString(true));\r\n    ProductCrawler pc = pgeTask.createProductCrawler();\r\n    assertEquals(\"org.apache.oodt.cas.filemgr.datatransfer.LocalDataTransferFactory\", pc.getClientTransferer());\r\n    assertEquals(\"http://localhost:9000\", pc.getFilemgrUrl());\r\n    assertEquals(Sets.newHashSet(\"DeleteDataFile\", \"MoveMetadataFileToFailureDir\"), Sets.newHashSet(pc.getActionIds()));\r\n    CrawlerAction action = (CrawlerAction) pc.getApplicationContext().getBean(\"DeleteDataFile\");\r\n    assertNotNull(action);\r\n    MoveFile moveFileAction = (MoveFile) pc.getApplicationContext().getBean(\"MoveMetadataFileToFailureDir\");\r\n    Properties properties = new Properties();\r\n    properties.load(new FileInputStream(new File(\"src/main/resources/examples/Crawler/action-beans.properties\")));\r\n    assertEquals(properties.get(\"crawler.failure.dir\"), moveFileAction.getToDir());\r\n    assertTrue(pc.getRequiredMetadata().contains(\"Owners\"));\r\n    assertFalse(pc.isCrawlForDirs());\r\n    assertFalse(pc.isNoRecur());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\pge\\src\\test\\java\\org\\apache\\oodt\\cas\\pge\\TestPGETaskInstance.java",
+  "methodName" : "testRunIngestCrawler",
+  "sourceCode" : "@Test\r\npublic void testRunIngestCrawler() throws Exception {\r\n    // Case: UpdateStatus Success, VerifyIngest Success,\r\n    PGETaskInstance pgeTask = createTestInstance();\r\n    pgeTask.pgeConfig.addOuputDirAndExpressions(new OutputDir(\"/tmp/dir1\", true));\r\n    pgeTask.pgeConfig.addOuputDirAndExpressions(new OutputDir(\"/tmp/dir2\", true));\r\n    pgeTask.pgeMetadata.replaceMetadata(ATTEMPT_INGEST_ALL, Boolean.toString(true));\r\n    pgeTask.setWorkflowInstId(\"WorkflowInstanceId\");\r\n    pgeTask.setWmClient(createMock(WorkflowManagerClient.class));\r\n    expect(pgeTask.getWorkflowManagerClient().updateWorkflowInstanceStatus(pgeTask.getWorkflowInstId(), CRAWLING.getWorkflowStatusName())).andReturn(true);\r\n    replay(pgeTask.getWorkflowManagerClient());\r\n    AutoDetectProductCrawler pc = createMock(AutoDetectProductCrawler.class);\r\n    pc.crawl(new File(\"/tmp/dir1\"));\r\n    pc.crawl(new File(\"/tmp/dir2\"));\r\n    expect(pc.getIngestStatus()).andReturn(Collections.<IngestStatus>emptyList());\r\n    replay(pc);\r\n    pgeTask.runIngestCrawler(pc);\r\n    verify(pgeTask.getWorkflowManagerClient());\r\n    verify(pc);\r\n    // Case: UpdateStatus Fail\r\n    pgeTask.setWmClient(createMock(WorkflowManagerClient.class));\r\n    expect(pgeTask.getWorkflowManagerClient().updateWorkflowInstanceStatus(pgeTask.getWorkflowInstId(), CRAWLING.getWorkflowStatusName())).andReturn(false);\r\n    replay(pgeTask.getWorkflowManagerClient());\r\n    pc = createMock(AutoDetectProductCrawler.class);\r\n    replay(pc);\r\n    try {\r\n        pgeTask.runIngestCrawler(pc);\r\n        fail(\"Should have thrown\");\r\n    } catch (Exception e) {\r\n        /* expect throw */\r\n    }\r\n    verify(pgeTask.getWorkflowManagerClient());\r\n    verify(pc);\r\n    // Case: UpdateStatus Success, VerifyIngest Fail\r\n    pgeTask.setWmClient(createMock(WorkflowManagerClient.class));\r\n    expect(pgeTask.getWorkflowManagerClient().updateWorkflowInstanceStatus(pgeTask.getWorkflowInstId(), CRAWLING.getWorkflowStatusName())).andReturn(true);\r\n    replay(pgeTask.getWorkflowManagerClient());\r\n    pc = createMock(AutoDetectProductCrawler.class);\r\n    pc.crawl(new File(\"/tmp/dir1\"));\r\n    pc.crawl(new File(\"/tmp/dir2\"));\r\n    IngestStatus failedIngestStatus = new IngestStatus() {\r\n\r\n        @Override\r\n        public String getMessage() {\r\n            return \"Ingest Failure\";\r\n        }\r\n\r\n        @Override\r\n        public File getProduct() {\r\n            return new File(\"/tmp/dir1\");\r\n        }\r\n\r\n        @Override\r\n        public Result getResult() {\r\n            return Result.FAILURE;\r\n        }\r\n    };\r\n    expect(pc.getIngestStatus()).andReturn(Lists.newArrayList(failedIngestStatus));\r\n    replay(pc);\r\n    try {\r\n        pgeTask.runIngestCrawler(pc);\r\n        fail(\"Should have thrown\");\r\n    } catch (Exception e) {\r\n        /* expect throw */\r\n    }\r\n    verify(pgeTask.getWorkflowManagerClient());\r\n    verify(pc);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\pge\\src\\test\\java\\org\\apache\\oodt\\cas\\pge\\TestPGETaskInstance.java",
+  "methodName" : "testVerifyIngests",
+  "sourceCode" : "@Test\r\npublic void testVerifyIngests() throws Exception {\r\n    PGETaskInstance pgeTask = createTestInstance();\r\n    // Test case failure.\r\n    AutoDetectProductCrawler pc = createMock(AutoDetectProductCrawler.class);\r\n    IngestStatus failedIngestStatus = new IngestStatus() {\r\n\r\n        @Override\r\n        public String getMessage() {\r\n            return \"Ingest Failure\";\r\n        }\r\n\r\n        @Override\r\n        public File getProduct() {\r\n            return new File(\"/tmp/dir1\");\r\n        }\r\n\r\n        @Override\r\n        public Result getResult() {\r\n            return Result.FAILURE;\r\n        }\r\n    };\r\n    expect(pc.getIngestStatus()).andReturn(Lists.newArrayList(failedIngestStatus));\r\n    replay(pc);\r\n    try {\r\n        pgeTask.verifyIngests(pc);\r\n        fail(\"Should have thrown\");\r\n    } catch (Exception e) {\r\n        /* expect throw */\r\n    }\r\n    verify(pc);\r\n    // Test case warn failure of precondition, but success overall.\r\n    pc = createMock(AutoDetectProductCrawler.class);\r\n    IngestStatus precondsFailIngestStatus = new IngestStatus() {\r\n\r\n        @Override\r\n        public String getMessage() {\r\n            return \"Preconditions failed\";\r\n        }\r\n\r\n        @Override\r\n        public File getProduct() {\r\n            return new File(\"/tmp/dir1\");\r\n        }\r\n\r\n        @Override\r\n        public Result getResult() {\r\n            return Result.PRECONDS_FAILED;\r\n        }\r\n    };\r\n    expect(pc.getIngestStatus()).andReturn(Lists.newArrayList(precondsFailIngestStatus));\r\n    replay(pc);\r\n    pgeTask.julLogger = createMock(Logger.class);\r\n    pgeTask.julLogger.info(\"Verifying ingests successful...\");\r\n    pgeTask.julLogger.warning(\"Product was not ingested [file='/tmp/dir1',result='PRECONDS_FAILED',msg='Preconditions failed']\");\r\n    pgeTask.julLogger.info(\"Ingests were successful\");\r\n    replay(pgeTask.julLogger);\r\n    pgeTask.verifyIngests(pc);\r\n    verify(pc);\r\n    verify(pgeTask.julLogger);\r\n    // Test case success.\r\n    pc = createMock(AutoDetectProductCrawler.class);\r\n    IngestStatus successIngestStatus = new IngestStatus() {\r\n\r\n        @Override\r\n        public String getMessage() {\r\n            return \"Ingest Success\";\r\n        }\r\n\r\n        @Override\r\n        public File getProduct() {\r\n            return new File(\"/tmp/dir1\");\r\n        }\r\n\r\n        @Override\r\n        public Result getResult() {\r\n            return Result.SUCCESS;\r\n        }\r\n    };\r\n    expect(pc.getIngestStatus()).andReturn(Lists.newArrayList(successIngestStatus));\r\n    replay(pc);\r\n    pgeTask.julLogger = createMock(Logger.class);\r\n    pgeTask.julLogger.info(\"Verifying ingests successful...\");\r\n    pgeTask.julLogger.info(\"Ingests were successful\");\r\n    replay(pgeTask.julLogger);\r\n    pgeTask.verifyIngests(pc);\r\n    verify(pc);\r\n    verify(pgeTask.julLogger);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\distributed\\TestDistributedAvroRpcResourceManager.java",
+  "methodName" : "testDynSetNodeCapacity",
+  "sourceCode" : "@Test\r\npublic void testDynSetNodeCapacity() {\r\n    new TestAvroRpcResourceManager().testDynSetNodeCapacity();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\distributed\\TestDistributedXmlRpcResourceManager.java",
+  "methodName" : "testDynSetNodeCapacity",
+  "sourceCode" : "@Test\r\npublic void testDynSetNodeCapacity() {\r\n    new TestXmlRpcResourceManager().testDynSetNodeCapacity();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestAvroRpcResourceManager.java",
+  "methodName" : "testDynSetNodeCapacity",
+  "sourceCode" : "/**\r\n * @since OODT-182\r\n */\r\n@Test\r\npublic void testDynSetNodeCapacity() {\r\n    AvroRpcResourceManagerClient rmc = null;\r\n    try {\r\n        rmc = new AvroRpcResourceManagerClient(new URL(\"http://localhost:\" + RM_PORT));\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail(e.getMessage());\r\n    }\r\n    assertNotNull(rmc);\r\n    try {\r\n        rmc.setNodeCapacity(\"localhost\", 8);\r\n    } catch (MonitorException e) {\r\n        e.printStackTrace();\r\n        fail(e.getMessage());\r\n    }\r\n    int setCapacity = -1;\r\n    try {\r\n        setCapacity = rmc.getNodeById(\"localhost\").getCapacity();\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail(e.getMessage());\r\n    }\r\n    assertEquals(8, setCapacity);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestAvroRpcResourceManagerClient.java",
+  "methodName" : "testGetNodes",
+  "sourceCode" : "@Test\r\npublic void testGetNodes() throws MonitorException {\r\n    List<Hashtable> nodes = rmc.getNodes();\r\n    assertThat(nodes, is(not(nullValue())));\r\n    assertThat(nodes, hasSize(1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestAvroRpcResourceManagerClient.java",
+  "methodName" : "testGetExecutionReport",
+  "sourceCode" : "@Test\r\npublic void testGetExecutionReport() throws JobRepositoryException {\r\n    String execreport = rmc.getExecReport();\r\n    assertThat(execreport, is(not(nullValue())));\r\n    //TODO make it return more than an empty string;\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestAvroRpcResourceManagerClient.java",
+  "methodName" : "testJobQueueCapacity",
+  "sourceCode" : "@Test\r\npublic void testJobQueueCapacity() throws JobRepositoryException {\r\n    int capacity = rmc.getJobQueueCapacity();\r\n    assertThat(capacity, equalTo(1000));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestAvroRpcResourceManagerClient.java",
+  "methodName" : "testGetJobQueueSize",
+  "sourceCode" : "@Test\r\npublic void testGetJobQueueSize() throws JobRepositoryException {\r\n    int size = rmc.getJobQueueSize();\r\n    assertThat(size, equalTo(0));\r\n    //TODO Make it change queue size\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestAvroRpcResourceManagerClient.java",
+  "methodName" : "testGetNodeById",
+  "sourceCode" : "@Test\r\npublic void testGetNodeById() throws MonitorException {\r\n    List<ResourceNode> nodelist = rmc.getNodes();\r\n    ResourceNode node = rmc.getNodeById(nodelist.get(0).getNodeId());\r\n    assertThat(node, is(not(nullValue())));\r\n    assertThat(node.getNodeId(), equalTo(\"localhost\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestAvroRpcResourceManagerClient.java",
+  "methodName" : "testGetNodeLoad",
+  "sourceCode" : "@Test\r\npublic void testGetNodeLoad() throws MonitorException {\r\n    List<ResourceNode> nodelist = rmc.getNodes();\r\n    String node = rmc.getNodeLoad(nodelist.get(0).getNodeId());\r\n    assertNotNull(node);\r\n    assertThat(node, equalTo(\"0/8\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestAvroRpcResourceManagerClient.java",
+  "methodName" : "testNodeReport",
+  "sourceCode" : "@Test\r\npublic void testNodeReport() throws MonitorException {\r\n    String report = rmc.getNodeReport();\r\n    assertThat(report, is(not(nullValue())));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestAvroRpcResourceManagerClient.java",
+  "methodName" : "testGetNodesInQueue",
+  "sourceCode" : "@Test\r\npublic void testGetNodesInQueue() throws QueueManagerException {\r\n    List<String> nodes = rmc.getNodesInQueue(\"long\");\r\n    assertThat(nodes, is(not(nullValue())));\r\n    assertThat(nodes, hasSize(1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestAvroRpcResourceManagerClient.java",
+  "methodName" : "testQueuedJobs",
+  "sourceCode" : "@Test\r\npublic void testQueuedJobs() throws JobQueueException {\r\n    List jobs = rmc.getQueuedJobs();\r\n    assertThat(jobs, is(not(nullValue())));\r\n    //TODO queue a job\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestAvroRpcResourceManagerClient.java",
+  "methodName" : "testQueuesWithNode",
+  "sourceCode" : "@Test\r\npublic void testQueuesWithNode() throws MonitorException, QueueManagerException {\r\n    List<ResourceNode> nodelist = rmc.getNodes();\r\n    List<String> queues = rmc.getQueuesWithNode(nodelist.get(0).getNodeId());\r\n    assertThat(queues, hasSize(3));\r\n    assertThat(queues, containsInAnyOrder(\"high\", \"quick\", \"long\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestAvroRpcResourceManagerClient.java",
+  "methodName" : "testQueues",
+  "sourceCode" : "@Test\r\npublic void testQueues() throws QueueManagerException {\r\n    List<String> queues = rmc.getQueues();\r\n    assertThat(queues, hasSize(3));\r\n    assertThat(queues, containsInAnyOrder(\"high\", \"quick\", \"long\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestXmlRpcResourceManagerClient.java",
+  "methodName" : "testGetNodes",
+  "sourceCode" : "@Test\r\npublic void testGetNodes() throws MonitorException {\r\n    List<Hashtable> nodes = rmc.getNodes();\r\n    assertThat(nodes, is(not(nullValue())));\r\n    assertThat(nodes, hasSize(1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestXmlRpcResourceManagerClient.java",
+  "methodName" : "testGetExecutionReport",
+  "sourceCode" : "@Test\r\npublic void testGetExecutionReport() throws JobRepositoryException {\r\n    String execreport = rmc.getExecReport();\r\n    assertThat(execreport, is(not(nullValue())));\r\n    //TODO make it return more than an empty string;\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestXmlRpcResourceManagerClient.java",
+  "methodName" : "testJobQueueCapacity",
+  "sourceCode" : "@Test\r\npublic void testJobQueueCapacity() throws JobRepositoryException {\r\n    int capacity = rmc.getJobQueueCapacity();\r\n    assertThat(capacity, equalTo(1000));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestXmlRpcResourceManagerClient.java",
+  "methodName" : "testGetJobQueueSize",
+  "sourceCode" : "@Test\r\npublic void testGetJobQueueSize() throws JobRepositoryException {\r\n    int size = rmc.getJobQueueSize();\r\n    assertThat(size, equalTo(0));\r\n    //TODO Make it change queue size\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestXmlRpcResourceManagerClient.java",
+  "methodName" : "testGetNodeById",
+  "sourceCode" : "@Test\r\npublic void testGetNodeById() throws MonitorException {\r\n    List<ResourceNode> nodelist = rmc.getNodes();\r\n    ResourceNode node = rmc.getNodeById(nodelist.get(0).getNodeId());\r\n    assertThat(node, is(not(nullValue())));\r\n    assertThat(node.getNodeId(), equalTo(\"localhost\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestXmlRpcResourceManagerClient.java",
+  "methodName" : "testGetNodeLoad",
+  "sourceCode" : "@Test\r\npublic void testGetNodeLoad() throws MonitorException {\r\n    List<ResourceNode> nodelist = rmc.getNodes();\r\n    String node = rmc.getNodeLoad(nodelist.get(0).getNodeId());\r\n    assertNotNull(node);\r\n    assertThat(node, equalTo(\"0/8\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestXmlRpcResourceManagerClient.java",
+  "methodName" : "testNodeReport",
+  "sourceCode" : "@Test\r\npublic void testNodeReport() throws MonitorException {\r\n    String report = rmc.getNodeReport();\r\n    assertThat(report, is(not(nullValue())));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestXmlRpcResourceManagerClient.java",
+  "methodName" : "testGetNodesInQueue",
+  "sourceCode" : "@Test\r\npublic void testGetNodesInQueue() throws QueueManagerException {\r\n    List<String> nodes = rmc.getNodesInQueue(\"long\");\r\n    assertThat(nodes, is(not(nullValue())));\r\n    assertThat(nodes, hasSize(1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestXmlRpcResourceManagerClient.java",
+  "methodName" : "testQueuedJobs",
+  "sourceCode" : "@Test\r\npublic void testQueuedJobs() throws JobQueueException {\r\n    List jobs = rmc.getQueuedJobs();\r\n    assertThat(jobs, is(not(nullValue())));\r\n    //TODO queue a job\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestXmlRpcResourceManagerClient.java",
+  "methodName" : "testQueuesWithNode",
+  "sourceCode" : "@Test\r\npublic void testQueuesWithNode() throws MonitorException, QueueManagerException {\r\n    List<ResourceNode> nodelist = rmc.getNodes();\r\n    List<String> queues = rmc.getQueuesWithNode(nodelist.get(0).getNodeId());\r\n    assertThat(queues, hasSize(3));\r\n    assertThat(queues, containsInAnyOrder(\"high\", \"quick\", \"long\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\resource\\src\\test\\java\\org\\apache\\oodt\\cas\\resource\\system\\TestXmlRpcResourceManagerClient.java",
+  "methodName" : "testQueues",
+  "sourceCode" : "@Test\r\npublic void testQueues() throws QueueManagerException {\r\n    List<String> queues = rmc.getQueues();\r\n    assertThat(queues, hasSize(3));\r\n    assertThat(queues, containsInAnyOrder(\"high\", \"quick\", \"long\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\webapp\\fmprod\\src\\test\\java\\org\\apache\\oodt\\cas\\product\\jaxrs\\resources\\DatasetResourceTest.java",
+  "methodName" : "testXmlMarshalling",
+  "sourceCode" : "/**\r\n * Tests that {@link DatasetResource dataset resources} are marshalled to\r\n * the expected XML format.\r\n * @throws IOException if the {@link Diff} constructor fails\r\n * @throws JAXBException if the {@link JAXBContext} or {@link Marshaller} fail\r\n * @throws MimeTypeException if {@link MimeTypes#forName(String)} fails\r\n * @throws SAXException if the {@link Diff} constructor fails\r\n */\r\n@Test\r\npublic void testXmlMarshalling() throws IOException, JAXBException, MimeTypeException, SAXException {\r\n    // Create a ProductType.\r\n    ProductType productType = new ProductType(\"1\", \"GenericFile\", \"test type\", \"repository\", \"versioner\");\r\n    // Create a ProductResource using Reference, Metadata and Product instances.\r\n    Reference reference1 = new Reference(\"original1\", \"dataStore1\", 500, new MimeTypes().forName(\"text/plain\"));\r\n    List<Reference> references1 = new ArrayList<Reference>();\r\n    references1.add(reference1);\r\n    HashMap<String, Object> metadataEntries1 = new HashMap<>();\r\n    metadataEntries1.put(\"product1_meta\", \"test1\");\r\n    Metadata metadata1 = new Metadata();\r\n    metadata1.addMetadata(metadataEntries1);\r\n    Product product1 = new Product();\r\n    product1.setProductId(\"123\");\r\n    product1.setProductName(\"test.txt\");\r\n    product1.setProductType(productType);\r\n    ProductResource productResource1 = new ProductResource(product1, metadata1, references1, new File(\"/tmp\"));\r\n    // Create another ProductResource using Reference, Metadata and Product\r\n    // instances.\r\n    Reference reference2 = new Reference(\"original2\", \"dataStore2\", 1000, new MimeTypes().forName(\"application/pdf\"));\r\n    List<Reference> references2 = new ArrayList<Reference>();\r\n    references2.add(reference2);\r\n    HashMap<String, Object> metadataEntries2 = new HashMap<>();\r\n    metadataEntries2.put(\"product2_meta\", \"test2\");\r\n    Metadata metadata2 = new Metadata();\r\n    metadata2.addMetadata(metadataEntries2);\r\n    Product product2 = new Product();\r\n    product2.setProductId(\"456\");\r\n    product2.setProductName(\"test2.txt\");\r\n    product2.setProductType(productType);\r\n    ProductResource productResource2 = new ProductResource(product2, metadata2, references2, new File(\"/tmp\"));\r\n    // Create a DatasetResource using ProductType, Metadata and ProductResource\r\n    // instances.\r\n    HashMap<String, Object> metadataEntries3 = new HashMap<>();\r\n    metadataEntries3.put(\"dataset_meta\", \"test3\");\r\n    Metadata metadata3 = new Metadata();\r\n    metadata3.addMetadata(metadataEntries3);\r\n    DatasetResource resource = new DatasetResource(productType.getProductTypeId(), productType.getName(), metadata3, new File(\"/tmp\"));\r\n    resource.addProductResource(productResource1);\r\n    resource.addProductResource(productResource2);\r\n    // Generate the expected output.\r\n    String expectedXml = \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\" + \"<dataset>\" + \"<id>\" + productType.getProductTypeId() + \"</id>\" + \"<name>\" + productType.getName() + \"</name>\" + \"<metadata>\" + \"<keyval>\" + \"<key>\" + metadata3.getAllKeys().get(0) + \"</key>\" + \"<val>\" + metadata3.getAllValues().get(0) + \"</val>\" + \"</keyval>\" + \"</metadata>\" + \"<products>\" + \"<product>\" + \"<id>\" + product1.getProductId() + \"</id>\" + \"<name>\" + product1.getProductName() + \"</name>\" + \"<type>\" + productType.getName() + \"</type>\" + \"<metadata>\" + \"<keyval>\" + \"<key>\" + metadata1.getAllKeys().get(0) + \"</key>\" + \"<val>\" + metadata1.getAllValues().get(0) + \"</val>\" + \"</keyval>\" + \"</metadata>\" + \"<references>\" + \"<reference>\" + \"<productId>\" + product1.getProductId() + \"</productId>\" + \"<refIndex>0</refIndex>\" + \"<dataStoreReference>\" + reference1.getDataStoreReference() + \"</dataStoreReference>\" + \"<originalReference>\" + reference1.getOrigReference() + \"</originalReference>\" + \"<mimeType>\" + reference1.getMimeType().getName() + \"</mimeType>\" + \"<fileSize>\" + reference1.getFileSize() + \"</fileSize>\" + \"</reference>\" + \"</references>\" + \"</product>\" + \"<product>\" + \"<id>\" + product2.getProductId() + \"</id>\" + \"<name>\" + product2.getProductName() + \"</name>\" + \"<type>\" + productType.getName() + \"</type>\" + \"<metadata>\" + \"<keyval>\" + \"<key>\" + metadata2.getAllKeys().get(0) + \"</key>\" + \"<val>\" + metadata2.getAllValues().get(0) + \"</val>\" + \"</keyval>\" + \"</metadata>\" + \"<references>\" + \"<reference>\" + \"<productId>\" + product2.getProductId() + \"</productId>\" + \"<refIndex>0</refIndex>\" + \"<dataStoreReference>\" + reference2.getDataStoreReference() + \"</dataStoreReference>\" + \"<originalReference>\" + reference2.getOrigReference() + \"</originalReference>\" + \"<mimeType>\" + reference2.getMimeType().getName() + \"</mimeType>\" + \"<fileSize>\" + reference2.getFileSize() + \"</fileSize>\" + \"</reference>\" + \"</references>\" + \"</product>\" + \"</products>\" + \"</dataset>\";\r\n    // Set up a JAXB context and marshall the DatasetResource to XML.\r\n    JAXBContext context = JAXBContext.newInstance(resource.getClass());\r\n    Marshaller marshaller = context.createMarshaller();\r\n    StringWriter writer = new StringWriter();\r\n    marshaller.marshal(resource, writer);\r\n    // Compare the expected and actual outputs.\r\n    XMLUnit.setIgnoreWhitespace(true);\r\n    XMLUnit.setIgnoreComments(true);\r\n    XMLUnit.setIgnoreAttributeOrder(true);\r\n    Diff diff = new Diff(expectedXml, writer.toString());\r\n    assertTrue(\"The output XML was different to the expected XML: \" + diff.toString(), diff.identical());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\webapp\\fmprod\\src\\test\\java\\org\\apache\\oodt\\cas\\product\\jaxrs\\resources\\MetadataResourceTest.java",
+  "methodName" : "testXmlMarshalling",
+  "sourceCode" : "/**\r\n * Tests that {@link MetadataResource metadata resources} are marshalled to\r\n * the expected XML format.\r\n * @throws IOException if the {@link Diff} constructor fails\r\n * @throws JAXBException if the {@link JAXBContext} or {@link Marshaller} fail\r\n * @throws SAXException if the {@link Diff} constructor fails\r\n */\r\n@Test\r\npublic void testXmlMarshalling() throws IOException, JAXBException, SAXException {\r\n    // Generate the expected output.\r\n    String expectedXml = \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\" + \"<metadata>\" + \"<keyval><key>1</key><val>one</val></keyval>\" + \"<keyval><key>2</key><val>two</val></keyval>\" + \"<keyval><key>3</key><val>three</val></keyval>\" + \"<keyval><key>4</key><val>a</val><val>b</val><val>c</val></keyval>\" + \"</metadata>\";\r\n    // Create a MetadataResource using a Metadata instance.\r\n    HashMap<String, Object> metadataEntries = new HashMap<>();\r\n    metadataEntries.put(\"1\", \"one\");\r\n    metadataEntries.put(\"2\", \"two\");\r\n    metadataEntries.put(\"3\", \"three\");\r\n    List<String> list = new ArrayList<String>();\r\n    list.add(\"a\");\r\n    list.add(\"b\");\r\n    list.add(\"c\");\r\n    metadataEntries.put(\"4\", list);\r\n    Metadata metadata = new Metadata();\r\n    metadata.addMetadata(metadataEntries);\r\n    MetadataResource resource = new MetadataResource(metadata);\r\n    // Set up a JAXB context and marshall the ReferenceResource to XML.\r\n    JAXBContext context = JAXBContext.newInstance(resource.getClass());\r\n    Marshaller marshaller = context.createMarshaller();\r\n    StringWriter writer = new StringWriter();\r\n    marshaller.marshal(resource, writer);\r\n    // Compare the expected and actual outputs.\r\n    XMLUnit.setIgnoreWhitespace(true);\r\n    XMLUnit.setIgnoreComments(true);\r\n    XMLUnit.setIgnoreAttributeOrder(true);\r\n    Diff diff = new Diff(expectedXml, writer.toString());\r\n    diff.overrideElementQualifier(new RecursiveElementNameAndTextQualifier());\r\n    assertTrue(\"The output XML was different to the expected XML: \" + diff.toString(), diff.similar());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\webapp\\fmprod\\src\\test\\java\\org\\apache\\oodt\\cas\\product\\jaxrs\\resources\\ProductPageResourceTest.java",
+  "methodName" : "testXmlMarshalling",
+  "sourceCode" : "@Test\r\npublic void testXmlMarshalling() throws JAXBException, IOException, SAXException, MimeTypeException {\r\n    // Create a ProductResource using ProductType, Reference, Metadata and\r\n    // Product instances.\r\n    HashMap<String, Object> metadataEntries = new HashMap<>();\r\n    metadataEntries.put(\"CAS.Test\", \"test value\");\r\n    Metadata metadata = new Metadata();\r\n    metadata.addMetadata(metadataEntries);\r\n    List<Metadata> metadataList = new Vector<>();\r\n    metadataList.add(metadata);\r\n    Reference reference = new Reference(\"original\", \"dataStore\", 1000, new MimeTypes().forName(\"text/plain\"));\r\n    List<Reference> references = new ArrayList<>();\r\n    references.add(reference);\r\n    List<List<Reference>> productReferencesList = new Vector<>();\r\n    productReferencesList.add(references);\r\n    ProductType productType = new ProductType(\"1\", \"GenericFile\", \"test type\", \"repository\", \"versioner\");\r\n    Product product = new Product();\r\n    product.setProductId(\"123\");\r\n    product.setProductName(\"test.txt\");\r\n    product.setProductStructure(Product.STRUCTURE_FLAT);\r\n    product.setProductType(productType);\r\n    product.setTransferStatus(\"RECEIVED\");\r\n    List<Product> pageProducts = new Vector<>();\r\n    pageProducts.add(product);\r\n    ProductPage productPage = new ProductPage(1, 1, 20, pageProducts);\r\n    //      Create a ProductPageResource using Reference, Metadata and Product instances.\r\n    ProductPageResource resource = new ProductPageResource(productPage, metadataList, productReferencesList, new File(\"/tmp\"));\r\n    //      Generate the expected output.\r\n    String expectedXml = \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\" + \"<productPage>\" + \"<pageSize>\" + resource.getPageSize() + \"</pageSize>\" + \"<pageNum>\" + resource.getPageNum() + \"</pageNum>\" + \"<totalPages>\" + resource.getTotalPages() + \"</totalPages>\" + \"<totalProducts>\" + resource.getTotalProducts() + \"</totalProducts>\" + \"<numOfHits>\" + resource.getNumOfHits() + \"</numOfHits>\" + \"<products>\" + \"<product>\" + \"<id>\" + product.getProductId() + \"</id>\" + \"<name>\" + product.getProductName() + \"</name>\" + \"<structure>\" + product.getProductStructure() + \"</structure>\" + \"<type>\" + productType.getName() + \"</type>\" + \"<transferStatus>\" + product.getTransferStatus() + \"</transferStatus>\" + \"<metadata>\" + \"<keyval>\" + \"<key>\" + metadataList.get(0).getAllKeys().get(0) + \"</key>\" + \"<val>\" + metadataList.get(0).getAllValues().get(0) + \"</val>\" + \"</keyval>\" + \"</metadata>\" + \"<references>\" + \"<reference>\" + \"<productId>\" + product.getProductId() + \"</productId>\" + \"<refIndex>0</refIndex>\" + \"<dataStoreReference>\" + productReferencesList.get(0).get(0).getDataStoreReference() + \"</dataStoreReference>\" + \"<originalReference>\" + productReferencesList.get(0).get(0).getOrigReference() + \"</originalReference>\" + \"<mimeType>\" + productReferencesList.get(0).get(0).getMimeType().getName() + \"</mimeType>\" + \"<fileSize>\" + productReferencesList.get(0).get(0).getFileSize() + \"</fileSize>\" + \"</reference>\" + \"</references>\" + \"</product>\" + \"</products>\" + \"</productPage>\";\r\n    // Set up a JAXB context and marshall the ProductResource to XML.\r\n    JAXBContext context = JAXBContext.newInstance(resource.getClass());\r\n    Marshaller marshaller = context.createMarshaller();\r\n    StringWriter writer = new StringWriter();\r\n    marshaller.marshal(resource, writer);\r\n    // Compare the expected and actual outputs.\r\n    XMLUnit.setIgnoreWhitespace(true);\r\n    XMLUnit.setIgnoreComments(true);\r\n    XMLUnit.setIgnoreAttributeOrder(true);\r\n    Diff diff = new Diff(expectedXml, writer.toString());\r\n    assertTrue(\"The output XML was different to the expected XML: \" + diff.toString(), diff.identical());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\webapp\\fmprod\\src\\test\\java\\org\\apache\\oodt\\cas\\product\\jaxrs\\resources\\ProductResourceTest.java",
+  "methodName" : "testXmlMarshalling",
+  "sourceCode" : "/**\r\n * Tests that {@link ProductResource product resources} are marshalled to\r\n * the expected XML format.\r\n * @throws IOException if the {@link Diff} constructor fails\r\n * @throws JAXBException if the {@link JAXBContext} or {@link Marshaller} fail\r\n * @throws MimeTypeException if {@link MimeTypes#forName(String)} fails\r\n * @throws SAXException if the {@link Diff} constructor fails\r\n */\r\n@Test\r\npublic void testXmlMarshalling() throws IOException, JAXBException, MimeTypeException, SAXException {\r\n    // Create a ProductResource using ProductType, Reference, Metadata and\r\n    // Product instances.\r\n    HashMap<String, Object> metadataEntries = new HashMap<>();\r\n    metadataEntries.put(\"CAS.Test\", \"test value\");\r\n    Metadata metadata = new Metadata();\r\n    metadata.addMetadata(metadataEntries);\r\n    Reference reference = new Reference(\"original\", \"dataStore\", 1000, new MimeTypes().forName(\"text/plain\"));\r\n    List<Reference> references = new ArrayList<Reference>();\r\n    references.add(reference);\r\n    ProductType productType = new ProductType(\"1\", \"GenericFile\", \"test type\", \"repository\", \"versioner\");\r\n    Product product = new Product();\r\n    product.setProductId(\"123\");\r\n    product.setProductName(\"test.txt\");\r\n    product.setProductStructure(Product.STRUCTURE_FLAT);\r\n    product.setProductType(productType);\r\n    ProductResource resource = new ProductResource(product, metadata, references, new File(\"/tmp\"));\r\n    // Generate the expected output.\r\n    String expectedXml = \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\" + \"<product>\" + \"<id>\" + product.getProductId() + \"</id>\" + \"<name>\" + product.getProductName() + \"</name>\" + \"<structure>\" + product.getProductStructure() + \"</structure>\" + \"<type>\" + productType.getName() + \"</type>\" + \"<metadata>\" + \"<keyval>\" + \"<key>\" + metadata.getAllKeys().get(0) + \"</key>\" + \"<val>\" + metadata.getAllValues().get(0) + \"</val>\" + \"</keyval>\" + \"</metadata>\" + \"<references>\" + \"<reference>\" + \"<productId>\" + product.getProductId() + \"</productId>\" + \"<refIndex>0</refIndex>\" + \"<dataStoreReference>\" + reference.getDataStoreReference() + \"</dataStoreReference>\" + \"<originalReference>\" + reference.getOrigReference() + \"</originalReference>\" + \"<mimeType>\" + reference.getMimeType().getName() + \"</mimeType>\" + \"<fileSize>\" + reference.getFileSize() + \"</fileSize>\" + \"</reference>\" + \"</references>\" + \"</product>\";\r\n    // Set up a JAXB context and marshall the ProductResource to XML.\r\n    JAXBContext context = JAXBContext.newInstance(resource.getClass());\r\n    Marshaller marshaller = context.createMarshaller();\r\n    StringWriter writer = new StringWriter();\r\n    marshaller.marshal(resource, writer);\r\n    // Compare the expected and actual outputs.\r\n    XMLUnit.setIgnoreWhitespace(true);\r\n    XMLUnit.setIgnoreComments(true);\r\n    XMLUnit.setIgnoreAttributeOrder(true);\r\n    Diff diff = new Diff(expectedXml, writer.toString());\r\n    assertTrue(\"The output XML was different to the expected XML: \" + diff.toString(), diff.identical());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\webapp\\fmprod\\src\\test\\java\\org\\apache\\oodt\\cas\\product\\jaxrs\\resources\\ReferenceResourceTest.java",
+  "methodName" : "testXmlMarshalling",
+  "sourceCode" : "/**\r\n * Tests that {@link ReferenceResource reference resources} are marshalled to\r\n * the expected XML format.\r\n * @throws IOException if the {@link Diff} constructor fails\r\n * @throws JAXBException if the {@link JAXBContext} or {@link Marshaller} fail\r\n * @throws MimeTypeException if {@link MimeTypes#forName(String)} fails\r\n * @throws SAXException if the {@link Diff} constructor fails\r\n */\r\n@Test\r\npublic void testXmlMarshalling() throws IOException, JAXBException, MimeTypeException, SAXException {\r\n    String productId = \"123\";\r\n    int refIndex = 0;\r\n    // Create a new ReferenceResource using a Reference instance.\r\n    Reference reference = new Reference(\"original\", \"dataStore\", 1000, new MimeTypes().forName(\"text/plain\"));\r\n    ReferenceResource resource = new ReferenceResource(productId, refIndex, reference, new File(\"/tmp\"));\r\n    // Generate the expected output.\r\n    String expectedXml = \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\" + \"<reference>\" + \"<productId>\" + productId + \"</productId>\" + \"<refIndex>\" + refIndex + \"</refIndex>\" + \"<dataStoreReference>\" + reference.getDataStoreReference() + \"</dataStoreReference>\" + \"<originalReference>\" + reference.getOrigReference() + \"</originalReference>\" + \"<mimeType>\" + reference.getMimeType().getName() + \"</mimeType>\" + \"<fileSize>\" + reference.getFileSize() + \"</fileSize>\" + \"</reference>\";\r\n    // Set up a JAXB context and marshall the ReferenceResource to XML.\r\n    JAXBContext context = JAXBContext.newInstance(resource.getClass());\r\n    Marshaller marshaller = context.createMarshaller();\r\n    StringWriter writer = new StringWriter();\r\n    marshaller.marshal(resource, writer);\r\n    // Compare the expected and actual outputs.\r\n    XMLUnit.setIgnoreWhitespace(true);\r\n    XMLUnit.setIgnoreComments(true);\r\n    XMLUnit.setIgnoreAttributeOrder(true);\r\n    Diff diff = new Diff(expectedXml, writer.toString());\r\n    assertTrue(\"The output XML was different to the expected XML: \" + diff.toString(), diff.identical());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\webapp\\fmprod\\src\\test\\java\\org\\apache\\oodt\\cas\\product\\jaxrs\\resources\\TransferResourceTest.java",
+  "methodName" : "testXmlMarshalling",
+  "sourceCode" : "/**\r\n * Tests that {@link TransferResource transfer resources} are marshalled to\r\n * the expected XML format.\r\n * @throws IOException if the {@link Diff} constructor fails\r\n * @throws JAXBException if the {@link JAXBContext} or {@link Marshaller} fail\r\n * @throws MimeTypeException if {@link MimeTypes#forName(String)} fails\r\n * @throws SAXException if the {@link Diff} constructor fails\r\n */\r\n@Test\r\npublic void testXmlMarshalling() throws IOException, JAXBException, MimeTypeException, SAXException {\r\n    // Create a TransferResource using ProductType, Product, Metadata, Reference\r\n    // and FileTransferStatus instances.\r\n    HashMap<String, Object> metadataEntries = new HashMap<>();\r\n    metadataEntries.put(\"CAS.ProductReceivedTime\", \"2013-09-12T16:25:50.662Z\");\r\n    Metadata metadata = new Metadata();\r\n    metadata.addMetadata(metadataEntries);\r\n    Reference reference = new Reference(\"original\", \"dataStore\", 1000, new MimeTypes().forName(\"text/plain\"));\r\n    ProductType productType = new ProductType(\"1\", \"GenericFile\", \"test type\", \"repository\", \"versioner\");\r\n    Product product = new Product();\r\n    product.setProductId(\"123\");\r\n    product.setProductName(\"test product\");\r\n    product.setProductStructure(Product.STRUCTURE_FLAT);\r\n    product.setProductType(productType);\r\n    FileTransferStatus status = new FileTransferStatus(reference, 1000, 100, product);\r\n    TransferResource resource = new TransferResource(product, metadata, status);\r\n    // Generate the expected output.\r\n    String expectedXml = \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\" + \"<transfer>\" + \"<productName>\" + product.getProductName() + \"</productName>\" + \"<productId>\" + product.getProductId() + \"</productId>\" + \"<productTypeName>\" + productType.getName() + \"</productTypeName>\" + \"<dataStoreReference>\" + reference.getDataStoreReference() + \"</dataStoreReference>\" + \"<origReference>\" + reference.getOrigReference() + \"</origReference>\" + \"<mimeType>\" + reference.getMimeType().getName() + \"</mimeType>\" + \"<fileSize>\" + reference.getFileSize() + \"</fileSize>\" + \"<totalBytes>\" + reference.getFileSize() + \"</totalBytes>\" + \"<bytesTransferred>\" + status.getBytesTransferred() + \"</bytesTransferred>\" + \"<percentComplete>\" + status.computePctTransferred() * 100 + \"</percentComplete>\" + \"<productReceivedTime>\" + metadata.getAllValues().get(0) + \"</productReceivedTime>\" + \"</transfer>\";\r\n    // Set up a JAXB context and marshall the DatasetResource to XML.\r\n    JAXBContext context = JAXBContext.newInstance(resource.getClass());\r\n    Marshaller marshaller = context.createMarshaller();\r\n    StringWriter writer = new StringWriter();\r\n    marshaller.marshal(resource, writer);\r\n    // Compare the expected and actual outputs.\r\n    XMLUnit.setIgnoreWhitespace(true);\r\n    XMLUnit.setIgnoreComments(true);\r\n    XMLUnit.setIgnoreAttributeOrder(true);\r\n    Diff diff = new Diff(expectedXml, writer.toString());\r\n    assertTrue(\"The output XML was different to the expected XML: \" + diff.toString(), diff.identical());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\webapp\\fmprod\\src\\test\\java\\org\\apache\\oodt\\cas\\product\\jaxrs\\resources\\TransfersResourceTest.java",
+  "methodName" : "testXmlMarshalling",
+  "sourceCode" : "/**\r\n * Tests that {@link TransferResource transfer resources} are marshalled to\r\n * the expected XML format.\r\n * @throws IOException if the {@link Diff} constructor fails\r\n * @throws JAXBException if the {@link JAXBContext} or {@link Marshaller} fail\r\n * @throws MimeTypeException if {@link MimeTypes#forName(String)} fails\r\n * @throws SAXException if the {@link Diff} constructor fails\r\n */\r\n@Test\r\npublic void testXmlMarshalling() throws IOException, JAXBException, MimeTypeException, SAXException {\r\n    // Create a FileTransferStatus instance using Metadata, Reference,\r\n    // ProductType and Product instances.\r\n    HashMap<String, Object> metadataEntries1 = new HashMap<>();\r\n    metadataEntries1.put(\"CAS.ProductReceivedTime\", \"2013-09-12T16:25:50.662Z\");\r\n    Metadata metadata1 = new Metadata();\r\n    metadata1.addMetadata(metadataEntries1);\r\n    Reference reference1 = new Reference(\"original1\", \"dataStore1\", 1000, new MimeTypes().forName(\"text/plain\"));\r\n    ProductType productType1 = new ProductType(\"1\", \"TestType\", \"test type 1\", \"repository1\", \"versioner1\");\r\n    Product product1 = new Product();\r\n    product1.setProductId(\"123\");\r\n    product1.setProductName(\"test product\");\r\n    product1.setProductStructure(Product.STRUCTURE_FLAT);\r\n    product1.setProductType(productType1);\r\n    FileTransferStatus status1 = new FileTransferStatus(reference1, 1000, 100, product1);\r\n    // Create another FileTransferStatus instance using Metadata, Reference,\r\n    // ProductType and Product instances.\r\n    HashMap<String, Object> metadataEntries2 = new HashMap<>();\r\n    metadataEntries2.put(\"CAS.ProductReceivedTime\", \"2011-04-11T11:59:59.662Z\");\r\n    Metadata metadata2 = new Metadata();\r\n    metadata2.addMetadata(metadataEntries2);\r\n    Reference reference2 = new Reference(\"original2\", \"dataStore2\", 500, new MimeTypes().forName(\"application/pdf\"));\r\n    ProductType productType2 = new ProductType(\"2\", \"TestType2\", \"test type 2\", \"repository2\", \"versioner2\");\r\n    Product product2 = new Product();\r\n    product2.setProductId(\"456\");\r\n    product2.setProductName(\"test product 2\");\r\n    product2.setProductStructure(Product.STRUCTURE_HIERARCHICAL);\r\n    product2.setProductType(productType2);\r\n    FileTransferStatus status2 = new FileTransferStatus(reference2, 500, 200, product2);\r\n    // Create a TransfersResource using the two FileTransferStatus instances to\r\n    // generate TransferResource instances for the TransfersResource.\r\n    List<TransferResource> resources = new ArrayList<>();\r\n    resources.add(new TransferResource(product1, metadata1, status1));\r\n    resources.add(new TransferResource(product2, metadata2, status2));\r\n    TransfersResource resource = new TransfersResource(\"ALL\", resources);\r\n    // Generate the expected output.\r\n    String expectedXml = \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\" + \"<transfers productId=\\\"ALL\\\">\" + \"<transfer>\" + \"<productName>\" + product1.getProductName() + \"</productName>\" + \"<productId>\" + product1.getProductId() + \"</productId>\" + \"<productTypeName>\" + productType1.getName() + \"</productTypeName>\" + \"<dataStoreReference>\" + reference1.getDataStoreReference() + \"</dataStoreReference>\" + \"<origReference>\" + reference1.getOrigReference() + \"</origReference>\" + \"<mimeType>\" + reference1.getMimeType().getName() + \"</mimeType>\" + \"<fileSize>\" + reference1.getFileSize() + \"</fileSize>\" + \"<totalBytes>\" + reference1.getFileSize() + \"</totalBytes>\" + \"<bytesTransferred>\" + status1.getBytesTransferred() + \"</bytesTransferred>\" + \"<percentComplete>\" + status1.computePctTransferred() * 100 + \"</percentComplete>\" + \"<productReceivedTime>\" + metadata1.getAllValues().get(0) + \"</productReceivedTime>\" + \"</transfer>\" + \"<transfer>\" + \"<productName>\" + product2.getProductName() + \"</productName>\" + \"<productId>\" + product2.getProductId() + \"</productId>\" + \"<productTypeName>\" + productType2.getName() + \"</productTypeName>\" + \"<dataStoreReference>\" + reference2.getDataStoreReference() + \"</dataStoreReference>\" + \"<origReference>\" + reference2.getOrigReference() + \"</origReference>\" + \"<mimeType>\" + reference2.getMimeType().getName() + \"</mimeType>\" + \"<fileSize>\" + reference2.getFileSize() + \"</fileSize>\" + \"<totalBytes>\" + reference2.getFileSize() + \"</totalBytes>\" + \"<bytesTransferred>\" + status2.getBytesTransferred() + \"</bytesTransferred>\" + \"<percentComplete>\" + status2.computePctTransferred() * 100 + \"</percentComplete>\" + \"<productReceivedTime>\" + metadata2.getAllValues().get(0) + \"</productReceivedTime>\" + \"</transfer>\" + \"</transfers>\";\r\n    // Set up a JAXB context and marshall the DatasetResource to XML.\r\n    JAXBContext context = JAXBContext.newInstance(resource.getClass());\r\n    Marshaller marshaller = context.createMarshaller();\r\n    StringWriter writer = new StringWriter();\r\n    marshaller.marshal(resource, writer);\r\n    // Compare the expected and actual outputs.\r\n    XMLUnit.setIgnoreWhitespace(true);\r\n    XMLUnit.setIgnoreComments(true);\r\n    XMLUnit.setIgnoreAttributeOrder(true);\r\n    Diff diff = new Diff(expectedXml, writer.toString());\r\n    assertTrue(\"The output XML was different to the expected XML: \" + diff.toString(), diff.identical());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\engine\\TestAsynchronousLocalEngineRunner.java",
+  "methodName" : "testRun",
+  "sourceCode" : "@Test\r\npublic void testRun() {\r\n    TaskProcessor taskProcessor1 = null;\r\n    TaskProcessor taskProcessor2 = null;\r\n    try {\r\n        taskProcessor1 = (TaskProcessor) utils.getProcessor(Priority.getDefault().getValue(), \"Executing\", \"running\");\r\n        taskProcessor2 = (TaskProcessor) utils.getProcessor(Priority.getDefault().getValue(), \"Executing\", \"running\");\r\n    } catch (Exception e) {\r\n        fail(e.getMessage());\r\n    }\r\n    Metadata met = new Metadata();\r\n    met.addMetadata(\"StartDateTime\", DateUtils.toString(Calendar.getInstance()));\r\n    taskProcessor1.getWorkflowInstance().getSharedContext().addMetadata(met);\r\n    taskProcessor2.getWorkflowInstance().getSharedContext().addMetadata(met);\r\n    try {\r\n        runner.execute(taskProcessor1);\r\n        runner.execute(taskProcessor2);\r\n    } catch (Exception e) {\r\n        LOG.log(Level.SEVERE, e.getMessage());\r\n        fail(e.getMessage());\r\n    }\r\n    assumeTrue(ranFast());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestPackagedWorkflowRepository.java",
+  "methodName" : "testWorkflowConditions",
+  "sourceCode" : "/**\r\n * @since OODT-205\r\n */\r\n@Test\r\npublic void testWorkflowConditions() {\r\n    Workflow w = null;\r\n    try {\r\n        w = this.repo.getWorkflowById(\"urn:npp:GranuleMaps\");\r\n    } catch (Exception e) {\r\n        fail(e.getMessage());\r\n    }\r\n    assertNotNull(w);\r\n    assertNotNull(w.getConditions());\r\n    System.out.println(\"NUM CONDITIONS: \" + w.getConditions().size());\r\n    assertTrue(w.getConditions().size() > 0);\r\n    assertEquals(w.getConditions().size(), 3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestPackagedWorkflowRepository.java",
+  "methodName" : "testDetectOuterLevelWorkflows",
+  "sourceCode" : "@Test\r\npublic void testDetectOuterLevelWorkflows() {\r\n    assertNotNull(this.repo);\r\n    List<Workflow> workflows = null;\r\n    try {\r\n        workflows = this.repo.getWorkflows();\r\n    } catch (Exception e) {\r\n        fail(e.getMessage());\r\n    }\r\n    boolean foundGranuleMaps = false;\r\n    for (Workflow w : workflows) {\r\n        if (w.getId().equals(\"urn:npp:GranuleMaps\")) {\r\n            foundGranuleMaps = true;\r\n        }\r\n    }\r\n    assertTrue(foundGranuleMaps);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestPackagedWorkflowRepository.java",
+  "methodName" : "testDetectInnerWorkflows",
+  "sourceCode" : "@Test\r\npublic void testDetectInnerWorkflows() {\r\n    assertNotNull(this.repo);\r\n    List<String> events = null;\r\n    try {\r\n        events = this.repo.getRegisteredEvents();\r\n    } catch (Exception e) {\r\n        fail(e.getMessage());\r\n    }\r\n    boolean foundFour = false, foundThree = false;\r\n    for (String event : events) {\r\n        List<Workflow> workflows = null;\r\n        try {\r\n            workflows = this.repo.getWorkflowsForEvent(event);\r\n        } catch (Exception e) {\r\n            fail(e.getMessage());\r\n        }\r\n        assertNotNull(workflows);\r\n        assertTrue(workflows.size() > 0);\r\n        if (workflows.size() == 3) {\r\n            foundThree = true;\r\n        } else if (workflows.size() == 4) {\r\n            foundFour = true;\r\n        }\r\n    }\r\n    assertTrue(foundThree);\r\n    assertTrue(foundFour);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestPackagedWorkflowRepository.java",
+  "methodName" : "testGetConditionTimeout",
+  "sourceCode" : "/**\r\n * @since OODT-207\r\n */\r\n@Test\r\npublic void testGetConditionTimeout() {\r\n    WorkflowCondition cond = null;\r\n    try {\r\n        cond = this.repo.getWorkflowConditionById(\"urn:npp:MOA_IASI_L1C_Daily\");\r\n    } catch (Exception e) {\r\n        LOG.log(Level.SEVERE, e.getMessage());\r\n        fail(e.getMessage());\r\n    }\r\n    assertNotNull(cond);\r\n    assertEquals(30L, cond.getTimeoutSeconds());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestPackagedWorkflowRepository.java",
+  "methodName" : "testGetOptional",
+  "sourceCode" : "/**\r\n * @since OODT-208\r\n */\r\n@Test\r\npublic void testGetOptional() {\r\n    WorkflowCondition cond = null;\r\n    try {\r\n        cond = this.repo.getWorkflowConditionById(\"urn:npp:MOA_ORBITS_FileBased\");\r\n    } catch (Exception e) {\r\n        LOG.log(Level.SEVERE, e.getMessage());\r\n        fail(e.getMessage());\r\n    }\r\n    assertNotNull(cond);\r\n    assertEquals(true, cond.isOptional());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testWorkflowConditions",
+  "sourceCode" : "/**\r\n * @since OODT-205\r\n */\r\n@Test\r\npublic void testWorkflowConditions() {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    Workflow w = null;\r\n    try {\r\n        w = repo.getWorkflowById(\"1\");\r\n    } catch (Exception e) {\r\n        fail(e.getMessage());\r\n    }\r\n    assertNotNull(w);\r\n    assertNotNull(w.getConditions());\r\n    assertTrue(w.getConditions().size() > 0);\r\n    assertEquals(w.getConditions().size(), 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testDataSourceRepo",
+  "sourceCode" : "@Test\r\npublic void testDataSourceRepo() throws SQLException, RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    //test id 1\r\n    WorkflowCondition wc = repo.getWorkflowConditionById(\"1\");\r\n    assertEquals(wc.getConditionName(), \"CheckCond\");\r\n    WorkflowConditionInstance condInst = GenericWorkflowObjectFactory.getConditionObjectFromClassName(wc.getConditionInstanceClassName());\r\n    Metadata m = new Metadata();\r\n    m.addMetadata(\"Met1\", \"Val1\");\r\n    m.addMetadata(\"Met2\", \"Val2\");\r\n    m.addMetadata(\"Met3\", \"Val3\");\r\n    assertTrue(condInst.evaluate(m, wc.getTaskConfig()));\r\n    //test id 2\r\n    wc = repo.getWorkflowConditionById(\"2\");\r\n    assertEquals(wc.getConditionName(), \"FalseCond\");\r\n    condInst = GenericWorkflowObjectFactory.getConditionObjectFromClassName(wc.getConditionInstanceClassName());\r\n    assertFalse(condInst.evaluate(m, wc.getTaskConfig()));\r\n    //test id 3\r\n    wc = repo.getWorkflowConditionById(\"3\");\r\n    assertEquals(wc.getConditionName(), \"TrueCond\");\r\n    condInst = GenericWorkflowObjectFactory.getConditionObjectFromClassName(wc.getConditionInstanceClassName());\r\n    assertTrue(condInst.evaluate(m, wc.getTaskConfig()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetworkflowByIncorredId",
+  "sourceCode" : "@Test\r\npublic void testGetworkflowByIncorredId() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    Workflow w = repo.getWorkflowById(\"100\");\r\n    assertNull(w);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetworkflowByIdNoDataSource",
+  "sourceCode" : "@Test(expected = RepositoryException.class)\r\npublic void testGetworkflowByIdNoDataSource() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(null);\r\n    Workflow w = repo.getWorkflowById(\"1\");\r\n    assertNull(w);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetworkflowByName",
+  "sourceCode" : "@Test\r\npublic void testGetworkflowByName() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    Workflow w = repo.getWorkflowByName(\"Test Workflow\");\r\n    assertNotNull(w);\r\n    assertThat(\"Test Workflow\", equalTo(w.getName()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetWorkflowByNameIncorrect",
+  "sourceCode" : "@Test\r\npublic void testGetWorkflowByNameIncorrect() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    Workflow w = repo.getWorkflowByName(\"Broken Workflow\");\r\n    assertNull(w);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetWorkflowByNameNoDataSource",
+  "sourceCode" : "@Test(expected = RepositoryException.class)\r\npublic void testGetWorkflowByNameNoDataSource() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(null);\r\n    repo.getWorkflowByName(\"Broken Workflow\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetWorkflowsNullRepository",
+  "sourceCode" : "@Test(expected = RepositoryException.class)\r\npublic void testGetWorkflowsNullRepository() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(null);\r\n    List flows = repo.getWorkflows();\r\n    assertNotNull(flows);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetWorkflows",
+  "sourceCode" : "@Test\r\npublic void testGetWorkflows() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    List<Workflow> flows = repo.getWorkflows();\r\n    assertThat(flows, allOf(notNullValue(), hasSize(1)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetWorkflowsNoConditionsOrTasks",
+  "sourceCode" : "@Test\r\npublic void testGetWorkflowsNoConditionsOrTasks() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    List<Workflow> flows = repo.getWorkflows(false, false);\r\n    assertThat(flows, allOf(notNullValue(), hasSize(1)));\r\n    assertThat(flows.get(0).getPreConditions(), hasSize(0));\r\n    assertThat(flows.get(0).getPostConditions(), hasSize(0));\r\n    assertThat(flows.get(0).getTasks(), hasSize(0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetTaskByWorkflowName",
+  "sourceCode" : "@Test\r\npublic void testGetTaskByWorkflowName() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    List<WorkflowTask> tasks = repo.getTasksByWorkflowName(\"Test Workflow\");\r\n    assertThat(tasks, allOf(notNullValue(), hasSize(2)));\r\n    assertThat(tasks.get(0).getTaskName(), equalTo(\"Test Task\"));\r\n    assertThat(tasks.get(1).getTaskName(), equalTo(\"Test Task2\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetTasksByWorkflowNameNull",
+  "sourceCode" : "@Test\r\npublic void testGetTasksByWorkflowNameNull() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    List<WorkflowTask> tasks = repo.getTasksByWorkflowName(null);\r\n    assertThat(tasks, nullValue());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetTasksByWorkflowNameNoDataSource",
+  "sourceCode" : "@Test(expected = RepositoryException.class)\r\npublic void testGetTasksByWorkflowNameNoDataSource() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(null);\r\n    List<WorkflowTask> tasks = repo.getTasksByWorkflowName(null);\r\n    assertThat(tasks, allOf(notNullValue(), hasSize(2)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetWorkflowsForEvent",
+  "sourceCode" : "@Test\r\npublic void testGetWorkflowsForEvent() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    List<Workflow> workflow = repo.getWorkflowsForEvent(\"event\");\r\n    assertThat(workflow, allOf(notNullValue(), hasSize(1)));\r\n    assertThat(workflow.get(0).getName(), equalTo(\"Test Workflow\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetworkflowsForEventNoTasksOrConditions",
+  "sourceCode" : "@Test\r\npublic void testGetworkflowsForEventNoTasksOrConditions() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    List<Workflow> workflow = repo.getWorkflowsForEvent(\"event\", false, false);\r\n    assertThat(workflow, allOf(notNullValue(), hasSize(1)));\r\n    assertThat(workflow.get(0).getPreConditions(), allOf(notNullValue(), hasSize(0)));\r\n    assertThat(workflow.get(0).getPostConditions(), allOf(notNullValue(), hasSize(0)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetWorkflowsForEventNoDataSource",
+  "sourceCode" : "@Test(expected = RepositoryException.class)\r\npublic void testGetWorkflowsForEventNoDataSource() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(null);\r\n    List<Workflow> workflow = repo.getWorkflowsForEvent(\"event\", false, false);\r\n    assertThat(workflow, allOf(notNullValue(), hasSize(2)));\r\n    assertThat(workflow.get(0).getPreConditions(), allOf(notNullValue(), hasSize(0)));\r\n    assertThat(workflow.get(0).getPostConditions(), allOf(notNullValue(), hasSize(0)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetConditionsByTaskName",
+  "sourceCode" : "@Test\r\npublic void testGetConditionsByTaskName() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    List<WorkflowCondition> workflow = repo.getConditionsByTaskName(\"Test Task\");\r\n    assertThat(workflow, allOf(notNullValue(), hasSize(1)));\r\n    assertThat(workflow.get(0).getConditionName(), equalTo(\"TrueCond\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetConditionsByTaskNameNoDataSource",
+  "sourceCode" : "@Test(expected = RepositoryException.class)\r\npublic void testGetConditionsByTaskNameNoDataSource() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(null);\r\n    List<WorkflowCondition> workflow = repo.getConditionsByTaskName(\"Test Task\");\r\n    assertThat(workflow, allOf(notNullValue(), hasSize(1)));\r\n    assertThat(workflow.get(0).getConditionName(), equalTo(\"Test Condition\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetConditionsByTaskId",
+  "sourceCode" : "@Test\r\npublic void testGetConditionsByTaskId() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    List<WorkflowCondition> workflow = repo.getConditionsByTaskId(\"1\");\r\n    assertThat(workflow, allOf(notNullValue(), hasSize(1)));\r\n    assertThat(workflow.get(0).getConditionName(), equalTo(\"TrueCond\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetConditionsByTaskIdNoDataSource",
+  "sourceCode" : "@Test(expected = RepositoryException.class)\r\npublic void testGetConditionsByTaskIdNoDataSource() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(null);\r\n    List<WorkflowCondition> workflow = repo.getConditionsByTaskName(\"1\");\r\n    assertThat(workflow, allOf(notNullValue(), hasSize(1)));\r\n    assertThat(workflow.get(0).getConditionName(), equalTo(\"Test Condition\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetConfigurationByTaskId",
+  "sourceCode" : "@Test\r\npublic void testGetConfigurationByTaskId() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    WorkflowTaskConfiguration workflow = repo.getConfigurationByTaskId(\"1\");\r\n    assertThat(workflow, notNullValue());\r\n    assertThat(workflow.getProperties(), notNullValue());\r\n    assertThat(workflow.getProperties().getProperty(\"TestProp\"), notNullValue());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetConfigurationByTaskIdNoDataSource",
+  "sourceCode" : "@Test(expected = RepositoryException.class)\r\npublic void testGetConfigurationByTaskIdNoDataSource() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(null);\r\n    WorkflowTaskConfiguration workflow = repo.getConfigurationByTaskId(\"1\");\r\n    assertThat(workflow, notNullValue());\r\n    assertThat(workflow.getProperties(), notNullValue());\r\n    assertThat(workflow.getProperties().getProperty(\"test\"), notNullValue());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetWorkflowTaskById",
+  "sourceCode" : "@Test\r\npublic void testGetWorkflowTaskById() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    WorkflowTask workflow = repo.getWorkflowTaskById(\"1\");\r\n    assertThat(workflow, notNullValue());\r\n    assertThat(workflow.getTaskName(), equalTo(\"Test Task\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetWorkflowTaskByIdNoDataSource",
+  "sourceCode" : "@Test(expected = RepositoryException.class)\r\npublic void testGetWorkflowTaskByIdNoDataSource() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(null);\r\n    WorkflowTask workflow = repo.getWorkflowTaskById(\"1\");\r\n    assertThat(workflow, notNullValue());\r\n    assertThat(workflow.getTaskName(), equalTo(\"Test\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetRegisteredEvents",
+  "sourceCode" : "@Test\r\npublic void testGetRegisteredEvents() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    List<String> workflow = repo.getRegisteredEvents();\r\n    assertThat(workflow, allOf(notNullValue(), hasSize(1)));\r\n    assertThat(workflow.get(0), equalTo(\"event\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testAddTask",
+  "sourceCode" : "@Test\r\npublic void testAddTask() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    WorkflowTask t = new WorkflowTask();\r\n    t.setTaskName(\"Manual\");\r\n    t.setTaskId(\"50\");\r\n    t.setPreConditions(Collections.EMPTY_LIST);\r\n    t.setPostConditions(Collections.EMPTY_LIST);\r\n    String workflow = repo.addTask(t);\r\n    assertThat(workflow, notNullValue());\r\n    assertThat(workflow, equalTo(\"3\"));\r\n    //TODO GET TASK BACK\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testAddWorkflow",
+  "sourceCode" : "@Test\r\npublic void testAddWorkflow() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    Workflow w = new Workflow();\r\n    w.setId(\"50\");\r\n    w.setName(\"Manual\");\r\n    WorkflowTask t = new WorkflowTask();\r\n    t.setTaskId(\"1\");\r\n    List<WorkflowTask> l = new ArrayList<WorkflowTask>();\r\n    l.add(t);\r\n    w.setTasks(l);\r\n    String workflow = repo.addWorkflow(w);\r\n    assertThat(workflow, notNullValue());\r\n    assertThat(workflow, equalTo(\"50\"));\r\n    //TODO GET WORKFLOW\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetTaskById",
+  "sourceCode" : "@Test\r\npublic void testGetTaskById() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    WorkflowTask task = repo.getTaskById(\"1\");\r\n    assertThat(task, notNullValue());\r\n    assertThat(task.getTaskName(), allOf(notNullValue(), equalTo(\"Test Task\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetTaskByIdNoDataSource",
+  "sourceCode" : "@Test(expected = RepositoryException.class)\r\npublic void testGetTaskByIdNoDataSource() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(null);\r\n    WorkflowTask task = repo.getTaskById(\"1\");\r\n    assertThat(task, notNullValue());\r\n    assertThat(task.getTaskName(), allOf(notNullValue(), equalTo(\"Test\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowDataSourceRepository.java",
+  "methodName" : "testGetConditions",
+  "sourceCode" : "@Test\r\npublic void testGetConditions() throws RepositoryException {\r\n    DataSourceWorkflowRepository repo = new DataSourceWorkflowRepository(ds);\r\n    List<WorkflowCondition> task = repo.getConditions();\r\n    assertThat(task, allOf(notNullValue(), hasSize(4)));\r\n    assertThat(task.get(0).getConditionName(), allOf(notNullValue(), equalTo(\"CheckCond\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\repository\\TestWorkflowRepository.java",
+  "methodName" : "testWorkflowConditions",
+  "sourceCode" : "/**\r\n * @since OODT-205\r\n */\r\n@Test\r\npublic void testWorkflowConditions() {\r\n    Workflow w = null;\r\n    try {\r\n        w = this.workflowRepository.getWorkflowById(\"urn:oodt:conditionsWorkflow\");\r\n    } catch (Exception e) {\r\n        fail(e.getMessage());\r\n    }\r\n    assertNotNull(w);\r\n    assertNotNull(w.getConditions());\r\n    assertTrue(w.getConditions().size() > 0);\r\n    assertEquals(w.getConditions().size(), 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\distributed\\TestDistributedXmlRpcWorkflowManager.java",
+  "methodName" : "testGetWorkflowInstances",
+  "sourceCode" : "@Test\r\npublic void testGetWorkflowInstances() {\r\n    List workflowInsts = null;\r\n    int numInsts = -1;\r\n    while (numInsts != 2) {\r\n        try {\r\n            workflowInsts = workflowManager.getWorkflowInstances();\r\n        } catch (Exception e) {\r\n            e.printStackTrace();\r\n        }\r\n        assertNotNull(workflowInsts);\r\n        numInsts = workflowInsts.size();\r\n    }\r\n    assertEquals(2, workflowInsts.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestAvroRpcWorkflowManager.java",
+  "methodName" : "testGetWorkflowInstances",
+  "sourceCode" : "/**\r\n * {@link #startWorkflow()} fires an event of type \"long\". This event is associated with 2 instances of \"LongWorkflow\". Therefore, we should check if the\r\n * number of workflow instances are 2 when asserting.\r\n */\r\n@Test\r\npublic void testGetWorkflowInstances() throws InterruptedException {\r\n    Thread.sleep(5000);\r\n    Vector workflowInsts = null;\r\n    try {\r\n        List list = AvroTypeFactory.getWorkflowInstances(wmgr.getWorkflowInstances());\r\n        workflowInsts = new Vector();\r\n        for (Object o : list) {\r\n            workflowInsts.add(o);\r\n        }\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    }\r\n    assertNotNull(workflowInsts);\r\n    assertEquals(2, workflowInsts.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetWorkflowInstanceMetadataActuallyUsingTheXmlRpcWorkflowManagerClient",
+  "sourceCode" : "@Test\r\npublic void testGetWorkflowInstanceMetadataActuallyUsingTheXmlRpcWorkflowManagerClient() throws IOException, RepositoryException, XmlRpcException {\r\n    List<Workflow> workflows = wmc.getWorkflows();\r\n    assertThat(workflows, is(not(empty())));\r\n    assertNotNull(workflows.get(0).getName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetPages",
+  "sourceCode" : "@Test\r\npublic void testGetPages() throws Exception {\r\n    Thread.sleep(3000);\r\n    WorkflowInstancePage page = null, lastpage = null, nextpage = null, prevpage = null;\r\n    try {\r\n        page = wmc.getFirstPage();\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    }\r\n    assumeNotNull(page);\r\n    try {\r\n        lastpage = wmc.getLastPage();\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    }\r\n    assumeNotNull(lastpage);\r\n    try {\r\n        nextpage = wmc.getNextPage(page);\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    }\r\n    assumeNotNull(nextpage);\r\n    try {\r\n        prevpage = wmc.getPrevPage(nextpage);\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    }\r\n    assumeNotNull(prevpage);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetWorkflowsByEvent",
+  "sourceCode" : "@Test\r\npublic void testGetWorkflowsByEvent() throws Exception {\r\n    List<Workflow> wflows = wmc.getWorkflowsByEvent(\"long\");\r\n    assertNotNull(wflows);\r\n    assertThat(wflows, hasSize(2));\r\n    assertThat(wflows.get(0).getName(), equalTo(\"Long Workflow\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetWorkflowInstancesByStatus",
+  "sourceCode" : "@Test\r\npublic void testGetWorkflowInstancesByStatus() throws Exception {\r\n    List<WorkflowInstance> wflows = wmc.getWorkflowInstancesByStatus(\"QUEUED\");\r\n    assertNotNull(wflows);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetWorkflowInstanceMetadata2",
+  "sourceCode" : "@Test\r\npublic void testGetWorkflowInstanceMetadata2() throws Exception {\r\n    WorkflowInstance wf = (WorkflowInstance) wmc.getFirstPage().getPageWorkflows().get(0);\r\n    assertThat(wf, is(not(Matchers.nullValue())));\r\n    Metadata meta = wmc.getWorkflowInstanceMetadata(wf.getId());\r\n    assertNotNull(meta);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetWorkflowCurrentTaskWallClockMinutes",
+  "sourceCode" : "@Test\r\npublic void testGetWorkflowCurrentTaskWallClockMinutes() throws Exception {\r\n    XmlRpcWorkflowManagerClient fmc = new XmlRpcWorkflowManagerClient(new URL(\"http://localhost:\" + WM_PORT));\r\n    List<WorkflowInstance> wfinstances = fmc.getWorkflowInstances();\r\n    assertNotNull(wfinstances);\r\n    double clock = fmc.getWorkflowCurrentTaskWallClockMinutes(wfinstances.get(0).getId());\r\n    assertThat(clock, is(not(Matchers.nullValue())));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetTaskById",
+  "sourceCode" : "@Test\r\npublic void testGetTaskById() throws Exception {\r\n    WorkflowTask task = wmc.getTaskById(\"urn:oodt:HelloWorld\");\r\n    assertThat(task, is(not(nullValue())));\r\n    assertThat(task.getTaskName(), equalTo(\"Hello World\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetRegisteredEvents",
+  "sourceCode" : "@Test\r\npublic void testGetRegisteredEvents() throws Exception {\r\n    List<String> events = wmc.getRegisteredEvents();\r\n    assertThat(events, is(not(nullValue())));\r\n    assertThat(events, hasSize(12));\r\n    assertThat(events, hasItem(\"stuck\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetNumWorkflowInstancesByStatus",
+  "sourceCode" : "@Test\r\npublic void testGetNumWorkflowInstancesByStatus() throws Exception {\r\n    int inst = wmc.getNumWorkflowInstancesByStatus(\"QUEUED\");\r\n    assertThat(inst, equalTo(0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetConditionById",
+  "sourceCode" : "@Test\r\npublic void testGetConditionById() throws Exception {\r\n    WorkflowCondition cond = wmc.getConditionById(\"urn:oodt:TrueCondition\");\r\n    assertNotNull(cond);\r\n    assertThat(cond.getConditionName(), equalTo(\"True Condition\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetNumWorkflowInstances",
+  "sourceCode" : "@Test\r\npublic void testGetNumWorkflowInstances() throws Exception {\r\n    int num = wmc.getNumWorkflowInstances();\r\n    assertThat(num, is(not(0)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetWorkflowInstances",
+  "sourceCode" : "@Test\r\npublic void testGetWorkflowInstances() throws IOException, XmlRpcException {\r\n    List<WorkflowInstance> wfinstances = wmc.getWorkflowInstances();\r\n    assertNotNull(wfinstances);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetWFMUrl",
+  "sourceCode" : "@Test\r\npublic void testGetWFMUrl() {\r\n    URL url = wmc.getWorkflowManagerUrl();\r\n    assertThat(url, is(not(nullValue())));\r\n    assertThat(url.toString(), equalTo(\"http://localhost:\" + WM_PORT));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetNullWorkflowInstances",
+  "sourceCode" : "@Ignore\r\n@Test\r\npublic void testGetNullWorkflowInstances() throws RepositoryException, XmlRpcException, IOException, InterruptedException {\r\n    Thread.sleep(3000);\r\n    WorkflowInstance instance = wmc.getWorkflowInstanceById(\"1234\");\r\n    assertThat(instance, is(nullValue()));\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetNullWorkflowInstancesByStatus",
+  "sourceCode" : "@Test\r\npublic void testGetNullWorkflowInstancesByStatus() throws XmlRpcException, IOException {\r\n    List<WorkflowInstance> instances = wmc.getWorkflowInstancesByStatus(\"NULL\");\r\n    assertThat(instances, is(empty()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetWorkflowById",
+  "sourceCode" : "@Test\r\npublic void testGetWorkflowById() throws RepositoryException, XmlRpcException, IOException {\r\n    List<Workflow> workflowlist = wmc.getWorkflows();\r\n    assertThat(workflowlist, is(not(nullValue())));\r\n    assertThat(workflowlist.size(), is(not(0)));\r\n    Workflow work = wmc.getWorkflowById(workflowlist.get(0).getId());\r\n    assertThat(work, is(not(nullValue())));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetWorkflowInstanceById",
+  "sourceCode" : "@Test\r\npublic void testGetWorkflowInstanceById() throws XmlRpcException, IOException, RepositoryException {\r\n    List<WorkflowInstance> workflowlist = wmc.getWorkflowInstances();\r\n    assertThat(workflowlist, is(not(nullValue())));\r\n    assertThat(workflowlist.size(), is(not(0)));\r\n    WorkflowInstance instance = wmc.getWorkflowInstanceById(workflowlist.get(0).getId());\r\n    assertThat(instance, is(not(nullValue())));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testUpdateMetadataForWorkflow",
+  "sourceCode" : "@Ignore\r\n@Test\r\npublic void testUpdateMetadataForWorkflow() {\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testUpdateWorkflowInstanceStatus",
+  "sourceCode" : "@Test\r\npublic void testUpdateWorkflowInstanceStatus() throws XmlRpcException, IOException, RepositoryException {\r\n    List<WorkflowInstance> workflowlist = null;\r\n    WorkflowInstance instance = null;\r\n    boolean upd = false;\r\n    try {\r\n        workflowlist = wmc.getWorkflowInstances();\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    }\r\n    assumeNotNull(workflowlist);\r\n    assertThat(workflowlist, is(not(nullValue())));\r\n    assertThat(workflowlist.size(), is(not(0)));\r\n    try {\r\n        instance = wmc.getWorkflowInstanceById(workflowlist.get(0).getId());\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    }\r\n    assumeNotNull(instance);\r\n    assertThat(instance, is(not(nullValue())));\r\n    try {\r\n        upd = wmc.updateWorkflowInstanceStatus(instance.getId(), \"RUNNING\");\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n    }\r\n    assumeTrue(upd);\r\n    assertThat(upd, equalTo(true));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testSetWorkflowInstanceCurrentTaskEndDateTime",
+  "sourceCode" : "@Ignore\r\n@Test\r\npublic void testSetWorkflowInstanceCurrentTaskEndDateTime() {\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testResumeWorkflowInstance",
+  "sourceCode" : "@Ignore\r\n@Test\r\npublic void testResumeWorkflowInstance() {\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testPauseWorkflowInstance",
+  "sourceCode" : "@Ignore\r\n@Test\r\npublic void testPauseWorkflowInstance() {\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testStopWorkflowInstances",
+  "sourceCode" : "@Ignore\r\n@Test\r\npublic void testStopWorkflowInstances() {\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetWorkflowWallClockMinutes",
+  "sourceCode" : "@Test\r\npublic void testGetWorkflowWallClockMinutes() throws RepositoryException, XmlRpcException, IOException {\r\n    List<WorkflowInstance> workflowlist = wmc.getWorkflowInstances();\r\n    assertThat(workflowlist, is(not(nullValue())));\r\n    assertThat(workflowlist.size(), is(not(0)));\r\n    WorkflowInstance instance = wmc.getWorkflowInstanceById(workflowlist.get(0).getId());\r\n    assertThat(instance, is(not(nullValue())));\r\n    double clock = wmc.getWorkflowWallClockMinutes(instance.getId());\r\n    assertThat(clock, is(not(nullValue())));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testSetWorkflowInstanceCurrentTaskStartDateTime",
+  "sourceCode" : "@Ignore\r\n@Test\r\npublic void testSetWorkflowInstanceCurrentTaskStartDateTime() {\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testPaginateWorkflowInstances",
+  "sourceCode" : "@Test\r\npublic void testPaginateWorkflowInstances() throws XmlRpcException, IOException {\r\n    WorkflowInstancePage paginate = wmc.paginateWorkflowInstances(2);\r\n    assertThat(paginate, is(not(nullValue())));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testPaginateWorkflowInstancesByStatus",
+  "sourceCode" : "@Test\r\npublic void testPaginateWorkflowInstancesByStatus() throws XmlRpcException, IOException {\r\n    WorkflowInstancePage paginate = wmc.paginateWorkflowInstances(2, \"QUEUED\");\r\n    assertThat(paginate, is(not(nullValue())));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testExecuteDynamicWorkflow",
+  "sourceCode" : "@Ignore\r\n@Test\r\npublic void testExecuteDynamicWorkflow() {\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testRefreshRepository",
+  "sourceCode" : "@Ignore\r\n@Test\r\npublic void testRefreshRepository() throws XmlRpcException, IOException {\r\n    boolean refresh = wmc.refreshRepository();\r\n    assertThat(refresh, equalTo(true));\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testGetWorkflowInstanceMetadata",
+  "sourceCode" : "@Test\r\npublic void testGetWorkflowInstanceMetadata() {\r\n    try {\r\n        repo.addWorkflowInstance(testWrkInst);\r\n    } catch (InstanceRepositoryException e) {\r\n        fail(e.getMessage());\r\n    }\r\n    String testWrkInstId = testWrkInst.getId();\r\n    assertNotNull(testWrkInstId);\r\n    // get workflow instance from instance id\r\n    WorkflowInstance WInst = null;\r\n    try {\r\n        WInst = repo.getWorkflowInstanceById(testWrkInstId);\r\n    } catch (InstanceRepositoryException e) {\r\n        fail(e.getMessage());\r\n    }\r\n    assertNotNull(WInst);\r\n    // get Metadata for the workflow instance\r\n    Metadata met;\r\n    met = WInst.getSharedContext();\r\n    assertNotNull(met);\r\n    assertNotNull(met.getMap());\r\n    assertEquals(2, met.getMap().keySet().size());\r\n    assertNotNull(met.getAllMetadata(\"key1\"));\r\n    assertEquals(3, met.getAllMetadata(\"key1\").size());\r\n    assertNotNull(met.getAllMetadata(\"key2\"));\r\n    assertEquals(2, met.getAllMetadata(\"key2\").size());\r\n    // check key-values for key1\r\n    boolean checkVal1 = false, checkVal2 = false, checkVal3 = false;\r\n    for (String val : met.getAllMetadata(\"key1\")) {\r\n        if (val.equals(\"val1\")) {\r\n            checkVal1 = true;\r\n        } else if (val.equals(\"val2\")) {\r\n            checkVal2 = true;\r\n        } else if (val.equals(\"val3\")) {\r\n            checkVal3 = true;\r\n        }\r\n    }\r\n    assert (checkVal1 && checkVal2 && checkVal3);\r\n    // check key-values for key2\r\n    boolean checkVal4 = false, checkVal5 = false;\r\n    for (String val : met.getAllMetadata(\"key2\")) {\r\n        if (val.equals(\"val4\")) {\r\n            checkVal4 = true;\r\n        } else if (val.equals(\"val5\")) {\r\n            checkVal5 = true;\r\n        }\r\n    }\r\n    assertTrue(checkVal4 && checkVal5);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\OODT\\workflow\\src\\test\\java\\org\\apache\\oodt\\cas\\workflow\\system\\TestXmlRpcWorkflowManagerClient.java",
+  "methodName" : "testIsAlive",
+  "sourceCode" : "@Test\r\npublic void testIsAlive() {\r\n    assertTrue(wmc.isAlive());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

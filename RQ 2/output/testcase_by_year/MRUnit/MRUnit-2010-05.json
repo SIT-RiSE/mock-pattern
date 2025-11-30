@@ -1,0 +1,823 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestCounters.java",
+  "methodName" : "testMapper",
+  "sourceCode" : "@Test\r\npublic void testMapper() throws IOException {\r\n    Mapper<Text, Text, Text, Text> mapper = new CounterMapper();\r\n    MapDriver<Text, Text, Text, Text> driver = new MapDriver<Text, Text, Text, Text>(mapper);\r\n    driver.withInput(new Text(\"foo\"), new Text(\"bar\")).run();\r\n    assertEquals(\"Expected 1 counter increment\", 1, driver.getCounters().findCounter(GROUP, ELEM).getValue());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestCounters.java",
+  "methodName" : "testReducer",
+  "sourceCode" : "@Test\r\npublic void testReducer() throws IOException {\r\n    Reducer<Text, Text, Text, Text> reducer = new CounterReducer();\r\n    ReduceDriver<Text, Text, Text, Text> driver = new ReduceDriver<Text, Text, Text, Text>(reducer);\r\n    driver.withInputKey(new Text(\"foo\")).withInputValue(new Text(\"bar\")).run();\r\n    assertEquals(\"Expected 1 counter increment\", 1, driver.getCounters().findCounter(GROUP, ELEM).getValue());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestCounters.java",
+  "methodName" : "testMapReduce",
+  "sourceCode" : "@Test\r\npublic void testMapReduce() throws IOException {\r\n    Mapper<Text, Text, Text, Text> mapper = new CounterMapper();\r\n    Reducer<Text, Text, Text, Text> reducer = new CounterReducer();\r\n    MapReduceDriver<Text, Text, Text, Text, Text, Text> driver = new MapReduceDriver<Text, Text, Text, Text, Text, Text>(mapper, reducer);\r\n    driver.withInput(new Text(\"foo\"), new Text(\"bar\")).run();\r\n    assertEquals(\"Expected counter=3\", 3, driver.getCounters().findCounter(GROUP, ELEM).getValue());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapDriver.java",
+  "methodName" : "testRun",
+  "sourceCode" : "@Test\r\npublic void testRun() {\r\n    List<Pair<Text, Text>> out = null;\r\n    try {\r\n        out = driver.withInput(new Text(\"foo\"), new Text(\"bar\")).run();\r\n    } catch (IOException ioe) {\r\n        fail();\r\n    }\r\n    List<Pair<Text, Text>> expected = new ArrayList<Pair<Text, Text>>();\r\n    expected.add(new Pair<Text, Text>(new Text(\"foo\"), new Text(\"bar\")));\r\n    assertListEquals(out, expected);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapDriver.java",
+  "methodName" : "testTestRun1",
+  "sourceCode" : "@Test\r\npublic void testTestRun1() {\r\n    driver.withInput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"foo\"), new Text(\"bar\")).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapDriver.java",
+  "methodName" : "testTestRun2",
+  "sourceCode" : "@Test\r\npublic void testTestRun2() {\r\n    try {\r\n        driver.withInput(new Text(\"foo\"), new Text(\"bar\")).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapDriver.java",
+  "methodName" : "testTestRun3",
+  "sourceCode" : "@Test\r\npublic void testTestRun3() {\r\n    try {\r\n        driver.withInput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"foo\"), new Text(\"bar\")).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapDriver.java",
+  "methodName" : "testTestRun4",
+  "sourceCode" : "@Test\r\npublic void testTestRun4() {\r\n    try {\r\n        driver.withInput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"bonusfoo\"), new Text(\"bar\")).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapDriver.java",
+  "methodName" : "testTestRun5",
+  "sourceCode" : "@Test\r\npublic void testTestRun5() {\r\n    try {\r\n        driver.withInput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"foo\"), new Text(\"somethingelse\")).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapDriver.java",
+  "methodName" : "testTestRun6",
+  "sourceCode" : "@Test\r\npublic void testTestRun6() {\r\n    try {\r\n        driver.withInput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"someotherkey\"), new Text(\"bar\")).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapDriver.java",
+  "methodName" : "testTestRun7",
+  "sourceCode" : "@Test\r\npublic void testTestRun7() {\r\n    try {\r\n        driver.withInput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"someotherkey\"), new Text(\"bar\")).withOutput(new Text(\"foo\"), new Text(\"bar\")).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapDriver.java",
+  "methodName" : "testSetInput",
+  "sourceCode" : "@Test\r\npublic void testSetInput() {\r\n    try {\r\n        driver.setInput(new Pair<Text, Text>(new Text(\"foo\"), new Text(\"bar\")));\r\n    } catch (Exception e) {\r\n        fail();\r\n    }\r\n    assertEquals(driver.getInputKey(), new Text(\"foo\"));\r\n    assertEquals(driver.getInputValue(), new Text(\"bar\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapDriver.java",
+  "methodName" : "testSetInputNull",
+  "sourceCode" : "@Test\r\npublic void testSetInputNull() {\r\n    try {\r\n        driver.setInput((Pair<Text, Text>) null);\r\n        fail();\r\n    } catch (Exception e) {\r\n        // expect this.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapDriver.java",
+  "methodName" : "testEmptyInput",
+  "sourceCode" : "@Test\r\npublic void testEmptyInput() {\r\n    // MapDriver will forcibly map (null, null) as undefined input;\r\n    // identity mapper expects (null, null) back.\r\n    driver.withOutput(null, null).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapDriver.java",
+  "methodName" : "testEmptyInput2",
+  "sourceCode" : "@Test\r\npublic void testEmptyInput2() {\r\n    // it is an error to expect no output because we expect\r\n    // the mapper to be fed (null, null) as an input if the\r\n    // user doesn't set any input.\r\n    try {\r\n        driver.runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapDriver.java",
+  "methodName" : "testConfiguration",
+  "sourceCode" : "@Test\r\npublic void testConfiguration() {\r\n    Configuration conf = new Configuration();\r\n    conf.set(\"TestKey\", \"TestValue\");\r\n    MapDriver<NullWritable, NullWritable, NullWritable, NullWritable> confDriver = new MapDriver<NullWritable, NullWritable, NullWritable, NullWritable>();\r\n    ConfigurationMapper<NullWritable, NullWritable, NullWritable, NullWritable> mapper = new ConfigurationMapper<NullWritable, NullWritable, NullWritable, NullWritable>();\r\n    confDriver.withMapper(mapper).withConfiguration(conf).withInput(NullWritable.get(), NullWritable.get()).withOutput(NullWritable.get(), NullWritable.get()).runTest();\r\n    assertEquals(mapper.setupConfiguration.get(\"TestKey\"), \"TestValue\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapReduceDriver.java",
+  "methodName" : "testRun",
+  "sourceCode" : "@Test\r\npublic void testRun() {\r\n    List<Pair<Text, LongWritable>> out = null;\r\n    try {\r\n        out = driver.withInput(new Text(\"foo\"), new LongWritable(FOO_IN_A)).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_B)).withInput(new Text(\"bar\"), new LongWritable(BAR_IN)).run();\r\n    } catch (IOException ioe) {\r\n        fail();\r\n    }\r\n    List<Pair<Text, LongWritable>> expected = new ArrayList<Pair<Text, LongWritable>>();\r\n    expected.add(new Pair<Text, LongWritable>(new Text(\"bar\"), new LongWritable(BAR_IN)));\r\n    expected.add(new Pair<Text, LongWritable>(new Text(\"foo\"), new LongWritable(FOO_OUT)));\r\n    assertListEquals(out, expected);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapReduceDriver.java",
+  "methodName" : "testTestRun1",
+  "sourceCode" : "@Test\r\npublic void testTestRun1() {\r\n    driver.withInput(new Text(\"foo\"), new LongWritable(FOO_IN_A)).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_B)).withInput(new Text(\"bar\"), new LongWritable(BAR_IN)).withOutput(new Text(\"bar\"), new LongWritable(BAR_IN)).withOutput(new Text(\"foo\"), new LongWritable(FOO_OUT)).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapReduceDriver.java",
+  "methodName" : "testTestRun2",
+  "sourceCode" : "@Test\r\npublic void testTestRun2() {\r\n    driver.withInput(new Text(\"foo\"), new LongWritable(FOO_IN_A)).withInput(new Text(\"bar\"), new LongWritable(BAR_IN)).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_B)).withOutput(new Text(\"bar\"), new LongWritable(BAR_IN)).withOutput(new Text(\"foo\"), new LongWritable(FOO_OUT)).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapReduceDriver.java",
+  "methodName" : "testTestRun3",
+  "sourceCode" : "@Test\r\npublic void testTestRun3() {\r\n    try {\r\n        driver.withInput(new Text(\"foo\"), new LongWritable(FOO_IN_A)).withInput(new Text(\"bar\"), new LongWritable(BAR_IN)).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_B)).withOutput(new Text(\"foo\"), new LongWritable(FOO_OUT)).withOutput(new Text(\"bar\"), new LongWritable(BAR_IN)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapReduceDriver.java",
+  "methodName" : "testEmptyInput",
+  "sourceCode" : "@Test\r\npublic void testEmptyInput() {\r\n    driver.runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapReduceDriver.java",
+  "methodName" : "testEmptyInputWithOutputFails",
+  "sourceCode" : "@Test\r\npublic void testEmptyInputWithOutputFails() {\r\n    try {\r\n        driver.withOutput(new Text(\"foo\"), new LongWritable(FOO_OUT)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapReduceDriver.java",
+  "methodName" : "testEmptyShuffle",
+  "sourceCode" : "@Test\r\npublic void testEmptyShuffle() {\r\n    List<Pair<Text, Text>> inputs = new ArrayList<Pair<Text, Text>>();\r\n    List<Pair<Text, List<Text>>> outputs = driver2.shuffle(inputs);\r\n    assertEquals(0, outputs.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapReduceDriver.java",
+  "methodName" : "testSingleShuffle",
+  "sourceCode" : "// just shuffle a single (k, v) pair\r\n@Test\r\npublic void testSingleShuffle() {\r\n    List<Pair<Text, Text>> inputs = new ArrayList<Pair<Text, Text>>();\r\n    inputs.add(new Pair<Text, Text>(new Text(\"a\"), new Text(\"b\")));\r\n    List<Pair<Text, List<Text>>> outputs = driver2.shuffle(inputs);\r\n    List<Pair<Text, List<Text>>> expected = new ArrayList<Pair<Text, List<Text>>>();\r\n    List<Text> sublist = new ArrayList<Text>();\r\n    sublist.add(new Text(\"b\"));\r\n    expected.add(new Pair<Text, List<Text>>(new Text(\"a\"), sublist));\r\n    assertListEquals(expected, outputs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapReduceDriver.java",
+  "methodName" : "testShuffleOneKey",
+  "sourceCode" : "// shuffle multiple values from the same key.\r\n@Test\r\npublic void testShuffleOneKey() {\r\n    List<Pair<Text, Text>> inputs = new ArrayList<Pair<Text, Text>>();\r\n    inputs.add(new Pair<Text, Text>(new Text(\"a\"), new Text(\"b\")));\r\n    inputs.add(new Pair<Text, Text>(new Text(\"a\"), new Text(\"c\")));\r\n    List<Pair<Text, List<Text>>> outputs = driver2.shuffle(inputs);\r\n    List<Pair<Text, List<Text>>> expected = new ArrayList<Pair<Text, List<Text>>>();\r\n    List<Text> sublist = new ArrayList<Text>();\r\n    sublist.add(new Text(\"b\"));\r\n    sublist.add(new Text(\"c\"));\r\n    expected.add(new Pair<Text, List<Text>>(new Text(\"a\"), sublist));\r\n    assertListEquals(expected, outputs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapReduceDriver.java",
+  "methodName" : "testMultiShuffle1",
+  "sourceCode" : "// shuffle multiple keys\r\n@Test\r\npublic void testMultiShuffle1() {\r\n    List<Pair<Text, Text>> inputs = new ArrayList<Pair<Text, Text>>();\r\n    inputs.add(new Pair<Text, Text>(new Text(\"a\"), new Text(\"x\")));\r\n    inputs.add(new Pair<Text, Text>(new Text(\"b\"), new Text(\"z\")));\r\n    inputs.add(new Pair<Text, Text>(new Text(\"b\"), new Text(\"w\")));\r\n    inputs.add(new Pair<Text, Text>(new Text(\"a\"), new Text(\"y\")));\r\n    List<Pair<Text, List<Text>>> outputs = driver2.shuffle(inputs);\r\n    List<Pair<Text, List<Text>>> expected = new ArrayList<Pair<Text, List<Text>>>();\r\n    List<Text> sublist1 = new ArrayList<Text>();\r\n    sublist1.add(new Text(\"x\"));\r\n    sublist1.add(new Text(\"y\"));\r\n    expected.add(new Pair<Text, List<Text>>(new Text(\"a\"), sublist1));\r\n    List<Text> sublist2 = new ArrayList<Text>();\r\n    sublist2.add(new Text(\"z\"));\r\n    sublist2.add(new Text(\"w\"));\r\n    expected.add(new Pair<Text, List<Text>>(new Text(\"b\"), sublist2));\r\n    assertListEquals(expected, outputs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapReduceDriver.java",
+  "methodName" : "testMultiShuffle2",
+  "sourceCode" : "// shuffle multiple keys that are out-of-order to start.\r\n@Test\r\npublic void testMultiShuffle2() {\r\n    List<Pair<Text, Text>> inputs = new ArrayList<Pair<Text, Text>>();\r\n    inputs.add(new Pair<Text, Text>(new Text(\"b\"), new Text(\"z\")));\r\n    inputs.add(new Pair<Text, Text>(new Text(\"a\"), new Text(\"x\")));\r\n    inputs.add(new Pair<Text, Text>(new Text(\"b\"), new Text(\"w\")));\r\n    inputs.add(new Pair<Text, Text>(new Text(\"a\"), new Text(\"y\")));\r\n    List<Pair<Text, List<Text>>> outputs = driver2.shuffle(inputs);\r\n    List<Pair<Text, List<Text>>> expected = new ArrayList<Pair<Text, List<Text>>>();\r\n    List<Text> sublist1 = new ArrayList<Text>();\r\n    sublist1.add(new Text(\"x\"));\r\n    sublist1.add(new Text(\"y\"));\r\n    expected.add(new Pair<Text, List<Text>>(new Text(\"a\"), sublist1));\r\n    List<Text> sublist2 = new ArrayList<Text>();\r\n    sublist2.add(new Text(\"z\"));\r\n    sublist2.add(new Text(\"w\"));\r\n    expected.add(new Pair<Text, List<Text>>(new Text(\"b\"), sublist2));\r\n    assertListEquals(expected, outputs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapReduceDriver.java",
+  "methodName" : "testConfiguration",
+  "sourceCode" : "@Test\r\npublic void testConfiguration() {\r\n    Configuration conf = new Configuration();\r\n    conf.set(\"TestKey\", \"TestValue\");\r\n    MapReduceDriver<NullWritable, NullWritable, NullWritable, NullWritable, NullWritable, NullWritable> confDriver = new MapReduceDriver<NullWritable, NullWritable, NullWritable, NullWritable, NullWritable, NullWritable>();\r\n    ConfigurationMapper<NullWritable, NullWritable, NullWritable, NullWritable> mapper = new ConfigurationMapper<NullWritable, NullWritable, NullWritable, NullWritable>();\r\n    ConfigurationReducer<NullWritable, NullWritable, NullWritable, NullWritable> reducer = new ConfigurationReducer<NullWritable, NullWritable, NullWritable, NullWritable>();\r\n    confDriver.withMapper(mapper).withReducer(reducer).withConfiguration(conf).withInput(NullWritable.get(), NullWritable.get()).withOutput(NullWritable.get(), NullWritable.get()).runTest();\r\n    assertEquals(mapper.setupConfiguration.get(\"TestKey\"), \"TestValue\");\r\n    assertEquals(reducer.setupConfiguration.get(\"TestKey\"), \"TestValue\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestMapReduceDriver.java",
+  "methodName" : "testComparators",
+  "sourceCode" : "// Test the key grouping and value ordering comparators\r\n@Test\r\npublic void testComparators() {\r\n    // group comparator - group by first character\r\n    RawComparator groupComparator = new RawComparator() {\r\n\r\n        @Override\r\n        public int compare(Object o1, Object o2) {\r\n            return o1.toString().substring(0, 1).compareTo(o2.toString().substring(0, 1));\r\n        }\r\n\r\n        @Override\r\n        public int compare(byte[] arg0, int arg1, int arg2, byte[] arg3, int arg4, int arg5) {\r\n            throw new RuntimeException(\"Not implemented\");\r\n        }\r\n    };\r\n    // value order comparator - order by second character\r\n    RawComparator orderComparator = new RawComparator() {\r\n\r\n        @Override\r\n        public int compare(Object o1, Object o2) {\r\n            return o1.toString().substring(1, 2).compareTo(o2.toString().substring(1, 2));\r\n        }\r\n\r\n        @Override\r\n        public int compare(byte[] arg0, int arg1, int arg2, byte[] arg3, int arg4, int arg5) {\r\n            throw new RuntimeException(\"Not implemented\");\r\n        }\r\n    };\r\n    // reducer to track the order of the input values using bit shifting\r\n    driver.withReducer(new Reducer<Text, LongWritable, Text, LongWritable>() {\r\n\r\n        protected void reduce(Text key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {\r\n            long outputValue = 0;\r\n            int count = 0;\r\n            for (LongWritable value : values) {\r\n                outputValue |= (value.get() << (count++ * 8));\r\n            }\r\n            context.write(key, new LongWritable(outputValue));\r\n        }\r\n    });\r\n    driver.withKeyGroupingComparator(groupComparator);\r\n    driver.withKeyOrderComparator(orderComparator);\r\n    driver.addInput(new Text(\"a1\"), new LongWritable(1));\r\n    driver.addInput(new Text(\"b1\"), new LongWritable(1));\r\n    driver.addInput(new Text(\"a3\"), new LongWritable(3));\r\n    driver.addInput(new Text(\"a2\"), new LongWritable(2));\r\n    driver.addOutput(new Text(\"a1\"), new LongWritable(0x1 | (0x2 << 8) | (0x3 << 16)));\r\n    driver.addOutput(new Text(\"b1\"), new LongWritable(0x1));\r\n    driver.runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestReduceDriver.java",
+  "methodName" : "testRun",
+  "sourceCode" : "@Test\r\npublic void testRun() {\r\n    List<Pair<Text, LongWritable>> out = null;\r\n    try {\r\n        out = driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).run();\r\n    } catch (IOException ioe) {\r\n        fail();\r\n    }\r\n    List<Pair<Text, LongWritable>> expected = new ArrayList<Pair<Text, LongWritable>>();\r\n    expected.add(new Pair<Text, LongWritable>(new Text(\"foo\"), new LongWritable(OUT_VAL)));\r\n    assertListEquals(out, expected);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestReduceDriver.java",
+  "methodName" : "testTestRun1",
+  "sourceCode" : "@Test\r\npublic void testTestRun1() {\r\n    driver.withInputKey(new Text(\"foo\")).withOutput(new Text(\"foo\"), new LongWritable(0)).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestReduceDriver.java",
+  "methodName" : "testTestRun2",
+  "sourceCode" : "@Test\r\npublic void testTestRun2() {\r\n    driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).withOutput(new Text(\"foo\"), new LongWritable(OUT_VAL)).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestReduceDriver.java",
+  "methodName" : "testTestRun3",
+  "sourceCode" : "@Test\r\npublic void testTestRun3() {\r\n    try {\r\n        driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).withOutput(new Text(\"bar\"), new LongWritable(OUT_VAL)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestReduceDriver.java",
+  "methodName" : "testTestRun4",
+  "sourceCode" : "@Test\r\npublic void testTestRun4() {\r\n    try {\r\n        driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).withOutput(new Text(\"foo\"), new LongWritable(INCORRECT_OUT)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestReduceDriver.java",
+  "methodName" : "testTestRun5",
+  "sourceCode" : "@Test\r\npublic void testTestRun5() {\r\n    try {\r\n        driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).withOutput(new Text(\"foo\"), new LongWritable(IN_A)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestReduceDriver.java",
+  "methodName" : "testTestRun6",
+  "sourceCode" : "@Test\r\npublic void testTestRun6() {\r\n    try {\r\n        driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).withOutput(new Text(\"foo\"), new LongWritable(IN_A)).withOutput(new Text(\"foo\"), new LongWritable(IN_B)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestReduceDriver.java",
+  "methodName" : "testTestRun7",
+  "sourceCode" : "@Test\r\npublic void testTestRun7() {\r\n    try {\r\n        driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).withOutput(new Text(\"foo\"), new LongWritable(OUT_VAL)).withOutput(new Text(\"foo\"), new LongWritable(OUT_VAL)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestReduceDriver.java",
+  "methodName" : "testTestRun8",
+  "sourceCode" : "@Test\r\npublic void testTestRun8() {\r\n    try {\r\n        driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).withOutput(new Text(\"bar\"), new LongWritable(OUT_VAL)).withOutput(new Text(\"foo\"), new LongWritable(OUT_VAL)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestReduceDriver.java",
+  "methodName" : "testTestRun9",
+  "sourceCode" : "@Test\r\npublic void testTestRun9() {\r\n    try {\r\n        driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).withOutput(new Text(\"foo\"), new LongWritable(OUT_VAL)).withOutput(new Text(\"bar\"), new LongWritable(OUT_VAL)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestReduceDriver.java",
+  "methodName" : "testEmptyInput",
+  "sourceCode" : "@Test\r\npublic void testEmptyInput() {\r\n    // (null, <empty>) will be forcibly fed as input\r\n    // since we use LongSumReducer, expect (null, 0) out.\r\n    driver.withOutput(null, new LongWritable(OUT_EMPTY)).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestReduceDriver.java",
+  "methodName" : "testEmptyInput2",
+  "sourceCode" : "@Test\r\npublic void testEmptyInput2() {\r\n    // because a null key with zero inputs will be fed as input\r\n    // to this reducer, do not accept no outputs.\r\n    try {\r\n        driver.runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestReduceDriver.java",
+  "methodName" : "testDoubleIteration",
+  "sourceCode" : "@Test\r\npublic void testDoubleIteration() {\r\n    reducer = new DoubleIterReducer<Text, LongWritable>();\r\n    driver = new ReduceDriver<Text, LongWritable, Text, LongWritable>(reducer);\r\n    driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(1)).withInputValue(new LongWritable(1)).withInputValue(new LongWritable(1)).withInputValue(new LongWritable(1)).withOutput(new Text(\"foo\"), new LongWritable(4)).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mapreduce\\TestReduceDriver.java",
+  "methodName" : "testConfiguration",
+  "sourceCode" : "@Test\r\npublic void testConfiguration() {\r\n    Configuration conf = new Configuration();\r\n    conf.set(\"TestKey\", \"TestValue\");\r\n    ReduceDriver<NullWritable, NullWritable, NullWritable, NullWritable> confDriver = new ReduceDriver<NullWritable, NullWritable, NullWritable, NullWritable>();\r\n    ConfigurationReducer<NullWritable, NullWritable, NullWritable, NullWritable> reducer = new ConfigurationReducer<NullWritable, NullWritable, NullWritable, NullWritable>();\r\n    confDriver.withReducer(reducer).withConfiguration(conf).withInput(NullWritable.get(), Arrays.asList(NullWritable.get())).withOutput(NullWritable.get(), NullWritable.get()).runTest();\r\n    assertEquals(reducer.setupConfiguration.get(\"TestKey\"), \"TestValue\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mock\\TestMockOutputCollector.java",
+  "methodName" : "testRepeatedObjectUse",
+  "sourceCode" : "@Test\r\npublic void testRepeatedObjectUse() {\r\n    Mapper<Text, Text, Text, Text> mapper = new RepeatMapper();\r\n    MapDriver<Text, Text, Text, Text> driver = new MapDriver(mapper);\r\n    driver.withInput(new Text(\"inK\"), new Text(\"inV\")).withOutput(new Text(\"1\"), new Text(\"a\")).withOutput(new Text(\"2\"), new Text(\"b\")).withOutput(new Text(\"3\"), new Text(\"c\")).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mock\\TestMockReporter.java",
+  "methodName" : "testGetInputSplitForMapper",
+  "sourceCode" : "@Test\r\npublic void testGetInputSplitForMapper() {\r\n    InputSplit split = new MockReporter(MockReporter.ReporterType.Mapper, null).getInputSplit();\r\n    assertTrue(null != split);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\mock\\TestMockReporter.java",
+  "methodName" : "testGetInputSplitForReducer",
+  "sourceCode" : "// reporter is contractually obligated to throw an exception\r\n// if the reducer tries to grab the input split.\r\n@Test\r\npublic void testGetInputSplitForReducer() {\r\n    try {\r\n        new MockReporter(MockReporter.ReporterType.Reducer, null).getInputSplit();\r\n        // shouldn't get here\r\n        fail();\r\n    } catch (UnsupportedOperationException uoe) {\r\n        // expected this.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestCounters.java",
+  "methodName" : "testMapper",
+  "sourceCode" : "@Test\r\npublic void testMapper() throws IOException {\r\n    Mapper<Text, Text, Text, Text> mapper = new CounterMapper();\r\n    MapDriver<Text, Text, Text, Text> driver = new MapDriver<Text, Text, Text, Text>(mapper);\r\n    driver.withInput(new Text(\"foo\"), new Text(\"bar\")).run();\r\n    assertEquals(\"Expected 1 counter increment\", 1, driver.getCounters().findCounter(GROUP, ELEM).getValue());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestCounters.java",
+  "methodName" : "testReducer",
+  "sourceCode" : "@Test\r\npublic void testReducer() throws IOException {\r\n    Reducer<Text, Text, Text, Text> reducer = new CounterReducer();\r\n    ReduceDriver<Text, Text, Text, Text> driver = new ReduceDriver<Text, Text, Text, Text>(reducer);\r\n    driver.withInputKey(new Text(\"foo\")).withInputValue(new Text(\"bar\")).run();\r\n    assertEquals(\"Expected 1 counter increment\", 1, driver.getCounters().findCounter(GROUP, ELEM).getValue());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestCounters.java",
+  "methodName" : "testMapReduce",
+  "sourceCode" : "@Test\r\npublic void testMapReduce() throws IOException {\r\n    Mapper<Text, Text, Text, Text> mapper = new CounterMapper();\r\n    Reducer<Text, Text, Text, Text> reducer = new CounterReducer();\r\n    MapReduceDriver<Text, Text, Text, Text, Text, Text> driver = new MapReduceDriver<Text, Text, Text, Text, Text, Text>(mapper, reducer);\r\n    driver.withInput(new Text(\"foo\"), new Text(\"bar\")).run();\r\n    assertEquals(\"Expected counter=3\", 3, driver.getCounters().findCounter(GROUP, ELEM).getValue());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestCounters.java",
+  "methodName" : "testPipeline",
+  "sourceCode" : "@Test\r\npublic void testPipeline() throws IOException {\r\n    Mapper<Text, Text, Text, Text> mapper = new CounterMapper();\r\n    Reducer<Text, Text, Text, Text> reducer = new CounterReducer();\r\n    PipelineMapReduceDriver<Text, Text, Text, Text> driver = new PipelineMapReduceDriver<Text, Text, Text, Text>();\r\n    driver.withMapReduce(mapper, reducer).withMapReduce(mapper, reducer).withInput(new Text(\"foo\"), new Text(\"bar\")).run();\r\n    assertEquals(\"Expected counter=9\", 9, driver.getCounters().findCounter(GROUP, ELEM).getValue());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestExample.java",
+  "methodName" : "testIdentityMapper",
+  "sourceCode" : "@Test\r\npublic void testIdentityMapper() {\r\n    driver.withInput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"foo\"), new Text(\"bar\")).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapDriver.java",
+  "methodName" : "testRun",
+  "sourceCode" : "@Test\r\npublic void testRun() {\r\n    List<Pair<Text, Text>> out = null;\r\n    try {\r\n        out = driver.withInput(new Text(\"foo\"), new Text(\"bar\")).run();\r\n    } catch (IOException ioe) {\r\n        fail();\r\n    }\r\n    List<Pair<Text, Text>> expected = new ArrayList<Pair<Text, Text>>();\r\n    expected.add(new Pair<Text, Text>(new Text(\"foo\"), new Text(\"bar\")));\r\n    assertListEquals(out, expected);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapDriver.java",
+  "methodName" : "testTestRun1",
+  "sourceCode" : "@Test\r\npublic void testTestRun1() {\r\n    driver.withInput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"foo\"), new Text(\"bar\")).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapDriver.java",
+  "methodName" : "testTestRun2",
+  "sourceCode" : "@Test\r\npublic void testTestRun2() {\r\n    try {\r\n        driver.withInput(new Text(\"foo\"), new Text(\"bar\")).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapDriver.java",
+  "methodName" : "testTestRun3",
+  "sourceCode" : "@Test\r\npublic void testTestRun3() {\r\n    try {\r\n        driver.withInput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"foo\"), new Text(\"bar\")).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapDriver.java",
+  "methodName" : "testTestRun4",
+  "sourceCode" : "@Test\r\npublic void testTestRun4() {\r\n    try {\r\n        driver.withInput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"bonusfoo\"), new Text(\"bar\")).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapDriver.java",
+  "methodName" : "testTestRun5",
+  "sourceCode" : "@Test\r\npublic void testTestRun5() {\r\n    try {\r\n        driver.withInput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"foo\"), new Text(\"somethingelse\")).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapDriver.java",
+  "methodName" : "testTestRun6",
+  "sourceCode" : "@Test\r\npublic void testTestRun6() {\r\n    try {\r\n        driver.withInput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"someotherkey\"), new Text(\"bar\")).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapDriver.java",
+  "methodName" : "testTestRun7",
+  "sourceCode" : "@Test\r\npublic void testTestRun7() {\r\n    try {\r\n        driver.withInput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"someotherkey\"), new Text(\"bar\")).withOutput(new Text(\"foo\"), new Text(\"bar\")).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapDriver.java",
+  "methodName" : "testSetInput",
+  "sourceCode" : "@Test\r\npublic void testSetInput() {\r\n    try {\r\n        driver.setInput(new Pair<Text, Text>(new Text(\"foo\"), new Text(\"bar\")));\r\n    } catch (Exception e) {\r\n        fail();\r\n    }\r\n    assertEquals(driver.getInputKey(), new Text(\"foo\"));\r\n    assertEquals(driver.getInputValue(), new Text(\"bar\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapDriver.java",
+  "methodName" : "testSetInputNull",
+  "sourceCode" : "@Test\r\npublic void testSetInputNull() {\r\n    try {\r\n        driver.setInput((Pair<Text, Text>) null);\r\n        fail();\r\n    } catch (Exception e) {\r\n        // expect this.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapDriver.java",
+  "methodName" : "testEmptyInput",
+  "sourceCode" : "@Test\r\npublic void testEmptyInput() {\r\n    // MapDriver will forcibly map (null, null) as undefined input;\r\n    // identity mapper expects (null, null) back.\r\n    driver.withOutput(null, null).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapDriver.java",
+  "methodName" : "testEmptyInput2",
+  "sourceCode" : "@Test\r\npublic void testEmptyInput2() {\r\n    // it is an error to expect no output because we expect\r\n    // the mapper to be fed (null, null) as an input if the\r\n    // user doesn't set any input.\r\n    try {\r\n        driver.runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapReduceDriver.java",
+  "methodName" : "testRun",
+  "sourceCode" : "@Test\r\npublic void testRun() {\r\n    List<Pair<Text, LongWritable>> out = null;\r\n    try {\r\n        out = driver.withInput(new Text(\"foo\"), new LongWritable(FOO_IN_A)).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_B)).withInput(new Text(\"bar\"), new LongWritable(BAR_IN)).run();\r\n    } catch (IOException ioe) {\r\n        fail();\r\n    }\r\n    List<Pair<Text, LongWritable>> expected = new ArrayList<Pair<Text, LongWritable>>();\r\n    expected.add(new Pair<Text, LongWritable>(new Text(\"bar\"), new LongWritable(BAR_IN)));\r\n    expected.add(new Pair<Text, LongWritable>(new Text(\"foo\"), new LongWritable(FOO_OUT)));\r\n    assertListEquals(out, expected);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapReduceDriver.java",
+  "methodName" : "testTestRun1",
+  "sourceCode" : "@Test\r\npublic void testTestRun1() {\r\n    driver.withInput(new Text(\"foo\"), new LongWritable(FOO_IN_A)).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_B)).withInput(new Text(\"bar\"), new LongWritable(BAR_IN)).withOutput(new Text(\"bar\"), new LongWritable(BAR_IN)).withOutput(new Text(\"foo\"), new LongWritable(FOO_OUT)).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapReduceDriver.java",
+  "methodName" : "testTestRun2",
+  "sourceCode" : "@Test\r\npublic void testTestRun2() {\r\n    driver.withInput(new Text(\"foo\"), new LongWritable(FOO_IN_A)).withInput(new Text(\"bar\"), new LongWritable(BAR_IN)).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_B)).withOutput(new Text(\"bar\"), new LongWritable(BAR_IN)).withOutput(new Text(\"foo\"), new LongWritable(FOO_OUT)).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapReduceDriver.java",
+  "methodName" : "testTestRun3",
+  "sourceCode" : "@Test\r\npublic void testTestRun3() {\r\n    try {\r\n        driver.withInput(new Text(\"foo\"), new LongWritable(FOO_IN_A)).withInput(new Text(\"bar\"), new LongWritable(BAR_IN)).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_B)).withOutput(new Text(\"foo\"), new LongWritable(FOO_OUT)).withOutput(new Text(\"bar\"), new LongWritable(BAR_IN)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapReduceDriver.java",
+  "methodName" : "testEmptyInput",
+  "sourceCode" : "@Test\r\npublic void testEmptyInput() {\r\n    driver.runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapReduceDriver.java",
+  "methodName" : "testEmptyInputWithOutputFails",
+  "sourceCode" : "@Test\r\npublic void testEmptyInputWithOutputFails() {\r\n    try {\r\n        driver.withOutput(new Text(\"foo\"), new LongWritable(FOO_OUT)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapReduceDriver.java",
+  "methodName" : "testEmptyShuffle",
+  "sourceCode" : "@Test\r\npublic void testEmptyShuffle() {\r\n    List<Pair<Text, Text>> inputs = new ArrayList<Pair<Text, Text>>();\r\n    List<Pair<Text, List<Text>>> outputs = driver2.shuffle(inputs);\r\n    assertEquals(0, outputs.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapReduceDriver.java",
+  "methodName" : "testSingleShuffle",
+  "sourceCode" : "// just shuffle a single (k, v) pair\r\n@Test\r\npublic void testSingleShuffle() {\r\n    List<Pair<Text, Text>> inputs = new ArrayList<Pair<Text, Text>>();\r\n    inputs.add(new Pair<Text, Text>(new Text(\"a\"), new Text(\"b\")));\r\n    List<Pair<Text, List<Text>>> outputs = driver2.shuffle(inputs);\r\n    List<Pair<Text, List<Text>>> expected = new ArrayList<Pair<Text, List<Text>>>();\r\n    List<Text> sublist = new ArrayList<Text>();\r\n    sublist.add(new Text(\"b\"));\r\n    expected.add(new Pair<Text, List<Text>>(new Text(\"a\"), sublist));\r\n    assertListEquals(expected, outputs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapReduceDriver.java",
+  "methodName" : "testShuffleOneKey",
+  "sourceCode" : "// shuffle multiple values from the same key.\r\n@Test\r\npublic void testShuffleOneKey() {\r\n    List<Pair<Text, Text>> inputs = new ArrayList<Pair<Text, Text>>();\r\n    inputs.add(new Pair<Text, Text>(new Text(\"a\"), new Text(\"b\")));\r\n    inputs.add(new Pair<Text, Text>(new Text(\"a\"), new Text(\"c\")));\r\n    List<Pair<Text, List<Text>>> outputs = driver2.shuffle(inputs);\r\n    List<Pair<Text, List<Text>>> expected = new ArrayList<Pair<Text, List<Text>>>();\r\n    List<Text> sublist = new ArrayList<Text>();\r\n    sublist.add(new Text(\"b\"));\r\n    sublist.add(new Text(\"c\"));\r\n    expected.add(new Pair<Text, List<Text>>(new Text(\"a\"), sublist));\r\n    assertListEquals(expected, outputs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapReduceDriver.java",
+  "methodName" : "testMultiShuffle1",
+  "sourceCode" : "// shuffle multiple keys\r\n@Test\r\npublic void testMultiShuffle1() {\r\n    List<Pair<Text, Text>> inputs = new ArrayList<Pair<Text, Text>>();\r\n    inputs.add(new Pair<Text, Text>(new Text(\"a\"), new Text(\"x\")));\r\n    inputs.add(new Pair<Text, Text>(new Text(\"b\"), new Text(\"z\")));\r\n    inputs.add(new Pair<Text, Text>(new Text(\"b\"), new Text(\"w\")));\r\n    inputs.add(new Pair<Text, Text>(new Text(\"a\"), new Text(\"y\")));\r\n    List<Pair<Text, List<Text>>> outputs = driver2.shuffle(inputs);\r\n    List<Pair<Text, List<Text>>> expected = new ArrayList<Pair<Text, List<Text>>>();\r\n    List<Text> sublist1 = new ArrayList<Text>();\r\n    sublist1.add(new Text(\"x\"));\r\n    sublist1.add(new Text(\"y\"));\r\n    expected.add(new Pair<Text, List<Text>>(new Text(\"a\"), sublist1));\r\n    List<Text> sublist2 = new ArrayList<Text>();\r\n    sublist2.add(new Text(\"z\"));\r\n    sublist2.add(new Text(\"w\"));\r\n    expected.add(new Pair<Text, List<Text>>(new Text(\"b\"), sublist2));\r\n    assertListEquals(expected, outputs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapReduceDriver.java",
+  "methodName" : "testMultiShuffle2",
+  "sourceCode" : "// shuffle multiple keys that are out-of-order to start.\r\n@Test\r\npublic void testMultiShuffle2() {\r\n    List<Pair<Text, Text>> inputs = new ArrayList<Pair<Text, Text>>();\r\n    inputs.add(new Pair<Text, Text>(new Text(\"b\"), new Text(\"z\")));\r\n    inputs.add(new Pair<Text, Text>(new Text(\"a\"), new Text(\"x\")));\r\n    inputs.add(new Pair<Text, Text>(new Text(\"b\"), new Text(\"w\")));\r\n    inputs.add(new Pair<Text, Text>(new Text(\"a\"), new Text(\"y\")));\r\n    List<Pair<Text, List<Text>>> outputs = driver2.shuffle(inputs);\r\n    List<Pair<Text, List<Text>>> expected = new ArrayList<Pair<Text, List<Text>>>();\r\n    List<Text> sublist1 = new ArrayList<Text>();\r\n    sublist1.add(new Text(\"x\"));\r\n    sublist1.add(new Text(\"y\"));\r\n    expected.add(new Pair<Text, List<Text>>(new Text(\"a\"), sublist1));\r\n    List<Text> sublist2 = new ArrayList<Text>();\r\n    sublist2.add(new Text(\"z\"));\r\n    sublist2.add(new Text(\"w\"));\r\n    expected.add(new Pair<Text, List<Text>>(new Text(\"b\"), sublist2));\r\n    assertListEquals(expected, outputs);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapReduceDriver.java",
+  "methodName" : "testIdentityCombiner",
+  "sourceCode" : "// Test \"combining\" with an IdentityReducer. Result should be the same.\r\n@Test\r\npublic void testIdentityCombiner() {\r\n    driver.withCombiner(new IdentityReducer<Text, LongWritable>()).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_A)).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_B)).withInput(new Text(\"bar\"), new LongWritable(BAR_IN)).withOutput(new Text(\"bar\"), new LongWritable(BAR_IN)).withOutput(new Text(\"foo\"), new LongWritable(FOO_OUT)).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapReduceDriver.java",
+  "methodName" : "testLongSumCombiner",
+  "sourceCode" : "// Test \"combining\" with another LongSumReducer. Result should be the same.\r\n@Test\r\npublic void testLongSumCombiner() {\r\n    driver.withCombiner(new LongSumReducer<Text>()).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_A)).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_B)).withInput(new Text(\"bar\"), new LongWritable(BAR_IN)).withOutput(new Text(\"bar\"), new LongWritable(BAR_IN)).withOutput(new Text(\"foo\"), new LongWritable(FOO_OUT)).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapReduceDriver.java",
+  "methodName" : "testLongSumCombinerAndIdentityReduce",
+  "sourceCode" : "// Test \"combining\" with another LongSumReducer, and with the Reducer\r\n// set to IdentityReducer. Result should be the same.\r\n@Test\r\npublic void testLongSumCombinerAndIdentityReduce() {\r\n    driver.withCombiner(new LongSumReducer<Text>()).withReducer(new IdentityReducer<Text, LongWritable>()).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_A)).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_B)).withInput(new Text(\"bar\"), new LongWritable(BAR_IN)).withOutput(new Text(\"bar\"), new LongWritable(BAR_IN)).withOutput(new Text(\"foo\"), new LongWritable(FOO_OUT)).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestMapReduceDriver.java",
+  "methodName" : "testComparators",
+  "sourceCode" : "// Test the key grouping and value ordering comparators\r\n@Test\r\npublic void testComparators() {\r\n    // group comparator - group by first character\r\n    RawComparator groupComparator = new RawComparator() {\r\n\r\n        @Override\r\n        public int compare(Object o1, Object o2) {\r\n            return o1.toString().substring(0, 1).compareTo(o2.toString().substring(0, 1));\r\n        }\r\n\r\n        @Override\r\n        public int compare(byte[] arg0, int arg1, int arg2, byte[] arg3, int arg4, int arg5) {\r\n            throw new RuntimeException(\"Not implemented\");\r\n        }\r\n    };\r\n    // value order comparator - order by second character\r\n    RawComparator orderComparator = new RawComparator() {\r\n\r\n        @Override\r\n        public int compare(Object o1, Object o2) {\r\n            return o1.toString().substring(1, 2).compareTo(o2.toString().substring(1, 2));\r\n        }\r\n\r\n        @Override\r\n        public int compare(byte[] arg0, int arg1, int arg2, byte[] arg3, int arg4, int arg5) {\r\n            throw new RuntimeException(\"Not implemented\");\r\n        }\r\n    };\r\n    // reducer to track the order of the input values using bit shifting\r\n    driver.withReducer(new Reducer<Text, LongWritable, Text, LongWritable>() {\r\n\r\n        @Override\r\n        public void reduce(Text key, Iterator<LongWritable> values, OutputCollector<Text, LongWritable> output, Reporter reporter) throws IOException {\r\n            long outputValue = 0;\r\n            int count = 0;\r\n            while (values.hasNext()) {\r\n                outputValue |= (values.next().get() << (count++ * 8));\r\n            }\r\n            output.collect(key, new LongWritable(outputValue));\r\n        }\r\n\r\n        @Override\r\n        public void configure(JobConf job) {\r\n        }\r\n\r\n        @Override\r\n        public void close() throws IOException {\r\n        }\r\n    });\r\n    driver.withKeyGroupingComparator(groupComparator);\r\n    driver.withKeyOrderComparator(orderComparator);\r\n    driver.addInput(new Text(\"a1\"), new LongWritable(1));\r\n    driver.addInput(new Text(\"b1\"), new LongWritable(1));\r\n    driver.addInput(new Text(\"a3\"), new LongWritable(3));\r\n    driver.addInput(new Text(\"a2\"), new LongWritable(2));\r\n    driver.addOutput(new Text(\"a1\"), new LongWritable(0x1 | (0x2 << 8) | (0x3 << 16)));\r\n    driver.addOutput(new Text(\"b1\"), new LongWritable(0x1));\r\n    driver.runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestPipelineMapReduceDriver.java",
+  "methodName" : "testFullyEmpty",
+  "sourceCode" : "@Test\r\npublic void testFullyEmpty() throws IOException {\r\n    // If no mappers or reducers are configured, then it should\r\n    // just return its inputs. If there are no inputs, this\r\n    // should be an empty list of outputs.\r\n    PipelineMapReduceDriver driver = new PipelineMapReduceDriver();\r\n    List out = driver.run();\r\n    assertEquals(\"Expected empty output list\", out.size(), 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestPipelineMapReduceDriver.java",
+  "methodName" : "testEmptyPipeline",
+  "sourceCode" : "@Test\r\npublic void testEmptyPipeline() throws IOException {\r\n    // If no mappers or reducers are configured, then it should\r\n    // just return its inputs.\r\n    PipelineMapReduceDriver driver = new PipelineMapReduceDriver();\r\n    driver.addInput(new Text(\"foo\"), new Text(\"bar\"));\r\n    List out = driver.run();\r\n    List expected = new ArrayList();\r\n    expected.add(new Pair<Text, Text>(new Text(\"foo\"), new Text(\"bar\")));\r\n    assertListEquals(expected, out);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestPipelineMapReduceDriver.java",
+  "methodName" : "testEmptyPipelineWithRunTest",
+  "sourceCode" : "@Test\r\npublic void testEmptyPipelineWithRunTest() {\r\n    // Like testEmptyPipeline, but call runTest.\r\n    PipelineMapReduceDriver driver = new PipelineMapReduceDriver();\r\n    driver.withInput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"foo\"), new Text(\"bar\")).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestPipelineMapReduceDriver.java",
+  "methodName" : "testSingleIdentity",
+  "sourceCode" : "@Test\r\npublic void testSingleIdentity() {\r\n    // Test that an identity mapper and identity reducer work\r\n    PipelineMapReduceDriver driver = new PipelineMapReduceDriver();\r\n    driver.withMapReduce(new IdentityMapper(), new IdentityReducer()).withInput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"foo\"), new Text(\"bar\")).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestPipelineMapReduceDriver.java",
+  "methodName" : "testMultipleIdentities",
+  "sourceCode" : "@Test\r\npublic void testMultipleIdentities() {\r\n    // Test that a pipeline of identity mapper and reducers work\r\n    PipelineMapReduceDriver driver = new PipelineMapReduceDriver();\r\n    driver.withMapReduce(new IdentityMapper(), new IdentityReducer()).withMapReduce(new IdentityMapper(), new IdentityReducer()).withMapReduce(new IdentityMapper(), new IdentityReducer()).withInput(new Text(\"foo\"), new Text(\"bar\")).withOutput(new Text(\"foo\"), new Text(\"bar\")).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestPipelineMapReduceDriver.java",
+  "methodName" : "testSumAtEnd",
+  "sourceCode" : "@Test\r\npublic void testSumAtEnd() {\r\n    PipelineMapReduceDriver driver = new PipelineMapReduceDriver();\r\n    driver.withMapReduce(new IdentityMapper(), new IdentityReducer()).withMapReduce(new IdentityMapper(), new IdentityReducer()).withMapReduce(new IdentityMapper(), new LongSumReducer()).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_A)).withInput(new Text(\"bar\"), new LongWritable(BAR_IN)).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_B)).withOutput(new Text(\"bar\"), new LongWritable(BAR_OUT)).withOutput(new Text(\"foo\"), new LongWritable(FOO_OUT)).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestPipelineMapReduceDriver.java",
+  "methodName" : "testSumInMiddle",
+  "sourceCode" : "@Test\r\npublic void testSumInMiddle() {\r\n    PipelineMapReduceDriver driver = new PipelineMapReduceDriver();\r\n    driver.withMapReduce(new IdentityMapper(), new IdentityReducer()).withMapReduce(new IdentityMapper(), new LongSumReducer()).withMapReduce(new IdentityMapper(), new IdentityReducer()).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_A)).withInput(new Text(\"bar\"), new LongWritable(BAR_IN)).withInput(new Text(\"foo\"), new LongWritable(FOO_IN_B)).withOutput(new Text(\"bar\"), new LongWritable(BAR_OUT)).withOutput(new Text(\"foo\"), new LongWritable(FOO_OUT)).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestReduceDriver.java",
+  "methodName" : "testRun",
+  "sourceCode" : "@Test\r\npublic void testRun() {\r\n    List<Pair<Text, LongWritable>> out = null;\r\n    try {\r\n        out = driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).run();\r\n    } catch (IOException ioe) {\r\n        fail();\r\n    }\r\n    List<Pair<Text, LongWritable>> expected = new ArrayList<Pair<Text, LongWritable>>();\r\n    expected.add(new Pair<Text, LongWritable>(new Text(\"foo\"), new LongWritable(OUT_VAL)));\r\n    assertListEquals(out, expected);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestReduceDriver.java",
+  "methodName" : "testTestRun1",
+  "sourceCode" : "@Test\r\npublic void testTestRun1() {\r\n    driver.withInputKey(new Text(\"foo\")).withOutput(new Text(\"foo\"), new LongWritable(0)).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestReduceDriver.java",
+  "methodName" : "testTestRun2",
+  "sourceCode" : "@Test\r\npublic void testTestRun2() {\r\n    driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).withOutput(new Text(\"foo\"), new LongWritable(OUT_VAL)).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestReduceDriver.java",
+  "methodName" : "testTestRun3",
+  "sourceCode" : "@Test\r\npublic void testTestRun3() {\r\n    try {\r\n        driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).withOutput(new Text(\"bar\"), new LongWritable(OUT_VAL)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestReduceDriver.java",
+  "methodName" : "testTestRun4",
+  "sourceCode" : "@Test\r\npublic void testTestRun4() {\r\n    try {\r\n        driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).withOutput(new Text(\"foo\"), new LongWritable(INCORRECT_OUT)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestReduceDriver.java",
+  "methodName" : "testTestRun5",
+  "sourceCode" : "@Test\r\npublic void testTestRun5() {\r\n    try {\r\n        driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).withOutput(new Text(\"foo\"), new LongWritable(IN_A)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestReduceDriver.java",
+  "methodName" : "testTestRun6",
+  "sourceCode" : "@Test\r\npublic void testTestRun6() {\r\n    try {\r\n        driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).withOutput(new Text(\"foo\"), new LongWritable(IN_A)).withOutput(new Text(\"foo\"), new LongWritable(IN_B)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestReduceDriver.java",
+  "methodName" : "testTestRun7",
+  "sourceCode" : "@Test\r\npublic void testTestRun7() {\r\n    try {\r\n        driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).withOutput(new Text(\"foo\"), new LongWritable(OUT_VAL)).withOutput(new Text(\"foo\"), new LongWritable(OUT_VAL)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestReduceDriver.java",
+  "methodName" : "testTestRun8",
+  "sourceCode" : "@Test\r\npublic void testTestRun8() {\r\n    try {\r\n        driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).withOutput(new Text(\"bar\"), new LongWritable(OUT_VAL)).withOutput(new Text(\"foo\"), new LongWritable(OUT_VAL)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestReduceDriver.java",
+  "methodName" : "testTestRun9",
+  "sourceCode" : "@Test\r\npublic void testTestRun9() {\r\n    try {\r\n        driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(IN_A)).withInputValue(new LongWritable(IN_B)).withOutput(new Text(\"foo\"), new LongWritable(OUT_VAL)).withOutput(new Text(\"bar\"), new LongWritable(OUT_VAL)).runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestReduceDriver.java",
+  "methodName" : "testEmptyInput",
+  "sourceCode" : "@Test\r\npublic void testEmptyInput() {\r\n    // (null, <empty>) will be forcibly fed as input\r\n    // since we use LongSumReducer, expect (null, 0) out.\r\n    driver.withOutput(null, new LongWritable(OUT_EMPTY)).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestReduceDriver.java",
+  "methodName" : "testEmptyInput2",
+  "sourceCode" : "@Test\r\npublic void testEmptyInput2() {\r\n    // because a null key with zero inputs will be fed as input\r\n    // to this reducer, do not accept no outputs.\r\n    try {\r\n        driver.runTest();\r\n        fail();\r\n    } catch (RuntimeException re) {\r\n        // expected.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestReduceDriver.java",
+  "methodName" : "testDoubleIteration",
+  "sourceCode" : "@Test\r\npublic void testDoubleIteration() {\r\n    reducer = new DoubleIterReducer<Text, LongWritable>();\r\n    driver = new ReduceDriver<Text, LongWritable, Text, LongWritable>(reducer);\r\n    driver.withInputKey(new Text(\"foo\")).withInputValue(new LongWritable(1)).withInputValue(new LongWritable(1)).withInputValue(new LongWritable(1)).withInputValue(new LongWritable(1)).withOutput(new Text(\"foo\"), new LongWritable(4)).runTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseTabbedPair1",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link org.apache.hadoop.mrunit.TestDriver#parseTabbedPair(java.lang.String)}.\r\n */\r\n@Test\r\npublic void testParseTabbedPair1() {\r\n    Pair<Text, Text> pr = TestDriver.parseTabbedPair(\"foo\\tbar\");\r\n    assertEquals(pr.getFirst().toString(), \"foo\");\r\n    assertEquals(pr.getSecond().toString(), \"bar\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseTabbedPair2",
+  "sourceCode" : "@Test\r\npublic void testParseTabbedPair2() {\r\n    Pair<Text, Text> pr = TestDriver.parseTabbedPair(\"   foo\\tbar\");\r\n    assertEquals(pr.getFirst().toString(), \"   foo\");\r\n    assertEquals(pr.getSecond().toString(), \"bar\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseTabbedPair3",
+  "sourceCode" : "@Test\r\npublic void testParseTabbedPair3() {\r\n    Pair<Text, Text> pr = TestDriver.parseTabbedPair(\"foo\\tbar   \");\r\n    assertEquals(pr.getFirst().toString(), \"foo\");\r\n    assertEquals(pr.getSecond().toString(), \"bar   \");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseTabbedPair4",
+  "sourceCode" : "@Test\r\npublic void testParseTabbedPair4() {\r\n    Pair<Text, Text> pr = TestDriver.parseTabbedPair(\"foo    \\tbar\");\r\n    assertEquals(pr.getFirst().toString(), \"foo    \");\r\n    assertEquals(pr.getSecond().toString(), \"bar\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseTabbedPair5",
+  "sourceCode" : "@Test\r\npublic void testParseTabbedPair5() {\r\n    Pair<Text, Text> pr = TestDriver.parseTabbedPair(\"foo\\t  bar\");\r\n    assertEquals(pr.getFirst().toString(), \"foo\");\r\n    assertEquals(pr.getSecond().toString(), \"  bar\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseTabbedPair6",
+  "sourceCode" : "@Test\r\npublic void testParseTabbedPair6() {\r\n    Pair<Text, Text> pr = TestDriver.parseTabbedPair(\"foo\\t\\tbar\");\r\n    assertEquals(pr.getFirst().toString(), \"foo\");\r\n    assertEquals(pr.getSecond().toString(), \"\\tbar\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseTabbedPair7",
+  "sourceCode" : "@Test\r\npublic void testParseTabbedPair7() {\r\n    Pair<Text, Text> pr = TestDriver.parseTabbedPair(\"foo\\tbar\\n\");\r\n    assertEquals(pr.getFirst().toString(), \"foo\");\r\n    assertEquals(pr.getSecond().toString(), \"bar\\n\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseTabbedPair8",
+  "sourceCode" : "@Test\r\npublic void testParseTabbedPair8() {\r\n    Pair<Text, Text> pr = TestDriver.parseTabbedPair(\"foo\\t  bar\\tbaz\");\r\n    assertEquals(pr.getFirst().toString(), \"foo\");\r\n    assertEquals(pr.getSecond().toString(), \"  bar\\tbaz\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseCommaDelimList1",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link\r\n * org.apache.hadoop.mrunit.TestDriver#parseCommaDelimitedList(java.lang.String)}.\r\n */\r\n@Test\r\npublic void testParseCommaDelimList1() {\r\n    List<Text> out = TestDriver.parseCommaDelimitedList(\"foo\");\r\n    ArrayList<Text> verify = new ArrayList<Text>();\r\n    verify.add(new Text(\"foo\"));\r\n    assertListEquals(out, verify);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseCommaDelimList2",
+  "sourceCode" : "@Test\r\npublic void testParseCommaDelimList2() {\r\n    List<Text> out = TestDriver.parseCommaDelimitedList(\"foo,bar\");\r\n    ArrayList<Text> verify = new ArrayList<Text>();\r\n    verify.add(new Text(\"foo\"));\r\n    verify.add(new Text(\"bar\"));\r\n    assertListEquals(out, verify);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseCommaDelimList3",
+  "sourceCode" : "@Test\r\npublic void testParseCommaDelimList3() {\r\n    List<Text> out = TestDriver.parseCommaDelimitedList(\"foo   ,bar\");\r\n    ArrayList<Text> verify = new ArrayList<Text>();\r\n    verify.add(new Text(\"foo\"));\r\n    verify.add(new Text(\"bar\"));\r\n    assertListEquals(out, verify);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseCommaDelimList4",
+  "sourceCode" : "@Test\r\npublic void testParseCommaDelimList4() {\r\n    List<Text> out = TestDriver.parseCommaDelimitedList(\"foo,   bar\");\r\n    ArrayList<Text> verify = new ArrayList<Text>();\r\n    verify.add(new Text(\"foo\"));\r\n    verify.add(new Text(\"bar\"));\r\n    assertListEquals(out, verify);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseCommaDelimList5",
+  "sourceCode" : "@Test\r\npublic void testParseCommaDelimList5() {\r\n    List<Text> out = TestDriver.parseCommaDelimitedList(\"   foo,bar\");\r\n    ArrayList<Text> verify = new ArrayList<Text>();\r\n    verify.add(new Text(\"foo\"));\r\n    verify.add(new Text(\"bar\"));\r\n    assertListEquals(out, verify);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseCommaDelimList6",
+  "sourceCode" : "@Test\r\npublic void testParseCommaDelimList6() {\r\n    List<Text> out = TestDriver.parseCommaDelimitedList(\"foo,bar   \");\r\n    ArrayList<Text> verify = new ArrayList<Text>();\r\n    verify.add(new Text(\"foo\"));\r\n    verify.add(new Text(\"bar\"));\r\n    assertListEquals(out, verify);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseCommaDelimList7",
+  "sourceCode" : "@Test\r\npublic void testParseCommaDelimList7() {\r\n    List<Text> out = TestDriver.parseCommaDelimitedList(\"foo,bar, baz\");\r\n    ArrayList<Text> verify = new ArrayList<Text>();\r\n    verify.add(new Text(\"foo\"));\r\n    verify.add(new Text(\"bar\"));\r\n    verify.add(new Text(\"baz\"));\r\n    assertListEquals(out, verify);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseCommaDelimList8",
+  "sourceCode" : "// note: we decide that correct behavior is that this does *not*\r\n// add a tailing empty element by itself.\r\n@Test\r\npublic void testParseCommaDelimList8() {\r\n    List<Text> out = TestDriver.parseCommaDelimitedList(\"foo,bar,\");\r\n    ArrayList<Text> verify = new ArrayList<Text>();\r\n    verify.add(new Text(\"foo\"));\r\n    verify.add(new Text(\"bar\"));\r\n    assertListEquals(out, verify);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseCommaDelimList8a",
+  "sourceCode" : "// but this one does.\r\n@Test\r\npublic void testParseCommaDelimList8a() {\r\n    List<Text> out = TestDriver.parseCommaDelimitedList(\"foo,bar,,\");\r\n    ArrayList<Text> verify = new ArrayList<Text>();\r\n    verify.add(new Text(\"foo\"));\r\n    verify.add(new Text(\"bar\"));\r\n    verify.add(new Text(\"\"));\r\n    assertListEquals(out, verify);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseCommaDelimList9",
+  "sourceCode" : "@Test\r\npublic void testParseCommaDelimList9() {\r\n    List<Text> out = TestDriver.parseCommaDelimitedList(\"foo,,bar\");\r\n    ArrayList<Text> verify = new ArrayList<Text>();\r\n    verify.add(new Text(\"foo\"));\r\n    verify.add(new Text(\"\"));\r\n    verify.add(new Text(\"bar\"));\r\n    assertListEquals(out, verify);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\TestTestDriver.java",
+  "methodName" : "testParseCommaDelimList10",
+  "sourceCode" : "@Test\r\npublic void testParseCommaDelimList10() {\r\n    List<Text> out = TestDriver.parseCommaDelimitedList(\",foo,bar\");\r\n    ArrayList<Text> verify = new ArrayList<Text>();\r\n    verify.add(new Text(\"\"));\r\n    verify.add(new Text(\"foo\"));\r\n    verify.add(new Text(\"bar\"));\r\n    assertListEquals(out, verify);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testEqualsTrulyEqual",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link\r\n * org.apache.hadoop.mrunit.types.Pair#equals(org.apache.hadoop.mrunit.types.Pair)}.\r\n */\r\n@Test\r\npublic void testEqualsTrulyEqual() {\r\n    assertTrue(new Pair<Integer, Integer>(Integer.valueOf(VAL_A), Integer.valueOf(VAL_B)).equals(new Pair<Integer, Integer>(Integer.valueOf(VAL_A), Integer.valueOf(VAL_B))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testEqualsInequalFirst",
+  "sourceCode" : "@Test\r\npublic void testEqualsInequalFirst() {\r\n    assertFalse(new Pair<Integer, Integer>(Integer.valueOf(VAL_A), Integer.valueOf(VAL_B)).equals(new Pair<Integer, Integer>(Integer.valueOf(VAL_C), Integer.valueOf(VAL_B))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testEqualsInequalSecond",
+  "sourceCode" : "@Test\r\npublic void testEqualsInequalSecond() {\r\n    assertFalse(new Pair<Integer, Integer>(Integer.valueOf(VAL_A), Integer.valueOf(VAL_B)).equals(new Pair<Integer, Integer>(Integer.valueOf(VAL_A), Integer.valueOf(VAL_D))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testEqualsNullNull",
+  "sourceCode" : "@Test\r\npublic void testEqualsNullNull() {\r\n    assertTrue(new Pair<Integer, Integer>(null, null).equals(new Pair<Integer, Integer>(null, null)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testEqualsNullIntFirst0",
+  "sourceCode" : "@Test\r\npublic void testEqualsNullIntFirst0() {\r\n    assertTrue(new Pair<Integer, Integer>(Integer.valueOf(VAL_A), null).equals(new Pair<Integer, Integer>(Integer.valueOf(VAL_A), null)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testEqualsNullIntFirst1",
+  "sourceCode" : "@Test\r\npublic void testEqualsNullIntFirst1() {\r\n    assertFalse(new Pair<Integer, Integer>(null, null).equals(new Pair<Integer, Integer>(Integer.valueOf(VAL_A), null)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testEqualsNullIntFirst2",
+  "sourceCode" : "@Test\r\npublic void testEqualsNullIntFirst2() {\r\n    assertFalse(new Pair<Integer, Integer>(Integer.valueOf(VAL_A), null).equals(new Pair<Integer, Integer>(null, null)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testEqualsNullIntSecond0",
+  "sourceCode" : "@Test\r\npublic void testEqualsNullIntSecond0() {\r\n    assertTrue(new Pair<Integer, Integer>(null, Integer.valueOf(VAL_A)).equals(new Pair<Integer, Integer>(null, Integer.valueOf(VAL_A))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testEqualsNullIntSecond1",
+  "sourceCode" : "@Test\r\npublic void testEqualsNullIntSecond1() {\r\n    assertFalse(new Pair<Integer, Integer>(null, null).equals(new Pair<Integer, Integer>(null, Integer.valueOf(VAL_A))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testEqualsNullIntSecond2",
+  "sourceCode" : "@Test\r\npublic void testEqualsNullIntSecond2() {\r\n    assertFalse(new Pair<Integer, Integer>(null, Integer.valueOf(VAL_A)).equals(new Pair<Integer, Integer>(null, null)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testCompareToTrulyEqual",
+  "sourceCode" : "/**\r\n * Test method for\r\n * {@link\r\n * org.apache.hadoop.mrunit.types.Pair#compareTo(org.apache.hadoop.mrunit.types.Pair)}.\r\n */\r\n@Test\r\npublic void testCompareToTrulyEqual() {\r\n    assertTrue(0 == new Pair<Integer, Integer>(Integer.valueOf(VAL_A), Integer.valueOf(VAL_B)).compareTo(new Pair<Integer, Integer>(Integer.valueOf(VAL_A), Integer.valueOf(VAL_B))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testCompareToInequalFirst",
+  "sourceCode" : "@Test\r\npublic void testCompareToInequalFirst() {\r\n    assertFalse(0 == new Pair<Integer, Integer>(Integer.valueOf(VAL_A), Integer.valueOf(VAL_B)).compareTo(new Pair<Integer, Integer>(Integer.valueOf(VAL_C), Integer.valueOf(VAL_B))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testCompareToInequalSecond",
+  "sourceCode" : "@Test\r\npublic void testCompareToInequalSecond() {\r\n    assertFalse(0 == new Pair<Integer, Integer>(Integer.valueOf(VAL_A), Integer.valueOf(VAL_B)).compareTo(new Pair<Integer, Integer>(Integer.valueOf(VAL_A), Integer.valueOf(VAL_D))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testCompareToNullNull",
+  "sourceCode" : "@Test\r\npublic void testCompareToNullNull() {\r\n    try {\r\n        new Pair<Integer, Integer>(null, null).compareTo(new Pair<Integer, Integer>(null, null));\r\n        fail();\r\n    } catch (NullPointerException npe) {\r\n        // expected this; ok.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testCompareToNullIntFirst0",
+  "sourceCode" : "@Test\r\npublic void testCompareToNullIntFirst0() {\r\n    try {\r\n        new Pair<Integer, Integer>(Integer.valueOf(VAL_A), null).compareTo(new Pair<Integer, Integer>(Integer.valueOf(VAL_A), null));\r\n        fail();\r\n    } catch (NullPointerException npe) {\r\n        // expected this; ok.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testCompareToNullIntFirst1",
+  "sourceCode" : "@Test\r\npublic void testCompareToNullIntFirst1() {\r\n    try {\r\n        new Pair<Integer, Integer>(null, null).compareTo(new Pair<Integer, Integer>(Integer.valueOf(VAL_A), null));\r\n        fail();\r\n    } catch (NullPointerException npe) {\r\n        // expected this; ok.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testCompareToNullIntFirst2",
+  "sourceCode" : "@Test\r\npublic void testCompareToNullIntFirst2() {\r\n    try {\r\n        new Pair<Integer, Integer>(Integer.valueOf(VAL_A), null).compareTo(new Pair<Integer, Integer>(null, null));\r\n        fail();\r\n    } catch (NullPointerException npe) {\r\n        // expected this; ok.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testCompareToNullIntSecond0",
+  "sourceCode" : "@Test\r\npublic void testCompareToNullIntSecond0() {\r\n    try {\r\n        new Pair<Integer, Integer>(null, Integer.valueOf(VAL_A)).compareTo(new Pair<Integer, Integer>(null, Integer.valueOf(VAL_A)));\r\n        fail();\r\n    } catch (NullPointerException npe) {\r\n        // expected this; ok.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testCompareToNullIntSecond1",
+  "sourceCode" : "@Test\r\npublic void testCompareToNullIntSecond1() {\r\n    try {\r\n        new Pair<Integer, Integer>(null, null).compareTo(new Pair<Integer, Integer>(null, Integer.valueOf(VAL_A)));\r\n        fail();\r\n    } catch (NullPointerException npe) {\r\n        // expected this; ok.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\MRUnit\\src\\test\\org\\apache\\hadoop\\mrunit\\types\\TestPair.java",
+  "methodName" : "testCompareToNullIntSecond2",
+  "sourceCode" : "@Test\r\npublic void testCompareToNullIntSecond2() {\r\n    try {\r\n        new Pair<Integer, Integer>(null, Integer.valueOf(VAL_A)).compareTo(new Pair<Integer, Integer>(null, null));\r\n        fail();\r\n    } catch (NullPointerException npe) {\r\n        // expected this; ok.\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

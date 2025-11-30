@@ -1,0 +1,205 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\extensions\\salesforce-connector\\services\\src\\test\\java\\org\\apache\\unomi\\sfdc\\services\\internal\\SFDCServiceImplTest.java",
+  "methodName" : "testGetLeads",
+  "sourceCode" : "@Test\r\npublic void testGetLeads() {\r\n    if (!checkCanRunTests())\r\n        return;\r\n    Set<String> recentLeadIds = sfdcServiceImpl.getRecentLeadIds();\r\n    if (recentLeadIds == null || recentLeadIds.size() == 0) {\r\n        return;\r\n    }\r\n    for (String recentLeadId : recentLeadIds) {\r\n        Map<String, Object> leadFields = sfdcServiceImpl.getLead(recentLeadId);\r\n        if (leadFields.containsKey(sfdcConfiguration.getSfdcIdentifierField())) {\r\n            String leadIdentifierFieldValue = (String) leadFields.get(sfdcConfiguration.getSfdcIdentifierField());\r\n            if (leadIdentifierFieldValue == null) {\r\n                System.out.println(\"Skipping lead with null identifier field value for field: \" + sfdcConfiguration.getSfdcIdentifierField());\r\n                continue;\r\n            }\r\n            Set<String> foundLeadIds = sfdcServiceImpl.findLeadIdsByIdentifierValue(leadIdentifierFieldValue);\r\n            assertTrue(\"Should find a single lead for identifier value \" + leadIdentifierFieldValue, foundLeadIds.size() == 1);\r\n            assertEquals(\"Expected Id to be the same\", foundLeadIds.iterator().next(), leadFields.get(\"Id\"));\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\extensions\\salesforce-connector\\services\\src\\test\\java\\org\\apache\\unomi\\sfdc\\services\\internal\\SFDCServiceImplTest.java",
+  "methodName" : "testGetLimits",
+  "sourceCode" : "@Test\r\npublic void testGetLimits() {\r\n    if (!checkCanRunTests())\r\n        return;\r\n    Map<String, Object> limits = sfdcServiceImpl.getLimits();\r\n    assertNotNull(\"Limits object is null, an error occurred !\", limits);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\extensions\\salesforce-connector\\services\\src\\test\\java\\org\\apache\\unomi\\sfdc\\services\\internal\\SFDCServiceImplTest.java",
+  "methodName" : "testCreateOrUpdateAndSyncLead",
+  "sourceCode" : "@Test\r\npublic void testCreateOrUpdateAndSyncLead() {\r\n    if (!checkCanRunTests())\r\n        return;\r\n    Profile profile = new Profile();\r\n    profile.setItemId(UUID.randomUUID().toString());\r\n    profile.setProperty(\"email\", \"test2@jahia.com\");\r\n    profile.setProperty(\"firstName\", \"Serge\");\r\n    String leadId = sfdcServiceImpl.createOrUpdateLead(profile);\r\n    assertNull(\"The lead creation should fail since we are missing mandatory fields.\", leadId);\r\n    profile.setProperty(\"lastName\", \"Huber\");\r\n    profile.setProperty(\"company\", \"Jahia Solutions Group\");\r\n    profile.setProperty(\"phoneNumber\", \"+41223613424\");\r\n    profile.setProperty(\"jobTitle\", \"CTO\");\r\n    leadId = sfdcServiceImpl.createOrUpdateLead(profile);\r\n    // now let's try to update it.\r\n    profile.setProperty(\"company\", \"Jahia Solutions Group SA\");\r\n    sfdcServiceImpl.createOrUpdateLead(profile);\r\n    boolean profileUpdated = sfdcServiceImpl.updateProfileFromLead(profile);\r\n    assertTrue(\"Profile should have been updated since we are reading status field\", profileUpdated);\r\n    profile.setProperty(\"company\", \"Another value\");\r\n    profileUpdated = sfdcServiceImpl.updateProfileFromLead(profile);\r\n    assertTrue(\"Profile should have been updated since data is not equal\", profileUpdated);\r\n    if (leadId != null) {\r\n        sfdcServiceImpl.deleteLead(leadId);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\extensions\\salesforce-connector\\services\\src\\test\\java\\org\\apache\\unomi\\sfdc\\services\\internal\\SFDCServiceImplTest.java",
+  "methodName" : "testStreaming",
+  "sourceCode" : "@Test\r\npublic void testStreaming() throws Exception {\r\n    if (!checkCanRunTests())\r\n        return;\r\n    System.out.println(\"Running streaming client example....\");\r\n    sfdcServiceImpl.setupPushListener(sfdcConfiguration.getSfdcChannel(), new ClientSessionChannel.MessageListener() {\r\n\r\n        @Override\r\n        public void onMessage(ClientSessionChannel clientSessionChannel, Message message) {\r\n            System.out.println(\"Received message for channel\" + sfdcConfiguration.getSfdcChannel() + \":\" + message);\r\n        }\r\n    });\r\n    System.out.println(\"Waiting 10 seconds for streamed data from your organization ...\");\r\n    int i = 0;\r\n    while (i < 10) {\r\n        Thread.sleep(1000);\r\n        i++;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\extensions\\salesforce-connector\\services\\src\\test\\java\\org\\apache\\unomi\\sfdc\\services\\internal\\SFDCServiceImplTest.java",
+  "methodName" : "testFailedLogin",
+  "sourceCode" : "@Test\r\npublic void testFailedLogin() throws IOException, HttpException {\r\n    if (!checkCanRunTests())\r\n        return;\r\n    InputStream configPropertiesStream = SFDCServiceImplTest.class.getClassLoader().getResourceAsStream(\"org.apache.unomi.sfdc.cfg\");\r\n    Properties properties = new Properties();\r\n    properties.load(configPropertiesStream);\r\n    String loginEndpoint = properties.getProperty(\"sfdc.login.endpoint\");\r\n    Properties testProperties = new Properties();\r\n    if (System.getProperty(\"sfdcProperties\") != null) {\r\n        sfdcServiceImpl.logout();\r\n        InputStream testPropertiesInputStream = new FileInputStream(System.getProperty(\"sfdcProperties\"));\r\n        testProperties.load(testPropertiesInputStream);\r\n        if (testProperties.getProperty(\"sfdc.login.endpoint\") != null) {\r\n            loginEndpoint = testProperties.getProperty(\"sfdc.login.endpoint\");\r\n        }\r\n        String userUserName = testProperties.getProperty(\"sfdc.user.username\");\r\n        String userPassword = testProperties.getProperty(\"sfdc.user.password\");\r\n        String userSecurityToken = testProperties.getProperty(\"sfdc.user.securityToken\");\r\n        String consumerKey = testProperties.getProperty(\"sfdc.consumer.key\");\r\n        String consumerSecret = testProperties.getProperty(\"sfdc.consumer.secret\");\r\n        SFDCConfiguration sfdcConfiguration = new SFDCConfiguration();\r\n        sfdcConfiguration.setSfdcLoginEndpoint(loginEndpoint);\r\n        sfdcConfiguration.setSfdcUserUsername(userUserName);\r\n        sfdcConfiguration.setSfdcUserPassword(userPassword + \"wrongpassword\");\r\n        sfdcConfiguration.setSfdcUserSecurityToken(userSecurityToken);\r\n        sfdcConfiguration.setSfdcConsumerKey(consumerKey);\r\n        sfdcConfiguration.setSfdcConsumerSecret(consumerSecret);\r\n        boolean loginSuccessful = sfdcServiceImpl.login(sfdcConfiguration);\r\n        assertNull(\"Session should not be valid since we used a wrong password !\", sfdcServiceImpl.getSFDCSession());\r\n        // we login properly for other tests to execute properly.\r\n        sfdcConfiguration.setSfdcUserPassword(userPassword);\r\n        loginSuccessful = sfdcServiceImpl.login(sfdcConfiguration);\r\n        assertTrue(\"Login with proper credentials should have worked !\", loginSuccessful);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\BasicIT.java",
+  "methodName" : "testContextJS",
+  "sourceCode" : "@Test\r\npublic void testContextJS() throws IOException {\r\n    HttpUriRequest request = new HttpGet(URL + \"/context.js?sessionId=aa3b04bd-8f4d-4a07-8e96-d33ffa04d3d9\");\r\n    CloseableHttpResponse response = HttpClientBuilder.create().build().execute(request);\r\n    // The underlying HTTP connection is still held by the response object\r\n    // to allow the response content to be streamed directly from the network socket.\r\n    // In order to ensure correct deallocation of system resources\r\n    // the profile MUST call CloseableHttpResponse#close() from a finally clause.\r\n    // Please note that if response content is not fully consumed the underlying\r\n    // connection cannot be safely re-used and will be shut down and discarded\r\n    // by the connection manager.\r\n    String responseContent = null;\r\n    try {\r\n        System.out.println(response.getStatusLine());\r\n        HttpEntity entity = response.getEntity();\r\n        // do something useful with the response body\r\n        // and ensure it is fully consumed\r\n        responseContent = EntityUtils.toString(entity);\r\n    } finally {\r\n        response.close();\r\n    }\r\n    Assert.assertTrue(\"Response should contain context object\", responseContent.contains(\"window.digitalData = window.digitalData || {};\"));\r\n    // @todo we should check the validity of the context object, but this is rather complex since it would\r\n    // potentially require parsing the Javascript !\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\BasicIT.java",
+  "methodName" : "testContextJSON",
+  "sourceCode" : "@Test\r\npublic void testContextJSON() throws IOException {\r\n    String sessionId = \"aa3b04bd-8f4d-4a07-8e96-d33ffa04d3d9\";\r\n    ContextRequest contextRequest = new ContextRequest();\r\n    //        contextRequest.setSource(new EventSource());\r\n    //        contextRequest.getSource().setId(\"af6f393a-a537-4586-991b-8521b9c7b05b\");\r\n    HttpPost request = new HttpPost(URL + \"/context.json?sessionId=\" + sessionId);\r\n    request.setEntity(new StringEntity(objectMapper.writeValueAsString(contextRequest), ContentType.create(\"application/json\")));\r\n    CloseableHttpResponse response = HttpClientBuilder.create().build().execute(request);\r\n    try {\r\n        // validate mimeType\r\n        String mimeType = ContentType.getOrDefault(response.getEntity()).getMimeType();\r\n        Assert.assertEquals(\"Response content type should be \" + JSON_MYME_TYPE, JSON_MYME_TYPE, mimeType);\r\n        // validate context\r\n        ContextResponse context = TestUtils.retrieveResourceFromResponse(response, ContextResponse.class);\r\n        Assert.assertNotNull(\"Context should not be null\", context);\r\n        Assert.assertNotNull(\"Context profileId should not be null\", context.getProfileId());\r\n        Assert.assertEquals(\"Context sessionId should be the same as the sessionId used to request the context\", sessionId, context.getSessionId());\r\n    } finally {\r\n        response.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ConditionEvaluatorIT.java",
+  "methodName" : "testCompound",
+  "sourceCode" : "@Test\r\npublic void testCompound() {\r\n    // test AND\r\n    assertTrue(eval(builder.and(builder.profileProperty(\"properties.gender\").equalTo(\"female\"), builder.profileProperty(\"properties.age\").equalTo(Integer.valueOf(30))).build()));\r\n    //assertFalse(eval(builder.and(builder.profileProperty(\"properties.gender\").equalTo(\"male\"),\r\n    //        builder.profileProperty(\"properties.age\").equalTo(Integer.valueOf(30))).build()));\r\n    //assertFalse(eval(builder.and(builder.profileProperty(\"properties.gender\").equalTo(\"female\"),\r\n    //        builder.profileProperty(\"properties.age\").equalTo(Integer.valueOf(40))).build()));\r\n    // test OR\r\n    assertTrue(eval(builder.or(builder.profileProperty(\"properties.gender\").equalTo(\"female\"), builder.profileProperty(\"properties.age\").equalTo(Integer.valueOf(40))).build()));\r\n    assertTrue(eval(builder.or(builder.profileProperty(\"properties.gender\").equalTo(\"male\"), builder.profileProperty(\"properties.age\").equalTo(Integer.valueOf(30))).build()));\r\n    //assertFalse(eval(builder.or(builder.profileProperty(\"properties.gender\").equalTo(\"male\"),\r\n    //        builder.profileProperty(\"properties.age\").equalTo(Integer.valueOf(40))).build()));\r\n    // test NOT\r\n    assertTrue(eval(builder.not(builder.profileProperty(\"properties.gender\").equalTo(\"male\")).build()));\r\n    //assertFalse(eval(builder.not(builder.profileProperty(\"properties.age\").equalTo(Integer.valueOf(30))).build()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ConditionEvaluatorIT.java",
+  "methodName" : "testExistence",
+  "sourceCode" : "@Test\r\npublic void testExistence() {\r\n    /*assertTrue(\"Gender property does not exist\",\r\n                eval(builder.profileProperty(\"properties.gender\").exists().build()));\r\n        assertFalse(\"Gender property missing\", eval(builder.profileProperty(\"properties.gender\").missing().build()));\r\n        assertTrue(\"Strange property exists\", eval(builder.profileProperty(\"properties.unknown\").missing().build()));\r\n        assertFalse(\"Strange property exists\", eval(builder.profileProperty(\"properties.unknown\").exists().build()));*/\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ConditionEvaluatorIT.java",
+  "methodName" : "testInteger",
+  "sourceCode" : "@Test\r\npublic void testInteger() {\r\n    assertTrue(eval(builder.profileProperty(\"properties.age\").equalTo(Integer.valueOf(30)).build()));\r\n    assertTrue(eval(builder.not(builder.profileProperty(\"properties.age\").equalTo(Integer.valueOf(40))).build()));\r\n    assertTrue(eval(builder.profileProperty(\"properties.age\").notEqualTo(Integer.valueOf(40)).build()));\r\n    assertTrue(eval(builder.profileProperty(\"properties.age\").lessThan(Integer.valueOf(40)).build()));\r\n    assertTrue(eval(builder.profileProperty(\"properties.age\").greaterThan(Integer.valueOf(20)).build()));\r\n    assertTrue(eval(builder.profileProperty(\"properties.age\").greaterThanOrEqualTo(Integer.valueOf(30)).build()));\r\n    //assertFalse(eval(builder.profileProperty(\"properties.age\").greaterThanOrEqualTo(Integer.valueOf(31)).build()));\r\n    assertTrue(eval(builder.profileProperty(\"properties.age\").in(Integer.valueOf(30)).build()));\r\n    assertTrue(eval(builder.profileProperty(\"properties.age\").in(Integer.valueOf(31), Integer.valueOf(30)).build()));\r\n    assertTrue(eval(builder.profileProperty(\"properties.age\").notIn(Integer.valueOf(25), Integer.valueOf(26)).build()));\r\n    //assertFalse(eval(builder.profileProperty(\"properties.age\").notIn(Integer.valueOf(25), Integer.valueOf(30))\r\n    //        .build()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ConditionEvaluatorIT.java",
+  "methodName" : "testMultiValue",
+  "sourceCode" : "@Test\r\npublic void testMultiValue() {\r\n    assertTrue(eval(builder.property(\"profileSegmentCondition\", \"segments\").parameter(\"matchType\", \"in\").parameter(\"segments\", \"s10\", \"s20\", \"s2\").build()));\r\n    //assertFalse(eval(builder.property(\"profileSegmentCondition\", \"segments\").parameter(\"matchType\", \"in\")\r\n    //        .parameter(\"segments\", \"s10\", \"s20\", \"s30\").build()));\r\n    assertTrue(eval(builder.property(\"profileSegmentCondition\", \"segments\").parameter(\"matchType\", \"notIn\").parameter(\"segments\", \"s10\", \"s20\", \"s30\").build()));\r\n    //assertFalse(eval(builder.property(\"profileSegmentCondition\", \"segments\").parameter(\"matchType\", \"notIn\")\r\n    //        .parameter(\"segments\", \"s10\", \"s20\", \"s2\").build()));\r\n    assertTrue(eval(builder.property(\"profileSegmentCondition\", \"segments\").parameter(\"matchType\", \"all\").parameter(\"segments\", \"s1\", \"s2\").build()));\r\n    //assertFalse(eval(builder.property(\"profileSegmentCondition\", \"segments\").parameter(\"matchType\", \"all\")\r\n    //        .parameter(\"segments\", \"s1\", \"s5\").build()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ConditionEvaluatorIT.java",
+  "methodName" : "testString",
+  "sourceCode" : "@Test\r\npublic void testString() {\r\n    assertTrue(eval(builder.profileProperty(\"properties.gender\").equalTo(\"female\").build()));\r\n    //assertFalse(eval(builder.not(builder.profileProperty(\"properties.gender\").equalTo(\"female\")).build()));\r\n    assertTrue(eval(builder.profileProperty(\"properties.gender\").notEqualTo(\"male\").build()));\r\n    //assertFalse(eval(builder.not(builder.profileProperty(\"properties.gender\").notEqualTo(\"male\")).build()));\r\n    assertTrue(eval(builder.profileProperty(\"properties.gender\").startsWith(\"fe\").build()));\r\n    assertTrue(eval(builder.profileProperty(\"properties.gender\").endsWith(\"le\").build()));\r\n    assertTrue(eval(builder.profileProperty(\"properties.gender\").contains(\"fem\").build()));\r\n    //assertFalse(eval(builder.profileProperty(\"properties.gender\").contains(\"mu\").build()));\r\n    assertTrue(eval(builder.profileProperty(\"properties.gender\").matchesRegex(\".*ale\").build()));\r\n    assertTrue(eval(builder.profileProperty(\"properties.gender\").in(\"male\", \"female\").build()));\r\n    assertTrue(eval(builder.profileProperty(\"properties.gender\").notIn(\"one\", \"two\").build()));\r\n    //assertFalse(eval(builder.profileProperty(\"properties.gender\").notIn(\"one\", \"two\", \"female\").build()));\r\n    assertTrue(eval(builder.profileProperty(\"properties.gender\").all(\"female\").build()));\r\n    //assertFalse(eval(builder.profileProperty(\"properties.gender\").all(\"male\", \"female\").build()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileExportIT.java",
+  "methodName" : "testCheckSegment",
+  "sourceCode" : "@Test\r\npublic void testCheckSegment() {\r\n    Segment segment = segmentService.getSegmentDefinition(\"exportItSeg\");\r\n    Assert.assertNotNull(segment);\r\n    Assert.assertEquals(\"Export IT Segment\", segment.getMetadata().getName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileExportIT.java",
+  "methodName" : "testCheckExportConfigList",
+  "sourceCode" : "@Test\r\npublic void testCheckExportConfigList() {\r\n    List<ExportConfiguration> exportConfigurations = exportConfigurationService.getAll();\r\n    Assert.assertEquals(1, exportConfigurations.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileExportIT.java",
+  "methodName" : "testExport",
+  "sourceCode" : "@Test\r\npublic void testExport() throws InterruptedException {\r\n    Thread.sleep(5000);\r\n    File exportResult = new File(exportDir + \"/profiles-actors-export.csv\");\r\n    logger.info(\"PATH : {}\", exportResult.getAbsolutePath());\r\n    Assert.assertTrue(exportResult.exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileImportActorsIT.java",
+  "methodName" : "testCheckImportConfigListActors",
+  "sourceCode" : "@Test\r\npublic void testCheckImportConfigListActors() {\r\n    List<ImportConfiguration> importConfigurations = importConfigurationService.getAll();\r\n    Assert.assertEquals(5, importConfigurations.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileImportActorsIT.java",
+  "methodName" : "testCheckAddedPropertiesActors",
+  "sourceCode" : "@Test\r\npublic void testCheckAddedPropertiesActors() throws IOException, InterruptedException {\r\n    //Wait for data to be processed\r\n    Thread.sleep(1000);\r\n    PropertyType propTwitterId = profileService.getPropertyType(\"twitterId\");\r\n    Assert.assertNotNull(propTwitterId);\r\n    PropertyType propActorsGenre = profileService.getPropertyType(\"movieGenres\");\r\n    Assert.assertNotNull(propActorsGenre);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileImportActorsIT.java",
+  "methodName" : "testImportActors",
+  "sourceCode" : "@Test\r\npublic void testImportActors() throws InterruptedException {\r\n    //Wait for data to be processed\r\n    //Check import config status\r\n    ImportConfiguration importConfiguration = importConfigurationService.load(\"6-actors-test\");\r\n    while (importConfiguration != null && !RouterConstants.CONFIG_STATUS_COMPLETE_SUCCESS.equals(importConfiguration.getStatus())) {\r\n        logger.info(\"$$$$ : testImportActors : Waiting for data to be processed ...\");\r\n        Thread.sleep(1000);\r\n        importConfiguration = importConfigurationService.load(\"6-actors-test\");\r\n    }\r\n    Thread.sleep(10000);\r\n    Assert.assertEquals(1, importConfiguration.getExecutions().size());\r\n    //Assert.assertEquals(34, profileService.getAllProfilesCount());\r\n    PartialList<Profile> jeanneProfile = profileService.findProfilesByPropertyValue(\"properties.twitterId\", \"4\", 0, 10, null);\r\n    Assert.assertEquals(1, jeanneProfile.getList().size());\r\n    Assert.assertNotNull(jeanneProfile.get(0));\r\n    Assert.assertEquals(\"Jeanne; D'arc\", jeanneProfile.get(0).getProperty(\"lastName\"));\r\n    Assert.assertEquals(\"jean@darc.com\", jeanneProfile.get(0).getProperty(\"email\"));\r\n    Assert.assertArrayEquals(new String[] {}, ((List) jeanneProfile.get(0).getProperty(\"movieGenres\")).toArray());\r\n    PartialList<Profile> rockProfile = profileService.findProfilesByPropertyValue(\"properties.twitterId\", \"6\", 0, 10, null);\r\n    Assert.assertEquals(1, rockProfile.getList().size());\r\n    Assert.assertNotNull(rockProfile.get(0));\r\n    Assert.assertEquals(\"The Rock\", rockProfile.get(0).getProperty(\"lastName\"));\r\n    Assert.assertEquals(\"the.rock@gmail.com\", rockProfile.get(0).getProperty(\"email\"));\r\n    Assert.assertEquals(Arrays.asList(\"Adventure\", \"Action\", \"Romance\", \"Comedy\"), rockProfile.get(0).getProperty(\"movieGenres\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileImportBasicIT.java",
+  "methodName" : "testCheckImportConfigList",
+  "sourceCode" : "@Test\r\npublic void testCheckImportConfigList() {\r\n    List<ImportConfiguration> importConfigurations = importConfigurationService.getAll();\r\n    Assert.assertEquals(1, importConfigurations.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileImportBasicIT.java",
+  "methodName" : "testImportBasic",
+  "sourceCode" : "@Test\r\npublic void testImportBasic() throws IOException, InterruptedException {\r\n    //Wait for the csv to be processed\r\n    Thread.sleep(10000);\r\n    //Check saved profiles\r\n    PartialList<Profile> profiles = profileService.findProfilesByPropertyValue(\"properties.email\", \"basic1@test.com\", 0, 10, null);\r\n    Assert.assertEquals(3, profileService.getAllProfilesCount());\r\n    Assert.assertEquals(1, profiles.getList().size());\r\n    Assert.assertNotNull(profiles.get(0));\r\n    Assert.assertEquals(\"Basic1\", profiles.get(0).getProperty(\"firstName\"));\r\n    Assert.assertEquals(\"User1\", profiles.get(0).getProperty(\"lastName\"));\r\n    //Check import config status\r\n    ImportConfiguration importConfiguration = importConfigurationService.load(\"1-basic-test\");\r\n    Assert.assertEquals(RouterConstants.CONFIG_STATUS_COMPLETE_SUCCESS, importConfiguration.getStatus());\r\n    Assert.assertEquals(1, importConfiguration.getExecutions().size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileImportRankingIT.java",
+  "methodName" : "testCheckImportConfigListRanking",
+  "sourceCode" : "@Test\r\npublic void testCheckImportConfigListRanking() {\r\n    List<ImportConfiguration> importConfigurations = importConfigurationService.getAll();\r\n    Assert.assertEquals(4, importConfigurations.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileImportRankingIT.java",
+  "methodName" : "testCheckAddedPropertiesRanking",
+  "sourceCode" : "@Test\r\npublic void testCheckAddedPropertiesRanking() throws IOException, InterruptedException {\r\n    //Wait for data to be processed\r\n    Thread.sleep(1000);\r\n    PropertyType propUciId = profileService.getPropertyType(\"uciId\");\r\n    Assert.assertNotNull(propUciId);\r\n    PropertyType propRankId = profileService.getPropertyType(\"rank\");\r\n    Assert.assertNotNull(propRankId);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileImportRankingIT.java",
+  "methodName" : "testImportRanking",
+  "sourceCode" : "@Test\r\npublic void testImportRanking() throws InterruptedException {\r\n    //Wait for data to be processed\r\n    //Check import config status\r\n    ImportConfiguration importConfiguration = importConfigurationService.load(\"5-ranking-test\");\r\n    while (importConfiguration != null && !RouterConstants.CONFIG_STATUS_COMPLETE_SUCCESS.equals(importConfiguration.getStatus())) {\r\n        logger.info(\"$$$$ : testImportRanking : Waiting for data to be processed ...\");\r\n        Thread.sleep(1000);\r\n        importConfiguration = importConfigurationService.load(\"5-ranking-test\");\r\n    }\r\n    Thread.sleep(10000);\r\n    Assert.assertEquals(1, importConfiguration.getExecutions().size());\r\n    //Assert.assertEquals(28, profileService.getAllProfilesCount());\r\n    PartialList<Profile> gregProfile = profileService.findProfilesByPropertyValue(\"properties.uciId\", \"10004451371\", 0, 10, null);\r\n    Assert.assertEquals(1, gregProfile.getList().size());\r\n    Assert.assertNotNull(gregProfile.get(0));\r\n    Assert.assertEquals(1, gregProfile.get(0).getProperty(\"rank\"));\r\n    Assert.assertEquals(\"VAN AVERMAET Greg\", gregProfile.get(0).getProperty(\"lastName\"));\r\n    Assert.assertEquals(\"BELGIUM\", gregProfile.get(0).getProperty(\"nationality\"));\r\n    Assert.assertEquals(32, gregProfile.get(0).getProperty(\"age\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileImportSurfersDeleteIT.java",
+  "methodName" : "testCheckImportConfigListSurfers",
+  "sourceCode" : "@Test\r\npublic void testCheckImportConfigListSurfers() {\r\n    List<ImportConfiguration> importConfigurations = importConfigurationService.getAll();\r\n    Assert.assertEquals(3, importConfigurations.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileImportSurfersDeleteIT.java",
+  "methodName" : "testImportSurfersDelete",
+  "sourceCode" : "@Test\r\npublic void testImportSurfersDelete() throws IOException, InterruptedException {\r\n    //Wait for data to be processed\r\n    Thread.sleep(10000);\r\n    //Assert.assertEquals(3, profileService.getAllProfilesCount());\r\n    PartialList<Profile> jordyProfile = profileService.findProfilesByPropertyValue(\"properties.email\", \"jordy@smith.com\", 0, 10, null);\r\n    Assert.assertEquals(0, jordyProfile.getList().size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileImportSurfersIT.java",
+  "methodName" : "testCheckAddedPropertiesSurfers",
+  "sourceCode" : "@Test\r\npublic void testCheckAddedPropertiesSurfers() throws IOException, InterruptedException {\r\n    //Wait for data to be processed\r\n    Thread.sleep(1000);\r\n    PropertyType propAlive = profileService.getPropertyType(\"alive\");\r\n    Assert.assertNotNull(propAlive);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileImportSurfersIT.java",
+  "methodName" : "testImportSurfers",
+  "sourceCode" : "@Test\r\npublic void testImportSurfers() throws IOException, InterruptedException {\r\n    //Wait for data to be processed\r\n    Thread.sleep(10000);\r\n    //Assert.assertEquals(37, profileService.getAllProfilesCount());\r\n    //Profile not to delete\r\n    PartialList<Profile> jordyProfile = profileService.findProfilesByPropertyValue(\"properties.email\", \"jordy@smith.com\", 0, 10, null);\r\n    Assert.assertEquals(1, jordyProfile.getList().size());\r\n    Assert.assertNotNull(jordyProfile.get(0));\r\n    Assert.assertEquals(\"1\", jordyProfile.get(0).getProperty(\"linkedInId\"));\r\n    Assert.assertEquals(\"Jordy Smith\", jordyProfile.get(0).getProperty(\"lastName\"));\r\n    Assert.assertEquals(\"999\", jordyProfile.get(0).getProperty(\"facebookId\"));\r\n    Assert.assertEquals(\"male\", jordyProfile.get(0).getProperty(\"gender\"));\r\n    Assert.assertTrue((Boolean) jordyProfile.get(0).getProperty(\"alive\"));\r\n    //Profile to delete\r\n    PartialList<Profile> paulineProfile = profileService.findProfilesByPropertyValue(\"properties.lastName\", \"Pauline Ado\", 0, 10, null);\r\n    Assert.assertEquals(0, paulineProfile.getList().size());\r\n    //Check import config status\r\n    ImportConfiguration importConfiguration = importConfigurationService.load(\"2-surfers-test\");\r\n    Assert.assertEquals(RouterConstants.CONFIG_STATUS_COMPLETE_SUCCESS, importConfiguration.getStatus());\r\n    Assert.assertEquals(1, importConfiguration.getExecutions().size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileImportSurfersOverwriteIT.java",
+  "methodName" : "testCheckImportConfigListSurfersOverwrite",
+  "sourceCode" : "@Test\r\npublic void testCheckImportConfigListSurfersOverwrite() {\r\n    List<ImportConfiguration> importConfigurations = importConfigurationService.getAll();\r\n    Assert.assertEquals(2, importConfigurations.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileImportSurfersOverwriteIT.java",
+  "methodName" : "testCheckAddedPropertiesSurfersOverwrite",
+  "sourceCode" : "@Test\r\npublic void testCheckAddedPropertiesSurfersOverwrite() throws IOException, InterruptedException {\r\n    //Wait for data to be processed\r\n    Thread.sleep(1000);\r\n    PropertyType propAlive = profileService.getPropertyType(\"alive\");\r\n    Assert.assertNotNull(propAlive);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileImportSurfersOverwriteIT.java",
+  "methodName" : "testImportSurfersOverwrite",
+  "sourceCode" : "@Test\r\npublic void testImportSurfersOverwrite() throws IOException, InterruptedException {\r\n    //Wait for data to be processed\r\n    Thread.sleep(10000);\r\n    //Assert.assertEquals(39, profileService.getAllProfilesCount());\r\n    //Profile not to delete\r\n    PartialList<Profile> aliveProfiles = profileService.findProfilesByPropertyValue(\"properties.alive\", \"true\", 0, 50, null);\r\n    PartialList<Profile> deadProfiles = profileService.findProfilesByPropertyValue(\"properties.alive\", \"false\", 0, 50, null);\r\n    Assert.assertEquals(0, aliveProfiles.getList().size());\r\n    Assert.assertEquals(36, deadProfiles.getList().size());\r\n    //Profile to delete = false, was to delete\r\n    PartialList<Profile> paulineProfile = profileService.findProfilesByPropertyValue(\"properties.lastName\", \"Pauline Ado\", 0, 10, null);\r\n    Assert.assertEquals(1, paulineProfile.getList().size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\ProfileServiceIT.java",
+  "methodName" : "testProfileDelete",
+  "sourceCode" : "@Test\r\npublic void testProfileDelete() {\r\n    Profile profile = new Profile();\r\n    profile.setItemId(TEST_PROFILE_ID);\r\n    profileService.save(profile);\r\n    LOGGER.info(\"Profile saved, now testing profile delete...\");\r\n    profileService.delete(TEST_PROFILE_ID, false);\r\n    LOGGER.info(\"Profile deleted successfully.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\itests\\src\\test\\java\\org\\apache\\unomi\\itests\\SegmentIT.java",
+  "methodName" : "testSegments",
+  "sourceCode" : "@Test\r\npublic void testSegments() {\r\n    Assert.assertNotNull(\"Segment service should be available\", segmentService);\r\n    List<Metadata> segmentMetadatas = segmentService.getSegmentMetadatas(0, 50, null).getList();\r\n    Assert.assertEquals(\"Segment metadata list should be empty\", 0, segmentMetadatas.size());\r\n    LOGGER.info(\"Retrieved \" + segmentMetadatas.size() + \" segment metadata entries\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\performance-tests\\src\\test\\java\\org\\apache\\unomi\\performancetests\\BasicTest.java",
+  "methodName" : "testContext",
+  "sourceCode" : "@BenchmarkOptions(benchmarkRounds = 100, warmupRounds = 0, concurrency = 10)\r\n@Test\r\npublic void testContext() throws IOException {\r\n    CloseableHttpClient httpclient = HttpClients.createDefault();\r\n    HttpGet httpGet = new HttpGet(\"http://localhost:8181/context.js\");\r\n    CloseableHttpResponse response = httpclient.execute(httpGet);\r\n    // The underlying HTTP connection is still held by the response object\r\n    // to allow the response content to be streamed directly from the network socket.\r\n    // In order to ensure correct deallocation of system resources\r\n    // the user MUST call CloseableHttpResponse#close() from a finally clause.\r\n    // Please note that if response content is not fully consumed the underlying\r\n    // connection cannot be safely re-used and will be shut down and discarded\r\n    // by the connection manager.\r\n    String responseContent = null;\r\n    try {\r\n        HttpEntity entity = response.getEntity();\r\n        // do something useful with the response body\r\n        // and ensure it is fully consumed\r\n        responseContent = EntityUtils.toString(entity);\r\n    } finally {\r\n        response.close();\r\n    }\r\n}",
+  "annotations" : [ "BenchmarkOptions", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Unomi\\performance-tests\\src\\test\\java\\org\\apache\\unomi\\performancetests\\BasicTest.java",
+  "methodName" : "testSegments",
+  "sourceCode" : "@BenchmarkOptions(benchmarkRounds = 100, warmupRounds = 0, concurrency = 10)\r\n@Test\r\npublic void testSegments() {\r\n    Assert.assertNotNull(\"Segment service should be available\", segmentService);\r\n    List<Metadata> segmentMetadatas = segmentService.getSegmentMetadatas(0, 50, null).getList();\r\n    Assert.assertNotEquals(\"Segment metadata list should not be empty\", 0, segmentMetadatas.size());\r\n    LOGGER.info(\"Retrieved \" + segmentMetadatas.size() + \" segment metadata entries\");\r\n}",
+  "annotations" : [ "BenchmarkOptions", "Test" ],
+  "junit" : "junit4"
+} ]

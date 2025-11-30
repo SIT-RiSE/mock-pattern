@@ -1,0 +1,985 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\client\\src\\test\\java\\org\\apache\\ivory\\cli\\TestCLIParser.java",
+  "methodName" : "testEmptyParser",
+  "sourceCode" : "@Test\r\npublic void testEmptyParser() throws Exception {\r\n    try {\r\n        CLIParser parser = new CLIParser(\"ivory\", new String[] {});\r\n        CLIParser.Command c = parser.parse(new String[] { \"a\" });\r\n        Assert.fail();\r\n    } catch (ParseException ex) {\r\n        // nop\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\client\\src\\test\\java\\org\\apache\\ivory\\cli\\TestCLIParser.java",
+  "methodName" : "testCommandParser",
+  "sourceCode" : "@Test\r\npublic void testCommandParser() throws Exception {\r\n    try {\r\n        CLIParser parser = new CLIParser(\"oozie\", new String[] {});\r\n        parser.addCommand(\"a\", \"<A>\", \"AAAAA\", new Options(), false);\r\n        CLIParser.Command c = parser.parse(new String[] { \"a\", \"b\" });\r\n        Assert.assertEquals(\"a\", c.getName());\r\n        Assert.assertEquals(\"b\", c.getCommandLine().getArgs()[0]);\r\n    } catch (ParseException ex) {\r\n        Assert.fail();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\client\\src\\test\\java\\org\\apache\\ivory\\cli\\TestCLIParser.java",
+  "methodName" : "testCommandParserX",
+  "sourceCode" : "@Test\r\npublic void testCommandParserX() throws Exception {\r\n    Option opt = new Option(\"o\", false, \"O\");\r\n    Options opts = new Options();\r\n    opts.addOption(opt);\r\n    CLIParser parser = new CLIParser(\"test\", new String[] {});\r\n    parser.addCommand(\"c\", \"-X \", \"(everything after '-X' are pass-through parameters)\", opts, true);\r\n    CLIParser.Command c = parser.parse(\"c -o -X -o c\".split(\" \"));\r\n    Assert.assertEquals(\"-X\", c.getCommandLine().getArgList().get(0));\r\n    Assert.assertEquals(3, c.getCommandLine().getArgList().size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\client\\src\\test\\java\\org\\apache\\ivory\\entity\\v0\\DateValidatorTest.java",
+  "methodName" : "ValidDateTest",
+  "sourceCode" : "@Test(dataProvider = \"ValidDateProvider\")\r\npublic void ValidDateTest(String date) {\r\n    boolean valid = DateValidator.validate(date);\r\n    System.out.println(\"Date is valid : \" + date + \" , \" + valid);\r\n    Assert.assertEquals(valid, true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\client\\src\\test\\java\\org\\apache\\ivory\\entity\\v0\\DateValidatorTest.java",
+  "methodName" : "InValidDateTest",
+  "sourceCode" : "@Test(dataProvider = \"InvalidDateProvider\", dependsOnMethods = \"ValidDateTest\")\r\npublic void InValidDateTest(String date) {\r\n    boolean valid = DateValidator.validate(date);\r\n    System.out.println(\"Date is valid : \" + date + \" , \" + valid);\r\n    Assert.assertEquals(valid, false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\cleanup\\LogCleanupServiceTest.java",
+  "methodName" : "testProcessLogs",
+  "sourceCode" : "@Test\r\npublic void testProcessLogs() throws IOException, IvoryException, InterruptedException {\r\n    Path instanceLogPath = new Path(\"/projects/ivory/staging/ivory/workflows/process/\" + \"sample\" + \"/logs/job-2010-01-01-01-00/000\");\r\n    Path instanceLogPath1 = new Path(\"/projects/ivory/staging/ivory/workflows/process/\" + \"sample\" + \"/logs/job-2010-01-01-01-00/001\");\r\n    Path instanceLogPath2 = new Path(\"/projects/ivory/staging/ivory/workflows/process/\" + \"sample\" + \"/logs/job-2010-01-01-02-00/001\");\r\n    Path instanceLogPath3 = new Path(\"/projects/ivory/staging/ivory/workflows/process/\" + \"sample2\" + \"/logs/job-2010-01-01-01-00/000\");\r\n    Path instanceLogPath4 = new Path(\"/projects/ivory/staging/ivory/workflows/process/\" + \"sample\" + \"/logs/latedata/2010-01-01-01-00\");\r\n    fs.mkdirs(instanceLogPath);\r\n    fs.mkdirs(instanceLogPath1);\r\n    fs.mkdirs(instanceLogPath2);\r\n    fs.mkdirs(instanceLogPath3);\r\n    fs.mkdirs(instanceLogPath4);\r\n    // fs.setTimes wont work on dirs\r\n    fs.createNewFile(new Path(instanceLogPath, \"oozie.log\"));\r\n    fs.createNewFile(new Path(instanceLogPath, \"pigAction_SUCCEEDED.log\"));\r\n    Thread.sleep(61000);\r\n    AbstractCleanupHandler processCleanupHandler = new ProcessCleanupHandler();\r\n    processCleanupHandler.cleanup();\r\n    Assert.assertFalse(fs.exists(instanceLogPath));\r\n    Assert.assertFalse(fs.exists(instanceLogPath1));\r\n    Assert.assertFalse(fs.exists(instanceLogPath2));\r\n    Assert.assertTrue(fs.exists(instanceLogPath3));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\cleanup\\LogCleanupServiceTest.java",
+  "methodName" : "testFeedLogs",
+  "sourceCode" : "@Test\r\npublic void testFeedLogs() throws IOException, IvoryException, InterruptedException {\r\n    Path instanceLogPath = new Path(\"/projects/ivory/staging/ivory/workflows/feed/\" + \"impressionFeed\" + \"/logs/job-2010-01-01-01-00/testCluster/000\");\r\n    Path instanceLogPath1 = new Path(\"/projects/ivory/staging/ivory/workflows/feed/\" + \"impressionFeed2\" + \"/logs/job-2010-01-01-01-00/testCluster/000\");\r\n    FileSystem tfs = targetDfsCluster.getFileSystem();\r\n    fs.mkdirs(instanceLogPath);\r\n    fs.mkdirs(instanceLogPath1);\r\n    tfs.mkdirs(instanceLogPath);\r\n    tfs.mkdirs(instanceLogPath1);\r\n    fs.createNewFile(new Path(instanceLogPath, \"oozie.log\"));\r\n    tfs.createNewFile(new Path(instanceLogPath, \"oozie.log\"));\r\n    Thread.sleep(61000);\r\n    AbstractCleanupHandler feedCleanupHandler = new FeedCleanupHandler();\r\n    feedCleanupHandler.cleanup();\r\n    Assert.assertFalse(fs.exists(instanceLogPath));\r\n    Assert.assertFalse(tfs.exists(instanceLogPath));\r\n    Assert.assertTrue(fs.exists(instanceLogPath1));\r\n    Assert.assertTrue(tfs.exists(instanceLogPath1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\ColoClusterRelationTest.java",
+  "methodName" : "testMapping",
+  "sourceCode" : "@Test\r\npublic void testMapping() throws Exception {\r\n    Cluster cluster1 = newCluster(\"cluster1\", \"colo1\");\r\n    Cluster cluster2 = newCluster(\"cluster2\", \"colo1\");\r\n    Cluster cluster3 = newCluster(\"cluster3\", \"colo2\");\r\n    ConfigurationStore store = ConfigurationStore.get();\r\n    store.publish(EntityType.CLUSTER, cluster1);\r\n    store.publish(EntityType.CLUSTER, cluster2);\r\n    store.publish(EntityType.CLUSTER, cluster3);\r\n    ColoClusterRelation relation = ColoClusterRelation.get();\r\n    Set<String> clusters = relation.getClusters(\"colo1\");\r\n    Assert.assertNotNull(clusters);\r\n    Assert.assertEquals(2, clusters.size());\r\n    Assert.assertTrue(clusters.contains(cluster1.getName()));\r\n    Assert.assertTrue(clusters.contains(cluster2.getName()));\r\n    clusters = relation.getClusters(\"colo2\");\r\n    Assert.assertNotNull(clusters);\r\n    Assert.assertEquals(1, clusters.size());\r\n    Assert.assertTrue(clusters.contains(cluster3.getName()));\r\n    store.remove(EntityType.CLUSTER, cluster1.getName());\r\n    clusters = relation.getClusters(\"colo1\");\r\n    Assert.assertNotNull(clusters);\r\n    Assert.assertEquals(1, clusters.size());\r\n    Assert.assertTrue(clusters.contains(cluster2.getName()));\r\n    store.remove(EntityType.CLUSTER, cluster2.getName());\r\n    clusters = relation.getClusters(\"colo1\");\r\n    Assert.assertNotNull(clusters);\r\n    Assert.assertEquals(0, clusters.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\EntityTypeTest.java",
+  "methodName" : "testGetEntityClass",
+  "sourceCode" : "@Test\r\npublic void testGetEntityClass() {\r\n    Assert.assertEquals(EntityType.PROCESS.getEntityClass().getName(), \"org.apache.ivory.entity.v0.process.Process\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\EntityTypeTest.java",
+  "methodName" : "testIsSchedulable",
+  "sourceCode" : "@Test\r\npublic void testIsSchedulable() {\r\n    Assert.assertTrue(EntityType.PROCESS.isSchedulable());\r\n    Assert.assertTrue(EntityType.FEED.isSchedulable());\r\n    Assert.assertFalse(EntityType.CLUSTER.isSchedulable());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\EntityUtilTest.java",
+  "methodName" : "testProcessView",
+  "sourceCode" : "@Test\r\npublic void testProcessView() throws Exception {\r\n    Process process = (Process) EntityType.PROCESS.getUnmarshaller().unmarshal(getClass().getResourceAsStream(PROCESS_XML));\r\n    Cluster cluster = new Cluster();\r\n    cluster.setName(\"newCluster\");\r\n    cluster.setValidity(process.getClusters().getClusters().get(0).getValidity());\r\n    process.getClusters().getClusters().add(cluster);\r\n    Assert.assertEquals(process.getClusters().getClusters().size(), 2);\r\n    String currentCluster = process.getClusters().getClusters().get(0).getName();\r\n    Process newProcess = EntityUtil.getClusterView(process, currentCluster);\r\n    Assert.assertFalse(EntityUtil.equals(process, newProcess));\r\n    Assert.assertEquals(newProcess.getClusters().getClusters().size(), 1);\r\n    Assert.assertEquals(newProcess.getClusters().getClusters().get(0).getName(), currentCluster);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\EntityUtilTest.java",
+  "methodName" : "testFeedView",
+  "sourceCode" : "@Test\r\npublic void testFeedView() throws Exception {\r\n    Feed feed = (Feed) EntityType.FEED.getUnmarshaller().unmarshal(getClass().getResourceAsStream(FEED_XML));\r\n    Feed view = EntityUtil.getClusterView(feed, \"testCluster\");\r\n    Assert.assertEquals(view.getClusters().getClusters().size(), 1);\r\n    Assert.assertEquals(view.getClusters().getClusters().get(0).getName(), \"testCluster\");\r\n    view = EntityUtil.getClusterView(feed, \"backupCluster\");\r\n    Assert.assertEquals(view.getClusters().getClusters().size(), 2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\EntityUtilTest.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "@Test\r\npublic void testEquals() throws Exception {\r\n    Process process1 = (Process) EntityType.PROCESS.getUnmarshaller().unmarshal(getClass().getResourceAsStream(PROCESS_XML));\r\n    Process process2 = (Process) EntityType.PROCESS.getUnmarshaller().unmarshal(getClass().getResourceAsStream(PROCESS_XML));\r\n    Assert.assertTrue(EntityUtil.equals(process1, process2));\r\n    Assert.assertTrue(EntityUtil.md5(process1).equals(EntityUtil.md5(process2)));\r\n    process2.getClusters().getClusters().get(0).getValidity().setEnd(SchemaHelper.parseDateUTC(\"2013-04-21T00:00Z\"));\r\n    Assert.assertFalse(EntityUtil.equals(process1, process2));\r\n    Assert.assertFalse(EntityUtil.md5(process1).equals(EntityUtil.md5(process2)));\r\n    Assert.assertTrue(EntityUtil.equals(process1, process2, new String[] { \"clusters.clusters[\\\\d+].validity.end\" }));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\EntityUtilTest.java",
+  "methodName" : "testGetNextStartTime",
+  "sourceCode" : "@Test\r\npublic void testGetNextStartTime() throws Exception {\r\n    Date now = getDate(\"2012-04-03 02:45 UTC\");\r\n    Date start = getDate(\"2012-04-02 03:00 UTC\");\r\n    Date newStart = getDate(\"2012-04-03 03:00 UTC\");\r\n    Frequency frequency = new Frequency(\"hours(1)\");\r\n    Assert.assertEquals(newStart, EntityUtil.getNextStartTime(start, frequency, tz, now));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\EntityUtilTest.java",
+  "methodName" : "testgetNextStartTimeOld",
+  "sourceCode" : "@Test\r\npublic void testgetNextStartTimeOld() throws Exception {\r\n    Date now = getDate(\"2012-05-02 02:45 UTC\");\r\n    Date start = getDate(\"2012-02-01 03:00 UTC\");\r\n    Date newStart = getDate(\"2012-05-02 03:00 UTC\");\r\n    Frequency frequency = new Frequency(\"days(7)\");\r\n    Assert.assertEquals(newStart, EntityUtil.getNextStartTime(start, frequency, tz, now));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\EntityUtilTest.java",
+  "methodName" : "testGetNextStartTime2",
+  "sourceCode" : "@Test\r\npublic void testGetNextStartTime2() throws Exception {\r\n    Date now = getDate(\"2010-05-02 04:45 UTC\");\r\n    Date start = getDate(\"2010-02-01 03:00 UTC\");\r\n    Date newStart = getDate(\"2010-05-03 03:00 UTC\");\r\n    Frequency frequency = new Frequency(\"days(7)\");\r\n    Assert.assertEquals(newStart, EntityUtil.getNextStartTime(start, frequency, tz, now));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\EntityUtilTest.java",
+  "methodName" : "testGetNextStartTime3",
+  "sourceCode" : "@Test\r\npublic void testGetNextStartTime3() throws Exception {\r\n    Date now = getDate(\"2010-05-02 04:45 UTC\");\r\n    Date start = getDate(\"1980-02-01 03:00 UTC\");\r\n    Date newStart = getDate(\"2010-05-07 03:00 UTC\");\r\n    Frequency frequency = new Frequency(\"days(7)\");\r\n    Assert.assertEquals(newStart, EntityUtil.getNextStartTime(start, frequency, tz, now));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\EntityUtilTest.java",
+  "methodName" : "testGetInstanceSequence",
+  "sourceCode" : "@Test\r\npublic void testGetInstanceSequence() throws Exception {\r\n    Date instance = getDate(\"2012-05-22 13:40 UTC\");\r\n    Date start = getDate(\"2012-05-14 07:40 UTC\");\r\n    Frequency frequency = new Frequency(\"hours(1)\");\r\n    Assert.assertEquals(199, EntityUtil.getInstanceSequence(start, frequency, tz, instance));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\EntityUtilTest.java",
+  "methodName" : "testGetInstanceSequence1",
+  "sourceCode" : "@Test\r\npublic void testGetInstanceSequence1() throws Exception {\r\n    Date instance = getDate(\"2012-05-22 12:40 UTC\");\r\n    Date start = getDate(\"2012-05-14 07:40 UTC\");\r\n    Frequency frequency = Frequency.fromString(\"hours(1)\");\r\n    Assert.assertEquals(198, EntityUtil.getInstanceSequence(start, frequency, tz, instance));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\EntityUtilTest.java",
+  "methodName" : "testGetInstanceSequence2",
+  "sourceCode" : "@Test\r\npublic void testGetInstanceSequence2() throws Exception {\r\n    Date instance = getDate(\"2012-05-22 12:41 UTC\");\r\n    Date start = getDate(\"2012-05-14 07:40 UTC\");\r\n    Frequency frequency = Frequency.fromString(\"hours(1)\");\r\n    Assert.assertEquals(199, EntityUtil.getInstanceSequence(start, frequency, tz, instance));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\EntityUtilTest.java",
+  "methodName" : "testGetInstanceSequence3",
+  "sourceCode" : "@Test\r\npublic void testGetInstanceSequence3() throws Exception {\r\n    Date instance = getDate(\"2010-01-02 01:01 UTC\");\r\n    Date start = getDate(\"2010-01-02 01:00 UTC\");\r\n    Frequency frequency = Frequency.fromString(\"minutes(1)\");\r\n    Assert.assertEquals(2, EntityUtil.getInstanceSequence(start, frequency, tz, instance));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\EntityUtilTest.java",
+  "methodName" : "testGetInstanceSequence4",
+  "sourceCode" : "@Test\r\npublic void testGetInstanceSequence4() throws Exception {\r\n    Date instance = getDate(\"2010-01-01 01:03 UTC\");\r\n    Date start = getDate(\"2010-01-01 01:01 UTC\");\r\n    Frequency frequency = Frequency.fromString(\"minutes(2)\");\r\n    Assert.assertEquals(2, EntityUtil.getInstanceSequence(start, frequency, tz, instance));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\EntityUtilTest.java",
+  "methodName" : "testGetInstanceSequence5",
+  "sourceCode" : "@Test\r\npublic void testGetInstanceSequence5() throws Exception {\r\n    Date instance = getDate(\"2010-01-01 02:01 UTC\");\r\n    Date start = getDate(\"2010-01-01 01:01 UTC\");\r\n    Frequency frequency = Frequency.fromString(\"hours(1)\");\r\n    Assert.assertEquals(2, EntityUtil.getInstanceSequence(start, frequency, tz, instance));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\EntityUtilTest.java",
+  "methodName" : "testGetInstanceSequence6",
+  "sourceCode" : "@Test\r\npublic void testGetInstanceSequence6() throws Exception {\r\n    Date instance = getDate(\"2010-01-01 01:04 UTC\");\r\n    Date start = getDate(\"2010-01-01 01:01 UTC\");\r\n    Frequency frequency = Frequency.fromString(\"minutes(3)\");\r\n    Assert.assertEquals(2, EntityUtil.getInstanceSequence(start, frequency, tz, instance));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\EntityUtilTest.java",
+  "methodName" : "testGetInstanceSequence7",
+  "sourceCode" : "@Test\r\npublic void testGetInstanceSequence7() throws Exception {\r\n    Date instance = getDate(\"2010-01-01 01:03 UTC\");\r\n    Date start = getDate(\"2010-01-01 01:01 UTC\");\r\n    Frequency frequency = Frequency.fromString(\"minutes(1)\");\r\n    Assert.assertEquals(3, EntityUtil.getInstanceSequence(start, frequency, tz, instance));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\FeedHelperTest.java",
+  "methodName" : "testPartitionExpression",
+  "sourceCode" : "@Test\r\npublic void testPartitionExpression() {\r\n    Assert.assertEquals(FeedHelper.normalizePartitionExpression(\" /a// \", \"  /b// \"), \"a/b\");\r\n    Assert.assertEquals(FeedHelper.normalizePartitionExpression(null, \"  /b// \"), \"b\");\r\n    Assert.assertEquals(FeedHelper.normalizePartitionExpression(null, null), \"\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\FeedHelperTest.java",
+  "methodName" : "testEvaluateExpression",
+  "sourceCode" : "@Test\r\npublic void testEvaluateExpression() throws Exception {\r\n    Cluster cluster = new Cluster();\r\n    cluster.setName(\"name\");\r\n    cluster.setColo(\"colo\");\r\n    cluster.setProperties(new Properties());\r\n    Property prop = new Property();\r\n    prop.setName(\"pname\");\r\n    prop.setValue(\"pvalue\");\r\n    cluster.getProperties().getProperties().add(prop);\r\n    Assert.assertEquals(FeedHelper.evaluateClusterExp(cluster, \"${cluster.colo}/*/US\"), \"colo/*/US\");\r\n    Assert.assertEquals(FeedHelper.evaluateClusterExp(cluster, \"${cluster.name}/*/${cluster.pname}\"), \"name/*/pvalue\");\r\n    Assert.assertEquals(FeedHelper.evaluateClusterExp(cluster, \"IN\"), \"IN\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ClusterEntityParserTest.java",
+  "methodName" : "testParse",
+  "sourceCode" : "@Test\r\npublic void testParse() throws IOException, IvoryException, JAXBException {\r\n    InputStream stream = this.getClass().getResourceAsStream(CLUSTER_XML);\r\n    Cluster cluster = (Cluster) parser.parse(stream);\r\n    ClusterHelper.getInterface(cluster, Interfacetype.WRITE).setEndpoint(conf.get(\"fs.default.name\"));\r\n    Assert.assertNotNull(cluster);\r\n    assertEquals(cluster.getName(), \"testCluster\");\r\n    Interface execute = ClusterHelper.getInterface(cluster, Interfacetype.EXECUTE);\r\n    assertEquals(execute.getEndpoint(), \"localhost:8021\");\r\n    assertEquals(execute.getVersion(), \"0.20.2\");\r\n    Interface readonly = ClusterHelper.getInterface(cluster, Interfacetype.READONLY);\r\n    assertEquals(readonly.getEndpoint(), \"hftp://localhost:50010\");\r\n    assertEquals(readonly.getVersion(), \"0.20.2\");\r\n    Interface write = ClusterHelper.getInterface(cluster, Interfacetype.WRITE);\r\n    //assertEquals(write.getEndpoint(), conf.get(\"fs.default.name\"));\r\n    assertEquals(write.getVersion(), \"0.20.2\");\r\n    Interface workflow = ClusterHelper.getInterface(cluster, Interfacetype.WORKFLOW);\r\n    assertEquals(workflow.getEndpoint(), \"http://localhost:11000/oozie/\");\r\n    assertEquals(workflow.getVersion(), \"3.1\");\r\n    assertEquals(ClusterHelper.getLocation(cluster, \"staging\"), \"/projects/ivory/staging\");\r\n    StringWriter stringWriter = new StringWriter();\r\n    Marshaller marshaller = EntityType.CLUSTER.getMarshaller();\r\n    marshaller.marshal(cluster, stringWriter);\r\n    System.out.println(stringWriter.toString());\r\n    parser.parseAndValidate(stringWriter.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedEntityParserTest.java",
+  "methodName" : "testValidations",
+  "sourceCode" : "@Test(expectedExceptions = ValidationException.class)\r\npublic void testValidations() throws Exception {\r\n    ConfigurationStore.get().remove(EntityType.CLUSTER, \"backupCluster\");\r\n    parser.parseAndValidate(this.getClass().getResourceAsStream(FEED_XML));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedEntityParserTest.java",
+  "methodName" : "testParse",
+  "sourceCode" : "@Test\r\npublic void testParse() throws IOException, IvoryException, JAXBException {\r\n    Feed feed = parser.parseAndValidate(this.getClass().getResourceAsStream(FEED_XML));\r\n    Assert.assertNotNull(feed);\r\n    assertEquals(feed.getName(), \"clicks\");\r\n    assertEquals(feed.getDescription(), \"clicks log\");\r\n    assertEquals(feed.getFrequency().toString(), \"hours(1)\");\r\n    assertEquals(feed.getGroups(), \"online,bi\");\r\n    assertEquals(feed.getClusters().getClusters().get(0).getName(), \"testCluster\");\r\n    assertEquals(feed.getClusters().getClusters().get(0).getType(), ClusterType.SOURCE);\r\n    assertEquals(SchemaHelper.formatDateUTC(feed.getClusters().getClusters().get(0).getValidity().getStart()), \"2011-11-01T00:00Z\");\r\n    assertEquals(SchemaHelper.formatDateUTC(feed.getClusters().getClusters().get(0).getValidity().getEnd()), \"2011-12-31T00:00Z\");\r\n    assertEquals(feed.getTimezone().getID(), \"UTC\");\r\n    assertEquals(feed.getClusters().getClusters().get(0).getRetention().getAction(), ActionType.DELETE);\r\n    assertEquals(feed.getClusters().getClusters().get(0).getRetention().getLimit().toString(), \"hours(48)\");\r\n    assertEquals(feed.getClusters().getClusters().get(1).getName(), \"backupCluster\");\r\n    assertEquals(feed.getClusters().getClusters().get(1).getType(), ClusterType.TARGET);\r\n    assertEquals(SchemaHelper.formatDateUTC(feed.getClusters().getClusters().get(1).getValidity().getStart()), \"2011-11-01T00:00Z\");\r\n    assertEquals(SchemaHelper.formatDateUTC(feed.getClusters().getClusters().get(1).getValidity().getEnd()), \"2011-12-31T00:00Z\");\r\n    assertEquals(feed.getClusters().getClusters().get(1).getRetention().getAction(), ActionType.ARCHIVE);\r\n    assertEquals(feed.getClusters().getClusters().get(1).getRetention().getLimit().toString(), \"hours(6)\");\r\n    assertEquals(FeedHelper.getLocation(feed, LocationType.DATA).getPath(), \"/projects/ivory/clicks\");\r\n    assertEquals(FeedHelper.getLocation(feed, LocationType.META).getPath(), \"/projects/ivory/clicksMetaData\");\r\n    assertEquals(FeedHelper.getLocation(feed, LocationType.STATS).getPath(), \"/projects/ivory/clicksStats\");\r\n    assertEquals(feed.getACL().getGroup(), \"group\");\r\n    assertEquals(feed.getACL().getOwner(), \"testuser\");\r\n    assertEquals(feed.getACL().getPermission(), \"0x755\");\r\n    assertEquals(feed.getSchema().getLocation(), \"/schema/clicks\");\r\n    assertEquals(feed.getSchema().getProvider(), \"protobuf\");\r\n    StringWriter stringWriter = new StringWriter();\r\n    Marshaller marshaller = EntityType.FEED.getMarshaller();\r\n    marshaller.marshal(feed, stringWriter);\r\n    System.out.println(stringWriter.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedEntityParserTest.java",
+  "methodName" : "applyValidationInvalidFeed",
+  "sourceCode" : "@Test(expectedExceptions = ValidationException.class)\r\npublic void applyValidationInvalidFeed() throws Exception {\r\n    Feed feed = (Feed) parser.parseAndValidate(ProcessEntityParserTest.class.getResourceAsStream(FEED_XML));\r\n    feed.getClusters().getClusters().get(0).setName(\"invalid cluster\");\r\n    parser.validate(feed);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedEntityParserTest.java",
+  "methodName" : "testPartitionExpression",
+  "sourceCode" : "@Test\r\npublic void testPartitionExpression() throws IvoryException {\r\n    Feed feed = (Feed) parser.parseAndValidate(ProcessEntityParserTest.class.getResourceAsStream(FEED_XML));\r\n    //When there are more than 1 src clusters, there should be partition expression\r\n    org.apache.ivory.entity.v0.feed.Cluster newCluster = new org.apache.ivory.entity.v0.feed.Cluster();\r\n    newCluster.setName(\"newCluster\");\r\n    newCluster.setType(ClusterType.SOURCE);\r\n    newCluster.setPartition(\"${cluster.colo}\");\r\n    feed.getClusters().getClusters().add(newCluster);\r\n    try {\r\n        parser.validate(feed);\r\n        Assert.fail(\"Expected ValidationException\");\r\n    } catch (ValidationException e) {\r\n    }\r\n    //When there are more than 1 src clusters, the partition expression should contain cluster variable\r\n    feed.getClusters().getClusters().get(0).setPartition(\"*\");\r\n    try {\r\n        parser.validate(feed);\r\n        Assert.fail(\"Expected ValidationException\");\r\n    } catch (ValidationException e) {\r\n    }\r\n    //When there are more than 1 target cluster, there should be partition expre\r\n    newCluster.setType(ClusterType.TARGET);\r\n    try {\r\n        parser.validate(feed);\r\n        Assert.fail(\"Expected ValidationException\");\r\n    } catch (ValidationException e) {\r\n    }\r\n    //When there are more than 1 target clusters, the partition expression should contain cluster variable\r\n    feed.getClusters().getClusters().get(1).setPartition(\"*\");\r\n    try {\r\n        parser.validate(feed);\r\n        Assert.fail(\"Expected ValidationException\");\r\n    } catch (ValidationException e) {\r\n    }\r\n    //Number of parts in partition expression < number of partitions defined for feed\r\n    feed.getClusters().getClusters().get(1).setPartition(\"*/*\");\r\n    try {\r\n        parser.validate(feed);\r\n        Assert.fail(\"Expected ValidationException\");\r\n    } catch (ValidationException e) {\r\n    }\r\n    feed.getClusters().getClusters().get(0).setPartition(null);\r\n    feed.getClusters().getClusters().get(1).setPartition(null);\r\n    feed.getClusters().getClusters().remove(2);\r\n    feed.setPartitions(null);\r\n    parser.validate(feed);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedEntityParserTest.java",
+  "methodName" : "testInvalidClusterValidityTime",
+  "sourceCode" : "@Test\r\npublic void testInvalidClusterValidityTime() {\r\n    Validity validity = modifiableFeed.getClusters().getClusters().get(0).getValidity();\r\n    try {\r\n        validity.setStart(SchemaHelper.parseDateUTC(\"2007-02-29T00:00Z\"));\r\n        modifiableFeed.getClusters().getClusters().get(0).setValidity(validity);\r\n        parser.parseAndValidate(marshallEntity(modifiableFeed));\r\n        Assert.fail(\"Cluster validity failed\");\r\n    } catch (Exception e) {\r\n        System.out.println(e.getMessage());\r\n        validity.setStart(SchemaHelper.parseDateUTC(\"2011-11-01T00:00Z\"));\r\n        modifiableFeed.getClusters().getClusters().get(0).setValidity(validity);\r\n    }\r\n    try {\r\n        validity.setEnd(SchemaHelper.parseDateUTC(\"2010-04-31T00:00Z\"));\r\n        modifiableFeed.getClusters().getClusters().get(0).setValidity(validity);\r\n        parser.parseAndValidate(marshallEntity(modifiableFeed));\r\n        Assert.fail(\"Cluster validity failed\");\r\n    } catch (Exception e) {\r\n        System.out.println(e.getMessage());\r\n        validity.setEnd(SchemaHelper.parseDateUTC(\"2011-12-31T00:00Z\"));\r\n        modifiableFeed.getClusters().getClusters().get(0).setValidity(validity);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedEntityParserTest.java",
+  "methodName" : "testInvalidProcessValidity",
+  "sourceCode" : "@Test(expectedExceptions = ValidationException.class)\r\npublic void testInvalidProcessValidity() throws Exception {\r\n    Feed feed = parser.parseAndValidate((FeedEntityParserTest.class.getResourceAsStream(FEED_XML)));\r\n    feed.getClusters().getClusters().get(0).getValidity().setStart(SchemaHelper.parseDateUTC(\"2012-11-01T00:00Z\"));\r\n    parser.validate(feed);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedEntityParserTest.java",
+  "methodName" : "testValidFeedGroup",
+  "sourceCode" : "@Test\r\npublic void testValidFeedGroup() throws IvoryException, JAXBException {\r\n    Feed feed1 = (Feed) EntityType.FEED.getUnmarshaller().unmarshal((FeedEntityParserTest.class.getResourceAsStream(FEED_XML)));\r\n    feed1.setName(\"f1\" + System.currentTimeMillis());\r\n    feed1.setGroups(\"group1,group2,group3\");\r\n    feed1.setLocations(new Locations());\r\n    Location location = new Location();\r\n    location.setPath(\"/projects/bi/rmc/daily/ad/${YEAR}/fraud/${MONTH}-${DAY}/ad\");\r\n    location.setType(LocationType.DATA);\r\n    feed1.getLocations().getLocations().add(location);\r\n    feed1.getClusters().getClusters().get(0).getLocations().getLocations().set(0, location);\r\n    parser.parseAndValidate(feed1.toString());\r\n    ConfigurationStore.get().publish(EntityType.FEED, feed1);\r\n    Feed feed2 = (Feed) EntityType.FEED.getUnmarshaller().unmarshal((FeedEntityParserTest.class.getResourceAsStream(FEED_XML)));\r\n    feed2.setName(\"f2\" + System.currentTimeMillis());\r\n    feed2.setGroups(\"group1,group2,group5\");\r\n    feed2.setLocations(new Locations());\r\n    Location location2 = new Location();\r\n    location2.setPath(\"/projects/bi/rmc/daily/ad/${YEAR}/fraud/${MONTH}-${DAY}/ad\");\r\n    location2.setType(LocationType.DATA);\r\n    feed2.getLocations().getLocations().add(location2);\r\n    feed2.getClusters().getClusters().get(0).getLocations().getLocations().set(0, location);\r\n    parser.parseAndValidate(feed2.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedEntityParserTest.java",
+  "methodName" : "testInvalidFeedClusterDataLocation",
+  "sourceCode" : "@Test(expectedExceptions = ValidationException.class)\r\npublic void testInvalidFeedClusterDataLocation() throws JAXBException, IvoryException {\r\n    Feed feed1 = (Feed) EntityType.FEED.getUnmarshaller().unmarshal((FeedEntityParserTest.class.getResourceAsStream(FEED_XML)));\r\n    feed1.setName(\"f1\" + System.currentTimeMillis());\r\n    feed1.setGroups(\"group1,group2,group3\");\r\n    feed1.setLocations(new Locations());\r\n    Location location = new Location();\r\n    location.setPath(\"/projects/bi/rmc/daily/ad/${YEAR}/fraud/${MONTH}-${DAY}/ad\");\r\n    location.setType(LocationType.DATA);\r\n    feed1.getLocations().getLocations().add(location);\r\n    parser.parseAndValidate(feed1.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedEntityParserTest.java",
+  "methodName" : "testInvalidFeedGroup",
+  "sourceCode" : "@Test(expectedExceptions = ValidationException.class)\r\npublic void testInvalidFeedGroup() throws IvoryException, JAXBException {\r\n    Feed feed1 = (Feed) EntityType.FEED.getUnmarshaller().unmarshal((FeedEntityParserTest.class.getResourceAsStream(FEED_XML)));\r\n    feed1.setName(\"f1\" + System.currentTimeMillis());\r\n    feed1.setGroups(\"group1,group2,group3\");\r\n    feed1.setLocations(new Locations());\r\n    Location location = new Location();\r\n    location.setPath(\"/projects/bi/rmc/daily/ad/${YEAR}/fraud/${MONTH}-${DAY}/ad\");\r\n    location.setType(LocationType.DATA);\r\n    feed1.getLocations().getLocations().add(location);\r\n    parser.parseAndValidate(feed1.toString());\r\n    feed1.getClusters().getClusters().get(0).getLocations().getLocations().set(0, location);\r\n    ConfigurationStore.get().publish(EntityType.FEED, feed1);\r\n    Feed feed2 = (Feed) EntityType.FEED.getUnmarshaller().unmarshal((FeedEntityParserTest.class.getResourceAsStream(FEED_XML)));\r\n    feed2.setName(\"f2\" + System.currentTimeMillis());\r\n    feed2.setGroups(\"group1,group2,group5\");\r\n    feed2.setLocations(new Locations());\r\n    Location location2 = new Location();\r\n    location2.setPath(\"/projects/bi/rmc/daily/ad/${YEAR}/fraud/${MONTH}/${HOUR}/ad\");\r\n    location2.setType(LocationType.DATA);\r\n    feed2.getLocations().getLocations().add(location2);\r\n    feed2.getClusters().getClusters().get(0).getLocations().getLocations().set(0, location);\r\n    parser.parseAndValidate(feed2.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedEntityParserTest.java",
+  "methodName" : "testValidGroupNames",
+  "sourceCode" : "@Test\r\npublic void testValidGroupNames() throws IvoryException, JAXBException {\r\n    Feed feed1 = (Feed) EntityType.FEED.getUnmarshaller().unmarshal(FeedGroupMapTest.class.getResourceAsStream(\"/config/feed/feed-0.1.xml\"));\r\n    feed1.setName(\"f1\" + System.currentTimeMillis());\r\n    feed1.setGroups(\"group7,group8\");\r\n    parser.parseAndValidate(feed1.toString());\r\n    feed1.setGroups(\"group7\");\r\n    parser.parseAndValidate(feed1.toString());\r\n    feed1.setGroups(null);\r\n    parser.parseAndValidate(feed1.toString());\r\n    ConfigurationStore.get().publish(EntityType.FEED, feed1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedEntityParserTest.java",
+  "methodName" : "testInvalidGroupNames",
+  "sourceCode" : "@Test\r\npublic void testInvalidGroupNames() throws IvoryException, JAXBException {\r\n    Feed feed1 = (Feed) EntityType.FEED.getUnmarshaller().unmarshal(FeedGroupMapTest.class.getResourceAsStream(\"/config/feed/feed-0.1.xml\"));\r\n    feed1.setName(\"f1\" + System.currentTimeMillis());\r\n    try {\r\n        feed1.setGroups(\"commaend,\");\r\n        parser.parseAndValidate(feed1.toString());\r\n        Assert.fail(\"Expected exception\");\r\n    } catch (IvoryException e) {\r\n    }\r\n    try {\r\n        feed1.setGroups(\"group8,   group9\");\r\n        parser.parseAndValidate(feed1.toString());\r\n        Assert.fail(\"Expected exception\");\r\n    } catch (IvoryException e) {\r\n    }\r\n    try {\r\n        feed1.setGroups(\"space in group,group9\");\r\n        parser.parseAndValidate(feed1.toString());\r\n        Assert.fail(\"Expected exception\");\r\n    } catch (IvoryException e) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedEntityParserTest.java",
+  "methodName" : "testClusterPartitionExp",
+  "sourceCode" : "@Test\r\npublic void testClusterPartitionExp() throws IvoryException {\r\n    Cluster cluster = ConfigurationStore.get().get(EntityType.CLUSTER, \"testCluster\");\r\n    Assert.assertEquals(FeedHelper.evaluateClusterExp(cluster, \"/*/${cluster.colo}\"), \"/*/\" + cluster.getColo());\r\n    Assert.assertEquals(FeedHelper.evaluateClusterExp(cluster, \"/*/${cluster.name}/Local\"), \"/*/\" + cluster.getName() + \"/Local\");\r\n    Assert.assertEquals(FeedHelper.evaluateClusterExp(cluster, \"/*/${cluster.field1}/Local\"), \"/*/value1/Local\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedEntityParserTest.java",
+  "methodName" : "testInvalidFeedName",
+  "sourceCode" : "@Test(expectedExceptions = IvoryException.class)\r\npublic void testInvalidFeedName() throws JAXBException, IvoryException {\r\n    Feed feed1 = (Feed) EntityType.FEED.getUnmarshaller().unmarshal(FeedGroupMapTest.class.getResourceAsStream(\"/config/feed/feed-0.1.xml\"));\r\n    feed1.setName(\"Feed_name\");\r\n    parser.parseAndValidate(feed1.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedEntityParserTest.java",
+  "methodName" : "testInvalidFeedGroupName",
+  "sourceCode" : "@Test(expectedExceptions = IvoryException.class)\r\npublic void testInvalidFeedGroupName() throws JAXBException, IvoryException {\r\n    Feed feed1 = (Feed) EntityType.FEED.getUnmarshaller().unmarshal(FeedGroupMapTest.class.getResourceAsStream(\"/config/feed/feed-0.1.xml\"));\r\n    feed1.setName(\"feed1\");\r\n    feed1.getLocations().getLocations().get(0).setPath(\"/data/clicks/${YEAR}/${MONTH}/${DAY}/${HOUR}\");\r\n    feed1.getClusters().getClusters().get(0).getLocations().getLocations().get(0).setPath(\"/data/clicks/${YEAR}/${MONTH}/${DAY}/${HOUR}\");\r\n    ConfigurationStore.get().publish(EntityType.FEED, feed1);\r\n    Feed feed2 = (Feed) EntityType.FEED.getUnmarshaller().unmarshal(FeedGroupMapTest.class.getResourceAsStream(\"/config/feed/feed-0.1.xml\"));\r\n    feed2.setName(\"feed2\");\r\n    feed2.getLocations().getLocations().get(0).setPath(\"/data/clicks/${YEAR}/${MONTH}/${DAY}/${HOUR}\");\r\n    feed2.getClusters().getClusters().get(0).getLocations().getLocations().get(0).setPath(\"/data/clicks/${YEAR}/${MONTH}/${DAY}/${HOUR}\");\r\n    feed2.setFrequency(new Frequency(\"hours(1)\"));\r\n    try {\r\n        parser.parseAndValidate(feed2.toString());\r\n    } catch (IvoryException e) {\r\n        e.printStackTrace();\r\n        Assert.fail(\"Not expecting exception for same frequency\");\r\n    }\r\n    feed2.setFrequency(new Frequency(\"hours(2)\"));\r\n    //expecting exception\r\n    parser.parseAndValidate(feed2.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedEntityParserTest.java",
+  "methodName" : "testNullFeedLateArrival",
+  "sourceCode" : "@Test\r\npublic void testNullFeedLateArrival() throws JAXBException, IvoryException {\r\n    Feed feed = (Feed) EntityType.FEED.getUnmarshaller().unmarshal(FeedGroupMapTest.class.getResourceAsStream(\"/config/feed/feed-0.1.xml\"));\r\n    feed.setLateArrival(null);\r\n    parser.parseAndValidate(feed.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedUpdateTest.java",
+  "methodName" : "testFeedUpdateWithNoDependentProcess",
+  "sourceCode" : "@Test\r\npublic void testFeedUpdateWithNoDependentProcess() {\r\n    try {\r\n        parser.parseAndValidate(this.getClass().getResourceAsStream(FEED_XML));\r\n    } catch (IvoryException e) {\r\n        Assert.fail(\"Didn't expect feed parsing to fail\", e);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedUpdateTest.java",
+  "methodName" : "testFeedUpdateWithOneDependentProcess",
+  "sourceCode" : "@Test\r\npublic void testFeedUpdateWithOneDependentProcess() {\r\n    try {\r\n        ConfigurationStore.get().remove(EntityType.FEED, \"clicks\");\r\n        ConfigurationStore.get().remove(EntityType.PROCESS, \"sample\");\r\n        Feed feed = parser.parseAndValidate(this.getClass().getResourceAsStream(FEED_XML));\r\n        ConfigurationStore.get().publish(EntityType.FEED, feed);\r\n        storeEntity(EntityType.PROCESS, \"sample\");\r\n        //Try parsing the same feed xml\r\n        parser.parseAndValidate(this.getClass().getResourceAsStream(FEED_XML));\r\n    } catch (Exception e) {\r\n        Assert.fail(\"Didn't expect feed parsing to fail\", e);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedUpdateTest.java",
+  "methodName" : "testFeedUpdateWithMultipleDependentProcess",
+  "sourceCode" : "@Test\r\npublic void testFeedUpdateWithMultipleDependentProcess() {\r\n    try {\r\n        ConfigurationStore.get().remove(EntityType.FEED, \"clicks\");\r\n        ConfigurationStore.get().remove(EntityType.PROCESS, \"sample\");\r\n        ConfigurationStore.get().remove(EntityType.PROCESS, \"sample2\");\r\n        ConfigurationStore.get().remove(EntityType.PROCESS, \"sample3\");\r\n        Feed feed = parser.parseAndValidate(this.getClass().getResourceAsStream(FEED_XML));\r\n        ConfigurationStore.get().publish(EntityType.FEED, feed);\r\n        storeEntity(EntityType.PROCESS, \"sample\");\r\n        storeEntity(EntityType.PROCESS, \"sample2\");\r\n        storeEntity(EntityType.PROCESS, \"sample3\");\r\n        //Try parsing the same feed xml\r\n        parser.parseAndValidate(this.getClass().getResourceAsStream(FEED_XML));\r\n    } catch (Exception e) {\r\n        Assert.fail(\"Didn't expect feed parsing to fail\", e);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\FeedUpdateTest.java",
+  "methodName" : "testFeedUpdateWithViolations",
+  "sourceCode" : "@Test\r\npublic void testFeedUpdateWithViolations() throws Exception {\r\n    ConfigurationStore.get().remove(EntityType.FEED, \"clicks\");\r\n    ConfigurationStore.get().remove(EntityType.PROCESS, \"sample\");\r\n    ConfigurationStore.get().remove(EntityType.PROCESS, \"sample2\");\r\n    storeEntity(EntityType.FEED, \"impressionFeed\");\r\n    storeEntity(EntityType.FEED, \"imp-click-join1\");\r\n    storeEntity(EntityType.FEED, \"imp-click-join2\");\r\n    Feed feed = parser.parseAndValidate(this.getClass().getResourceAsStream(FEED_XML));\r\n    ConfigurationStore.get().publish(EntityType.FEED, feed);\r\n    Process process = processParser.parseAndValidate(this.getClass().getResourceAsStream(PROCESS1_XML));\r\n    ConfigurationStore.get().publish(EntityType.PROCESS, process);\r\n    Process p1 = (Process) process.clone();\r\n    p1.setName(\"sample2\");\r\n    ConfigurationStore.get().publish(EntityType.PROCESS, p1);\r\n    try {\r\n        //Try parsing the same feed xml\r\n        parser.parseAndValidate(this.getClass().getResourceAsStream(FEED1_XML));\r\n        Assert.fail(\"Expected feed parsing to fail\");\r\n    } catch (ValidationException ignore) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ProcessEntityParserTest.java",
+  "methodName" : "testNotNullgetUnmarshaller",
+  "sourceCode" : "@Test\r\npublic void testNotNullgetUnmarshaller() throws Exception {\r\n    final Unmarshaller unmarshaller = EntityType.PROCESS.getUnmarshaller();\r\n    Assert.assertNotNull(unmarshaller);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ProcessEntityParserTest.java",
+  "methodName" : "testParse",
+  "sourceCode" : "@Test\r\npublic void testParse() throws IvoryException, JAXBException {\r\n    Process process = parser.parseAndValidate(getClass().getResourceAsStream(PROCESS_XML));\r\n    Assert.assertNotNull(process);\r\n    Assert.assertEquals(process.getName(), \"sample\");\r\n    Assert.assertEquals(process.getParallel(), 1);\r\n    Assert.assertEquals(process.getOrder().name(), \"LIFO\");\r\n    Assert.assertEquals(process.getFrequency().toString(), \"hours(1)\");\r\n    Assert.assertEquals(process.getEntityType(), EntityType.PROCESS);\r\n    Assert.assertEquals(process.getInputs().getInputs().get(0).getName(), \"impression\");\r\n    Assert.assertEquals(process.getInputs().getInputs().get(0).getFeed(), \"impressionFeed\");\r\n    Assert.assertEquals(process.getInputs().getInputs().get(0).getStart(), \"today(0,0)\");\r\n    Assert.assertEquals(process.getInputs().getInputs().get(0).getEnd(), \"today(2,0)\");\r\n    Assert.assertEquals(process.getInputs().getInputs().get(0).getPartition(), \"*/US\");\r\n    Assert.assertEquals(process.getOutputs().getOutputs().get(0).getName(), \"impOutput\");\r\n    Assert.assertEquals(process.getOutputs().getOutputs().get(0).getFeed(), \"imp-click-join1\");\r\n    Assert.assertEquals(process.getOutputs().getOutputs().get(0).getInstance(), \"today(0,0)\");\r\n    Assert.assertEquals(process.getProperties().getProperties().get(0).getName(), \"name1\");\r\n    Assert.assertEquals(process.getProperties().getProperties().get(0).getValue(), \"value1\");\r\n    Cluster processCluster = process.getClusters().getClusters().get(0);\r\n    Assert.assertEquals(SchemaHelper.formatDateUTC(processCluster.getValidity().getStart()), \"2011-11-02T00:00Z\");\r\n    Assert.assertEquals(SchemaHelper.formatDateUTC(processCluster.getValidity().getEnd()), \"2011-12-30T00:00Z\");\r\n    Assert.assertEquals(process.getTimezone().getID(), \"UTC\");\r\n    Assert.assertEquals(process.getWorkflow().getEngine().name().toLowerCase(), \"oozie\");\r\n    Assert.assertEquals(process.getWorkflow().getPath(), \"/path/to/workflow\");\r\n    StringWriter stringWriter = new StringWriter();\r\n    Marshaller marshaller = EntityType.PROCESS.getMarshaller();\r\n    marshaller.marshal(process, stringWriter);\r\n    System.out.println(stringWriter.toString());\r\n    // TODO for retry and late policy\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ProcessEntityParserTest.java",
+  "methodName" : "testELExpressions",
+  "sourceCode" : "@Test\r\npublic void testELExpressions() throws Exception {\r\n    Process process = parser.parseAndValidate(getClass().getResourceAsStream(PROCESS_XML));\r\n    process.getInputs().getInputs().get(0).setStart(\"lastMonth(0,0,0)\");\r\n    try {\r\n        parser.validate(process);\r\n        throw new AssertionError(\"Expected ValidationException!\");\r\n    } catch (ValidationException e) {\r\n    }\r\n    process.getInputs().getInputs().get(0).setStart(\"today(0,0)\");\r\n    process.getInputs().getInputs().get(0).setEnd(\"lastMonth(0,0,0)\");\r\n    try {\r\n        parser.validate(process);\r\n        throw new AssertionError(\"Expected ValidationException!\");\r\n    } catch (ValidationException e) {\r\n    }\r\n    process.getInputs().getInputs().get(0).setStart(\"today(2,0)\");\r\n    process.getInputs().getInputs().get(0).setEnd(\"today(0,0)\");\r\n    try {\r\n        parser.validate(process);\r\n        throw new AssertionError(\"Expected ValidationException!\");\r\n    } catch (ValidationException e) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ProcessEntityParserTest.java",
+  "methodName" : "doParseInvalidXML",
+  "sourceCode" : "@Test(expectedExceptions = IvoryException.class)\r\npublic void doParseInvalidXML() throws IOException, IvoryException {\r\n    parser.parseAndValidate(this.getClass().getResourceAsStream(INVALID_PROCESS_XML));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ProcessEntityParserTest.java",
+  "methodName" : "applyValidationInvalidProcess",
+  "sourceCode" : "@Test(expectedExceptions = ValidationException.class)\r\npublic void applyValidationInvalidProcess() throws Exception {\r\n    Process process = (Process) parser.parseAndValidate(getClass().getResourceAsStream(PROCESS_XML));\r\n    process.getClusters().getClusters().get(0).setName(\"invalid cluster\");\r\n    parser.validate(process);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ProcessEntityParserTest.java",
+  "methodName" : "testValidate",
+  "sourceCode" : "@Test(expectedExceptions = IvoryException.class)\r\npublic void testValidate() throws IvoryException {\r\n    parser.parseAndValidate(\"<process></process>\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ProcessEntityParserTest.java",
+  "methodName" : "testConcurrentParsing",
+  "sourceCode" : "@Test\r\npublic void testConcurrentParsing() throws Exception {\r\n    List<Thread> threadList = new ArrayList<Thread>();\r\n    for (int i = 0; i < 3; i++) {\r\n        threadList.add(new Thread() {\r\n\r\n            public void run() {\r\n                try {\r\n                    EntityParser parser = EntityParserFactory.getParser(EntityType.PROCESS);\r\n                    parser.parseAndValidate(this.getClass().getResourceAsStream(PROCESS_XML));\r\n                } catch (Exception e) {\r\n                    throw new RuntimeException(e);\r\n                }\r\n            }\r\n        });\r\n    }\r\n    for (Thread thread : threadList) {\r\n        thread.start();\r\n    }\r\n    for (Thread thread : threadList) {\r\n        thread.join();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ProcessEntityParserTest.java",
+  "methodName" : "testInvalidProcessValidity",
+  "sourceCode" : "@Test(expectedExceptions = ValidationException.class)\r\npublic void testInvalidProcessValidity() throws Exception {\r\n    Process process = parser.parseAndValidate((ProcessEntityParserTest.class.getResourceAsStream(PROCESS_XML)));\r\n    process.getClusters().getClusters().get(0).getValidity().setStart(SchemaHelper.parseDateUTC(\"2011-12-31T00:00Z\"));\r\n    parser.validate(process);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ProcessEntityParserTest.java",
+  "methodName" : "testInvalidDependentFeedsRetentionLimit",
+  "sourceCode" : "@Test(expectedExceptions = ValidationException.class)\r\npublic void testInvalidDependentFeedsRetentionLimit() throws Exception {\r\n    Process process = parser.parseAndValidate((ProcessEntityParserTest.class.getResourceAsStream(PROCESS_XML)));\r\n    process.getInputs().getInputs().get(0).setStart(\"today(-48,0)\");\r\n    parser.validate(process);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ProcessEntityParserTest.java",
+  "methodName" : "testDuplicateInputOutputNames",
+  "sourceCode" : "@Test(expectedExceptions = ValidationException.class)\r\npublic void testDuplicateInputOutputNames() throws IvoryException {\r\n    Process process = parser.parseAndValidate((ProcessEntityParserTest.class.getResourceAsStream(PROCESS_XML)));\r\n    process.getInputs().getInputs().get(0).setName(\"duplicateName\");\r\n    process.getOutputs().getOutputs().get(0).setName(\"duplicateName\");\r\n    parser.validate(process);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ProcessEntityParserTest.java",
+  "methodName" : "testInvalidRetryAttempt",
+  "sourceCode" : "@Test(expectedExceptions = IvoryException.class)\r\npublic void testInvalidRetryAttempt() throws IvoryException {\r\n    Process process = parser.parseAndValidate((ProcessEntityParserTest.class.getResourceAsStream(PROCESS_XML)));\r\n    process.getRetry().setAttempts(-1);\r\n    parser.parseAndValidate(process.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ProcessEntityParserTest.java",
+  "methodName" : "testInvalidRetryDelay",
+  "sourceCode" : "@Test(expectedExceptions = IvoryException.class)\r\npublic void testInvalidRetryDelay() throws IvoryException {\r\n    Process process = parser.parseAndValidate((ProcessEntityParserTest.class.getResourceAsStream(PROCESS_XML)));\r\n    process.getRetry().setDelay(Frequency.fromString(\"hours(0)\"));\r\n    parser.parseAndValidate(process.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ProcessEntityParserTest.java",
+  "methodName" : "testInvalidLateInputs",
+  "sourceCode" : "@Test(expectedExceptions = ValidationException.class)\r\npublic void testInvalidLateInputs() throws Exception {\r\n    Process process = parser.parseAndValidate((ProcessEntityParserTest.class.getResourceAsStream(PROCESS_XML)));\r\n    process.getLateProcess().getLateInputs().get(0).setInput(\"invalidInput\");\r\n    parser.parseAndValidate(process.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ProcessEntityParserTest.java",
+  "methodName" : "testInvalidProcessName",
+  "sourceCode" : "@Test(expectedExceptions = IvoryException.class)\r\npublic void testInvalidProcessName() throws Exception {\r\n    Process process = parser.parseAndValidate((ProcessEntityParserTest.class.getResourceAsStream(PROCESS_XML)));\r\n    process.setName(\"name_with_underscore\");\r\n    parser.parseAndValidate(process.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ProcessEntityParserTest.java",
+  "methodName" : "testOozieFutureExpression",
+  "sourceCode" : "@Test\r\npublic void testOozieFutureExpression() throws Exception {\r\n    Process process = parser.parseAndValidate((ProcessEntityParserTest.class.getResourceAsStream(PROCESS_XML)));\r\n    process.getInputs().getInputs().get(0).setStart(\"future(1,2)\");\r\n    parser.parseAndValidate(process.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ProcessEntityParserTest.java",
+  "methodName" : "testOozieLatestExpression",
+  "sourceCode" : "@Test\r\npublic void testOozieLatestExpression() throws Exception {\r\n    Process process = parser.parseAndValidate((ProcessEntityParserTest.class.getResourceAsStream(PROCESS_XML)));\r\n    process.getInputs().getInputs().get(0).setStart(\"latest(-1)\");\r\n    parser.parseAndValidate(process.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\parser\\ProcessEntityParserTest.java",
+  "methodName" : "testDuplicateClusterName",
+  "sourceCode" : "@Test(expectedExceptions = ValidationException.class)\r\npublic void testDuplicateClusterName() throws Exception {\r\n    Process process = parser.parse((ProcessEntityParserTest.class.getResourceAsStream(PROCESS_XML)));\r\n    process.getClusters().getClusters().add(1, process.getClusters().getClusters().get(0));\r\n    parser.validate(process);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\store\\ConfigurationStoreTest.java",
+  "methodName" : "testPublish",
+  "sourceCode" : "@Test\r\npublic void testPublish() throws Exception {\r\n    Process process = new Process();\r\n    process.setName(\"hello\");\r\n    store.publish(EntityType.PROCESS, process);\r\n    Process p = store.get(EntityType.PROCESS, \"hello\");\r\n    Assert.assertEquals(p, process);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\store\\ConfigurationStoreTest.java",
+  "methodName" : "testGet",
+  "sourceCode" : "@Test\r\npublic void testGet() throws Exception {\r\n    Process p = store.get(EntityType.PROCESS, \"notfound\");\r\n    Assert.assertNull(p);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\store\\ConfigurationStoreTest.java",
+  "methodName" : "testRemove",
+  "sourceCode" : "@Test\r\npublic void testRemove() throws Exception {\r\n    Process process = new Process();\r\n    process.setName(\"remove\");\r\n    store.publish(EntityType.PROCESS, process);\r\n    Process p = store.get(EntityType.PROCESS, \"remove\");\r\n    Assert.assertEquals(p, process);\r\n    store.remove(EntityType.PROCESS, \"remove\");\r\n    p = store.get(EntityType.PROCESS, \"remove\");\r\n    Assert.assertNull(p);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\store\\ConfigurationStoreTest.java",
+  "methodName" : "testSearch",
+  "sourceCode" : "@Test\r\npublic void testSearch() throws Exception {\r\n    //TODO\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\TestWorkflowNameBuilder.java",
+  "methodName" : "getTagTest",
+  "sourceCode" : "@Test\r\npublic void getTagTest() {\r\n    Feed feed = new Feed();\r\n    feed.setName(\"raw-logs\");\r\n    WorkflowNameBuilder<Feed> builder = new WorkflowNameBuilder<Feed>(feed);\r\n    Tag tag = builder.getWorkflowTag(\"IVORY_FEED_RETENTION_raw-logs\");\r\n    Assert.assertEquals(tag, Tag.RETENTION);\r\n    tag = builder.getWorkflowTag(\"IVORY_FEED_raw-logs\");\r\n    Assert.assertNull(tag);\r\n    tag = builder.getWorkflowTag(\"IVORY_FEED_REPLICATION_raw-logs_corp1\");\r\n    Assert.assertEquals(tag, Tag.REPLICATION);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\TestWorkflowNameBuilder.java",
+  "methodName" : "getSuffixesTest",
+  "sourceCode" : "@Test\r\npublic void getSuffixesTest() {\r\n    Feed feed = new Feed();\r\n    feed.setName(\"raw-logs\");\r\n    WorkflowNameBuilder<Feed> builder = new WorkflowNameBuilder<Feed>(feed);\r\n    String suffixes = builder.getWorkflowSuffixes(\"IVORY_FEED_REPLICATION_raw-logs_corp-1\");\r\n    Assert.assertEquals(suffixes, \"_corp-1\");\r\n    suffixes = builder.getWorkflowSuffixes(\"IVORY_FEED_REPLICATION_raw-logs\");\r\n    Assert.assertEquals(suffixes, \"\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\TestWorkflowNameBuilder.java",
+  "methodName" : "WorkflowNameTest",
+  "sourceCode" : "@Test\r\npublic void WorkflowNameTest() {\r\n    Feed feed = new Feed();\r\n    feed.setName(\"raw-logs\");\r\n    WorkflowNameBuilder<Feed> builder = new WorkflowNameBuilder<Feed>(feed);\r\n    Assert.assertEquals(builder.getWorkflowName().toString(), \"IVORY_FEED_raw-logs\");\r\n    builder.setTag(Tag.REPLICATION);\r\n    Assert.assertEquals(builder.getWorkflowName().toString(), \"IVORY_FEED_REPLICATION_raw-logs\");\r\n    builder.setSuffixes(Arrays.asList(\"cluster1\"));\r\n    Assert.assertEquals(builder.getWorkflowName().toString(), \"IVORY_FEED_REPLICATION_raw-logs_cluster1\");\r\n    Process process = new Process();\r\n    process.setName(\"agg-logs\");\r\n    WorkflowNameBuilder<Process> processBuilder = new WorkflowNameBuilder<Process>(process);\r\n    processBuilder.setTag(Tag.DEFAULT);\r\n    Assert.assertEquals(processBuilder.getWorkflowName().toString(), \"IVORY_PROCESS_DEFAULT_agg-logs\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\v0\\EntityGraphTest.java",
+  "methodName" : "testOnAdd",
+  "sourceCode" : "@Test\r\npublic void testOnAdd() throws Exception {\r\n    Process process = new Process();\r\n    process.setName(\"p1\");\r\n    Cluster cluster = new Cluster();\r\n    cluster.setName(\"c1\");\r\n    Feed f1 = addInput(process, \"f1\", cluster);\r\n    Feed f2 = addInput(process, \"f2\", cluster);\r\n    Feed f3 = addOutput(process, \"f3\", cluster);\r\n    Feed f4 = addOutput(process, \"f4\", cluster);\r\n    org.apache.ivory.entity.v0.process.Cluster processCluster = new org.apache.ivory.entity.v0.process.Cluster();\r\n    processCluster.setName(\"c1\");\r\n    process.setClusters(new org.apache.ivory.entity.v0.process.Clusters());\r\n    process.getClusters().getClusters().add(processCluster);\r\n    store.publish(EntityType.CLUSTER, cluster);\r\n    store.publish(EntityType.FEED, f1);\r\n    store.publish(EntityType.FEED, f2);\r\n    store.publish(EntityType.FEED, f3);\r\n    store.publish(EntityType.FEED, f4);\r\n    store.publish(EntityType.PROCESS, process);\r\n    Set<Entity> entities = graph.getDependents(process);\r\n    Assert.assertEquals(entities.size(), 5);\r\n    Assert.assertTrue(entities.contains(cluster));\r\n    Assert.assertTrue(entities.contains(f1));\r\n    Assert.assertTrue(entities.contains(f2));\r\n    Assert.assertTrue(entities.contains(f3));\r\n    Assert.assertTrue(entities.contains(f4));\r\n    entities = graph.getDependents(f1);\r\n    Assert.assertEquals(entities.size(), 2);\r\n    Assert.assertTrue(entities.contains(process));\r\n    Assert.assertTrue(entities.contains(cluster));\r\n    entities = graph.getDependents(f2);\r\n    Assert.assertEquals(entities.size(), 2);\r\n    Assert.assertTrue(entities.contains(process));\r\n    Assert.assertTrue(entities.contains(cluster));\r\n    entities = graph.getDependents(f3);\r\n    Assert.assertEquals(entities.size(), 2);\r\n    Assert.assertTrue(entities.contains(process));\r\n    Assert.assertTrue(entities.contains(cluster));\r\n    entities = graph.getDependents(f4);\r\n    Assert.assertEquals(entities.size(), 2);\r\n    Assert.assertTrue(entities.contains(process));\r\n    Assert.assertTrue(entities.contains(cluster));\r\n    entities = graph.getDependents(cluster);\r\n    Assert.assertEquals(entities.size(), 5);\r\n    Assert.assertTrue(entities.contains(process));\r\n    Assert.assertTrue(entities.contains(f1));\r\n    Assert.assertTrue(entities.contains(f2));\r\n    Assert.assertTrue(entities.contains(f3));\r\n    Assert.assertTrue(entities.contains(f4));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\v0\\EntityGraphTest.java",
+  "methodName" : "testOnRemove",
+  "sourceCode" : "@Test\r\npublic void testOnRemove() throws Exception {\r\n    Process process = new Process();\r\n    process.setName(\"rp1\");\r\n    Cluster cluster = new Cluster();\r\n    cluster.setName(\"rc1\");\r\n    org.apache.ivory.entity.v0.process.Cluster processCluster = new org.apache.ivory.entity.v0.process.Cluster();\r\n    processCluster.setName(\"rc1\");\r\n    process.setClusters(new org.apache.ivory.entity.v0.process.Clusters());\r\n    process.getClusters().getClusters().add(processCluster);\r\n    store.publish(EntityType.CLUSTER, cluster);\r\n    store.publish(EntityType.PROCESS, process);\r\n    Set<Entity> entities = graph.getDependents(process);\r\n    Assert.assertEquals(entities.size(), 1);\r\n    Assert.assertTrue(entities.contains(cluster));\r\n    entities = graph.getDependents(cluster);\r\n    Assert.assertEquals(entities.size(), 1);\r\n    Assert.assertTrue(entities.contains(process));\r\n    store.remove(EntityType.PROCESS, process.getName());\r\n    entities = graph.getDependents(cluster);\r\n    Assert.assertTrue(entities == null);\r\n    entities = graph.getDependents(process);\r\n    Assert.assertTrue(entities == null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\v0\\EntityGraphTest.java",
+  "methodName" : "testOnRemove2",
+  "sourceCode" : "@Test\r\npublic void testOnRemove2() throws Exception {\r\n    Process p1 = new Process();\r\n    p1.setName(\"ap1\");\r\n    Process p2 = new Process();\r\n    p2.setName(\"ap2\");\r\n    Cluster cluster = new Cluster();\r\n    cluster.setName(\"ac1\");\r\n    Feed f1 = addInput(p1, \"af1\", cluster);\r\n    Feed f3 = addOutput(p1, \"af3\", cluster);\r\n    Feed f2 = addOutput(p2, \"af2\", cluster);\r\n    attachInput(p2, f3);\r\n    org.apache.ivory.entity.v0.process.Cluster processCluster = new org.apache.ivory.entity.v0.process.Cluster();\r\n    processCluster.setName(\"ac1\");\r\n    p1.setClusters(new org.apache.ivory.entity.v0.process.Clusters());\r\n    p1.getClusters().getClusters().add(processCluster);\r\n    processCluster = new org.apache.ivory.entity.v0.process.Cluster();\r\n    processCluster.setName(\"ac1\");\r\n    p2.setClusters(new org.apache.ivory.entity.v0.process.Clusters());\r\n    p2.getClusters().getClusters().add(processCluster);\r\n    store.publish(EntityType.CLUSTER, cluster);\r\n    store.publish(EntityType.FEED, f1);\r\n    store.publish(EntityType.FEED, f2);\r\n    store.publish(EntityType.FEED, f3);\r\n    store.publish(EntityType.PROCESS, p1);\r\n    store.publish(EntityType.PROCESS, p2);\r\n    Set<Entity> entities = graph.getDependents(p1);\r\n    Assert.assertEquals(entities.size(), 3);\r\n    Assert.assertTrue(entities.contains(cluster));\r\n    Assert.assertTrue(entities.contains(f1));\r\n    Assert.assertTrue(entities.contains(f3));\r\n    entities = graph.getDependents(p2);\r\n    Assert.assertEquals(entities.size(), 3);\r\n    Assert.assertTrue(entities.contains(cluster));\r\n    Assert.assertTrue(entities.contains(f2));\r\n    Assert.assertTrue(entities.contains(f3));\r\n    entities = graph.getDependents(f1);\r\n    Assert.assertEquals(entities.size(), 2);\r\n    Assert.assertTrue(entities.contains(p1));\r\n    Assert.assertTrue(entities.contains(cluster));\r\n    entities = graph.getDependents(f2);\r\n    Assert.assertEquals(entities.size(), 2);\r\n    Assert.assertTrue(entities.contains(p2));\r\n    Assert.assertTrue(entities.contains(cluster));\r\n    entities = graph.getDependents(f3);\r\n    Assert.assertEquals(entities.size(), 3);\r\n    Assert.assertTrue(entities.contains(p2));\r\n    Assert.assertTrue(entities.contains(p1));\r\n    Assert.assertTrue(entities.contains(cluster));\r\n    entities = graph.getDependents(cluster);\r\n    Assert.assertEquals(entities.size(), 5);\r\n    Assert.assertTrue(entities.contains(p1));\r\n    Assert.assertTrue(entities.contains(p2));\r\n    Assert.assertTrue(entities.contains(f1));\r\n    Assert.assertTrue(entities.contains(f2));\r\n    Assert.assertTrue(entities.contains(f3));\r\n    store.remove(EntityType.PROCESS, p2.getName());\r\n    store.remove(EntityType.FEED, f2.getName());\r\n    entities = graph.getDependents(p1);\r\n    Assert.assertEquals(entities.size(), 3);\r\n    Assert.assertTrue(entities.contains(cluster));\r\n    Assert.assertTrue(entities.contains(f1));\r\n    Assert.assertTrue(entities.contains(f3));\r\n    entities = graph.getDependents(p2);\r\n    Assert.assertTrue(entities == null);\r\n    entities = graph.getDependents(f1);\r\n    Assert.assertEquals(entities.size(), 2);\r\n    Assert.assertTrue(entities.contains(p1));\r\n    Assert.assertTrue(entities.contains(cluster));\r\n    entities = graph.getDependents(f2);\r\n    Assert.assertTrue(entities == null);\r\n    entities = graph.getDependents(f3);\r\n    Assert.assertEquals(entities.size(), 2);\r\n    Assert.assertTrue(entities.contains(p1));\r\n    Assert.assertTrue(entities.contains(cluster));\r\n    entities = graph.getDependents(cluster);\r\n    Assert.assertEquals(entities.size(), 3);\r\n    Assert.assertTrue(entities.contains(p1));\r\n    Assert.assertTrue(entities.contains(f1));\r\n    Assert.assertTrue(entities.contains(f3));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\entity\\v0\\EntityGraphTest.java",
+  "methodName" : "testOnChange",
+  "sourceCode" : "@Test\r\npublic void testOnChange() throws Exception {\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\group\\FeedGroupMapTest.java",
+  "methodName" : "testOnAdd",
+  "sourceCode" : "@Test\r\npublic void testOnAdd() throws IvoryException, JAXBException {\r\n    store.publish(EntityType.CLUSTER, cluster);\r\n    Feed feed1 = (Feed) EntityType.FEED.getUnmarshaller().unmarshal(FeedGroupMapTest.class.getResourceAsStream(\"/config/feed/feed-0.1.xml\"));\r\n    feed1.setName(\"f1\");\r\n    feed1.setGroups(\"group1,group2,group3\");\r\n    Location location = new Location();\r\n    location.setPath(\"/projects/bi/rmc/daily/ad/${YEAR}/fraud/${MONTH}-${DAY}/ad\");\r\n    location.setType(LocationType.DATA);\r\n    feed1.setLocations(new Locations());\r\n    feed1.getLocations().getLocations().add(location);\r\n    store.publish(EntityType.FEED, feed1);\r\n    Map<String, FeedGroup> groupMapping = FeedGroupMap.get().getGroupsMapping();\r\n    FeedGroup group = groupMapping.get(\"group1\");\r\n    Assert.assertEquals(group.getName(), \"group1\");\r\n    Assert.assertEquals(group.getFeeds().size(), 1);\r\n    assertFields(group, feed1);\r\n    group = groupMapping.get(\"group2\");\r\n    Assert.assertEquals(group.getName(), \"group2\");\r\n    Assert.assertEquals(group.getFeeds().size(), 1);\r\n    assertFields(group, feed1);\r\n    group = groupMapping.get(\"group3\");\r\n    Assert.assertEquals(group.getName(), \"group3\");\r\n    Assert.assertEquals(group.getFeeds().size(), 1);\r\n    assertFields(group, feed1);\r\n    Feed feed2 = (Feed) EntityType.FEED.getUnmarshaller().unmarshal(FeedGroupMapTest.class.getResourceAsStream(\"/config/feed/feed-0.1.xml\"));\r\n    feed2.setName(\"f2\");\r\n    feed2.setGroups(\"group1,group5,group3\");\r\n    location.setPath(\"/projects/bi/rmc/daily/ad/${YEAR}/${MONTH}/${DAY}/ad2\");\r\n    location.setType(LocationType.DATA);\r\n    feed2.setLocations(new Locations());\r\n    feed2.getLocations().getLocations().add(location);\r\n    store.publish(EntityType.FEED, feed2);\r\n    groupMapping = FeedGroupMap.get().getGroupsMapping();\r\n    group = groupMapping.get(\"group1\");\r\n    Assert.assertEquals(group.getName(), \"group1\");\r\n    Assert.assertEquals(group.getFeeds().size(), 2);\r\n    assertFields(group, feed2);\r\n    group = groupMapping.get(\"group2\");\r\n    Assert.assertEquals(group.getName(), \"group2\");\r\n    Assert.assertEquals(group.getFeeds().size(), 1);\r\n    assertFields(group, feed2);\r\n    group = groupMapping.get(\"group3\");\r\n    Assert.assertEquals(group.getName(), \"group3\");\r\n    Assert.assertEquals(group.getFeeds().size(), 2);\r\n    assertFields(group, feed2);\r\n    group = groupMapping.get(\"group5\");\r\n    Assert.assertEquals(group.getName(), \"group5\");\r\n    Assert.assertEquals(group.getFeeds().size(), 1);\r\n    assertFields(group, feed2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\group\\FeedGroupMapTest.java",
+  "methodName" : "testOnRemove",
+  "sourceCode" : "@Test\r\npublic void testOnRemove() throws IvoryException, JAXBException {\r\n    Feed feed1 = (Feed) EntityType.FEED.getUnmarshaller().unmarshal(FeedGroupMapTest.class.getResourceAsStream(\"/config/feed/feed-0.1.xml\"));\r\n    feed1.setName(\"f1\");\r\n    store.publish(EntityType.CLUSTER, cluster);\r\n    feed1.setGroups(\"group7,group8,group9\");\r\n    Location location = new Location();\r\n    location.setPath(\"/projects/bi/rmc/daily/ad/${YEAR}/fraud/${MONTH}-${DAY}/ad\");\r\n    location.setType(LocationType.DATA);\r\n    feed1.setLocations(new Locations());\r\n    feed1.getLocations().getLocations().add(location);\r\n    store.publish(EntityType.FEED, feed1);\r\n    Feed feed2 = (Feed) EntityType.FEED.getUnmarshaller().unmarshal(FeedGroupMapTest.class.getResourceAsStream(\"/config/feed/feed-0.1.xml\"));\r\n    feed2.setName(\"f2\");\r\n    feed2.setGroups(\"group7,group8,group10\");\r\n    location.setPath(\"/projects/bi/rmc/daily/ad/${YEAR}/${MONTH}/${DAY}/ad2\");\r\n    location.setType(LocationType.DATA);\r\n    feed2.setLocations(new Locations());\r\n    feed2.getLocations().getLocations().add(location);\r\n    store.publish(EntityType.FEED, feed2);\r\n    Map<String, FeedGroup> groupMapping = FeedGroupMap.get().getGroupsMapping();\r\n    store.remove(EntityType.FEED, \"f2\");\r\n    FeedGroup group = groupMapping.get(\"group7\");\r\n    Assert.assertEquals(group.getName(), \"group7\");\r\n    Assert.assertEquals(group.getFeeds().size(), 1);\r\n    group = groupMapping.get(\"group8\");\r\n    Assert.assertEquals(group.getName(), \"group8\");\r\n    Assert.assertEquals(group.getFeeds().size(), 1);\r\n    group = groupMapping.get(\"group10\");\r\n    Assert.assertEquals(null, group);\r\n    store.remove(EntityType.FEED, \"f1\");\r\n    group = groupMapping.get(\"group7\");\r\n    Assert.assertEquals(null, group);\r\n    group = groupMapping.get(\"group8\");\r\n    Assert.assertEquals(null, group);\r\n    group = groupMapping.get(\"group9\");\r\n    Assert.assertEquals(null, group);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\group\\FeedGroupMapTest.java",
+  "methodName" : "testNullGroup",
+  "sourceCode" : "@Test\r\npublic void testNullGroup() throws IvoryException, JAXBException {\r\n    Feed feed1 = (Feed) EntityType.FEED.getUnmarshaller().unmarshal(FeedGroupMapTest.class.getResourceAsStream(\"/config/feed/feed-0.1.xml\"));\r\n    feed1.setName(\"f5\" + System.currentTimeMillis());\r\n    store.publish(EntityType.CLUSTER, cluster);\r\n    feed1.setGroups(null);\r\n    Location location = new Location();\r\n    location.setPath(\"/projects/bi/rmc/daily/ad/${YEAR}/fraud/${MONTH}-${DAY}/ad\");\r\n    location.setType(LocationType.DATA);\r\n    feed1.setLocations(new Locations());\r\n    feed1.getLocations().getLocations().add(location);\r\n    store.publish(EntityType.FEED, feed1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\security\\CurrentUserTest.java",
+  "methodName" : "testGetUser",
+  "sourceCode" : "@Test(threadPoolSize = 10, invocationCount = 10, timeOut = 10000)\r\npublic void testGetUser() throws Exception {\r\n    String id = Long.toString(System.nanoTime());\r\n    CurrentUser.authenticate(id);\r\n    Assert.assertEquals(CurrentUser.getUser(), id);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\update\\UpdateHelperTest.java",
+  "methodName" : "testShouldUpdate2",
+  "sourceCode" : "@Test\r\npublic void testShouldUpdate2() throws Exception {\r\n    Feed oldFeed = parser.parseAndValidate(this.getClass().getResourceAsStream(FEED_XML));\r\n    String cluster = \"testCluster\";\r\n    Feed newFeed = (Feed) oldFeed.clone();\r\n    Assert.assertFalse(UpdateHelper.shouldUpdate(oldFeed, newFeed, cluster));\r\n    newFeed.setGroups(\"newgroups\");\r\n    Assert.assertFalse(UpdateHelper.shouldUpdate(oldFeed, newFeed, cluster));\r\n    newFeed.getLateArrival().setCutOff(Frequency.fromString(\"hours(8)\"));\r\n    Assert.assertFalse(UpdateHelper.shouldUpdate(oldFeed, newFeed, cluster));\r\n    newFeed.setFrequency(Frequency.fromString(\"days(1)\"));\r\n    Assert.assertTrue(UpdateHelper.shouldUpdate(oldFeed, newFeed, cluster));\r\n    Process oldProcess = processParser.parseAndValidate(this.getClass().getResourceAsStream(PROCESS_XML));\r\n    Process newProcess = (Process) oldProcess.clone();\r\n    newProcess.getRetry().setPolicy(PolicyType.FINAL);\r\n    Assert.assertFalse(UpdateHelper.shouldUpdate(oldProcess, newProcess, cluster));\r\n    newProcess.getLateProcess().getLateInputs().remove(1);\r\n    Assert.assertFalse(UpdateHelper.shouldUpdate(oldProcess, newProcess, cluster));\r\n    newProcess.getLateProcess().setPolicy(PolicyType.PERIODIC);\r\n    Assert.assertFalse(UpdateHelper.shouldUpdate(oldProcess, newProcess, cluster));\r\n    newProcess.setFrequency(Frequency.fromString(\"days(1)\"));\r\n    Assert.assertTrue(UpdateHelper.shouldUpdate(oldProcess, newProcess, cluster));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\common\\src\\test\\java\\org\\apache\\ivory\\update\\UpdateHelperTest.java",
+  "methodName" : "testShouldUpdate",
+  "sourceCode" : "@Test\r\npublic void testShouldUpdate() throws Exception {\r\n    Feed oldFeed = parser.parseAndValidate(this.getClass().getResourceAsStream(FEED_XML));\r\n    Feed newFeed = (Feed) oldFeed.clone();\r\n    Process process = processParser.parseAndValidate(this.getClass().getResourceAsStream(PROCESS_XML));\r\n    Assert.assertFalse(UpdateHelper.shouldUpdate(oldFeed, newFeed, process));\r\n    newFeed.getLateArrival().setCutOff(Frequency.fromString(\"hours(1)\"));\r\n    Assert.assertFalse(UpdateHelper.shouldUpdate(oldFeed, newFeed, process));\r\n    newFeed.getLateArrival().setCutOff(oldFeed.getLateArrival().getCutOff());\r\n    Assert.assertFalse(UpdateHelper.shouldUpdate(oldFeed, newFeed, process));\r\n    FeedHelper.getLocation(newFeed, LocationType.DATA).setPath(\"/test\");\r\n    Assert.assertTrue(UpdateHelper.shouldUpdate(oldFeed, newFeed, process));\r\n    FeedHelper.getLocation(newFeed, LocationType.DATA).setPath(FeedHelper.getLocation(oldFeed, LocationType.DATA).getPath());\r\n    Assert.assertFalse(UpdateHelper.shouldUpdate(oldFeed, newFeed, process));\r\n    newFeed.setFrequency(Frequency.fromString(\"months(1)\"));\r\n    Assert.assertTrue(UpdateHelper.shouldUpdate(oldFeed, newFeed, process));\r\n    newFeed.setFrequency(oldFeed.getFrequency());\r\n    Assert.assertFalse(UpdateHelper.shouldUpdate(oldFeed, newFeed, process));\r\n    Partition partition = new Partition();\r\n    partition.setName(\"1\");\r\n    newFeed.getPartitions().getPartitions().add(partition);\r\n    Assert.assertFalse(UpdateHelper.shouldUpdate(oldFeed, newFeed, process));\r\n    Property property = new Property();\r\n    property.setName(\"1\");\r\n    property.setValue(\"1\");\r\n    newFeed.setProperties(new Properties());\r\n    newFeed.getProperties().getProperties().add(property);\r\n    Assert.assertFalse(UpdateHelper.shouldUpdate(oldFeed, newFeed, process));\r\n    newFeed.getProperties().getProperties().remove(0);\r\n    Assert.assertFalse(UpdateHelper.shouldUpdate(oldFeed, newFeed, process));\r\n    FeedHelper.getCluster(newFeed, process.getClusters().getClusters().get(0).getName()).getValidity().setStart(SchemaHelper.parseDateUTC(\"2012-11-01T00:00Z\"));\r\n    Assert.assertTrue(UpdateHelper.shouldUpdate(oldFeed, newFeed, process));\r\n    FeedHelper.getCluster(newFeed, process.getClusters().getClusters().get(0).getName()).getValidity().setStart(FeedHelper.getCluster(oldFeed, process.getClusters().getClusters().get(0).getName()).getValidity().getStart());\r\n    Assert.assertFalse(UpdateHelper.shouldUpdate(oldFeed, newFeed, process));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\feed\\src\\test\\java\\org\\apache\\ivory\\converter\\OozieFeedMapperTest.java",
+  "methodName" : "testReplicationCoords",
+  "sourceCode" : "@Test\r\npublic void testReplicationCoords() throws IvoryException {\r\n    OozieFeedMapper feedMapper = new OozieFeedMapper(feed);\r\n    List<COORDINATORAPP> coords = feedMapper.getCoordinators(trgCluster, new Path(\"/projects/ivory/\"));\r\n    COORDINATORAPP coord = coords.get(0);\r\n    Assert.assertEquals(\"${nameNode}/projects/ivory/REPLICATION\", coord.getAction().getWorkflow().getAppPath());\r\n    Assert.assertEquals(\"IVORY_FEED_REPLICATION_\" + feed.getName() + \"_\" + srcCluster.getName(), coord.getName());\r\n    Assert.assertEquals(\"${coord:minutes(20)}\", coord.getFrequency());\r\n    SYNCDATASET inputDataset = (SYNCDATASET) coord.getDatasets().getDatasetOrAsyncDataset().get(0);\r\n    SYNCDATASET outputDataset = (SYNCDATASET) coord.getDatasets().getDatasetOrAsyncDataset().get(1);\r\n    Assert.assertEquals(\"${coord:minutes(20)}\", inputDataset.getFrequency());\r\n    Assert.assertEquals(\"input-dataset\", inputDataset.getName());\r\n    Assert.assertEquals(ClusterHelper.getHdfsUrl(srcCluster) + \"/examples/input-data/rawLogs/${YEAR}/${MONTH}/${DAY}/${HOUR}/${MINUTE}\", inputDataset.getUriTemplate());\r\n    Assert.assertEquals(\"${coord:minutes(20)}\", outputDataset.getFrequency());\r\n    Assert.assertEquals(\"output-dataset\", outputDataset.getName());\r\n    Assert.assertEquals(\"${nameNode}\" + \"/examples/input-data/rawLogs/${YEAR}/${MONTH}/${DAY}/${HOUR}/${MINUTE}\", outputDataset.getUriTemplate());\r\n    for (Property prop : coord.getAction().getWorkflow().getConfiguration().getProperty()) {\r\n        if (prop.getName().equals(\"mapred.job.priority\")) {\r\n            assertEquals(prop.getValue(), \"NORMAL\");\r\n            break;\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\messaging\\src\\test\\java\\org\\apache\\ivory\\messaging\\FeedProducerTest.java",
+  "methodName" : "testLogFile",
+  "sourceCode" : "@Test\r\npublic void testLogFile() throws Exception {\r\n    FileSystem fs = dfsCluster.getFileSystem();\r\n    OutputStream out = fs.create(logFile);\r\n    InputStream in = new ByteArrayInputStream((\"instancePaths=/ivory/feed/agg-logs/path1/2010/10/10/20,\" + \"/ivory/feed/agg-logs/path1/2010/10/10/21,\" + \"/ivory/feed/agg-logs/path1/2010/10/10/22,\" + \"/ivory/feed/agg-logs/path1/2010/10/10/23\").getBytes());\r\n    IOUtils.copyBytes(in, out, conf);\r\n    testProcessMessageCreator();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\messaging\\src\\test\\java\\org\\apache\\ivory\\messaging\\FeedProducerTest.java",
+  "methodName" : "testEmptyLogFile",
+  "sourceCode" : "@Test\r\npublic void testEmptyLogFile() throws Exception {\r\n    FileSystem fs = dfsCluster.getFileSystem();\r\n    OutputStream out = fs.create(logFile);\r\n    InputStream in = new ByteArrayInputStream((\"instancePaths=\").getBytes());\r\n    IOUtils.copyBytes(in, out, conf);\r\n    new MessageProducer().run(this.args);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\messaging\\src\\test\\java\\org\\apache\\ivory\\messaging\\IvoryTopicProducerTest.java",
+  "methodName" : "testWithFeedOutputPaths",
+  "sourceCode" : "@Test\r\npublic void testWithFeedOutputPaths() throws Exception {\r\n    String[] args = new String[] { \"-\" + ARG.entityName.getArgName(), \"agg-coord\", \"-\" + ARG.feedNames.getArgName(), \"click-logs,raw-logs\", \"-\" + ARG.feedInstancePaths.getArgName(), \"/click-logs/10/05/05/00/20,/raw-logs/10/05/05/00/20\", \"-\" + ARG.workflowId.getArgName(), \"workflow-01-00\", \"-\" + ARG.runId.getArgName(), \"1\", \"-\" + ARG.nominalTime.getArgName(), \"2011-01-01-01-00\", \"-\" + ARG.timeStamp.getArgName(), \"2012-01-01-01-00\", \"-\" + ARG.brokerUrl.getArgName(), BROKER_URL, \"-\" + ARG.brokerImplClass.getArgName(), (BROKER_IMPL_CLASS), \"-\" + ARG.entityType.getArgName(), (\"process\"), \"-\" + ARG.operation.getArgName(), (\"GENERATE\"), \"-\" + ARG.logFile.getArgName(), (\"/logFile\"), \"-\" + ARG.topicName.getArgName(), (TOPIC_NAME), \"-\" + ARG.status.getArgName(), (\"SUCCEEDED\"), \"-\" + ARG.brokerTTL.getArgName(), \"10\", \"-\" + ARG.cluster.getArgName(), \"corp\" };\r\n    testProcessMessageCreator(args);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\messaging\\src\\test\\java\\org\\apache\\ivory\\messaging\\IvoryTopicProducerTest.java",
+  "methodName" : "testWithEmptyFeedOutputPaths",
+  "sourceCode" : "@Test\r\npublic void testWithEmptyFeedOutputPaths() throws Exception {\r\n    String[] args = new String[] { \"-\" + ARG.entityName.getArgName(), \"agg-coord\", \"-\" + ARG.feedNames.getArgName(), \"null\", \"-\" + ARG.feedInstancePaths.getArgName(), \"null\", \"-\" + ARG.workflowId.getArgName(), \"workflow-01-00\", \"-\" + ARG.runId.getArgName(), \"1\", \"-\" + ARG.nominalTime.getArgName(), \"2011-01-01-01-00\", \"-\" + ARG.timeStamp.getArgName(), \"2012-01-01-01-00\", \"-\" + ARG.brokerUrl.getArgName(), BROKER_URL, \"-\" + ARG.brokerImplClass.getArgName(), (BROKER_IMPL_CLASS), \"-\" + ARG.entityType.getArgName(), (\"process\"), \"-\" + ARG.operation.getArgName(), (\"GENERATE\"), \"-\" + ARG.logFile.getArgName(), (\"/logFile\"), \"-\" + ARG.topicName.getArgName(), (TOPIC_NAME), \"-\" + ARG.status.getArgName(), (\"SUCCEEDED\"), \"-\" + ARG.brokerTTL.getArgName(), \"10\", \"-\" + ARG.cluster.getArgName(), \"corp\" };\r\n    testProcessMessageCreator(args);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\messaging\\src\\test\\java\\org\\apache\\ivory\\messaging\\ProcessProducerTest.java",
+  "methodName" : "testProcessMessageCreator",
+  "sourceCode" : "@Test\r\npublic void testProcessMessageCreator() throws Exception {\r\n    Thread t = new Thread() {\r\n\r\n        @Override\r\n        public void run() {\r\n            try {\r\n                consumer();\r\n            } catch (AssertionError e) {\r\n                error = e;\r\n            } catch (JMSException ignore) {\r\n            }\r\n        }\r\n    };\r\n    t.start();\r\n    Thread.sleep(1500);\r\n    new MessageProducer().run(this.args);\r\n    t.join();\r\n    if (error != null) {\r\n        throw error;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\oozie\\src\\test\\java\\org\\apache\\ivory\\oozie\\bundle\\BundleUnmarshallingTest.java",
+  "methodName" : "testValidBundleUnamrashalling",
+  "sourceCode" : "@Test\r\npublic void testValidBundleUnamrashalling() throws Exception {\r\n    Unmarshaller unmarshaller = JAXBContext.newInstance(org.apache.ivory.oozie.bundle.BUNDLEAPP.class).createUnmarshaller();\r\n    SchemaFactory schemaFactory = SchemaFactory.newInstance(\"http://www.w3.org/2001/XMLSchema\");\r\n    Schema schema = schemaFactory.newSchema(this.getClass().getResource(\"/oozie-bundle-0.1.xsd\"));\r\n    unmarshaller.setSchema(schema);\r\n    Object bundle = unmarshaller.unmarshal(new StreamSource(BundleUnmarshallingTest.class.getResourceAsStream(\"/oozie/xmls/bundle.xml\")), BUNDLEAPP.class);\r\n    BUNDLEAPP bundleApp = ((JAXBElement<BUNDLEAPP>) bundle).getValue();\r\n    Assert.assertEquals(bundleApp.getName(), \"bundle-app\");\r\n    Assert.assertEquals(bundleApp.getCoordinator().get(0).getName(), \"coord-1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\oozie\\src\\test\\java\\org\\apache\\ivory\\oozie\\coordinator\\CoordinatorUnmarshallingTest.java",
+  "methodName" : "testValidCoordinatorUnamrashalling",
+  "sourceCode" : "@Test\r\npublic void testValidCoordinatorUnamrashalling() throws JAXBException, SAXException {\r\n    Unmarshaller unmarshaller = JAXBContext.newInstance(org.apache.ivory.oozie.coordinator.COORDINATORAPP.class).createUnmarshaller();\r\n    SchemaFactory schemaFactory = SchemaFactory.newInstance(\"http://www.w3.org/2001/XMLSchema\");\r\n    Schema schema = schemaFactory.newSchema(this.getClass().getResource(\"/oozie-coordinator-0.3.xsd\"));\r\n    unmarshaller.setSchema(schema);\r\n    JAXBElement<COORDINATORAPP> coordinatorApp = (JAXBElement<COORDINATORAPP>) unmarshaller.unmarshal(CoordinatorUnmarshallingTest.class.getResourceAsStream(\"/oozie/xmls/coordinator.xml\"));\r\n    COORDINATORAPP app = coordinatorApp.getValue();\r\n    Assert.assertEquals(app.getName(), \"test\");\r\n    Assert.assertEquals(app.getInputEvents().getDataIn().get(0).getName(), \"data-in\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\oozie\\src\\test\\java\\org\\apache\\ivory\\oozie\\workflow\\IvoryPostProcessingTest.java",
+  "methodName" : "testProcessMessageCreator",
+  "sourceCode" : "@Test\r\npublic void testProcessMessageCreator() throws Exception {\r\n    Thread t = new Thread() {\r\n\r\n        @Override\r\n        public void run() {\r\n            try {\r\n                consumer(BROKER_URL, \"IVORY.\" + ENTITY_NAME);\r\n                consumer(BROKER_URL, IVORY_TOPIC_NAME);\r\n            } catch (AssertionError e) {\r\n                error = e;\r\n            } catch (JMSException ignore) {\r\n            }\r\n        }\r\n    };\r\n    t.start();\r\n    Thread.sleep(1500);\r\n    new IvoryPostProcessing().run(this.args);\r\n    t.join();\r\n    if (error != null) {\r\n        throw error;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\oozie\\src\\test\\java\\org\\apache\\ivory\\oozie\\workflow\\WorkflowUnmarshallingTest.java",
+  "methodName" : "testValidWorkflowUnamrashalling",
+  "sourceCode" : "@Test\r\npublic void testValidWorkflowUnamrashalling() throws JAXBException, SAXException {\r\n    Unmarshaller unmarshaller = JAXBContext.newInstance(org.apache.ivory.oozie.workflow.WORKFLOWAPP.class).createUnmarshaller();\r\n    SchemaFactory schemaFactory = SchemaFactory.newInstance(\"http://www.w3.org/2001/XMLSchema\");\r\n    Schema schema = schemaFactory.newSchema(this.getClass().getResource(\"/oozie-workflow-0.3.xsd\"));\r\n    unmarshaller.setSchema(schema);\r\n    JAXBElement<WORKFLOWAPP> workflowApp = (JAXBElement<WORKFLOWAPP>) unmarshaller.unmarshal(WorkflowUnmarshallingTest.class.getResourceAsStream(\"/oozie/xmls/workflow.xml\"));\r\n    WORKFLOWAPP app = workflowApp.getValue();\r\n    Assert.assertEquals(app.getName(), \"java-main-wf\");\r\n    Assert.assertEquals(((ACTION) app.getDecisionOrForkOrJoin().get(0)).getName(), \"java-node\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\oozie\\src\\test\\java\\org\\apache\\oozie\\client\\CustomOozieClientTest.java",
+  "methodName" : "testGetConfiguration",
+  "sourceCode" : "@Test(enabled = false)\r\npublic void testGetConfiguration() throws Exception {\r\n    CustomOozieClient client = new CustomOozieClient(\"http://localhost:11000/oozie\");\r\n    Properties props = client.getConfiguration();\r\n    System.out.println(props);\r\n    props = client.getProperties();\r\n    System.out.println(props);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\prism\\src\\test\\java\\org\\apache\\ivory\\aspect\\GenericAlertTest.java",
+  "methodName" : "testWfInstanceFailedAlert",
+  "sourceCode" : "@Test\r\npublic void testWfInstanceFailedAlert() throws Exception {\r\n    GenericAlert.instrumentFailedInstance(\"cluster\", \"process\", \"agg-coord\", \"120:df\", \"ef-id\", \"1\", \"DELETE\", \"now\", \"error\", \"none\", 1242);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\prism\\src\\test\\java\\org\\apache\\ivory\\aspect\\LoggingAspectTest.java",
+  "methodName" : "testBeanLoading",
+  "sourceCode" : "@Test(expectedExceptions = IvoryWebException.class)\r\npublic void testBeanLoading() {\r\n    APIResult result = em.getStatus(\"type\", \"entity\", \"colo\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\prism\\src\\test\\java\\org\\apache\\ivory\\aspect\\LoggingAspectTest.java",
+  "methodName" : "testExceptionBeanLoading",
+  "sourceCode" : "@Test\r\npublic void testExceptionBeanLoading() {\r\n    try {\r\n        em.getStatus(\"type\", \"entity\", \"colo\");\r\n        System.out.println();\r\n    } catch (Exception e) {\r\n        return;\r\n    }\r\n    Assert.fail(\"Exepected excpetion\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\prism\\src\\test\\java\\org\\apache\\ivory\\aspect\\LoggingAspectTest.java",
+  "methodName" : "testConcurrentRequests",
+  "sourceCode" : "@Test(expectedExceptions = IvoryWebException.class)\r\npublic void testConcurrentRequests() throws Exception {\r\n    List<Thread> threadList = new ArrayList<Thread>();\r\n    for (int i = 0; i < 5; i++) {\r\n        threadList.add(new Thread() {\r\n\r\n            public void run() {\r\n                try {\r\n                    testBeanLoading();\r\n                } catch (Exception e) {\r\n                    e.printStackTrace();\r\n                    threadException = e;\r\n                    throw new RuntimeException(e);\r\n                }\r\n            }\r\n        });\r\n    }\r\n    for (Thread thread : threadList) {\r\n        thread.start();\r\n        thread.join();\r\n    }\r\n    if (threadException != null) {\r\n        throw threadException;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\prism\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerTest.java",
+  "methodName" : "testValidateForValidEntityXML",
+  "sourceCode" : "/**\r\n * Run this testcase for different types of VALID entity xmls like process,\r\n * feed, dataEndPoint\r\n *\r\n * @param stream\r\n * @throws IOException\r\n */\r\n@Test(dataProvider = \"validXMLServletStreamProvider\")\r\npublic void testValidateForValidEntityXML(EntityType entityType, ServletInputStream stream) throws IOException {\r\n    when(mockHttpServletRequest.getInputStream()).thenReturn(stream);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\prism\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerTest.java",
+  "methodName" : "testValidateForInvalidEntityXML",
+  "sourceCode" : "@Test\r\npublic void testValidateForInvalidEntityXML() throws IOException {\r\n    ServletInputStream invalidProcessXML = getServletInputStream(SAMPLE_INVALID_PROCESS_XML);\r\n    when(mockHttpServletRequest.getInputStream()).thenReturn(invalidProcessXML);\r\n    try {\r\n        validate(mockHttpServletRequest, EntityType.PROCESS.name());\r\n        Assert.fail(\"Invalid entity type was accepted by the system\");\r\n    } catch (IvoryWebException ignore) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\prism\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerTest.java",
+  "methodName" : "testValidateForInvalidEntityType",
+  "sourceCode" : "@Test\r\npublic void testValidateForInvalidEntityType() throws IOException {\r\n    ServletInputStream invalidProcessXML = getServletInputStream(SAMPLE_PROCESS_XML);\r\n    when(mockHttpServletRequest.getInputStream()).thenReturn(invalidProcessXML);\r\n    try {\r\n        validate(mockHttpServletRequest, \"InvalidEntityType\");\r\n        Assert.fail(\"Invalid entity type was accepted by the system\");\r\n    } catch (IvoryWebException ignore) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\prism\\src\\test\\java\\org\\apache\\ivory\\service\\IvoryTopicSubscriberTest.java",
+  "methodName" : "testSubscriber",
+  "sourceCode" : "@Test\r\npublic void testSubscriber() throws IvoryException, JMSException {\r\n    IvoryTopicSubscriber subscriber1 = new IvoryTopicSubscriber(BROKER_IMPL_CLASS, \"\", \"\", BROKER_URL, TOPIC_NAME);\r\n    subscriber1.startSubscriber();\r\n    sendMessages();\r\n    subscriber1.closeSubscriber();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\process\\src\\test\\java\\org\\apache\\ivory\\converter\\OozieProcessMapperTest.java",
+  "methodName" : "testBundle",
+  "sourceCode" : "@Test\r\npublic void testBundle() throws Exception {\r\n    Process process = ConfigurationStore.get().get(EntityType.PROCESS, \"clicksummary\");\r\n    Cluster cluster = ConfigurationStore.get().get(EntityType.CLUSTER, \"corp\");\r\n    OozieProcessMapper mapper = new OozieProcessMapper(process);\r\n    Path bundlePath = new Path(\"/\", EntityUtil.getStagingPath(process));\r\n    mapper.map(cluster, bundlePath);\r\n    FileSystem fs = new Path(hdfsUrl).getFileSystem(new Configuration());\r\n    assertTrue(fs.exists(bundlePath));\r\n    BUNDLEAPP bundle = getBundle(fs, bundlePath);\r\n    assertEquals(EntityUtil.getWorkflowName(process).toString(), bundle.getName());\r\n    assertEquals(1, bundle.getCoordinator().size());\r\n    assertEquals(EntityUtil.getWorkflowName(Tag.DEFAULT, process).toString(), bundle.getCoordinator().get(0).getName());\r\n    String coordPath = bundle.getCoordinator().get(0).getAppPath().replace(\"${nameNode}\", \"\");\r\n    COORDINATORAPP coord = getCoordinator(fs, new Path(coordPath));\r\n    testDefCoordMap(process, coord);\r\n    assertEquals(coord.getControls().getThrottle(), \"12\");\r\n    assertEquals(coord.getControls().getTimeout(), \"360\");\r\n    String wfPath = coord.getAction().getWorkflow().getAppPath().replace(\"${nameNode}\", \"\");\r\n    WORKFLOWAPP parentWorkflow = getParentWorkflow(fs, new Path(wfPath));\r\n    testParentWorkflow(process, parentWorkflow);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\process\\src\\test\\java\\org\\apache\\ivory\\converter\\OozieProcessMapperTest.java",
+  "methodName" : "testBundle1",
+  "sourceCode" : "@Test\r\npublic void testBundle1() throws Exception {\r\n    Process process = ConfigurationStore.get().get(EntityType.PROCESS, \"clicksummary\");\r\n    Cluster cluster = ConfigurationStore.get().get(EntityType.CLUSTER, \"corp\");\r\n    process.setFrequency(Frequency.fromString(\"minutes(1)\"));\r\n    process.setTimeout(Frequency.fromString(\"minutes(15)\"));\r\n    OozieProcessMapper mapper = new OozieProcessMapper(process);\r\n    Path bundlePath = new Path(\"/\", EntityUtil.getStagingPath(process));\r\n    mapper.map(cluster, bundlePath);\r\n    FileSystem fs = new Path(hdfsUrl).getFileSystem(new Configuration());\r\n    assertTrue(fs.exists(bundlePath));\r\n    BUNDLEAPP bundle = getBundle(fs, bundlePath);\r\n    assertEquals(EntityUtil.getWorkflowName(process).toString(), bundle.getName());\r\n    assertEquals(1, bundle.getCoordinator().size());\r\n    assertEquals(EntityUtil.getWorkflowName(Tag.DEFAULT, process).toString(), bundle.getCoordinator().get(0).getName());\r\n    String coordPath = bundle.getCoordinator().get(0).getAppPath().replace(\"${nameNode}\", \"\");\r\n    COORDINATORAPP coord = getCoordinator(fs, new Path(coordPath));\r\n    testDefCoordMap(process, coord);\r\n    assertEquals(coord.getControls().getThrottle(), \"30\");\r\n    assertEquals(coord.getControls().getTimeout(), \"15\");\r\n    String wfPath = coord.getAction().getWorkflow().getAppPath().replace(\"${nameNode}\", \"\");\r\n    WORKFLOWAPP parentWorkflow = getParentWorkflow(fs, new Path(wfPath));\r\n    testParentWorkflow(process, parentWorkflow);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\replication\\src\\test\\java\\org\\apache\\ivory\\repliation\\FeedReplicatorTest.java",
+  "methodName" : "testArguments",
+  "sourceCode" : "@Test\r\npublic void testArguments() throws Exception {\r\n    /*\r\n         * <arg>-update</arg>\r\n         * <arg>-blocking</arg><arg>true</arg> <arg>-maxMaps</arg><arg>20</arg>\r\n         * <arg>-sourcePaths</arg><arg>${distcpSourcePaths}</arg>\r\n         * <arg>-targetPath</arg><arg>${distcpTargetPaths}</arg>\r\n         */\r\n    FeedReplicator replicator = new FeedReplicator();\r\n    DistCpOptions options = replicator.getDistCpOptions(new String[] { \"-update\", \"-blocking\", \"true\", \"-maxMaps\", \"5\", \"-sourcePaths\", \"hdfs://localhost:8020/tmp/\", \"-targetPath\", \"hdfs://localhost1:8020/tmp/\" });\r\n    List<Path> srcPaths = new ArrayList<Path>();\r\n    srcPaths.add(new Path(\"hdfs://localhost:8020/tmp/\"));\r\n    Assert.assertEquals(options.getSourcePaths(), srcPaths);\r\n    Assert.assertEquals(options.getTargetPath(), new Path(\"hdfs://localhost1:8020/tmp/\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\replication\\src\\test\\java\\org\\apache\\ivory\\replication\\FilteredCopyListingTest.java",
+  "methodName" : "testRunNoPattern",
+  "sourceCode" : "@Test\r\npublic void testRunNoPattern() throws Exception {\r\n    final URI uri = FileSystem.getLocal(new Configuration()).getUri();\r\n    final String pathString = uri.toString();\r\n    Path fileSystemPath = new Path(pathString);\r\n    Path source = new Path(fileSystemPath.toString() + \"///tmp/source\");\r\n    Path target = new Path(fileSystemPath.toString() + \"///tmp/target\");\r\n    Path listingPath = new Path(fileSystemPath.toString() + \"///tmp/META/fileList.seq\");\r\n    DistCpOptions options = new DistCpOptions(Arrays.asList(source), target);\r\n    new FilteredCopyListing(new Configuration(), CREDENTIALS).buildListing(listingPath, options);\r\n    verifyContents(listingPath, -1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\replication\\src\\test\\java\\org\\apache\\ivory\\replication\\FilteredCopyListingTest.java",
+  "methodName" : "testRunStarPattern",
+  "sourceCode" : "@Test\r\npublic void testRunStarPattern() throws Exception {\r\n    final URI uri = FileSystem.getLocal(new Configuration()).getUri();\r\n    final String pathString = uri.toString();\r\n    Path fileSystemPath = new Path(pathString);\r\n    Path source = new Path(fileSystemPath.toString() + \"///tmp/source\");\r\n    Path target = new Path(fileSystemPath.toString() + \"///tmp/target\");\r\n    Path listingPath = new Path(fileSystemPath.toString() + \"///tmp/META/fileList.seq\");\r\n    DistCpOptions options = new DistCpOptions(Arrays.asList(source), target);\r\n    Configuration configuration = new Configuration();\r\n    configuration.set(\"ivory.include.path\", \"*/3/*\");\r\n    new FilteredCopyListing(configuration, CREDENTIALS).buildListing(listingPath, options);\r\n    verifyContents(listingPath, 3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\replication\\src\\test\\java\\org\\apache\\ivory\\replication\\FilteredCopyListingTest.java",
+  "methodName" : "testRunQuestionPattern",
+  "sourceCode" : "@Test\r\npublic void testRunQuestionPattern() throws Exception {\r\n    final URI uri = FileSystem.getLocal(new Configuration()).getUri();\r\n    final String pathString = uri.toString();\r\n    Path fileSystemPath = new Path(pathString);\r\n    Path source = new Path(fileSystemPath.toString() + \"///tmp/source\");\r\n    Path target = new Path(fileSystemPath.toString() + \"///tmp/target\");\r\n    Path listingPath = new Path(fileSystemPath.toString() + \"///tmp/META/fileList.seq\");\r\n    DistCpOptions options = new DistCpOptions(Arrays.asList(source), target);\r\n    Configuration configuration = new Configuration();\r\n    configuration.set(\"ivory.include.path\", \"*/3/?\");\r\n    new FilteredCopyListing(configuration, CREDENTIALS).buildListing(listingPath, options);\r\n    verifyContents(listingPath, 2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\replication\\src\\test\\java\\org\\apache\\ivory\\replication\\FilteredCopyListingTest.java",
+  "methodName" : "testRunRangePattern",
+  "sourceCode" : "@Test\r\npublic void testRunRangePattern() throws Exception {\r\n    final URI uri = FileSystem.getLocal(new Configuration()).getUri();\r\n    final String pathString = uri.toString();\r\n    Path fileSystemPath = new Path(pathString);\r\n    Path source = new Path(fileSystemPath.toString() + \"///tmp/source\");\r\n    Path target = new Path(fileSystemPath.toString() + \"///tmp/target\");\r\n    Path listingPath = new Path(fileSystemPath.toString() + \"///tmp/META/fileList.seq\");\r\n    DistCpOptions options = new DistCpOptions(Arrays.asList(source), target);\r\n    Configuration configuration = new Configuration();\r\n    configuration.set(\"ivory.include.path\", \"*/3/[47]\");\r\n    new FilteredCopyListing(configuration, CREDENTIALS).buildListing(listingPath, options);\r\n    verifyContents(listingPath, 2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\replication\\src\\test\\java\\org\\apache\\ivory\\replication\\FilteredCopyListingTest.java",
+  "methodName" : "testRunSpecificPattern",
+  "sourceCode" : "@Test\r\npublic void testRunSpecificPattern() throws Exception {\r\n    final URI uri = FileSystem.getLocal(new Configuration()).getUri();\r\n    final String pathString = uri.toString();\r\n    Path fileSystemPath = new Path(pathString);\r\n    Path source = new Path(fileSystemPath.toString() + \"///tmp/source\");\r\n    Path target = new Path(fileSystemPath.toString() + \"///tmp/target\");\r\n    Path listingPath = new Path(fileSystemPath.toString() + \"///tmp/META/fileList.seq\");\r\n    DistCpOptions options = new DistCpOptions(Arrays.asList(source), target);\r\n    Configuration configuration = new Configuration();\r\n    configuration.set(\"ivory.include.path\", \"*/3/40\");\r\n    new FilteredCopyListing(configuration, CREDENTIALS).buildListing(listingPath, options);\r\n    verifyContents(listingPath, 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\replication\\src\\test\\java\\org\\apache\\ivory\\replication\\FilteredCopyListingTest.java",
+  "methodName" : "testRunListPattern",
+  "sourceCode" : "@Test\r\npublic void testRunListPattern() throws Exception {\r\n    final URI uri = FileSystem.getLocal(new Configuration()).getUri();\r\n    final String pathString = uri.toString();\r\n    Path fileSystemPath = new Path(pathString);\r\n    Path source = new Path(fileSystemPath.toString() + \"///tmp/source\");\r\n    Path target = new Path(fileSystemPath.toString() + \"///tmp/target\");\r\n    Path listingPath = new Path(fileSystemPath.toString() + \"///tmp/META/fileList.seq\");\r\n    DistCpOptions options = new DistCpOptions(Arrays.asList(source), target);\r\n    Configuration configuration = new Configuration();\r\n    configuration.set(\"ivory.include.path\", \"*/3/{4,7}\");\r\n    new FilteredCopyListing(configuration, CREDENTIALS).buildListing(listingPath, options);\r\n    verifyContents(listingPath, 2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\rerun\\src\\test\\java\\org\\apache\\ivory\\rerun\\AbstractRerunPolicyTest.java",
+  "methodName" : "TestGetDurationInMillis",
+  "sourceCode" : "@Test\r\npublic void TestGetDurationInMillis() throws IvoryException {\r\n    AbstractRerunPolicy policy = new AbstractRerunPolicy() {\r\n\r\n        @Override\r\n        public long getDelay(Frequency delay, Date nominaltime, Date cutOffTime) throws IvoryException {\r\n            // TODO Auto-generated method stub\r\n            return 0;\r\n        }\r\n\r\n        @Override\r\n        public long getDelay(Frequency delay, int eventNumber) throws IvoryException {\r\n            // TODO Auto-generated method stub\r\n            return 0;\r\n        }\r\n    };\r\n    Frequency frequency = new Frequency(\"minutes(1)\");\r\n    Assert.assertEquals(policy.getDurationInMilliSec(frequency), 60000);\r\n    frequency = new Frequency(\"minutes(15)\");\r\n    Assert.assertEquals(policy.getDurationInMilliSec(frequency), 900000);\r\n    frequency = new Frequency(\"hours(2)\");\r\n    Assert.assertEquals(policy.getDurationInMilliSec(frequency), 7200000);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\rerun\\src\\test\\java\\org\\apache\\ivory\\rerun\\AbstractRerunPolicyTest.java",
+  "methodName" : "TestExpBackoffPolicy",
+  "sourceCode" : "@Test\r\npublic void TestExpBackoffPolicy() throws IvoryException {\r\n    AbstractRerunPolicy backoff = new ExpBackoffPolicy();\r\n    long delay = backoff.getDelay(new Frequency(\"minutes(2)\"), 2);\r\n    Assert.assertEquals(delay, 480000);\r\n    long currentTime = System.currentTimeMillis();\r\n    delay = backoff.getDelay(new Frequency(\"minutes(2)\"), new Date(currentTime - 1 * 4 * 60 * 1000), new Date(currentTime + 1 * 60 * 60 * 1000));\r\n    Assert.assertEquals(delay, 1 * 6 * 60 * 1000);\r\n    currentTime = System.currentTimeMillis();\r\n    delay = backoff.getDelay(new Frequency(\"minutes(1)\"), new Date(currentTime - 1 * 9 * 60 * 1000), new Date(currentTime + 1 * 60 * 60 * 1000));\r\n    Assert.assertEquals(delay, 900000);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\rerun\\src\\test\\java\\org\\apache\\ivory\\rerun\\AbstractRerunPolicyTest.java",
+  "methodName" : "TestPeriodicPolicy",
+  "sourceCode" : "@Test\r\npublic void TestPeriodicPolicy() throws IvoryException, InterruptedException {\r\n    AbstractRerunPolicy periodic = new PeriodicPolicy();\r\n    long delay = periodic.getDelay(new Frequency(\"minutes(2)\"), 2);\r\n    Assert.assertEquals(delay, 120000);\r\n    delay = periodic.getDelay(new Frequency(\"minutes(2)\"), 5);\r\n    Assert.assertEquals(delay, 120000);\r\n    long currentTime = System.currentTimeMillis();\r\n    //Thread.sleep(1000);\r\n    delay = periodic.getDelay(new Frequency(\"minutes(3)\"), new Date(currentTime), new Date(currentTime + 1 * 60 * 60 * 1000));\r\n    Assert.assertEquals(delay, 180000);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\rerun\\src\\test\\java\\org\\apache\\ivory\\rerun\\queue\\ActiveMQTest.java",
+  "methodName" : "testBrokerStartAndEnqueue",
+  "sourceCode" : "@Test\r\npublic void testBrokerStartAndEnqueue() {\r\n    ActiveMQueue<RerunEvent> activeMQueue = new ActiveMQueue<RerunEvent>(BROKER_URL, DESTI);\r\n    activeMQueue.init();\r\n    RerunEvent event = new LaterunEvent(\"clusterName\", \"wfId\", System.currentTimeMillis(), 60 * 1000, \"entityType\", \"entityName\", \"instance\", 0);\r\n    try {\r\n        activeMQueue.offer(event);\r\n        broker.stop();\r\n        broker.start();\r\n        activeMQueue.reconnect();\r\n        activeMQueue.offer(event);\r\n    } catch (Exception e) {\r\n        Assert.fail();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\retention\\src\\test\\java\\org\\apache\\ivory\\retention\\FeedEvictorTest.java",
+  "methodName" : "testBadArgs",
+  "sourceCode" : "@Test\r\npublic void testBadArgs() throws Exception {\r\n    try {\r\n        FeedEvictor.main(null);\r\n        Assert.fail(\"Expected an exception to be thrown\");\r\n    } catch (Exception ignore) {\r\n    }\r\n    try {\r\n        FeedEvictor.main(new String[] { \"1\", \"2\" });\r\n        Assert.fail(\"Expected an exception to be thrown\");\r\n    } catch (Exception ignore) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\retention\\src\\test\\java\\org\\apache\\ivory\\retention\\FeedEvictorTest.java",
+  "methodName" : "testEviction1",
+  "sourceCode" : "@Test\r\npublic void testEviction1() throws Exception {\r\n    try {\r\n        FeedEvictor.main(new String[] { \"1\", \"2\", \"3\", \"4\", \"5\", \"6\", \"7\" });\r\n    } catch (Exception e) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\retention\\src\\test\\java\\org\\apache\\ivory\\retention\\FeedEvictorTest.java",
+  "methodName" : "testEviction2",
+  "sourceCode" : "@Test\r\npublic void testEviction2() throws Exception {\r\n    try {\r\n        Configuration conf = cluster.getConf();\r\n        FileSystem fs = FileSystem.get(conf);\r\n        fs.delete(new Path(\"/\"), true);\r\n        stream.clear();\r\n        Pair<List<String>, List<String>> pair;\r\n        pair = createTestData(\"feed1\", \"yyyy-MM-dd\", 10, TimeUnit.DAYS);\r\n        String dataPath = \"/data/YYYY/feed1/mmHH/dd/MM/?{YEAR}-?{MONTH}-?{DAY}/more/?{YEAR}\";\r\n        String logFile = \"/ivory/staging/feed/instancePaths-2012-01-01-01-00.csv\";\r\n        FeedEvictor.main(new String[] { \"-feedBasePath\", cluster.getConf().get(\"fs.default.name\") + dataPath, \"-retentionType\", \"instance\", \"-retentionLimit\", \"days(10)\", \"-timeZone\", \"UTC\", \"-frequency\", \"daily\", \"-logFile\", logFile });\r\n        assertFailures(fs, pair);\r\n        compare(map.get(\"feed1\"), stream.getBuffer());\r\n        Assert.assertEquals(readLogFile(new Path(logFile)), getExpectedInstancePaths(dataPath));\r\n    } catch (Exception e) {\r\n        Assert.fail(\"Unknown exception\", e);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\retention\\src\\test\\java\\org\\apache\\ivory\\retention\\FeedEvictorTest.java",
+  "methodName" : "testEviction3",
+  "sourceCode" : "@Test\r\npublic void testEviction3() throws Exception {\r\n    try {\r\n        Configuration conf = cluster.getConf();\r\n        FileSystem fs = FileSystem.get(conf);\r\n        fs.delete(new Path(\"/\"), true);\r\n        stream.clear();\r\n        Pair<List<String>, List<String>> pair;\r\n        pair = createTestData(\"feed2\", \"yyyyMMddHH\", 5, TimeUnit.HOURS);\r\n        String dataPath = \"/data/YYYY/feed2/mmHH/dd/MM/\" + \"?{YEAR}?{MONTH}?{DAY}?{HOUR}/more/?{YEAR}\";\r\n        String logFile = \"/ivory/staging/feed/instancePaths-2012-01-01-02-00.csv\";\r\n        FeedEvictor.main(new String[] { \"-feedBasePath\", cluster.getConf().get(\"fs.default.name\") + dataPath, \"-retentionType\", \"instance\", \"-retentionLimit\", \"hours(5)\", \"-timeZone\", \"UTC\", \"-frequency\", \"hourly\", \"-logFile\", logFile });\r\n        assertFailures(fs, pair);\r\n        compare(map.get(\"feed2\"), stream.getBuffer());\r\n        Assert.assertEquals(readLogFile(new Path(logFile)), getExpectedInstancePaths(dataPath));\r\n    } catch (Exception e) {\r\n        Assert.fail(\"Unknown exception\", e);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\retention\\src\\test\\java\\org\\apache\\ivory\\retention\\FeedEvictorTest.java",
+  "methodName" : "testEviction4",
+  "sourceCode" : "@Test\r\npublic void testEviction4() throws Exception {\r\n    try {\r\n        Configuration conf = cluster.getConf();\r\n        FileSystem fs = FileSystem.get(conf);\r\n        fs.delete(new Path(\"/\"), true);\r\n        stream.clear();\r\n        Pair<List<String>, List<String>> pair;\r\n        pair = createTestData();\r\n        FeedEvictor.main(new String[] { \"-feedBasePath\", cluster.getConf().get(\"fs.default.name\") + \"/data/YYYY/feed3/dd/MM/\" + \"?{MONTH}/more/?{HOUR}\", \"-retentionType\", \"instance\", \"-retentionLimit\", \"months(5)\", \"-timeZone\", \"UTC\", \"-frequency\", \"hourly\", \"-logFile\", \"/ivory/staging/feed/2012-01-01-04-00\" });\r\n        Assert.assertEquals(\"instances=NULL\", stream.getBuffer());\r\n        stream.clear();\r\n        String dataPath = \"/data/YYYY/feed4/dd/MM/\" + \"02/more/hello\";\r\n        String logFile = \"/ivory/staging/feed/instancePaths-2012-01-01-02-00.csv\";\r\n        FeedEvictor.main(new String[] { \"-feedBasePath\", cluster.getConf().get(\"fs.default.name\") + dataPath, \"-retentionType\", \"instance\", \"-retentionLimit\", \"hours(5)\", \"-timeZone\", \"UTC\", \"-frequency\", \"hourly\", \"-logFile\", logFile });\r\n        Assert.assertEquals(\"instances=NULL\", stream.getBuffer());\r\n        Assert.assertEquals(readLogFile(new Path(logFile)), getExpectedInstancePaths(dataPath));\r\n        assertFailures(fs, pair);\r\n    } catch (Exception e) {\r\n        Assert.fail(\"Unknown exception\", e);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testSubmitEntityValidCommands",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testSubmitEntityValidCommands() throws Exception {\r\n    IvoryCLI.OUT_STREAM = stream;\r\n    String filePath;\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    filePath = overlayParametersOverTemplate(CLUSTER_FILE_TEMPLATE, overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -submit -type cluster -file \" + filePath));\r\n    Assert.assertEquals(stream.buffer.toString().trim(), \"default/Submit successful (cluster) \" + clusterName);\r\n    filePath = overlayParametersOverTemplate(FEED_TEMPLATE1, overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -submit -type feed -file \" + filePath));\r\n    Assert.assertEquals(stream.buffer.toString().trim(), \"default/Submit successful (feed) \" + overlay.get(\"inputFeedName\"));\r\n    filePath = overlayParametersOverTemplate(FEED_TEMPLATE2, overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -submit -type feed -file \" + filePath));\r\n    Assert.assertEquals(stream.buffer.toString().trim(), \"default/Submit successful (feed) \" + overlay.get(\"outputFeedName\"));\r\n    filePath = overlayParametersOverTemplate(PROCESS_TEMPLATE, overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -submit -type process -file \" + filePath));\r\n    Assert.assertEquals(stream.buffer.toString().trim(), \"default/Submit successful (process) \" + overlay.get(\"processName\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testListWithEmptyConfigStore",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testListWithEmptyConfigStore() throws Exception {\r\n    Assert.assertEquals(0, executeWithURL(\"entity -list -type process \"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testSubmitAndScheduleEntityValidCommands",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testSubmitAndScheduleEntityValidCommands() throws Exception {\r\n    String filePath;\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    filePath = overlayParametersOverTemplate(CLUSTER_FILE_TEMPLATE, overlay);\r\n    Assert.assertEquals(-1, executeWithURL(\"entity -submitAndSchedule -type cluster -file \" + filePath));\r\n    filePath = overlayParametersOverTemplate(FEED_TEMPLATE1, overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -submitAndSchedule -type feed -file \" + filePath));\r\n    filePath = overlayParametersOverTemplate(FEED_TEMPLATE2, overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -submitAndSchedule -type feed -file \" + filePath));\r\n    filePath = overlayParametersOverTemplate(FEED_TEMPLATE1, overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -submit -type feed -file \" + filePath));\r\n    filePath = overlayParametersOverTemplate(FEED_TEMPLATE2, overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -submit -type feed -file \" + filePath));\r\n    filePath = overlayParametersOverTemplate(PROCESS_TEMPLATE, overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -submitAndSchedule -type process -file \" + filePath));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testValidateValidCommands",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testValidateValidCommands() throws Exception {\r\n    String filePath;\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    filePath = overlayParametersOverTemplate(CLUSTER_FILE_TEMPLATE, overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -validate -type cluster -file \" + filePath));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -submit -type cluster -file \" + filePath));\r\n    filePath = overlayParametersOverTemplate(FEED_TEMPLATE1, overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -validate -type feed -file \" + filePath));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -submit -type feed -file \" + filePath));\r\n    filePath = overlayParametersOverTemplate(FEED_TEMPLATE2, overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -validate -type feed -file \" + filePath));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -submit -type feed -file \" + filePath));\r\n    filePath = overlayParametersOverTemplate(PROCESS_TEMPLATE, overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -validate -type process -file \" + filePath));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -submit -type process -file \" + filePath));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testDefinitionEntityValidCommands",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testDefinitionEntityValidCommands() throws Exception {\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    submitTestFiles(overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -definition -type cluster -name \" + overlay.get(\"cluster\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -definition -type feed -name \" + overlay.get(\"inputFeedName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -definition -type feed -name \" + overlay.get(\"outputFeedName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -definition -type process -name \" + overlay.get(\"processName\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testScheduleEntityValidCommands",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testScheduleEntityValidCommands() throws Exception {\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    submitTestFiles(overlay);\r\n    Assert.assertEquals(-1, executeWithURL(\"entity -schedule -type cluster -name \" + overlay.get(\"cluster\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -schedule -type feed -name \" + overlay.get(\"outputFeedName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -schedule -type process -name \" + overlay.get(\"processName\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testSuspendResumeStatusEntityValidCommands",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testSuspendResumeStatusEntityValidCommands() throws Exception {\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    submitTestFiles(overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -status -type feed -name \" + overlay.get(\"outputFeedName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -status -type process -name \" + overlay.get(\"processName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -schedule -type feed -name \" + overlay.get(\"outputFeedName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -schedule -type process -name \" + overlay.get(\"processName\")));\r\n    waitForProcessWFtoStart();\r\n    Assert.assertEquals(0, executeWithURL(\"entity -suspend -type feed -name \" + overlay.get(\"outputFeedName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -suspend -type process -name \" + overlay.get(\"processName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -status -type feed -name \" + overlay.get(\"outputFeedName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -status -type process -name \" + overlay.get(\"processName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -resume -type feed -name \" + overlay.get(\"outputFeedName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -resume -type process -name \" + overlay.get(\"processName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -status -type feed -name \" + overlay.get(\"outputFeedName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -status -type process -name \" + overlay.get(\"processName\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testSubCommandPresence",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testSubCommandPresence() throws Exception {\r\n    Assert.assertEquals(-1, executeWithURL(\"entity -type cluster \"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testDeleteEntityValidCommands",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testDeleteEntityValidCommands() throws Exception {\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    submitTestFiles(overlay);\r\n    Assert.assertEquals(-1, executeWithURL(\"entity -delete -type cluster -name \" + overlay.get(\"cluster\")));\r\n    Assert.assertEquals(-1, executeWithURL(\"entity -delete -type feed -name \" + overlay.get(\"inputFeedName\")));\r\n    Assert.assertEquals(-1, executeWithURL(\"entity -delete -type feed -name \" + overlay.get(\"outputFeedName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -delete -type process -name \" + overlay.get(\"processName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -delete -type feed -name \" + overlay.get(\"inputFeedName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -delete -type feed -name \" + overlay.get(\"outputFeedName\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testInvalidCLIEntitycommands",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testInvalidCLIEntitycommands() throws Exception {\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    overlayParametersOverTemplate(FEED_TEMPLATE1, overlay);\r\n    Assert.assertEquals(-1, executeWithURL(\"entity -submit -type feed -name \" + \"name\"));\r\n    Assert.assertEquals(-1, executeWithURL(\"entity -schedule -type feed -file \" + \"name\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testInstanceRunningAndStatusCommands",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testInstanceRunningAndStatusCommands() throws Exception {\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    submitTestFiles(overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -schedule -type process -name \" + overlay.get(\"processName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"entity -schedule -type feed -name \" + overlay.get(\"outputFeedName\")));\r\n    waitForProcessWFtoStart();\r\n    Assert.assertEquals(0, executeWithURL(\"instance -status -type feed -name \" + overlay.get(\"outputFeedName\") + \" -start \" + START_INSTANCE));\r\n    Assert.assertEquals(0, executeWithURL(\"instance -running -type process -name \" + overlay.get(\"processName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"instance -status -type process -name \" + overlay.get(\"processName\") + \" -start \" + START_INSTANCE));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testInstanceSuspendAndResume",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testInstanceSuspendAndResume() throws Exception {\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    submitTestFiles(overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -schedule -type process -name \" + overlay.get(\"processName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"instance -suspend -type process -name \" + overlay.get(\"processName\") + \" -start \" + START_INSTANCE + \" -end \" + START_INSTANCE));\r\n    Assert.assertEquals(0, executeWithURL(\"instance -resume -type process -name \" + overlay.get(\"processName\") + \" -start \" + START_INSTANCE));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testInstanceKillAndRerun",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testInstanceKillAndRerun() throws Exception {\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    submitTestFiles(overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -schedule -type process -name \" + overlay.get(\"processName\")));\r\n    waitForProcessWFtoStart();\r\n    Assert.assertEquals(0, executeWithURL(\"instance -kill -type process -name \" + overlay.get(\"processName\") + \" -start \" + START_INSTANCE + \" -end \" + START_INSTANCE));\r\n    Assert.assertEquals(0, executeWithURL(\"instance -rerun -type process -name \" + overlay.get(\"processName\") + \" -start \" + START_INSTANCE + \" -file \" + createTempJobPropertiesFile()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testContinue",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testContinue() throws Exception {\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    submitTestFiles(overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -schedule -type process -name \" + overlay.get(\"processName\")));\r\n    waitForProcessWFtoStart();\r\n    Assert.assertEquals(0, executeWithURL(\"instance -kill -type process -name \" + overlay.get(\"processName\") + \" -start \" + START_INSTANCE + \" -end \" + START_INSTANCE));\r\n    Assert.assertEquals(0, executeWithURL(\"instance -continue -type process -name \" + overlay.get(\"processName\") + \" -start \" + START_INSTANCE));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testInvalidCLIInstanceCommands",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testInvalidCLIInstanceCommands() throws Exception {\r\n    // no command\r\n    Assert.assertEquals(-1, executeWithURL(\" -kill -type process -name \" + \"name\" + \" -start 2010-01-01T01:00Z  -end 2010-01-01T03:00Z\"));\r\n    Assert.assertEquals(-1, executeWithURL(\"instance -kill  \" + \"name\" + \" -start 2010-01-01T01:00Z  -end 2010-01-01T01:00Z\"));\r\n    Assert.assertEquals(-1, executeWithURL(\"instance -kill -type process -name \" + \"name\" + \" -end 2010-01-01T03:00Z\"));\r\n    Assert.assertEquals(-1, executeWithURL(\"instance -kill -type process -name \" + \" -start 2010-01-01T01:00Z  -end 2010-01-01T03:00Z\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testIvoryURL",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testIvoryURL() throws Exception {\r\n    Assert.assertEquals(-1, new IvoryCLI().run((\"instance -status -type process -name \" + \"processName\" + \" -start 2010-01-01T01:00Z  -end 2010-01-01T03:00Z\").split(\"\\\\s\")));\r\n    Assert.assertEquals(-1, new IvoryCLI().run((\"instance -status -type process -name \" + \"processName -url http://unknownhost:1234/\" + \" -start 2010-01-01T01:00Z  -end 2010-01-01T03:00Z\").split(\"\\\\s\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testClientProperties",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testClientProperties() throws Exception {\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    submitTestFiles(overlay);\r\n    Assert.assertEquals(0, new IvoryCLI().run((\"entity -schedule -type feed -name \" + overlay.get(\"outputFeedName\")).split(\"\\\\s\")));\r\n    Assert.assertEquals(0, new IvoryCLI().run((\"entity -schedule -type process -name \" + overlay.get(\"processName\")).split(\"\\\\s\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testGetVersion",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testGetVersion() throws Exception {\r\n    Assert.assertEquals(0, new IvoryCLI().run(\"admin -version\".split(\"\\\\s\")));\r\n    Assert.assertEquals(0, new IvoryCLI().run(\"admin -stack\".split(\"\\\\s\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\cli\\IvoryCLITest.java",
+  "methodName" : "testInstanceGetLogs",
+  "sourceCode" : "@Test(enabled = enableTest)\r\npublic void testInstanceGetLogs() throws Exception {\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    submitTestFiles(overlay);\r\n    Assert.assertEquals(0, executeWithURL(\"entity -schedule -type process -name \" + overlay.get(\"processName\")));\r\n    Assert.assertEquals(0, executeWithURL(\"instance -logs -type process -name \" + overlay.get(\"processName\") + \" -start \" + START_INSTANCE + \" -end \" + START_INSTANCE));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\logging\\LogMoverTest.java",
+  "methodName" : "testLogMover",
+  "sourceCode" : "@Test\r\npublic void testLogMover() throws Exception {\r\n    CurrentUser.authenticate(System.getProperty(\"user.name\"));\r\n    OozieWorkflowEngine engine = new OozieWorkflowEngine();\r\n    engine.schedule(testProcess);\r\n    OozieClient client = new OozieClient(ClusterHelper.getOozieUrl(testCluster.getCluster()));\r\n    List<WorkflowJob> jobs;\r\n    while (true) {\r\n        jobs = client.getJobsInfo(OozieClient.FILTER_NAME + \"=\" + \"IVORY_PROCESS_DEFAULT_\" + processName);\r\n        if (jobs.size() > 0) {\r\n            break;\r\n        } else {\r\n            Thread.sleep(100);\r\n        }\r\n    }\r\n    WorkflowJob job = jobs.get(0);\r\n    while (true) {\r\n        if (!(job.getStatus() == WorkflowJob.Status.RUNNING || job.getStatus() == WorkflowJob.Status.PREP)) {\r\n            break;\r\n        } else {\r\n            Thread.sleep(100);\r\n            job = client.getJobInfo(job.getId());\r\n        }\r\n    }\r\n    Path oozieLogPath = new Path(getLogPath(), \"job-2010-01-01-01-00/000/oozie.log\");\r\n    Assert.assertTrue(fs.exists(oozieLogPath));\r\n    testLogMoverWithNextRunId(job.getId());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\logging\\LogProviderTest.java",
+  "methodName" : "testLogProviderWithValidRunId",
+  "sourceCode" : "@Test\r\npublic void testLogProviderWithValidRunId() throws IvoryException {\r\n    LogProvider provider = new LogProvider();\r\n    Instance instanceWithLog = provider.populateLogUrls(testProcess, instance, \"0\");\r\n    Assert.assertEquals(instance.logFile, \"http://localhost:50070/data/workflow/staging/ivory/workflows/process/testProcess/logs/job-2010-01-01-01-00/000/oozie.log\");\r\n    InstanceAction action = instanceWithLog.actions[0];\r\n    Assert.assertEquals(action.action, \"mr_Action2\");\r\n    Assert.assertEquals(action.status, \"SUCCEEDED\");\r\n    Assert.assertEquals(action.logFile, \"http://localhost:50070/data/workflow/staging/ivory/workflows/process/testProcess/logs/job-2010-01-01-01-00/000/mr_Action2_SUCCEEDED.log\");\r\n    action = instanceWithLog.actions[1];\r\n    Assert.assertEquals(action.action, \"mr_Action\");\r\n    Assert.assertEquals(action.status, \"FAILED\");\r\n    Assert.assertEquals(action.logFile, \"http://localhost:50070/data/workflow/staging/ivory/workflows/process/testProcess/logs/job-2010-01-01-01-00/000/mr_Action_FAILED.log\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\logging\\LogProviderTest.java",
+  "methodName" : "testLogProviderWithInvalidRunId",
+  "sourceCode" : "@Test\r\npublic void testLogProviderWithInvalidRunId() throws IvoryException {\r\n    LogProvider provider = new LogProvider();\r\n    provider.populateLogUrls(testProcess, instance, \"x\");\r\n    Assert.assertEquals(instance.logFile, \"http://localhost:15000/oozie/wflog\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\logging\\LogProviderTest.java",
+  "methodName" : "testLogProviderWithUnavailableRunId",
+  "sourceCode" : "@Test\r\npublic void testLogProviderWithUnavailableRunId() throws IvoryException {\r\n    LogProvider provider = new LogProvider();\r\n    instance.logFile = null;\r\n    provider.populateLogUrls(testProcess, instance, \"7\");\r\n    Assert.assertEquals(instance.logFile, \"-\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\logging\\LogProviderTest.java",
+  "methodName" : "testLogProviderWithEmptyRunId",
+  "sourceCode" : "@Test\r\npublic void testLogProviderWithEmptyRunId() throws IvoryException {\r\n    LogProvider provider = new LogProvider();\r\n    instance.logFile = null;\r\n    provider.populateLogUrls(testProcess, instance, null);\r\n    Assert.assertEquals(instance.logFile, \"http://localhost:50070/data/workflow/staging/ivory/workflows/process/testProcess/logs/job-2010-01-01-01-00/003/oozie.log\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testProcessDeleteAndSchedule",
+  "sourceCode" : "/**\r\n * Tests should be enabled only in local environments as they need running\r\n * instance of webserver\r\n */\r\n@Test\r\npublic void testProcessDeleteAndSchedule() throws Exception {\r\n    //Submit process with no workflow so that bundle goes to failed state\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    String tmpFileName = overlayParametersOverTemplate(PROCESS_TEMPLATE, overlay);\r\n    Process process = (Process) EntityType.PROCESS.getUnmarshaller().unmarshal(new File(tmpFileName));\r\n    FileSystem fs = FileSystem.get(this.cluster.getConf());\r\n    Path invalidPath = new Path(\"/ivory/test/invalidWorkflow\");\r\n    fs.mkdirs(invalidPath);\r\n    process.getWorkflow().setPath(invalidPath.toString());\r\n    File tmpFile = getTempFile();\r\n    EntityType.PROCESS.getMarshaller().marshal(process, tmpFile);\r\n    scheduleProcess(tmpFile.getAbsolutePath(), overlay);\r\n    waitForBundleStart(Status.FAILED);\r\n    //Delete and re-submit the process with correct workflow\r\n    ClientResponse clientRepsonse = this.service.path(\"api/entities/delete/process/\" + processName).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).delete(ClientResponse.class);\r\n    assertSuccessful(clientRepsonse);\r\n    process.getWorkflow().setPath(\"/ivory/test/workflow\");\r\n    tmpFile = getTempFile();\r\n    EntityType.PROCESS.getMarshaller().marshal(process, tmpFile);\r\n    clientRepsonse = this.service.path(\"api/entities/submitAndSchedule/process\").header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).type(MediaType.TEXT_XML).post(ClientResponse.class, getServletInputStream(tmpFile.getAbsolutePath()));\r\n    assertSuccessful(clientRepsonse);\r\n    //Assert that new schedule creates new bundle\r\n    List<BundleJob> bundles = getBundles();\r\n    Assert.assertEquals(bundles.size(), 2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testProcessInputUpdate",
+  "sourceCode" : "@Test\r\npublic void testProcessInputUpdate() throws Exception {\r\n    scheduleProcess();\r\n    waitForBundleStart(Job.Status.RUNNING);\r\n    ClientResponse response = this.service.path(\"api/entities/definition/process/\" + processName).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).get(ClientResponse.class);\r\n    Process process = (Process) EntityType.PROCESS.getUnmarshaller().unmarshal(new StringReader(response.getEntity(String.class)));\r\n    String feed3 = \"f3\" + System.currentTimeMillis();\r\n    Map<String, String> overlay = new HashMap<String, String>();\r\n    overlay.put(\"inputFeedName\", feed3);\r\n    overlay.put(\"cluster\", clusterName);\r\n    response = submitToIvory(FEED_TEMPLATE1, overlay, EntityType.FEED);\r\n    assertSuccessful(response);\r\n    Input input = new Input();\r\n    input.setFeed(feed3);\r\n    input.setName(\"inputData2\");\r\n    input.setStart(\"today(20,0)\");\r\n    input.setEnd(\"today(20,20)\");\r\n    process.getInputs().getInputs().add(input);\r\n    Validity processValidity = process.getClusters().getClusters().get(0).getValidity();\r\n    processValidity.setEnd(new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000));\r\n    File tmpFile = getTempFile();\r\n    EntityType.PROCESS.getMarshaller().marshal(process, tmpFile);\r\n    response = this.service.path(\"api/entities/update/process/\" + processName).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).post(ClientResponse.class, getServletInputStream(tmpFile.getAbsolutePath()));\r\n    assertSuccessful(response);\r\n    //Assert that update creates new bundle\r\n    List<BundleJob> bundles = getBundles();\r\n    Assert.assertEquals(bundles.size(), 2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testProcessEndtimeUpdate",
+  "sourceCode" : "@Test\r\npublic void testProcessEndtimeUpdate() throws Exception {\r\n    scheduleProcess();\r\n    waitForBundleStart(Job.Status.RUNNING);\r\n    ClientResponse response = this.service.path(\"api/entities/definition/process/\" + processName).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).get(ClientResponse.class);\r\n    Process process = (Process) EntityType.PROCESS.getUnmarshaller().unmarshal(new StringReader(response.getEntity(String.class)));\r\n    Validity processValidity = process.getClusters().getClusters().get(0).getValidity();\r\n    processValidity.setEnd(new Date(new Date().getTime() + 60 * 60 * 1000));\r\n    File tmpFile = getTempFile();\r\n    EntityType.PROCESS.getMarshaller().marshal(process, tmpFile);\r\n    response = this.service.path(\"api/entities/update/process/\" + processName).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).post(ClientResponse.class, getServletInputStream(tmpFile.getAbsolutePath()));\r\n    assertSuccessful(response);\r\n    //Assert that update does not create new bundle\r\n    List<BundleJob> bundles = getBundles();\r\n    Assert.assertEquals(bundles.size(), 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testStatus",
+  "sourceCode" : "@Test\r\npublic void testStatus() throws Exception {\r\n    ClientResponse response;\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    response = submitToIvory(CLUSTER_FILE_TEMPLATE, overlay, EntityType.CLUSTER);\r\n    assertSuccessful(response);\r\n    response = submitToIvory(FEED_TEMPLATE1, overlay, EntityType.FEED);\r\n    assertSuccessful(response);\r\n    response = this.service.path(\"api/entities/status/feed/\" + overlay.get(\"inputFeedName\")).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).get(ClientResponse.class);\r\n    APIResult result = (APIResult) unmarshaller.unmarshal(new StringReader(response.getEntity(String.class)));\r\n    Assert.assertTrue(result.getMessage().contains(\"SUBMITTED\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testIdempotentSubmit",
+  "sourceCode" : "@Test\r\npublic void testIdempotentSubmit() throws Exception {\r\n    ClientResponse response;\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    response = submitToIvory(CLUSTER_FILE_TEMPLATE, overlay, EntityType.CLUSTER);\r\n    assertSuccessful(response);\r\n    response = submitToIvory(CLUSTER_FILE_TEMPLATE, overlay, EntityType.CLUSTER);\r\n    assertSuccessful(response);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testNotFoundStatus",
+  "sourceCode" : "@Test\r\npublic void testNotFoundStatus() throws IvoryWebException {\r\n    ClientResponse response;\r\n    String feed1 = \"f1\" + System.currentTimeMillis();\r\n    response = this.service.path(\"api/entities/status/feed/\" + feed1).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);\r\n    String status = response.getEntity(String.class);\r\n    Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testVersion",
+  "sourceCode" : "@Test\r\npublic void testVersion() throws IvoryWebException {\r\n    ClientResponse response;\r\n    response = this.service.path(\"api/admin/version\").header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);\r\n    String status = response.getEntity(String.class);\r\n    Assert.assertEquals(status, \"{Version:\\\"\" + BuildProperties.get().getProperty(\"build.version\") + \"\\\",Mode:\\\"\" + DeploymentProperties.get().getProperty(\"deploy.mode\") + \"\\\"}\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testValidate",
+  "sourceCode" : "@Test\r\npublic void testValidate() {\r\n    ServletInputStream stream = getServletInputStream(getClass().getResourceAsStream(SAMPLE_PROCESS_XML));\r\n    ClientResponse clientRepsonse = this.service.path(\"api/entities/validate/process\").header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).type(MediaType.TEXT_XML).post(ClientResponse.class, stream);\r\n    assertFailure(clientRepsonse);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testClusterValidate",
+  "sourceCode" : "@Test\r\npublic void testClusterValidate() throws Exception {\r\n    ClientResponse clientRepsonse;\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    InputStream stream = getServletInputStream(overlayParametersOverTemplate(CLUSTER_FILE_TEMPLATE, overlay));\r\n    clientRepsonse = this.service.path(\"api/entities/validate/cluster\").accept(MediaType.TEXT_XML).type(MediaType.TEXT_XML).header(\"Remote-User\", REMOTE_USER).post(ClientResponse.class, stream);\r\n    assertSuccessful(clientRepsonse);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testClusterSubmitScheduleSuspendResumeDelete",
+  "sourceCode" : "@Test\r\npublic void testClusterSubmitScheduleSuspendResumeDelete() throws Exception {\r\n    ClientResponse clientRepsonse;\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    clientRepsonse = submitToIvory(CLUSTER_FILE_TEMPLATE, overlay, EntityType.CLUSTER);\r\n    assertSuccessful(clientRepsonse);\r\n    clientRepsonse = this.service.path(\"api/entities/schedule/cluster/\" + clusterName).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).type(MediaType.TEXT_XML).post(ClientResponse.class);\r\n    assertFailure(clientRepsonse);\r\n    clientRepsonse = this.service.path(\"api/entities/suspend/cluster/\" + clusterName).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).type(MediaType.TEXT_XML).post(ClientResponse.class);\r\n    assertFailure(clientRepsonse);\r\n    clientRepsonse = this.service.path(\"api/entities/resume/cluster/\" + clusterName).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).type(MediaType.TEXT_XML).post(ClientResponse.class);\r\n    assertFailure(clientRepsonse);\r\n    clientRepsonse = this.service.path(\"api/entities/delete/cluster/\" + clusterName).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).delete(ClientResponse.class);\r\n    assertSuccessful(clientRepsonse);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testSubmit",
+  "sourceCode" : "@Test\r\npublic void testSubmit() throws Exception {\r\n    ClientResponse response;\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    response = submitToIvory(CLUSTER_FILE_TEMPLATE, overlay, EntityType.CLUSTER);\r\n    assertSuccessful(response);\r\n    response = submitToIvory(FEED_TEMPLATE1, overlay, EntityType.FEED);\r\n    assertSuccessful(response);\r\n    response = submitToIvory(FEED_TEMPLATE2, overlay, EntityType.FEED);\r\n    assertSuccessful(response);\r\n    response = submitToIvory(PROCESS_TEMPLATE, overlay, EntityType.PROCESS);\r\n    assertSuccessful(response);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testGetEntityDefinition",
+  "sourceCode" : "@Test\r\npublic void testGetEntityDefinition() throws Exception {\r\n    ClientResponse response;\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    response = submitToIvory(CLUSTER_FILE_TEMPLATE, overlay, EntityType.CLUSTER);\r\n    assertSuccessful(response);\r\n    response = submitToIvory(FEED_TEMPLATE1, overlay, EntityType.FEED);\r\n    assertSuccessful(response);\r\n    response = this.service.path(\"api/entities/definition/feed/\" + overlay.get(\"inputFeedName\")).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).get(ClientResponse.class);\r\n    String feedXML = response.getEntity(String.class);\r\n    try {\r\n        Feed result = (Feed) unmarshaller.unmarshal(new StringReader(feedXML));\r\n        Assert.assertEquals(result.getName(), overlay.get(\"inputFeedName\"));\r\n    } catch (JAXBException e) {\r\n        Assert.fail(\"Reponse \" + feedXML + \" is not valid\", e);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testInvalidGetEntityDefinition",
+  "sourceCode" : "@Test\r\npublic void testInvalidGetEntityDefinition() {\r\n    ClientResponse clientRepsonse = this.service.path(\"api/entities/definition/process/sample1\").header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).get(ClientResponse.class);\r\n    assertFailure(clientRepsonse);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testScheduleSuspendResume",
+  "sourceCode" : "@Test\r\npublic void testScheduleSuspendResume() throws Exception {\r\n    scheduleProcess();\r\n    ClientResponse clientRepsonse = this.service.path(\"api/entities/suspend/process/\" + processName).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).post(ClientResponse.class);\r\n    assertSuccessful(clientRepsonse);\r\n    clientRepsonse = this.service.path(\"api/entities/resume/process/\" + processName).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).post(ClientResponse.class);\r\n    assertSuccessful(clientRepsonse);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testFeedSchedule",
+  "sourceCode" : "@Test(enabled = false)\r\npublic void testFeedSchedule() throws Exception {\r\n    ClientResponse response;\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    response = submitToIvory(CLUSTER_FILE_TEMPLATE, overlay, EntityType.CLUSTER);\r\n    assertSuccessful(response);\r\n    response = submitToIvory(FEED_TEMPLATE1, overlay, EntityType.FEED);\r\n    assertSuccessful(response);\r\n    createTestData();\r\n    ClientResponse clientRepsonse = this.service.path(\"api/entities/schedule/feed/\" + overlay.get(\"inputFeedName\")).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).type(MediaType.TEXT_XML).post(ClientResponse.class);\r\n    assertSuccessful(clientRepsonse);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testDeleteDataSet",
+  "sourceCode" : "@Test\r\npublic void testDeleteDataSet() throws Exception {\r\n    ClientResponse response;\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    response = submitToIvory(CLUSTER_FILE_TEMPLATE, overlay, EntityType.CLUSTER);\r\n    assertSuccessful(response);\r\n    response = submitToIvory(FEED_TEMPLATE1, overlay, EntityType.FEED);\r\n    assertSuccessful(response);\r\n    response = this.service.path(\"api/entities/delete/feed/\" + overlay.get(\"inputFeedName\")).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).delete(ClientResponse.class);\r\n    assertSuccessful(response);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testDelete",
+  "sourceCode" : "@Test\r\npublic void testDelete() throws Exception {\r\n    ClientResponse response;\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    response = submitToIvory(CLUSTER_FILE_TEMPLATE, overlay, EntityType.CLUSTER);\r\n    assertSuccessful(response);\r\n    response = submitToIvory(FEED_TEMPLATE1, overlay, EntityType.FEED);\r\n    assertSuccessful(response);\r\n    response = this.service.path(\"api/entities/delete/cluster/\" + clusterName).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).delete(ClientResponse.class);\r\n    assertFailure(response);\r\n    response = submitToIvory(FEED_TEMPLATE2, overlay, EntityType.FEED);\r\n    assertSuccessful(response);\r\n    response = submitToIvory(PROCESS_TEMPLATE, overlay, EntityType.PROCESS);\r\n    assertSuccessful(response);\r\n    //Delete a referred feed\r\n    response = this.service.path(\"api/entities/delete/feed/\" + overlay.get(\"inputFeedName\")).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).delete(ClientResponse.class);\r\n    assertFailure(response);\r\n    //Delete a submitted process\r\n    response = this.service.path(\"api/entities/delete/process/\" + processName).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).delete(ClientResponse.class);\r\n    assertSuccessful(response);\r\n    response = submitToIvory(PROCESS_TEMPLATE, overlay, EntityType.PROCESS);\r\n    assertSuccessful(response);\r\n    ClientResponse clientRepsonse = this.service.path(\"api/entities/schedule/process/\" + processName).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).type(MediaType.TEXT_XML).post(ClientResponse.class);\r\n    assertSuccessful(clientRepsonse);\r\n    //Delete a scheduled process\r\n    response = this.service.path(\"api/entities/delete/process/\" + processName).header(\"Remote-User\", REMOTE_USER).accept(MediaType.TEXT_XML).delete(ClientResponse.class);\r\n    assertSuccessful(response);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\resource\\EntityManagerJerseyTest.java",
+  "methodName" : "testGetDependencies",
+  "sourceCode" : "@Test\r\npublic void testGetDependencies() throws Exception {\r\n    ClientResponse response;\r\n    response = this.service.path(\"api/entities/list/process/\").header(\"Remote-User\", REMOTE_USER).type(MediaType.TEXT_XML).accept(MediaType.TEXT_XML).get(ClientResponse.class);\r\n    Assert.assertEquals(response.getStatus(), 200);\r\n    Map<String, String> overlay = getUniqueOverlay();\r\n    response = submitToIvory(CLUSTER_FILE_TEMPLATE, overlay, EntityType.CLUSTER);\r\n    assertSuccessful(response);\r\n    response = this.service.path(\"api/entities/list/cluster/\").header(\"Remote-User\", REMOTE_USER).type(MediaType.TEXT_XML).accept(MediaType.TEXT_XML).get(ClientResponse.class);\r\n    Assert.assertEquals(response.getStatus(), 200);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\security\\BasicAuthFilterTest.java",
+  "methodName" : "testDoFilter",
+  "sourceCode" : "@Test\r\npublic void testDoFilter() throws Exception {\r\n    Filter filter = new BasicAuthFilter();\r\n    synchronized (StartupProperties.get()) {\r\n        StartupProperties.get().setProperty(\"security.enabled\", \"false\");\r\n        filter.init(mockConfig);\r\n    }\r\n    CurrentUser.authenticate(\"nouser\");\r\n    Assert.assertEquals(CurrentUser.getUser(), \"nouser\");\r\n    when(mockRequest.getHeader(\"Remote-User\")).thenReturn(\"testuser\");\r\n    filter.doFilter(mockRequest, mockResponse, mockChain);\r\n    Assert.assertEquals(CurrentUser.getUser(), \"guest\");\r\n    synchronized (StartupProperties.get()) {\r\n        StartupProperties.get().remove(\"security.enabled\");\r\n        filter.init(mockConfig);\r\n    }\r\n    CurrentUser.authenticate(\"nouser\");\r\n    Assert.assertEquals(CurrentUser.getUser(), \"nouser\");\r\n    when(mockRequest.getHeader(\"Remote-User\")).thenReturn(\"testuser\");\r\n    filter.doFilter(mockRequest, mockResponse, mockChain);\r\n    Assert.assertEquals(CurrentUser.getUser(), \"testuser\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\security\\BasicAuthFilterTest.java",
+  "methodName" : "testAnonymous",
+  "sourceCode" : "@Test\r\npublic void testAnonymous() throws Exception {\r\n    Filter filter = new BasicAuthFilter();\r\n    synchronized (StartupProperties.get()) {\r\n        StartupProperties.get().setProperty(\"security.enabled\", \"true\");\r\n        filter.init(mockConfig);\r\n    }\r\n    CurrentUser.authenticate(\"nouser\");\r\n    Assert.assertEquals(CurrentUser.getUser(), \"nouser\");\r\n    when(mockRequest.getHeader(\"Remote-User\")).thenReturn(\"testuser\");\r\n    filter.doFilter(mockRequest, mockResponse, mockChain);\r\n    Assert.assertEquals(CurrentUser.getUser(), \"testuser\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\security\\BasicAuthFilterTest.java",
+  "methodName" : "testEmptyUser",
+  "sourceCode" : "@Test\r\npublic void testEmptyUser() throws Exception {\r\n    Filter filter = new BasicAuthFilter();\r\n    synchronized (StartupProperties.get()) {\r\n        StartupProperties.get().setProperty(\"security.enabled\", \"true\");\r\n        filter.init(mockConfig);\r\n    }\r\n    HttpServletResponse errorResponse = mock(HttpServletResponse.class);\r\n    when(mockRequest.getHeader(\"Remote-User\")).thenReturn(null);\r\n    filter.doFilter(mockRequest, errorResponse, mockChain);\r\n    verify(errorResponse).sendError(Response.Status.BAD_REQUEST.getStatusCode(), \"Remote user header can't be empty\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Falcon\\webapp\\src\\test\\java\\org\\apache\\ivory\\util\\ResourcesReflectionUtilTest.java",
+  "methodName" : "testMonitoredResources",
+  "sourceCode" : "@Test\r\npublic void testMonitoredResources() {\r\n    Assert.assertEquals(\"submit\", ResourcesReflectionUtil.getResourceMonitorName(\"SchedulableEntityManagerProxy.submit\"));\r\n    Assert.assertEquals(\"entityType\", ResourcesReflectionUtil.getResourceDimensionsName(\"SchedulableEntityManagerProxy.submit\").get(1));\r\n    Assert.assertEquals(\"submitAndSchedule\", ResourcesReflectionUtil.getResourceMonitorName(\"SchedulableEntityManagerProxy.submitAndSchedule\"));\r\n    Assert.assertEquals(\"entityType\", ResourcesReflectionUtil.getResourceDimensionsName(\"SchedulableEntityManagerProxy.submit\").get(1));\r\n    Assert.assertEquals(\"kill-instance\", ResourcesReflectionUtil.getResourceMonitorName(\"InstanceManagerProxy.killInstance\"));\r\n    Assert.assertEquals(\"entityType\", ResourcesReflectionUtil.getResourceDimensionsName(\"InstanceManagerProxy.killInstance\").get(1));\r\n    Assert.assertEquals(\"wf-instance-failed\", ResourcesReflectionUtil.getResourceMonitorName(\"GenericAlert.instrumentFailedInstance\"));\r\n    Assert.assertEquals(new Integer(10), ResourcesReflectionUtil.getResourceTimeTakenName(\"GenericAlert.instrumentFailedInstance\"));\r\n    Assert.assertEquals(null, ResourcesReflectionUtil.getResourceTimeTakenName(\"GenericAlert.alertLateRerunFailed\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+} ]

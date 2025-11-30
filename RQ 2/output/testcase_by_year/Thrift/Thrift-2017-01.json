@@ -1,0 +1,31 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestThrift.java",
+  "methodName" : "testThriftCompile",
+  "sourceCode" : "@Test\r\npublic void testThriftCompile() throws Exception {\r\n    executeThriftCompile();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestThrift.java",
+  "methodName" : "testThriftCompileWithGeneratorOption",
+  "sourceCode" : "@Test\r\npublic void testThriftCompileWithGeneratorOption() throws Exception {\r\n    builder.setGenerator(\"java:private-members\");\r\n    executeThriftCompile();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestThrift.java",
+  "methodName" : "testThriftMultipleFileCompile",
+  "sourceCode" : "@Test\r\npublic void testThriftMultipleFileCompile() throws Exception {\r\n    final File sharedThrift = new File(idlDir, \"shared.thrift\");\r\n    final File tutorialThrift = new File(idlDir, \"tutorial.thrift\");\r\n    builder.addThriftFile(sharedThrift);\r\n    builder.addThriftFile(tutorialThrift);\r\n    final Thrift thrift = builder.build();\r\n    assertTrue(\"File not found: shared.thrift\", sharedThrift.exists());\r\n    assertFalse(\"gen-java directory should not exist\", genJavaDir.exists());\r\n    // execute the compile\r\n    final int result = thrift.compile();\r\n    assertEquals(0, result);\r\n    assertFalse(\"gen-java directory was not removed\", genJavaDir.exists());\r\n    assertTrue(\"generated java code doesn't exist\", new File(testRootDir, \"shared/SharedService.java\").exists());\r\n    assertTrue(\"generated java code doesn't exist\", new File(testRootDir, \"tutorial/InvalidOperation.java\").exists());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestThrift.java",
+  "methodName" : "testBadCompile",
+  "sourceCode" : "@Test\r\npublic void testBadCompile() throws Exception {\r\n    final File thriftFile = new File(testRootDir, \"missing.thrift\");\r\n    builder.addThriftPathElement(testRootDir);\r\n    // Hacking around checks in addThrift file.\r\n    assertTrue(thriftFile.createNewFile());\r\n    builder.addThriftFile(thriftFile);\r\n    assertTrue(thriftFile.delete());\r\n    final Thrift thrift = builder.build();\r\n    assertTrue(!thriftFile.exists());\r\n    assertFalse(\"gen-java directory should not exist\", genJavaDir.exists());\r\n    // execute the compile\r\n    final int result = thrift.compile();\r\n    assertEquals(1, result);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Thrift\\contrib\\thrift-maven-plugin\\src\\test\\java\\org\\apache\\thrift\\maven\\TestThrift.java",
+  "methodName" : "testFileInPathPreCondition",
+  "sourceCode" : "@Test\r\npublic void testFileInPathPreCondition() throws Exception {\r\n    final File thriftFile = new File(testRootDir, \"missing.thrift\");\r\n    // Hacking around checks in addThrift file.\r\n    assertTrue(thriftFile.createNewFile());\r\n    try {\r\n        builder.addThriftFile(thriftFile);\r\n        fail(\"Expected IllegalStateException\");\r\n    } catch (IllegalStateException e) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

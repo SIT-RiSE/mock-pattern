@@ -1,0 +1,1114 @@
+[
+  {
+    "rawMockObjectId": 1,
+    "variableName": "mockMetastoreEventsProcessor",
+    "variableType": "MetastoreEventsProcessor",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.catalog.events",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\catalog\\events\\MetastoreEventsProcessorTest.java"
+    },
+    "statements": [
+      {
+        "code": "MetastoreEventsProcessor mockMetastoreEventsProcessor = Mockito.spy(eventsProcessor_);",
+        "line": 285,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testValidateConfig",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * Test if validateConfigs() works as expected. If more than one configuration keys\r\n * in metastore are incorrect, we present all of those incorrect results together so\r\n * users can change them in one go. This test will assert the number of failed\r\n * configurations for Hive major version >=2 or otherwise.\r\n * @throws TException\r\n */\r\n@Test\r\npublic void testValidateConfig() throws TException {\r\n    MetastoreEventsProcessor mockMetastoreEventsProcessor = Mockito.spy(eventsProcessor_);\r\n    for (MetastoreEventProcessorConfig config : MetastoreEventProcessorConfig.values()) {\r\n        String configKey = config.getValidator().getConfigKey();\r\n        when(mockMetastoreEventsProcessor.getConfigValueFromMetastore(configKey, \"\")).thenReturn(\"false\");\r\n        if (config.equals(MetastoreEventProcessorConfig.METASTORE_DEFAULT_CATALOG_NAME)) {\r\n            when(mockMetastoreEventsProcessor.getConfigValueFromMetastore(configKey, \"\")).thenReturn(\"test_custom_catalog\");\r\n        }\r\n    }\r\n    try {\r\n        mockMetastoreEventsProcessor.validateConfigs();\r\n    } catch (CatalogException e) {\r\n        String errorMessage = \"Found %d incorrect metastore configuration(s).\";\r\n        // Use MetastoreShim to determine the number of failed configs.\r\n        assertTrue(e.getMessage().contains(String.format(errorMessage, MetastoreEventsProcessor.getEventProcessorConfigsToValidate().size())));\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 2,
+    "variableName": "incompleteBefore",
+    "variableType": "boolean",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.catalog.events",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\catalog\\events\\MetastoreEventsProcessorTest.java"
+    },
+    "statements": [
+      {
+        "code": "boolean incompleteBefore = tblBefore instanceof IncompleteTable;",
+        "line": 3030,
+        "type": "METHOD_VARIABLE_INITIALIZATION",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "execute",
+          "methodAnnotations": [],
+          "methodRawCode": "public void execute() throws Exception {\r\n    Table tblBefore = Preconditions.checkNotNull(catalog_.getTable(TEST_DB_NAME, tblName_));\r\n    boolean incompleteBefore = tblBefore instanceof IncompleteTable;\r\n    if (toggle_.get()) {\r\n        alterTableAddCol(tblName_, colName_, colType_, \"\");\r\n    } else {\r\n        alterTableRemoveCol(tblName_, colName_);\r\n    }\r\n    verify(incompleteBefore);\r\n    toggle_.compareAndSet(toggle_.get(), !toggle_.get());\r\n}"
+        }
+      },
+      {
+        "code": "verify(incompleteBefore);",
+        "line": 3036,
+        "type": "VERIFICATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "execute",
+          "methodAnnotations": [],
+          "methodRawCode": "public void execute() throws Exception {\r\n    Table tblBefore = Preconditions.checkNotNull(catalog_.getTable(TEST_DB_NAME, tblName_));\r\n    boolean incompleteBefore = tblBefore instanceof IncompleteTable;\r\n    if (toggle_.get()) {\r\n        alterTableAddCol(tblName_, colName_, colType_, \"\");\r\n    } else {\r\n        alterTableRemoveCol(tblName_, colName_);\r\n    }\r\n    verify(incompleteBefore);\r\n    toggle_.compareAndSet(toggle_.get(), !toggle_.get());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 3,
+    "variableName": "mockFileStatus",
+    "variableType": "FileStatus",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.common",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\common\\FileSystemUtilTest.java"
+    },
+    "statements": [
+      {
+        "code": "FileStatus mockFileStatus = Mockito.mock(FileStatus.class);",
+        "line": 239,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testIsInIgnoredDirectory",
+          "methodAnnotations": [],
+          "methodRawCode": "private boolean testIsInIgnoredDirectory(Path input, boolean isDir) {\r\n    FileStatus mockFileStatus = Mockito.mock(FileStatus.class);\r\n    Mockito.when(mockFileStatus.getPath()).thenReturn(input);\r\n    Mockito.when(mockFileStatus.isDirectory()).thenReturn(isDir);\r\n    return FileSystemUtil.isInIgnoredDirectory(TEST_TABLE_PATH, mockFileStatus);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(mockFileStatus.getPath()).thenReturn(input);",
+        "line": 240,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testIsInIgnoredDirectory",
+          "methodAnnotations": [],
+          "methodRawCode": "private boolean testIsInIgnoredDirectory(Path input, boolean isDir) {\r\n    FileStatus mockFileStatus = Mockito.mock(FileStatus.class);\r\n    Mockito.when(mockFileStatus.getPath()).thenReturn(input);\r\n    Mockito.when(mockFileStatus.isDirectory()).thenReturn(isDir);\r\n    return FileSystemUtil.isInIgnoredDirectory(TEST_TABLE_PATH, mockFileStatus);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(mockFileStatus.isDirectory()).thenReturn(isDir);",
+        "line": 241,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testIsInIgnoredDirectory",
+          "methodAnnotations": [],
+          "methodRawCode": "private boolean testIsInIgnoredDirectory(Path input, boolean isDir) {\r\n    FileStatus mockFileStatus = Mockito.mock(FileStatus.class);\r\n    Mockito.when(mockFileStatus.getPath()).thenReturn(input);\r\n    Mockito.when(mockFileStatus.isDirectory()).thenReturn(isDir);\r\n    return FileSystemUtil.isInIgnoredDirectory(TEST_TABLE_PATH, mockFileStatus);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 4,
+    "variableName": "mockDb",
+    "variableType": "FeDb",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "FeDb mockDb = mock(FeDb.class);",
+        "line": 74,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testScanNodeFsScheme",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * IMPALA-6050: Tests that explains plans for queries that read data from multiple\r\n * filesystems (e.g. S3, ADLS, HDFS) accurately report the number of partitions and\r\n * file read from each filesystem.\r\n */\r\n@Test\r\npublic void testScanNodeFsScheme() throws ImpalaException {\r\n    List<HdfsPartition> partitions = new ArrayList<>();\r\n    String dummyDbName = \"dummy-db\";\r\n    String dummyTblName = \"dummy-tbl\";\r\n    String dummyTblPath = \"hdfs://localhost/\" + dummyDbName + \".\" + dummyTblName;\r\n    FeDb mockDb = mock(FeDb.class);\r\n    when(mockDb.getName()).thenReturn(dummyDbName);\r\n    FeFsTable mockFeFsTable = createMockFeFsTable(partitions, dummyTblName, mockDb);\r\n    TupleDescriptor tupleDescriptor = createMockTupleDescriptor(mockFeFsTable);\r\n    TableRef mockTableRef = mock(TableRef.class);\r\n    when(mockTableRef.getTable()).thenReturn(mockFeFsTable);\r\n    partitions.add(createMockHdfsPartition(\"abfs://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-1\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfs://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-2\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfss://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-3\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfss://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-4\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"adl://dummy-account.azuredatalakestore\" + \".net/dummy-part-5\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"adl://dummy-account.azuredatalakestore\" + \".net/dummy-part-6\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"s3a://dummy-bucket/dummy-part-7\", FileSystemUtil.FsType.S3));\r\n    partitions.add(createMockHdfsPartition(\"s3a://dummy-bucket/dummy-part-8\", FileSystemUtil.FsType.S3));\r\n    partitions.add(createMockHdfsPartition(dummyTblPath + \"/dummy-part-9\", FileSystemUtil.FsType.HDFS));\r\n    partitions.add(createMockHdfsPartition(dummyTblPath + \"/dummy-part-10\", FileSystemUtil.FsType.HDFS));\r\n    HdfsScanNode hdfsScanNode = new HdfsScanNode(PlanNodeId.createGenerator().getNextId(), tupleDescriptor, new ArrayList<>(), partitions, mockTableRef, null, new ArrayList<>(), false);\r\n    Analyzer mockAnalyer = createMockAnalyzer();\r\n    hdfsScanNode.init(mockAnalyer);\r\n    List<String> explainString = Lists.newArrayList(Splitter.on('\\n').omitEmptyStrings().trimResults().split(hdfsScanNode.getNodeExplainString(\"\", \"\", TExplainLevel.STANDARD)));\r\n    Assert.assertEquals(\"Scan node explain string not of expected size\", 4, explainString.size());\r\n    Assert.assertTrue(\"Scan node explain string does not contain correct base table \" + \"scheme\", explainString.get(0).contains(\"SCAN HDFS\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct ADLS metadata\", explainString.get(1).contains(\"ADLS partitions=6/10 files=6 size=6B\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct HDFS metadata\", explainString.get(2).contains(\"HDFS partitions=2/10 files=2 size=2B\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct S3 metadata\", explainString.get(3).contains(\"S3 partitions=2/10 files=2 size=2B\"));\r\n}"
+        }
+      },
+      {
+        "code": "when(mockDb.getName()).thenReturn(dummyDbName);",
+        "line": 75,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testScanNodeFsScheme",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * IMPALA-6050: Tests that explains plans for queries that read data from multiple\r\n * filesystems (e.g. S3, ADLS, HDFS) accurately report the number of partitions and\r\n * file read from each filesystem.\r\n */\r\n@Test\r\npublic void testScanNodeFsScheme() throws ImpalaException {\r\n    List<HdfsPartition> partitions = new ArrayList<>();\r\n    String dummyDbName = \"dummy-db\";\r\n    String dummyTblName = \"dummy-tbl\";\r\n    String dummyTblPath = \"hdfs://localhost/\" + dummyDbName + \".\" + dummyTblName;\r\n    FeDb mockDb = mock(FeDb.class);\r\n    when(mockDb.getName()).thenReturn(dummyDbName);\r\n    FeFsTable mockFeFsTable = createMockFeFsTable(partitions, dummyTblName, mockDb);\r\n    TupleDescriptor tupleDescriptor = createMockTupleDescriptor(mockFeFsTable);\r\n    TableRef mockTableRef = mock(TableRef.class);\r\n    when(mockTableRef.getTable()).thenReturn(mockFeFsTable);\r\n    partitions.add(createMockHdfsPartition(\"abfs://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-1\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfs://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-2\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfss://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-3\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfss://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-4\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"adl://dummy-account.azuredatalakestore\" + \".net/dummy-part-5\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"adl://dummy-account.azuredatalakestore\" + \".net/dummy-part-6\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"s3a://dummy-bucket/dummy-part-7\", FileSystemUtil.FsType.S3));\r\n    partitions.add(createMockHdfsPartition(\"s3a://dummy-bucket/dummy-part-8\", FileSystemUtil.FsType.S3));\r\n    partitions.add(createMockHdfsPartition(dummyTblPath + \"/dummy-part-9\", FileSystemUtil.FsType.HDFS));\r\n    partitions.add(createMockHdfsPartition(dummyTblPath + \"/dummy-part-10\", FileSystemUtil.FsType.HDFS));\r\n    HdfsScanNode hdfsScanNode = new HdfsScanNode(PlanNodeId.createGenerator().getNextId(), tupleDescriptor, new ArrayList<>(), partitions, mockTableRef, null, new ArrayList<>(), false);\r\n    Analyzer mockAnalyer = createMockAnalyzer();\r\n    hdfsScanNode.init(mockAnalyer);\r\n    List<String> explainString = Lists.newArrayList(Splitter.on('\\n').omitEmptyStrings().trimResults().split(hdfsScanNode.getNodeExplainString(\"\", \"\", TExplainLevel.STANDARD)));\r\n    Assert.assertEquals(\"Scan node explain string not of expected size\", 4, explainString.size());\r\n    Assert.assertTrue(\"Scan node explain string does not contain correct base table \" + \"scheme\", explainString.get(0).contains(\"SCAN HDFS\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct ADLS metadata\", explainString.get(1).contains(\"ADLS partitions=6/10 files=6 size=6B\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct HDFS metadata\", explainString.get(2).contains(\"HDFS partitions=2/10 files=2 size=2B\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct S3 metadata\", explainString.get(3).contains(\"S3 partitions=2/10 files=2 size=2B\"));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 5,
+    "variableName": "mockTableRef",
+    "variableType": "TableRef",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "TableRef mockTableRef = mock(TableRef.class);",
+        "line": 78,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testScanNodeFsScheme",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * IMPALA-6050: Tests that explains plans for queries that read data from multiple\r\n * filesystems (e.g. S3, ADLS, HDFS) accurately report the number of partitions and\r\n * file read from each filesystem.\r\n */\r\n@Test\r\npublic void testScanNodeFsScheme() throws ImpalaException {\r\n    List<HdfsPartition> partitions = new ArrayList<>();\r\n    String dummyDbName = \"dummy-db\";\r\n    String dummyTblName = \"dummy-tbl\";\r\n    String dummyTblPath = \"hdfs://localhost/\" + dummyDbName + \".\" + dummyTblName;\r\n    FeDb mockDb = mock(FeDb.class);\r\n    when(mockDb.getName()).thenReturn(dummyDbName);\r\n    FeFsTable mockFeFsTable = createMockFeFsTable(partitions, dummyTblName, mockDb);\r\n    TupleDescriptor tupleDescriptor = createMockTupleDescriptor(mockFeFsTable);\r\n    TableRef mockTableRef = mock(TableRef.class);\r\n    when(mockTableRef.getTable()).thenReturn(mockFeFsTable);\r\n    partitions.add(createMockHdfsPartition(\"abfs://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-1\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfs://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-2\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfss://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-3\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfss://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-4\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"adl://dummy-account.azuredatalakestore\" + \".net/dummy-part-5\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"adl://dummy-account.azuredatalakestore\" + \".net/dummy-part-6\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"s3a://dummy-bucket/dummy-part-7\", FileSystemUtil.FsType.S3));\r\n    partitions.add(createMockHdfsPartition(\"s3a://dummy-bucket/dummy-part-8\", FileSystemUtil.FsType.S3));\r\n    partitions.add(createMockHdfsPartition(dummyTblPath + \"/dummy-part-9\", FileSystemUtil.FsType.HDFS));\r\n    partitions.add(createMockHdfsPartition(dummyTblPath + \"/dummy-part-10\", FileSystemUtil.FsType.HDFS));\r\n    HdfsScanNode hdfsScanNode = new HdfsScanNode(PlanNodeId.createGenerator().getNextId(), tupleDescriptor, new ArrayList<>(), partitions, mockTableRef, null, new ArrayList<>(), false);\r\n    Analyzer mockAnalyer = createMockAnalyzer();\r\n    hdfsScanNode.init(mockAnalyer);\r\n    List<String> explainString = Lists.newArrayList(Splitter.on('\\n').omitEmptyStrings().trimResults().split(hdfsScanNode.getNodeExplainString(\"\", \"\", TExplainLevel.STANDARD)));\r\n    Assert.assertEquals(\"Scan node explain string not of expected size\", 4, explainString.size());\r\n    Assert.assertTrue(\"Scan node explain string does not contain correct base table \" + \"scheme\", explainString.get(0).contains(\"SCAN HDFS\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct ADLS metadata\", explainString.get(1).contains(\"ADLS partitions=6/10 files=6 size=6B\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct HDFS metadata\", explainString.get(2).contains(\"HDFS partitions=2/10 files=2 size=2B\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct S3 metadata\", explainString.get(3).contains(\"S3 partitions=2/10 files=2 size=2B\"));\r\n}"
+        }
+      },
+      {
+        "code": "when(mockTableRef.getTable()).thenReturn(mockFeFsTable);",
+        "line": 79,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testScanNodeFsScheme",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * IMPALA-6050: Tests that explains plans for queries that read data from multiple\r\n * filesystems (e.g. S3, ADLS, HDFS) accurately report the number of partitions and\r\n * file read from each filesystem.\r\n */\r\n@Test\r\npublic void testScanNodeFsScheme() throws ImpalaException {\r\n    List<HdfsPartition> partitions = new ArrayList<>();\r\n    String dummyDbName = \"dummy-db\";\r\n    String dummyTblName = \"dummy-tbl\";\r\n    String dummyTblPath = \"hdfs://localhost/\" + dummyDbName + \".\" + dummyTblName;\r\n    FeDb mockDb = mock(FeDb.class);\r\n    when(mockDb.getName()).thenReturn(dummyDbName);\r\n    FeFsTable mockFeFsTable = createMockFeFsTable(partitions, dummyTblName, mockDb);\r\n    TupleDescriptor tupleDescriptor = createMockTupleDescriptor(mockFeFsTable);\r\n    TableRef mockTableRef = mock(TableRef.class);\r\n    when(mockTableRef.getTable()).thenReturn(mockFeFsTable);\r\n    partitions.add(createMockHdfsPartition(\"abfs://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-1\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfs://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-2\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfss://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-3\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"abfss://dummy-fs@dummy-account.dfs.core\" + \".windows.net/dummy-part-4\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"adl://dummy-account.azuredatalakestore\" + \".net/dummy-part-5\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"adl://dummy-account.azuredatalakestore\" + \".net/dummy-part-6\", FileSystemUtil.FsType.ADLS));\r\n    partitions.add(createMockHdfsPartition(\"s3a://dummy-bucket/dummy-part-7\", FileSystemUtil.FsType.S3));\r\n    partitions.add(createMockHdfsPartition(\"s3a://dummy-bucket/dummy-part-8\", FileSystemUtil.FsType.S3));\r\n    partitions.add(createMockHdfsPartition(dummyTblPath + \"/dummy-part-9\", FileSystemUtil.FsType.HDFS));\r\n    partitions.add(createMockHdfsPartition(dummyTblPath + \"/dummy-part-10\", FileSystemUtil.FsType.HDFS));\r\n    HdfsScanNode hdfsScanNode = new HdfsScanNode(PlanNodeId.createGenerator().getNextId(), tupleDescriptor, new ArrayList<>(), partitions, mockTableRef, null, new ArrayList<>(), false);\r\n    Analyzer mockAnalyer = createMockAnalyzer();\r\n    hdfsScanNode.init(mockAnalyer);\r\n    List<String> explainString = Lists.newArrayList(Splitter.on('\\n').omitEmptyStrings().trimResults().split(hdfsScanNode.getNodeExplainString(\"\", \"\", TExplainLevel.STANDARD)));\r\n    Assert.assertEquals(\"Scan node explain string not of expected size\", 4, explainString.size());\r\n    Assert.assertTrue(\"Scan node explain string does not contain correct base table \" + \"scheme\", explainString.get(0).contains(\"SCAN HDFS\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct ADLS metadata\", explainString.get(1).contains(\"ADLS partitions=6/10 files=6 size=6B\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct HDFS metadata\", explainString.get(2).contains(\"HDFS partitions=2/10 files=2 size=2B\"));\r\n    Assert.assertTrue(\"Scan node explain string does not correct S3 metadata\", explainString.get(3).contains(\"S3 partitions=2/10 files=2 size=2B\"));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 6,
+    "variableName": "tupleDescriptor",
+    "variableType": "TupleDescriptor",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "TupleDescriptor tupleDescriptor = mock(TupleDescriptor.class);",
+        "line": 135,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockTupleDescriptor",
+          "methodAnnotations": [],
+          "methodRawCode": "private TupleDescriptor createMockTupleDescriptor(FeFsTable mockFeFsTable) {\r\n    TupleDescriptor tupleDescriptor = mock(TupleDescriptor.class);\r\n    when(tupleDescriptor.getTable()).thenReturn(mockFeFsTable);\r\n    when(tupleDescriptor.getId()).thenReturn(TupleId.createGenerator().getNextId());\r\n    when(tupleDescriptor.getPath()).thenReturn(mock(Path.class));\r\n    return tupleDescriptor;\r\n}"
+        }
+      },
+      {
+        "code": "when(tupleDescriptor.getTable()).thenReturn(mockFeFsTable);",
+        "line": 136,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockTupleDescriptor",
+          "methodAnnotations": [],
+          "methodRawCode": "private TupleDescriptor createMockTupleDescriptor(FeFsTable mockFeFsTable) {\r\n    TupleDescriptor tupleDescriptor = mock(TupleDescriptor.class);\r\n    when(tupleDescriptor.getTable()).thenReturn(mockFeFsTable);\r\n    when(tupleDescriptor.getId()).thenReturn(TupleId.createGenerator().getNextId());\r\n    when(tupleDescriptor.getPath()).thenReturn(mock(Path.class));\r\n    return tupleDescriptor;\r\n}"
+        }
+      },
+      {
+        "code": "when(tupleDescriptor.getId()).thenReturn(TupleId.createGenerator().getNextId());",
+        "line": 137,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockTupleDescriptor",
+          "methodAnnotations": [],
+          "methodRawCode": "private TupleDescriptor createMockTupleDescriptor(FeFsTable mockFeFsTable) {\r\n    TupleDescriptor tupleDescriptor = mock(TupleDescriptor.class);\r\n    when(tupleDescriptor.getTable()).thenReturn(mockFeFsTable);\r\n    when(tupleDescriptor.getId()).thenReturn(TupleId.createGenerator().getNextId());\r\n    when(tupleDescriptor.getPath()).thenReturn(mock(Path.class));\r\n    return tupleDescriptor;\r\n}"
+        }
+      },
+      {
+        "code": "when(tupleDescriptor.getPath()).thenReturn(mock(Path.class));",
+        "line": 138,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockTupleDescriptor",
+          "methodAnnotations": [],
+          "methodRawCode": "private TupleDescriptor createMockTupleDescriptor(FeFsTable mockFeFsTable) {\r\n    TupleDescriptor tupleDescriptor = mock(TupleDescriptor.class);\r\n    when(tupleDescriptor.getTable()).thenReturn(mockFeFsTable);\r\n    when(tupleDescriptor.getId()).thenReturn(TupleId.createGenerator().getNextId());\r\n    when(tupleDescriptor.getPath()).thenReturn(mock(Path.class));\r\n    return tupleDescriptor;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 7,
+    "variableName": "mockFeFsTable",
+    "variableType": "FeFsTable",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "FeFsTable mockFeFsTable = mock(FeFsTable.class);",
+        "line": 144,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockFeFsTable",
+          "methodAnnotations": [],
+          "methodRawCode": "private FeFsTable createMockFeFsTable(List<HdfsPartition> partitions, String dummyTblName, FeDb mockDb) {\r\n    FeFsTable mockFeFsTable = mock(FeFsTable.class);\r\n    when(mockFeFsTable.getFsType()).thenReturn(FileSystemUtil.FsType.HDFS);\r\n    when(mockFeFsTable.getMetaStoreTable()).thenReturn(mock(Table.class));\r\n    doReturn(partitions).when(mockFeFsTable).getPartitions();\r\n    when(mockFeFsTable.getDb()).thenReturn(mockDb);\r\n    when(mockFeFsTable.getName()).thenReturn(dummyTblName);\r\n    return mockFeFsTable;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockFeFsTable.getFsType()).thenReturn(FileSystemUtil.FsType.HDFS);",
+        "line": 145,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockFeFsTable",
+          "methodAnnotations": [],
+          "methodRawCode": "private FeFsTable createMockFeFsTable(List<HdfsPartition> partitions, String dummyTblName, FeDb mockDb) {\r\n    FeFsTable mockFeFsTable = mock(FeFsTable.class);\r\n    when(mockFeFsTable.getFsType()).thenReturn(FileSystemUtil.FsType.HDFS);\r\n    when(mockFeFsTable.getMetaStoreTable()).thenReturn(mock(Table.class));\r\n    doReturn(partitions).when(mockFeFsTable).getPartitions();\r\n    when(mockFeFsTable.getDb()).thenReturn(mockDb);\r\n    when(mockFeFsTable.getName()).thenReturn(dummyTblName);\r\n    return mockFeFsTable;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockFeFsTable.getMetaStoreTable()).thenReturn(mock(Table.class));",
+        "line": 146,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockFeFsTable",
+          "methodAnnotations": [],
+          "methodRawCode": "private FeFsTable createMockFeFsTable(List<HdfsPartition> partitions, String dummyTblName, FeDb mockDb) {\r\n    FeFsTable mockFeFsTable = mock(FeFsTable.class);\r\n    when(mockFeFsTable.getFsType()).thenReturn(FileSystemUtil.FsType.HDFS);\r\n    when(mockFeFsTable.getMetaStoreTable()).thenReturn(mock(Table.class));\r\n    doReturn(partitions).when(mockFeFsTable).getPartitions();\r\n    when(mockFeFsTable.getDb()).thenReturn(mockDb);\r\n    when(mockFeFsTable.getName()).thenReturn(dummyTblName);\r\n    return mockFeFsTable;\r\n}"
+        }
+      },
+      {
+        "code": "doReturn(partitions).when(mockFeFsTable).getPartitions();",
+        "line": 147,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockFeFsTable",
+          "methodAnnotations": [],
+          "methodRawCode": "private FeFsTable createMockFeFsTable(List<HdfsPartition> partitions, String dummyTblName, FeDb mockDb) {\r\n    FeFsTable mockFeFsTable = mock(FeFsTable.class);\r\n    when(mockFeFsTable.getFsType()).thenReturn(FileSystemUtil.FsType.HDFS);\r\n    when(mockFeFsTable.getMetaStoreTable()).thenReturn(mock(Table.class));\r\n    doReturn(partitions).when(mockFeFsTable).getPartitions();\r\n    when(mockFeFsTable.getDb()).thenReturn(mockDb);\r\n    when(mockFeFsTable.getName()).thenReturn(dummyTblName);\r\n    return mockFeFsTable;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockFeFsTable.getDb()).thenReturn(mockDb);",
+        "line": 148,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockFeFsTable",
+          "methodAnnotations": [],
+          "methodRawCode": "private FeFsTable createMockFeFsTable(List<HdfsPartition> partitions, String dummyTblName, FeDb mockDb) {\r\n    FeFsTable mockFeFsTable = mock(FeFsTable.class);\r\n    when(mockFeFsTable.getFsType()).thenReturn(FileSystemUtil.FsType.HDFS);\r\n    when(mockFeFsTable.getMetaStoreTable()).thenReturn(mock(Table.class));\r\n    doReturn(partitions).when(mockFeFsTable).getPartitions();\r\n    when(mockFeFsTable.getDb()).thenReturn(mockDb);\r\n    when(mockFeFsTable.getName()).thenReturn(dummyTblName);\r\n    return mockFeFsTable;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockFeFsTable.getName()).thenReturn(dummyTblName);",
+        "line": 149,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockFeFsTable",
+          "methodAnnotations": [],
+          "methodRawCode": "private FeFsTable createMockFeFsTable(List<HdfsPartition> partitions, String dummyTblName, FeDb mockDb) {\r\n    FeFsTable mockFeFsTable = mock(FeFsTable.class);\r\n    when(mockFeFsTable.getFsType()).thenReturn(FileSystemUtil.FsType.HDFS);\r\n    when(mockFeFsTable.getMetaStoreTable()).thenReturn(mock(Table.class));\r\n    doReturn(partitions).when(mockFeFsTable).getPartitions();\r\n    when(mockFeFsTable.getDb()).thenReturn(mockDb);\r\n    when(mockFeFsTable.getName()).thenReturn(dummyTblName);\r\n    return mockFeFsTable;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 8,
+    "variableName": "mockHdfsPartition",
+    "variableType": "HdfsPartition",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);",
+        "line": 155,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    when(mockFileDesc.getPath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getLocation()).thenReturn(path);\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));",
+        "line": 164,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    when(mockFileDesc.getPath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getLocation()).thenReturn(path);\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockHdfsPartition.getLocation()).thenReturn(path);",
+        "line": 166,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    when(mockFileDesc.getPath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getLocation()).thenReturn(path);\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);",
+        "line": 167,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    when(mockFileDesc.getPath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getLocation()).thenReturn(path);\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);",
+        "line": 168,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    when(mockFileDesc.getPath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getLocation()).thenReturn(path);\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockHdfsPartition.getFsType()).thenReturn(fsType);",
+        "line": 169,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    when(mockFileDesc.getPath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getLocation()).thenReturn(path);\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 9,
+    "variableName": "mockFileDesc",
+    "variableType": "HdfsPartition.FileDescriptor",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);",
+        "line": 158,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    when(mockFileDesc.getPath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getLocation()).thenReturn(path);\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockFileDesc.getFileLength()).thenReturn(1L);",
+        "line": 159,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    when(mockFileDesc.getPath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getLocation()).thenReturn(path);\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockFileDesc.getRelativePath()).thenReturn(\"\");",
+        "line": 160,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    when(mockFileDesc.getPath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getLocation()).thenReturn(path);\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockFileDesc.getPath()).thenReturn(\"\");",
+        "line": 161,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    when(mockFileDesc.getPath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getLocation()).thenReturn(path);\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      },
+      {
+        "code": "mockFilesDescs.add(mockFileDesc);",
+        "line": 162,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockHdfsPartition",
+          "methodAnnotations": [],
+          "methodRawCode": "private HdfsPartition createMockHdfsPartition(String path, FileSystemUtil.FsType fsType) {\r\n    HdfsPartition mockHdfsPartition = mock(HdfsPartition.class);\r\n    List<HdfsPartition.FileDescriptor> mockFilesDescs = new ArrayList<>();\r\n    HdfsPartition.FileDescriptor mockFileDesc = mock(HdfsPartition.FileDescriptor.class);\r\n    when(mockFileDesc.getFileLength()).thenReturn(1L);\r\n    when(mockFileDesc.getRelativePath()).thenReturn(\"\");\r\n    when(mockFileDesc.getPath()).thenReturn(\"\");\r\n    mockFilesDescs.add(mockFileDesc);\r\n    when(mockHdfsPartition.getLocationPath()).thenReturn(new org.apache.hadoop.fs.Path(path));\r\n    when(mockHdfsPartition.getLocation()).thenReturn(path);\r\n    when(mockHdfsPartition.getFileDescriptors()).thenReturn(mockFilesDescs);\r\n    when(mockHdfsPartition.getFileFormat()).thenReturn(HdfsFileFormat.PARQUET);\r\n    when(mockHdfsPartition.getFsType()).thenReturn(fsType);\r\n    return mockHdfsPartition;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 10,
+    "variableName": "mockAnalyer",
+    "variableType": "Analyzer",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "Analyzer mockAnalyer = mock(Analyzer.class);",
+        "line": 174,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);",
+        "line": 184,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));",
+        "line": 185,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));",
+        "line": 186,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);",
+        "line": 187,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));",
+        "line": 188,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 11,
+    "variableName": "mockQueryCtx",
+    "variableType": "TQueryCtx",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "TQueryCtx mockQueryCtx = mock(TQueryCtx.class);",
+        "line": 176,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);",
+        "line": 184,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 12,
+    "variableName": "tClientRequest",
+    "variableType": "TClientRequest",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "TClientRequest tClientRequest = mock(TClientRequest.class);",
+        "line": 177,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));",
+        "line": 178,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 13,
+    "variableName": "mockDescriptorTable",
+    "variableType": "DescriptorTable",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.planner",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\planner\\ExplainTest.java"
+    },
+    "statements": [
+      {
+        "code": "DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);",
+        "line": 181,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));",
+        "line": 182,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      },
+      {
+        "code": "when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);",
+        "line": 187,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "createMockAnalyzer",
+          "methodAnnotations": [],
+          "methodRawCode": "private Analyzer createMockAnalyzer() {\r\n    Analyzer mockAnalyer = mock(Analyzer.class);\r\n    TQueryCtx mockQueryCtx = mock(TQueryCtx.class);\r\n    TClientRequest tClientRequest = mock(TClientRequest.class);\r\n    when(tClientRequest.getQuery_options()).thenReturn(mock(TQueryOptions.class));\r\n    mockQueryCtx.client_request = tClientRequest;\r\n    DescriptorTable mockDescriptorTable = mock(DescriptorTable.class);\r\n    when(mockDescriptorTable.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    when(mockAnalyer.getQueryCtx()).thenReturn(mockQueryCtx);\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mock(DescriptorTable.class));\r\n    when(mockAnalyer.getQueryOptions()).thenReturn(mock(TQueryOptions.class));\r\n    when(mockAnalyer.getDescTbl()).thenReturn(mockDescriptorTable);\r\n    when(mockAnalyer.getTupleDesc(any())).thenReturn(mock(TupleDescriptor.class));\r\n    return mockAnalyer;\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 14,
+    "variableName": "conf",
+    "variableType": "Configuration",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.service",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\service\\JniFrontendTest.java"
+    },
+    "statements": [
+      {
+        "code": "Configuration conf = mock(Configuration.class);",
+        "line": 98,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckShortCircuitConfigs",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * This test verifies whether short-circuit socket path parent directory configurations\r\n * are skipped for coordinator-only mode instances and checked for executors. A socket\r\n * directory is created in order to mock the file access.\r\n */\r\n@Test\r\npublic void testCheckShortCircuitConfigs() {\r\n    String tmpDir = System.getProperty(\"java.io.tmpdir\", \"/tmp\");\r\n    File socketDir = new File(tmpDir + \"/socketTest\", \"socks.\" + (System.currentTimeMillis() + \".\" + (new Random().nextInt())));\r\n    socketDir.mkdirs();\r\n    socketDir.getParentFile().setExecutable(false);\r\n    Configuration conf = mock(Configuration.class);\r\n    when(conf.getBoolean(HdfsClientConfigKeys.Read.ShortCircuit.KEY, HdfsClientConfigKeys.Read.ShortCircuit.DEFAULT)).thenReturn(true);\r\n    when(conf.getTrimmed(HdfsClientConfigKeys.DFS_DOMAIN_SOCKET_PATH_KEY, HdfsClientConfigKeys.DFS_DOMAIN_SOCKET_PATH_DEFAULT)).thenReturn(socketDir.getAbsolutePath());\r\n    when(conf.getBoolean(HdfsClientConfigKeys.DFS_CLIENT_USE_LEGACY_BLOCKREADERLOCAL, HdfsClientConfigKeys.DFS_CLIENT_USE_LEGACY_BLOCKREADERLOCAL_DEFAULT)).thenReturn(false);\r\n    BackendConfig.INSTANCE = mock(BackendConfig.class);\r\n    when(BackendConfig.INSTANCE.isDedicatedCoordinator()).thenReturn(true);\r\n    String actualErrorMessage = JniFrontend.checkShortCircuitRead(conf);\r\n    assertEquals(\"\", actualErrorMessage);\r\n    when(BackendConfig.INSTANCE.isDedicatedCoordinator()).thenReturn(false);\r\n    actualErrorMessage = JniFrontend.checkShortCircuitRead(conf);\r\n    assertEquals(\"Invalid short-circuit reads configuration:\\n\" + \"  - Impala cannot read or execute the parent directory of \" + HdfsClientConfigKeys.DFS_DOMAIN_SOCKET_PATH_KEY + \"\\n\", actualErrorMessage);\r\n    if (socketDir != null) {\r\n        socketDir.getParentFile().setExecutable(true);\r\n        socketDir.delete();\r\n        socketDir.getParentFile().delete();\r\n    }\r\n}"
+        }
+      },
+      {
+        "code": "when(conf.getBoolean(HdfsClientConfigKeys.Read.ShortCircuit.KEY, HdfsClientConfigKeys.Read.ShortCircuit.DEFAULT)).thenReturn(true);",
+        "line": 99,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckShortCircuitConfigs",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * This test verifies whether short-circuit socket path parent directory configurations\r\n * are skipped for coordinator-only mode instances and checked for executors. A socket\r\n * directory is created in order to mock the file access.\r\n */\r\n@Test\r\npublic void testCheckShortCircuitConfigs() {\r\n    String tmpDir = System.getProperty(\"java.io.tmpdir\", \"/tmp\");\r\n    File socketDir = new File(tmpDir + \"/socketTest\", \"socks.\" + (System.currentTimeMillis() + \".\" + (new Random().nextInt())));\r\n    socketDir.mkdirs();\r\n    socketDir.getParentFile().setExecutable(false);\r\n    Configuration conf = mock(Configuration.class);\r\n    when(conf.getBoolean(HdfsClientConfigKeys.Read.ShortCircuit.KEY, HdfsClientConfigKeys.Read.ShortCircuit.DEFAULT)).thenReturn(true);\r\n    when(conf.getTrimmed(HdfsClientConfigKeys.DFS_DOMAIN_SOCKET_PATH_KEY, HdfsClientConfigKeys.DFS_DOMAIN_SOCKET_PATH_DEFAULT)).thenReturn(socketDir.getAbsolutePath());\r\n    when(conf.getBoolean(HdfsClientConfigKeys.DFS_CLIENT_USE_LEGACY_BLOCKREADERLOCAL, HdfsClientConfigKeys.DFS_CLIENT_USE_LEGACY_BLOCKREADERLOCAL_DEFAULT)).thenReturn(false);\r\n    BackendConfig.INSTANCE = mock(BackendConfig.class);\r\n    when(BackendConfig.INSTANCE.isDedicatedCoordinator()).thenReturn(true);\r\n    String actualErrorMessage = JniFrontend.checkShortCircuitRead(conf);\r\n    assertEquals(\"\", actualErrorMessage);\r\n    when(BackendConfig.INSTANCE.isDedicatedCoordinator()).thenReturn(false);\r\n    actualErrorMessage = JniFrontend.checkShortCircuitRead(conf);\r\n    assertEquals(\"Invalid short-circuit reads configuration:\\n\" + \"  - Impala cannot read or execute the parent directory of \" + HdfsClientConfigKeys.DFS_DOMAIN_SOCKET_PATH_KEY + \"\\n\", actualErrorMessage);\r\n    if (socketDir != null) {\r\n        socketDir.getParentFile().setExecutable(true);\r\n        socketDir.delete();\r\n        socketDir.getParentFile().delete();\r\n    }\r\n}"
+        }
+      },
+      {
+        "code": "when(conf.getTrimmed(HdfsClientConfigKeys.DFS_DOMAIN_SOCKET_PATH_KEY, HdfsClientConfigKeys.DFS_DOMAIN_SOCKET_PATH_DEFAULT)).thenReturn(socketDir.getAbsolutePath());",
+        "line": 101,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckShortCircuitConfigs",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * This test verifies whether short-circuit socket path parent directory configurations\r\n * are skipped for coordinator-only mode instances and checked for executors. A socket\r\n * directory is created in order to mock the file access.\r\n */\r\n@Test\r\npublic void testCheckShortCircuitConfigs() {\r\n    String tmpDir = System.getProperty(\"java.io.tmpdir\", \"/tmp\");\r\n    File socketDir = new File(tmpDir + \"/socketTest\", \"socks.\" + (System.currentTimeMillis() + \".\" + (new Random().nextInt())));\r\n    socketDir.mkdirs();\r\n    socketDir.getParentFile().setExecutable(false);\r\n    Configuration conf = mock(Configuration.class);\r\n    when(conf.getBoolean(HdfsClientConfigKeys.Read.ShortCircuit.KEY, HdfsClientConfigKeys.Read.ShortCircuit.DEFAULT)).thenReturn(true);\r\n    when(conf.getTrimmed(HdfsClientConfigKeys.DFS_DOMAIN_SOCKET_PATH_KEY, HdfsClientConfigKeys.DFS_DOMAIN_SOCKET_PATH_DEFAULT)).thenReturn(socketDir.getAbsolutePath());\r\n    when(conf.getBoolean(HdfsClientConfigKeys.DFS_CLIENT_USE_LEGACY_BLOCKREADERLOCAL, HdfsClientConfigKeys.DFS_CLIENT_USE_LEGACY_BLOCKREADERLOCAL_DEFAULT)).thenReturn(false);\r\n    BackendConfig.INSTANCE = mock(BackendConfig.class);\r\n    when(BackendConfig.INSTANCE.isDedicatedCoordinator()).thenReturn(true);\r\n    String actualErrorMessage = JniFrontend.checkShortCircuitRead(conf);\r\n    assertEquals(\"\", actualErrorMessage);\r\n    when(BackendConfig.INSTANCE.isDedicatedCoordinator()).thenReturn(false);\r\n    actualErrorMessage = JniFrontend.checkShortCircuitRead(conf);\r\n    assertEquals(\"Invalid short-circuit reads configuration:\\n\" + \"  - Impala cannot read or execute the parent directory of \" + HdfsClientConfigKeys.DFS_DOMAIN_SOCKET_PATH_KEY + \"\\n\", actualErrorMessage);\r\n    if (socketDir != null) {\r\n        socketDir.getParentFile().setExecutable(true);\r\n        socketDir.delete();\r\n        socketDir.getParentFile().delete();\r\n    }\r\n}"
+        }
+      },
+      {
+        "code": "when(conf.getBoolean(HdfsClientConfigKeys.DFS_CLIENT_USE_LEGACY_BLOCKREADERLOCAL, HdfsClientConfigKeys.DFS_CLIENT_USE_LEGACY_BLOCKREADERLOCAL_DEFAULT)).thenReturn(false);",
+        "line": 104,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckShortCircuitConfigs",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "/**\r\n * This test verifies whether short-circuit socket path parent directory configurations\r\n * are skipped for coordinator-only mode instances and checked for executors. A socket\r\n * directory is created in order to mock the file access.\r\n */\r\n@Test\r\npublic void testCheckShortCircuitConfigs() {\r\n    String tmpDir = System.getProperty(\"java.io.tmpdir\", \"/tmp\");\r\n    File socketDir = new File(tmpDir + \"/socketTest\", \"socks.\" + (System.currentTimeMillis() + \".\" + (new Random().nextInt())));\r\n    socketDir.mkdirs();\r\n    socketDir.getParentFile().setExecutable(false);\r\n    Configuration conf = mock(Configuration.class);\r\n    when(conf.getBoolean(HdfsClientConfigKeys.Read.ShortCircuit.KEY, HdfsClientConfigKeys.Read.ShortCircuit.DEFAULT)).thenReturn(true);\r\n    when(conf.getTrimmed(HdfsClientConfigKeys.DFS_DOMAIN_SOCKET_PATH_KEY, HdfsClientConfigKeys.DFS_DOMAIN_SOCKET_PATH_DEFAULT)).thenReturn(socketDir.getAbsolutePath());\r\n    when(conf.getBoolean(HdfsClientConfigKeys.DFS_CLIENT_USE_LEGACY_BLOCKREADERLOCAL, HdfsClientConfigKeys.DFS_CLIENT_USE_LEGACY_BLOCKREADERLOCAL_DEFAULT)).thenReturn(false);\r\n    BackendConfig.INSTANCE = mock(BackendConfig.class);\r\n    when(BackendConfig.INSTANCE.isDedicatedCoordinator()).thenReturn(true);\r\n    String actualErrorMessage = JniFrontend.checkShortCircuitRead(conf);\r\n    assertEquals(\"\", actualErrorMessage);\r\n    when(BackendConfig.INSTANCE.isDedicatedCoordinator()).thenReturn(false);\r\n    actualErrorMessage = JniFrontend.checkShortCircuitRead(conf);\r\n    assertEquals(\"Invalid short-circuit reads configuration:\\n\" + \"  - Impala cannot read or execute the parent directory of \" + HdfsClientConfigKeys.DFS_DOMAIN_SOCKET_PATH_KEY + \"\\n\", actualErrorMessage);\r\n    if (socketDir != null) {\r\n        socketDir.getParentFile().setExecutable(true);\r\n        socketDir.delete();\r\n        socketDir.getParentFile().delete();\r\n    }\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 15,
+    "variableName": "fs",
+    "variableType": "FileSystem",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.util",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\util\\FsPermissionCheckerTest.java"
+    },
+    "statements": [
+      {
+        "code": "FileSystem fs = Mockito.mock(FileSystem.class);",
+        "line": 40,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckAccessWhenAuthorizationEnableAndFsPermissionDenied",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCheckAccessWhenAuthorizationEnableAndFsPermissionDenied() throws IOException {\r\n    Path path = new Path(\"hdfs://nameservice/user/impala/work\");\r\n    FileSystem fs = Mockito.mock(FileSystem.class);\r\n    FsAction read = FsAction.READ;\r\n    Mockito.doThrow(new AccessControlException()).when(fs).access(path, read);\r\n    boolean access = checker.checkAccess(path, fs, read, true);\r\n    Assert.assertFalse(access);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.doThrow(new AccessControlException()).when(fs).access(path, read);",
+        "line": 43,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckAccessWhenAuthorizationEnableAndFsPermissionDenied",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCheckAccessWhenAuthorizationEnableAndFsPermissionDenied() throws IOException {\r\n    Path path = new Path(\"hdfs://nameservice/user/impala/work\");\r\n    FileSystem fs = Mockito.mock(FileSystem.class);\r\n    FsAction read = FsAction.READ;\r\n    Mockito.doThrow(new AccessControlException()).when(fs).access(path, read);\r\n    boolean access = checker.checkAccess(path, fs, read, true);\r\n    Assert.assertFalse(access);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 16,
+    "variableName": "fs",
+    "variableType": "FileSystem",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.util",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\util\\FsPermissionCheckerTest.java"
+    },
+    "statements": [
+      {
+        "code": "FileSystem fs = Mockito.mock(FileSystem.class);",
+        "line": 53,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckAccessWhenAuthorizationEnableAndPermissionConfirmed",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCheckAccessWhenAuthorizationEnableAndPermissionConfirmed() throws IOException {\r\n    Path path = new Path(\"hdfs://nameservice/user/impala/work\");\r\n    FileSystem fs = Mockito.mock(FileSystem.class);\r\n    FsAction read = FsAction.READ;\r\n    Mockito.doNothing().when(fs).access(path, read);\r\n    boolean access = checker.checkAccess(path, fs, read, true);\r\n    Assert.assertTrue(access);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.doNothing().when(fs).access(path, read);",
+        "line": 56,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckAccessWhenAuthorizationEnableAndPermissionConfirmed",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCheckAccessWhenAuthorizationEnableAndPermissionConfirmed() throws IOException {\r\n    Path path = new Path(\"hdfs://nameservice/user/impala/work\");\r\n    FileSystem fs = Mockito.mock(FileSystem.class);\r\n    FsAction read = FsAction.READ;\r\n    Mockito.doNothing().when(fs).access(path, read);\r\n    boolean access = checker.checkAccess(path, fs, read, true);\r\n    Assert.assertTrue(access);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 17,
+    "variableName": "fs",
+    "variableType": "FileSystem",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.util",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\util\\FsPermissionCheckerTest.java"
+    },
+    "statements": [
+      {
+        "code": "FileSystem fs = Mockito.mock(FileSystem.class);",
+        "line": 66,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckAccessWhenAuthorizationDisableAndPermissionDenied",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCheckAccessWhenAuthorizationDisableAndPermissionDenied() throws IOException {\r\n    Path path = new Path(\"hdfs://nameservice/user/impala/work\");\r\n    FileSystem fs = Mockito.mock(FileSystem.class);\r\n    FsAction read = FsAction.READ;\r\n    FileStatus fileStatus = Mockito.mock(FileStatus.class);\r\n    Mockito.doReturn(fileStatus).when(fs).getFileStatus(path);\r\n    FsPermission permission = FsPermission.valueOf(\"-r--r-----\");\r\n    Mockito.doReturn(permission).when(fileStatus).getPermission();\r\n    boolean access = checker.checkAccess(path, fs, read, false);\r\n    Assert.assertFalse(access);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.doReturn(fileStatus).when(fs).getFileStatus(path);",
+        "line": 70,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckAccessWhenAuthorizationDisableAndPermissionDenied",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCheckAccessWhenAuthorizationDisableAndPermissionDenied() throws IOException {\r\n    Path path = new Path(\"hdfs://nameservice/user/impala/work\");\r\n    FileSystem fs = Mockito.mock(FileSystem.class);\r\n    FsAction read = FsAction.READ;\r\n    FileStatus fileStatus = Mockito.mock(FileStatus.class);\r\n    Mockito.doReturn(fileStatus).when(fs).getFileStatus(path);\r\n    FsPermission permission = FsPermission.valueOf(\"-r--r-----\");\r\n    Mockito.doReturn(permission).when(fileStatus).getPermission();\r\n    boolean access = checker.checkAccess(path, fs, read, false);\r\n    Assert.assertFalse(access);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 18,
+    "variableName": "fileStatus",
+    "variableType": "FileStatus",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.util",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\util\\FsPermissionCheckerTest.java"
+    },
+    "statements": [
+      {
+        "code": "FileStatus fileStatus = Mockito.mock(FileStatus.class);",
+        "line": 69,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckAccessWhenAuthorizationDisableAndPermissionDenied",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCheckAccessWhenAuthorizationDisableAndPermissionDenied() throws IOException {\r\n    Path path = new Path(\"hdfs://nameservice/user/impala/work\");\r\n    FileSystem fs = Mockito.mock(FileSystem.class);\r\n    FsAction read = FsAction.READ;\r\n    FileStatus fileStatus = Mockito.mock(FileStatus.class);\r\n    Mockito.doReturn(fileStatus).when(fs).getFileStatus(path);\r\n    FsPermission permission = FsPermission.valueOf(\"-r--r-----\");\r\n    Mockito.doReturn(permission).when(fileStatus).getPermission();\r\n    boolean access = checker.checkAccess(path, fs, read, false);\r\n    Assert.assertFalse(access);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.doReturn(fileStatus).when(fs).getFileStatus(path);",
+        "line": 70,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckAccessWhenAuthorizationDisableAndPermissionDenied",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCheckAccessWhenAuthorizationDisableAndPermissionDenied() throws IOException {\r\n    Path path = new Path(\"hdfs://nameservice/user/impala/work\");\r\n    FileSystem fs = Mockito.mock(FileSystem.class);\r\n    FsAction read = FsAction.READ;\r\n    FileStatus fileStatus = Mockito.mock(FileStatus.class);\r\n    Mockito.doReturn(fileStatus).when(fs).getFileStatus(path);\r\n    FsPermission permission = FsPermission.valueOf(\"-r--r-----\");\r\n    Mockito.doReturn(permission).when(fileStatus).getPermission();\r\n    boolean access = checker.checkAccess(path, fs, read, false);\r\n    Assert.assertFalse(access);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.doReturn(permission).when(fileStatus).getPermission();",
+        "line": 72,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckAccessWhenAuthorizationDisableAndPermissionDenied",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCheckAccessWhenAuthorizationDisableAndPermissionDenied() throws IOException {\r\n    Path path = new Path(\"hdfs://nameservice/user/impala/work\");\r\n    FileSystem fs = Mockito.mock(FileSystem.class);\r\n    FsAction read = FsAction.READ;\r\n    FileStatus fileStatus = Mockito.mock(FileStatus.class);\r\n    Mockito.doReturn(fileStatus).when(fs).getFileStatus(path);\r\n    FsPermission permission = FsPermission.valueOf(\"-r--r-----\");\r\n    Mockito.doReturn(permission).when(fileStatus).getPermission();\r\n    boolean access = checker.checkAccess(path, fs, read, false);\r\n    Assert.assertFalse(access);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 19,
+    "variableName": "fs",
+    "variableType": "FileSystem",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.util",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\util\\FsPermissionCheckerTest.java"
+    },
+    "statements": [
+      {
+        "code": "FileSystem fs = Mockito.mock(FileSystem.class);",
+        "line": 82,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckAccessWhenAuthorizationDisableAndPermissionConfirmed",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCheckAccessWhenAuthorizationDisableAndPermissionConfirmed() throws IOException {\r\n    Path path = new Path(\"hdfs://nameservice/user/impala/work\");\r\n    FileSystem fs = Mockito.mock(FileSystem.class);\r\n    FsAction read = FsAction.READ;\r\n    FileStatus fileStatus = Mockito.mock(FileStatus.class);\r\n    Mockito.doReturn(fileStatus).when(fs).getFileStatus(path);\r\n    FsPermission permission = FsPermission.valueOf(\"-r--r--r--\");\r\n    Mockito.doReturn(permission).when(fileStatus).getPermission();\r\n    boolean access = checker.checkAccess(path, fs, read, false);\r\n    Assert.assertTrue(access);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.doReturn(fileStatus).when(fs).getFileStatus(path);",
+        "line": 86,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckAccessWhenAuthorizationDisableAndPermissionConfirmed",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCheckAccessWhenAuthorizationDisableAndPermissionConfirmed() throws IOException {\r\n    Path path = new Path(\"hdfs://nameservice/user/impala/work\");\r\n    FileSystem fs = Mockito.mock(FileSystem.class);\r\n    FsAction read = FsAction.READ;\r\n    FileStatus fileStatus = Mockito.mock(FileStatus.class);\r\n    Mockito.doReturn(fileStatus).when(fs).getFileStatus(path);\r\n    FsPermission permission = FsPermission.valueOf(\"-r--r--r--\");\r\n    Mockito.doReturn(permission).when(fileStatus).getPermission();\r\n    boolean access = checker.checkAccess(path, fs, read, false);\r\n    Assert.assertTrue(access);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 20,
+    "variableName": "fileStatus",
+    "variableType": "FileStatus",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.impala.util",
+      "filePath": "C:\\Java_projects\\temp_projects\\Impala\\fe\\src\\test\\java\\org\\apache\\impala\\util\\FsPermissionCheckerTest.java"
+    },
+    "statements": [
+      {
+        "code": "FileStatus fileStatus = Mockito.mock(FileStatus.class);",
+        "line": 85,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckAccessWhenAuthorizationDisableAndPermissionConfirmed",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCheckAccessWhenAuthorizationDisableAndPermissionConfirmed() throws IOException {\r\n    Path path = new Path(\"hdfs://nameservice/user/impala/work\");\r\n    FileSystem fs = Mockito.mock(FileSystem.class);\r\n    FsAction read = FsAction.READ;\r\n    FileStatus fileStatus = Mockito.mock(FileStatus.class);\r\n    Mockito.doReturn(fileStatus).when(fs).getFileStatus(path);\r\n    FsPermission permission = FsPermission.valueOf(\"-r--r--r--\");\r\n    Mockito.doReturn(permission).when(fileStatus).getPermission();\r\n    boolean access = checker.checkAccess(path, fs, read, false);\r\n    Assert.assertTrue(access);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.doReturn(fileStatus).when(fs).getFileStatus(path);",
+        "line": 86,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckAccessWhenAuthorizationDisableAndPermissionConfirmed",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCheckAccessWhenAuthorizationDisableAndPermissionConfirmed() throws IOException {\r\n    Path path = new Path(\"hdfs://nameservice/user/impala/work\");\r\n    FileSystem fs = Mockito.mock(FileSystem.class);\r\n    FsAction read = FsAction.READ;\r\n    FileStatus fileStatus = Mockito.mock(FileStatus.class);\r\n    Mockito.doReturn(fileStatus).when(fs).getFileStatus(path);\r\n    FsPermission permission = FsPermission.valueOf(\"-r--r--r--\");\r\n    Mockito.doReturn(permission).when(fileStatus).getPermission();\r\n    boolean access = checker.checkAccess(path, fs, read, false);\r\n    Assert.assertTrue(access);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.doReturn(permission).when(fileStatus).getPermission();",
+        "line": 88,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testCheckAccessWhenAuthorizationDisableAndPermissionConfirmed",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testCheckAccessWhenAuthorizationDisableAndPermissionConfirmed() throws IOException {\r\n    Path path = new Path(\"hdfs://nameservice/user/impala/work\");\r\n    FileSystem fs = Mockito.mock(FileSystem.class);\r\n    FsAction read = FsAction.READ;\r\n    FileStatus fileStatus = Mockito.mock(FileStatus.class);\r\n    Mockito.doReturn(fileStatus).when(fs).getFileStatus(path);\r\n    FsPermission permission = FsPermission.valueOf(\"-r--r--r--\");\r\n    Mockito.doReturn(permission).when(fileStatus).getPermission();\r\n    boolean access = checker.checkAccess(path, fs, read, false);\r\n    Assert.assertTrue(access);\r\n}"
+        }
+      }
+    ]
+  }
+]

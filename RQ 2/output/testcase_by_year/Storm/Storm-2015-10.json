@@ -1,0 +1,1507 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\IntermediateRankingsBoltTest.java",
+  "methodName" : "negativeOrZeroTopNShouldThrowIAE",
+  "sourceCode" : "@Test(expectedExceptions = IllegalArgumentException.class, dataProvider = \"illegalTopN\")\r\npublic void negativeOrZeroTopNShouldThrowIAE(int topN) {\r\n    new IntermediateRankingsBolt(topN);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\IntermediateRankingsBoltTest.java",
+  "methodName" : "negativeOrZeroEmitFrequencyShouldThrowIAE",
+  "sourceCode" : "@Test(expectedExceptions = IllegalArgumentException.class, dataProvider = \"illegalEmitFrequency\")\r\npublic void negativeOrZeroEmitFrequencyShouldThrowIAE(int emitFrequencyInSeconds) {\r\n    new IntermediateRankingsBolt(ANY_TOPN, emitFrequencyInSeconds);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\IntermediateRankingsBoltTest.java",
+  "methodName" : "positiveTopNShouldBeOk",
+  "sourceCode" : "@Test(dataProvider = \"legalTopN\")\r\npublic void positiveTopNShouldBeOk(int topN) {\r\n    new IntermediateRankingsBolt(topN);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\IntermediateRankingsBoltTest.java",
+  "methodName" : "positiveEmitFrequencyShouldBeOk",
+  "sourceCode" : "@Test(dataProvider = \"legalEmitFrequency\")\r\npublic void positiveEmitFrequencyShouldBeOk(int emitFrequencyInSeconds) {\r\n    new IntermediateRankingsBolt(ANY_TOPN, emitFrequencyInSeconds);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\IntermediateRankingsBoltTest.java",
+  "methodName" : "shouldEmitSomethingIfTickTupleIsReceived",
+  "sourceCode" : "@Test\r\npublic void shouldEmitSomethingIfTickTupleIsReceived() {\r\n    // given\r\n    Tuple tickTuple = MockTupleHelpers.mockTickTuple();\r\n    BasicOutputCollector collector = mock(BasicOutputCollector.class);\r\n    IntermediateRankingsBolt bolt = new IntermediateRankingsBolt();\r\n    // when\r\n    bolt.execute(tickTuple, collector);\r\n    // then\r\n    // verifyZeroInteractions(collector);\r\n    verify(collector).emit(any(Values.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\IntermediateRankingsBoltTest.java",
+  "methodName" : "shouldEmitNothingIfNormalTupleIsReceived",
+  "sourceCode" : "@Test\r\npublic void shouldEmitNothingIfNormalTupleIsReceived() {\r\n    // given\r\n    Tuple normalTuple = mockRankableTuple(ANY_OBJECT, ANY_COUNT);\r\n    BasicOutputCollector collector = mock(BasicOutputCollector.class);\r\n    IntermediateRankingsBolt bolt = new IntermediateRankingsBolt();\r\n    // when\r\n    bolt.execute(normalTuple, collector);\r\n    // then\r\n    verifyZeroInteractions(collector);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\IntermediateRankingsBoltTest.java",
+  "methodName" : "shouldDeclareOutputFields",
+  "sourceCode" : "@Test\r\npublic void shouldDeclareOutputFields() {\r\n    // given\r\n    OutputFieldsDeclarer declarer = mock(OutputFieldsDeclarer.class);\r\n    IntermediateRankingsBolt bolt = new IntermediateRankingsBolt();\r\n    // when\r\n    bolt.declareOutputFields(declarer);\r\n    // then\r\n    verify(declarer, times(1)).declare(any(Fields.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\IntermediateRankingsBoltTest.java",
+  "methodName" : "shouldSetTickTupleFrequencyInComponentConfigurationToNonZeroValue",
+  "sourceCode" : "@Test\r\npublic void shouldSetTickTupleFrequencyInComponentConfigurationToNonZeroValue() {\r\n    // given\r\n    IntermediateRankingsBolt bolt = new IntermediateRankingsBolt();\r\n    // when\r\n    Map<String, Object> componentConfig = bolt.getComponentConfiguration();\r\n    // then\r\n    assertThat(componentConfig).containsKey(Config.TOPOLOGY_TICK_TUPLE_FREQ_SECS);\r\n    Integer emitFrequencyInSeconds = (Integer) componentConfig.get(Config.TOPOLOGY_TICK_TUPLE_FREQ_SECS);\r\n    assertThat(emitFrequencyInSeconds).isGreaterThan(0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\RollingCountBoltTest.java",
+  "methodName" : "shouldEmitNothingIfNoObjectHasBeenCountedYetAndTickTupleIsReceived",
+  "sourceCode" : "@SuppressWarnings(\"rawtypes\")\r\n@Test\r\npublic void shouldEmitNothingIfNoObjectHasBeenCountedYetAndTickTupleIsReceived() {\r\n    // given\r\n    Tuple tickTuple = MockTupleHelpers.mockTickTuple();\r\n    RollingCountBolt bolt = new RollingCountBolt();\r\n    Map conf = mock(Map.class);\r\n    TopologyContext context = mock(TopologyContext.class);\r\n    OutputCollector collector = mock(OutputCollector.class);\r\n    bolt.prepare(conf, context, collector);\r\n    // when\r\n    bolt.execute(tickTuple);\r\n    // then\r\n    verifyZeroInteractions(collector);\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\RollingCountBoltTest.java",
+  "methodName" : "shouldEmitSomethingIfAtLeastOneObjectWasCountedAndTickTupleIsReceived",
+  "sourceCode" : "@SuppressWarnings(\"rawtypes\")\r\n@Test\r\npublic void shouldEmitSomethingIfAtLeastOneObjectWasCountedAndTickTupleIsReceived() {\r\n    // given\r\n    Tuple normalTuple = mockNormalTuple(new Object());\r\n    Tuple tickTuple = MockTupleHelpers.mockTickTuple();\r\n    RollingCountBolt bolt = new RollingCountBolt();\r\n    Map conf = mock(Map.class);\r\n    TopologyContext context = mock(TopologyContext.class);\r\n    OutputCollector collector = mock(OutputCollector.class);\r\n    bolt.prepare(conf, context, collector);\r\n    // when\r\n    bolt.execute(normalTuple);\r\n    bolt.execute(tickTuple);\r\n    // then\r\n    verify(collector).emit(any(Values.class));\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\RollingCountBoltTest.java",
+  "methodName" : "shouldDeclareOutputFields",
+  "sourceCode" : "@Test\r\npublic void shouldDeclareOutputFields() {\r\n    // given\r\n    OutputFieldsDeclarer declarer = mock(OutputFieldsDeclarer.class);\r\n    RollingCountBolt bolt = new RollingCountBolt();\r\n    // when\r\n    bolt.declareOutputFields(declarer);\r\n    // then\r\n    verify(declarer, times(1)).declare(any(Fields.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\RollingCountBoltTest.java",
+  "methodName" : "shouldSetTickTupleFrequencyInComponentConfigurationToNonZeroValue",
+  "sourceCode" : "@Test\r\npublic void shouldSetTickTupleFrequencyInComponentConfigurationToNonZeroValue() {\r\n    // given\r\n    RollingCountBolt bolt = new RollingCountBolt();\r\n    // when\r\n    Map<String, Object> componentConfig = bolt.getComponentConfiguration();\r\n    // then\r\n    assertThat(componentConfig).containsKey(Config.TOPOLOGY_TICK_TUPLE_FREQ_SECS);\r\n    Integer emitFrequencyInSeconds = (Integer) componentConfig.get(Config.TOPOLOGY_TICK_TUPLE_FREQ_SECS);\r\n    assertThat(emitFrequencyInSeconds).isGreaterThan(0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\TotalRankingsBoltTest.java",
+  "methodName" : "negativeOrZeroTopNShouldThrowIAE",
+  "sourceCode" : "@Test(expectedExceptions = IllegalArgumentException.class, dataProvider = \"illegalTopN\")\r\npublic void negativeOrZeroTopNShouldThrowIAE(int topN) {\r\n    new TotalRankingsBolt(topN);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\TotalRankingsBoltTest.java",
+  "methodName" : "negativeOrZeroEmitFrequencyShouldThrowIAE",
+  "sourceCode" : "@Test(expectedExceptions = IllegalArgumentException.class, dataProvider = \"illegalEmitFrequency\")\r\npublic void negativeOrZeroEmitFrequencyShouldThrowIAE(int emitFrequencyInSeconds) {\r\n    new TotalRankingsBolt(ANY_TOPN, emitFrequencyInSeconds);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\TotalRankingsBoltTest.java",
+  "methodName" : "positiveTopNShouldBeOk",
+  "sourceCode" : "@Test(dataProvider = \"legalTopN\")\r\npublic void positiveTopNShouldBeOk(int topN) {\r\n    new TotalRankingsBolt(topN);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\TotalRankingsBoltTest.java",
+  "methodName" : "positiveEmitFrequencyShouldBeOk",
+  "sourceCode" : "@Test(dataProvider = \"legalEmitFrequency\")\r\npublic void positiveEmitFrequencyShouldBeOk(int emitFrequencyInSeconds) {\r\n    new TotalRankingsBolt(ANY_TOPN, emitFrequencyInSeconds);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\TotalRankingsBoltTest.java",
+  "methodName" : "shouldEmitSomethingIfTickTupleIsReceived",
+  "sourceCode" : "@Test\r\npublic void shouldEmitSomethingIfTickTupleIsReceived() {\r\n    // given\r\n    Tuple tickTuple = MockTupleHelpers.mockTickTuple();\r\n    BasicOutputCollector collector = mock(BasicOutputCollector.class);\r\n    TotalRankingsBolt bolt = new TotalRankingsBolt();\r\n    // when\r\n    bolt.execute(tickTuple, collector);\r\n    // then\r\n    // verifyZeroInteractions(collector);\r\n    verify(collector).emit(any(Values.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\TotalRankingsBoltTest.java",
+  "methodName" : "shouldEmitNothingIfNormalTupleIsReceived",
+  "sourceCode" : "@Test\r\npublic void shouldEmitNothingIfNormalTupleIsReceived() {\r\n    // given\r\n    Tuple normalTuple = mockRankingsTuple(ANY_OBJECT, ANY_COUNT);\r\n    BasicOutputCollector collector = mock(BasicOutputCollector.class);\r\n    TotalRankingsBolt bolt = new TotalRankingsBolt();\r\n    // when\r\n    bolt.execute(normalTuple, collector);\r\n    // then\r\n    verifyZeroInteractions(collector);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\TotalRankingsBoltTest.java",
+  "methodName" : "shouldDeclareOutputFields",
+  "sourceCode" : "@Test\r\npublic void shouldDeclareOutputFields() {\r\n    // given\r\n    OutputFieldsDeclarer declarer = mock(OutputFieldsDeclarer.class);\r\n    TotalRankingsBolt bolt = new TotalRankingsBolt();\r\n    // when\r\n    bolt.declareOutputFields(declarer);\r\n    // then\r\n    verify(declarer, times(1)).declare(any(Fields.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\bolt\\TotalRankingsBoltTest.java",
+  "methodName" : "shouldSetTickTupleFrequencyInComponentConfigurationToNonZeroValue",
+  "sourceCode" : "@Test\r\npublic void shouldSetTickTupleFrequencyInComponentConfigurationToNonZeroValue() {\r\n    // given\r\n    TotalRankingsBolt bolt = new TotalRankingsBolt();\r\n    // when\r\n    Map<String, Object> componentConfig = bolt.getComponentConfiguration();\r\n    // then\r\n    assertThat(componentConfig).containsKey(Config.TOPOLOGY_TICK_TUPLE_FREQ_SECS);\r\n    Integer emitFrequencyInSeconds = (Integer) componentConfig.get(Config.TOPOLOGY_TICK_TUPLE_FREQ_SECS);\r\n    assertThat(emitFrequencyInSeconds).isGreaterThan(0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\NthLastModifiedTimeTrackerTest.java",
+  "methodName" : "negativeOrZeroNumTimesToTrackShouldThrowIAE",
+  "sourceCode" : "@Test(expectedExceptions = IllegalArgumentException.class, dataProvider = \"illegalNumTimesData\")\r\npublic void negativeOrZeroNumTimesToTrackShouldThrowIAE(int numTimesToTrack) {\r\n    new NthLastModifiedTimeTracker(numTimesToTrack);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\NthLastModifiedTimeTrackerTest.java",
+  "methodName" : "positiveNumTimesToTrackShouldBeOk",
+  "sourceCode" : "@Test(dataProvider = \"legalNumTimesData\")\r\npublic void positiveNumTimesToTrackShouldBeOk(int numTimesToTrack) {\r\n    new NthLastModifiedTimeTracker(numTimesToTrack);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\NthLastModifiedTimeTrackerTest.java",
+  "methodName" : "shouldReturnCorrectModifiedTimeEvenWhenNotYetMarkedAsModified",
+  "sourceCode" : "@Test(dataProvider = \"whenNotYetMarkedAsModifiedData\")\r\npublic void shouldReturnCorrectModifiedTimeEvenWhenNotYetMarkedAsModified(int secondsToAdvance) {\r\n    // given\r\n    Time.startSimulating();\r\n    NthLastModifiedTimeTracker tracker = new NthLastModifiedTimeTracker(ANY_NUM_TIMES_TO_TRACK);\r\n    // when\r\n    advanceSimulatedTimeBy(secondsToAdvance);\r\n    int seconds = tracker.secondsSinceOldestModification();\r\n    // then\r\n    assertThat(seconds).isEqualTo(secondsToAdvance);\r\n    // cleanup\r\n    Time.stopSimulating();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\NthLastModifiedTimeTrackerTest.java",
+  "methodName" : "shouldReturnCorrectModifiedTimeWhenMarkedAsModified",
+  "sourceCode" : "@Test(dataProvider = \"simulatedTrackerIterations\")\r\npublic void shouldReturnCorrectModifiedTimeWhenMarkedAsModified(int numTimesToTrack, int[] secondsToAdvancePerIteration, int[] expLastModifiedTimes) {\r\n    // given\r\n    Time.startSimulating();\r\n    NthLastModifiedTimeTracker tracker = new NthLastModifiedTimeTracker(numTimesToTrack);\r\n    int[] modifiedTimes = new int[expLastModifiedTimes.length];\r\n    // when\r\n    int i = 0;\r\n    for (int secondsToAdvance : secondsToAdvancePerIteration) {\r\n        advanceSimulatedTimeBy(secondsToAdvance);\r\n        tracker.markAsModified();\r\n        modifiedTimes[i] = tracker.secondsSinceOldestModification();\r\n        i++;\r\n    }\r\n    // then\r\n    assertThat(modifiedTimes).isEqualTo(expLastModifiedTimes);\r\n    // cleanup\r\n    Time.stopSimulating();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "constructorWithNullObjectAndNoFieldsShouldThrowIAE",
+  "sourceCode" : "@Test(expectedExceptions = IllegalArgumentException.class)\r\npublic void constructorWithNullObjectAndNoFieldsShouldThrowIAE() {\r\n    new RankableObjectWithFields(null, ANY_COUNT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "constructorWithNullObjectAndFieldsShouldThrowIAE",
+  "sourceCode" : "@Test(expectedExceptions = IllegalArgumentException.class)\r\npublic void constructorWithNullObjectAndFieldsShouldThrowIAE() {\r\n    Object someAdditionalField = new Object();\r\n    new RankableObjectWithFields(null, ANY_COUNT, someAdditionalField);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "constructorWithNegativeCountAndNoFieldsShouldThrowIAE",
+  "sourceCode" : "@Test(expectedExceptions = IllegalArgumentException.class)\r\npublic void constructorWithNegativeCountAndNoFieldsShouldThrowIAE() {\r\n    new RankableObjectWithFields(ANY_OBJECT, -1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "constructorWithNegativeCountAndFieldsShouldThrowIAE",
+  "sourceCode" : "@Test(expectedExceptions = IllegalArgumentException.class)\r\npublic void constructorWithNegativeCountAndFieldsShouldThrowIAE() {\r\n    Object someAdditionalField = new Object();\r\n    new RankableObjectWithFields(ANY_OBJECT, -1, someAdditionalField);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "shouldBeEqualToItself",
+  "sourceCode" : "@Test\r\npublic void shouldBeEqualToItself() {\r\n    RankableObjectWithFields r = new RankableObjectWithFields(ANY_OBJECT, ANY_COUNT);\r\n    assertThat(r).isEqualTo(r);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "shouldNotBeEqualToInstancesOfOtherClasses",
+  "sourceCode" : "@Test(dataProvider = \"otherClassesData\")\r\npublic void shouldNotBeEqualToInstancesOfOtherClasses(Object notARankable) {\r\n    RankableObjectWithFields r = new RankableObjectWithFields(ANY_OBJECT, ANY_COUNT);\r\n    assertFalse(r.equals(notARankable), r + \" is equal to \" + notARankable + \" but it should not be\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "shouldNotBeEqualToFalseDuplicates",
+  "sourceCode" : "@Test(dataProvider = \"falseDuplicatesData\")\r\npublic void shouldNotBeEqualToFalseDuplicates(RankableObjectWithFields r, RankableObjectWithFields falseDuplicate) {\r\n    assertFalse(r.equals(falseDuplicate), r + \" is equal to \" + falseDuplicate + \" but it should not be\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "shouldHaveDifferentHashCodeThanFalseDuplicates",
+  "sourceCode" : "@Test(dataProvider = \"falseDuplicatesData\")\r\npublic void shouldHaveDifferentHashCodeThanFalseDuplicates(RankableObjectWithFields r, RankableObjectWithFields falseDuplicate) {\r\n    assertThat(r.hashCode()).isNotEqualTo(falseDuplicate.hashCode());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "shouldBeEqualToTrueDuplicates",
+  "sourceCode" : "@Test(dataProvider = \"trueDuplicatesData\")\r\npublic void shouldBeEqualToTrueDuplicates(RankableObjectWithFields r, RankableObjectWithFields trueDuplicate) {\r\n    assertTrue(r.equals(trueDuplicate), r + \" is not equal to \" + trueDuplicate + \" but it should be\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "shouldHaveSameHashCodeAsTrueDuplicates",
+  "sourceCode" : "@Test(dataProvider = \"trueDuplicatesData\")\r\npublic void shouldHaveSameHashCodeAsTrueDuplicates(RankableObjectWithFields r, RankableObjectWithFields trueDuplicate) {\r\n    assertThat(r.hashCode()).isEqualTo(trueDuplicate.hashCode());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "verifyCompareTo",
+  "sourceCode" : "@Test(dataProvider = \"compareToData\")\r\npublic void verifyCompareTo(RankableObjectWithFields first, RankableObjectWithFields second, int expCompareToValue) {\r\n    assertThat(first.compareTo(second)).isEqualTo(expCompareToValue);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "toStringShouldContainStringRepresentationsOfObjectAndCount",
+  "sourceCode" : "@Test(dataProvider = \"toStringData\")\r\npublic void toStringShouldContainStringRepresentationsOfObjectAndCount(Object obj, long count) {\r\n    // given\r\n    RankableObjectWithFields r = new RankableObjectWithFields(obj, count);\r\n    // when\r\n    String strRepresentation = r.toString();\r\n    // then\r\n    assertThat(strRepresentation).contains(obj.toString()).contains(\"\" + count);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "shouldReturnTheObject",
+  "sourceCode" : "@Test\r\npublic void shouldReturnTheObject() {\r\n    // given\r\n    RankableObjectWithFields r = new RankableObjectWithFields(ANY_OBJECT, ANY_COUNT, ANY_FIELD);\r\n    // when\r\n    Object obj = r.getObject();\r\n    // then\r\n    assertThat(obj).isEqualTo(ANY_OBJECT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "shouldReturnTheCount",
+  "sourceCode" : "@Test\r\npublic void shouldReturnTheCount() {\r\n    // given\r\n    RankableObjectWithFields r = new RankableObjectWithFields(ANY_OBJECT, ANY_COUNT, ANY_FIELD);\r\n    // when\r\n    long count = r.getCount();\r\n    // then\r\n    assertThat(count).isEqualTo(ANY_COUNT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "shouldReturnTheFields",
+  "sourceCode" : "@Test(dataProvider = \"fieldsData\")\r\npublic void shouldReturnTheFields(Object obj, long count, Object[] fields) {\r\n    // given\r\n    RankableObjectWithFields r = new RankableObjectWithFields(obj, count, fields);\r\n    // when\r\n    List<Object> actualFields = r.getFields();\r\n    // then\r\n    assertThat(actualFields).isEqualTo(Lists.newArrayList(fields));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "fieldsShouldBeImmutable",
+  "sourceCode" : "@Test(expectedExceptions = UnsupportedOperationException.class)\r\npublic void fieldsShouldBeImmutable() {\r\n    // given\r\n    RankableObjectWithFields r = new RankableObjectWithFields(ANY_OBJECT, ANY_COUNT, ANY_FIELD);\r\n    // when\r\n    List<Object> fields = r.getFields();\r\n    // try to modify the list, which should fail\r\n    fields.remove(0);\r\n    // then (exception)\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "shouldCreateRankableObjectFromTuple",
+  "sourceCode" : "@Test\r\npublic void shouldCreateRankableObjectFromTuple() {\r\n    // given\r\n    Tuple tuple = mock(Tuple.class);\r\n    List<Object> tupleValues = Lists.newArrayList(ANY_OBJECT, ANY_COUNT, ANY_FIELD);\r\n    when(tuple.getValues()).thenReturn(tupleValues);\r\n    // when\r\n    RankableObjectWithFields r = RankableObjectWithFields.from(tuple);\r\n    // then\r\n    assertThat(r.getObject()).isEqualTo(ANY_OBJECT);\r\n    assertThat(r.getCount()).isEqualTo(ANY_COUNT);\r\n    List<Object> fields = new ArrayList<Object>();\r\n    fields.add(ANY_FIELD);\r\n    assertThat(r.getFields()).isEqualTo(fields);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankableObjectWithFieldsTest.java",
+  "methodName" : "copyShouldReturnCopy",
+  "sourceCode" : "// TODO: What would be a good test to ensure that RankableObjectWithFields is at least somewhat defensively copied?\r\n//       The contract of Rankable#copy() returns a Rankable value, not a RankableObjectWithFields.\r\n@Test(dataProvider = \"copyData\")\r\npublic void copyShouldReturnCopy(RankableObjectWithFields original) {\r\n    // given\r\n    // when\r\n    Rankable copy = original.copy();\r\n    // then\r\n    assertThat(copy.getObject()).isEqualTo(original.getObject());\r\n    assertThat(copy.getCount()).isEqualTo(original.getCount());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankingsTest.java",
+  "methodName" : "constructorWithNegativeOrZeroTopNShouldThrowIAE",
+  "sourceCode" : "@Test(expectedExceptions = IllegalArgumentException.class, dataProvider = \"illegalTopNData\")\r\npublic void constructorWithNegativeOrZeroTopNShouldThrowIAE(int topN) {\r\n    new Rankings(topN);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankingsTest.java",
+  "methodName" : "copyConstructorShouldReturnCopy",
+  "sourceCode" : "@Test(dataProvider = \"copyRankingsData\")\r\npublic void copyConstructorShouldReturnCopy(int topN, List<Rankable> rankables) {\r\n    // given\r\n    Rankings rankings = new Rankings(topN);\r\n    for (Rankable r : rankables) {\r\n        rankings.updateWith(r);\r\n    }\r\n    // when\r\n    Rankings copy = new Rankings(rankings);\r\n    // then\r\n    assertThat(copy.maxSize()).isEqualTo(rankings.maxSize());\r\n    assertThat(copy.getRankings()).isEqualTo(rankings.getRankings());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankingsTest.java",
+  "methodName" : "copyConstructorShouldReturnDefensiveCopy",
+  "sourceCode" : "@Test(dataProvider = \"defensiveCopyRankingsData\")\r\npublic void copyConstructorShouldReturnDefensiveCopy(int topN, List<Rankable> rankables, List<Rankable> changes) {\r\n    // given\r\n    Rankings original = new Rankings(topN);\r\n    for (Rankable r : rankables) {\r\n        original.updateWith(r);\r\n    }\r\n    int expSize = original.size();\r\n    List<Rankable> expRankings = original.getRankings();\r\n    // when\r\n    Rankings copy = new Rankings(original);\r\n    for (Rankable r : changes) {\r\n        copy.updateWith(r);\r\n    }\r\n    // then\r\n    assertThat(original.size()).isEqualTo(expSize);\r\n    assertThat(original.getRankings()).isEqualTo(expRankings);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankingsTest.java",
+  "methodName" : "constructorWithPositiveTopNShouldBeOk",
+  "sourceCode" : "@Test(dataProvider = \"legalTopNData\")\r\npublic void constructorWithPositiveTopNShouldBeOk(int topN) {\r\n    // given/when\r\n    Rankings rankings = new Rankings(topN);\r\n    // then\r\n    assertThat(rankings.maxSize()).isEqualTo(topN);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankingsTest.java",
+  "methodName" : "shouldHaveDefaultConstructor",
+  "sourceCode" : "@Test\r\npublic void shouldHaveDefaultConstructor() {\r\n    new Rankings();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankingsTest.java",
+  "methodName" : "defaultConstructorShouldSetPositiveTopN",
+  "sourceCode" : "@Test\r\npublic void defaultConstructorShouldSetPositiveTopN() {\r\n    // given/when\r\n    Rankings rankings = new Rankings();\r\n    // then\r\n    assertThat(rankings.maxSize()).isGreaterThan(0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankingsTest.java",
+  "methodName" : "sizeOfRankingsShouldNotGrowBeyondTopN",
+  "sourceCode" : "@Test(dataProvider = \"rankingsGrowData\")\r\npublic void sizeOfRankingsShouldNotGrowBeyondTopN(int topN, List<Rankable> rankables) {\r\n    // sanity check of the provided test data\r\n    assertThat(rankables.size()).overridingErrorMessage(\"The supplied test data is not correct: the number of rankables <%d> should be greater than <%d>\", rankables.size(), topN).isGreaterThan(topN);\r\n    // given\r\n    Rankings rankings = new Rankings(topN);\r\n    // when\r\n    for (Rankable r : rankables) {\r\n        rankings.updateWith(r);\r\n    }\r\n    // then\r\n    assertThat(rankings.size()).isLessThanOrEqualTo(rankings.maxSize());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankingsTest.java",
+  "methodName" : "shouldCorrectlyRankWhenUpdatedWithRankables",
+  "sourceCode" : "@Test(dataProvider = \"simulatedRankingsData\")\r\npublic void shouldCorrectlyRankWhenUpdatedWithRankables(List<Rankable> unsorted, List<Rankable> expSorted) {\r\n    // given\r\n    Rankings rankings = new Rankings(unsorted.size());\r\n    // when\r\n    for (Rankable r : unsorted) {\r\n        rankings.updateWith(r);\r\n    }\r\n    // then\r\n    assertThat(rankings.getRankings()).isEqualTo(expSorted);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankingsTest.java",
+  "methodName" : "shouldCorrectlyRankWhenEmptyAndUpdatedWithOtherRankings",
+  "sourceCode" : "@Test(dataProvider = \"simulatedRankingsData\")\r\npublic void shouldCorrectlyRankWhenEmptyAndUpdatedWithOtherRankings(List<Rankable> unsorted, List<Rankable> expSorted) {\r\n    // given\r\n    Rankings rankings = new Rankings(unsorted.size());\r\n    Rankings otherRankings = new Rankings(rankings.maxSize());\r\n    for (Rankable r : unsorted) {\r\n        otherRankings.updateWith(r);\r\n    }\r\n    // when\r\n    rankings.updateWith(otherRankings);\r\n    // then\r\n    assertThat(rankings.getRankings()).isEqualTo(expSorted);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankingsTest.java",
+  "methodName" : "shouldCorrectlyRankWhenUpdatedWithEmptyOtherRankings",
+  "sourceCode" : "@Test(dataProvider = \"simulatedRankingsData\")\r\npublic void shouldCorrectlyRankWhenUpdatedWithEmptyOtherRankings(List<Rankable> unsorted, List<Rankable> expSorted) {\r\n    // given\r\n    Rankings rankings = new Rankings(unsorted.size());\r\n    for (Rankable r : unsorted) {\r\n        rankings.updateWith(r);\r\n    }\r\n    Rankings emptyRankings = new Rankings(ANY_TOPN);\r\n    // when\r\n    rankings.updateWith(emptyRankings);\r\n    // then\r\n    assertThat(rankings.getRankings()).isEqualTo(expSorted);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankingsTest.java",
+  "methodName" : "shouldCorrectlyRankWhenNotEmptyAndUpdatedWithOtherRankings",
+  "sourceCode" : "@Test(dataProvider = \"simulatedRankingsAndOtherRankingsData\")\r\npublic void shouldCorrectlyRankWhenNotEmptyAndUpdatedWithOtherRankings(List<Rankable> unsorted, List<Rankable> unsortedForOtherRankings, List<Rankable> expSorted) {\r\n    // given\r\n    Rankings rankings = new Rankings(expSorted.size());\r\n    for (Rankable r : unsorted) {\r\n        rankings.updateWith(r);\r\n    }\r\n    Rankings otherRankings = new Rankings(unsortedForOtherRankings.size());\r\n    for (Rankable r : unsortedForOtherRankings) {\r\n        otherRankings.updateWith(r);\r\n    }\r\n    // when\r\n    rankings.updateWith(otherRankings);\r\n    // then\r\n    assertThat(rankings.getRankings()).isEqualTo(expSorted);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankingsTest.java",
+  "methodName" : "shouldNotRankDuplicateObjectsMoreThanOnce",
+  "sourceCode" : "@Test(dataProvider = \"duplicatesData\")\r\npublic void shouldNotRankDuplicateObjectsMoreThanOnce(List<Rankable> duplicates) {\r\n    // given\r\n    Rankings rankings = new Rankings(duplicates.size());\r\n    // when\r\n    for (Rankable r : duplicates) {\r\n        rankings.updateWith(r);\r\n    }\r\n    // then\r\n    assertThat(rankings.size()).isEqualTo(1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankingsTest.java",
+  "methodName" : "shouldRemoveZeroCounts",
+  "sourceCode" : "@Test(dataProvider = \"removeZeroRankingsData\")\r\npublic void shouldRemoveZeroCounts(List<Rankable> unsorted, List<Rankable> expSorted) {\r\n    // given\r\n    Rankings rankings = new Rankings(unsorted.size());\r\n    for (Rankable r : unsorted) {\r\n        rankings.updateWith(r);\r\n    }\r\n    // when\r\n    rankings.pruneZeroCounts();\r\n    // then\r\n    assertThat(rankings.getRankings()).isEqualTo(expSorted);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankingsTest.java",
+  "methodName" : "updatingWithNewRankablesShouldBeThreadSafe",
+  "sourceCode" : "@Test\r\npublic void updatingWithNewRankablesShouldBeThreadSafe() throws InterruptedException {\r\n    // given\r\n    final List<Rankable> entries = ImmutableList.of(A, B, C, D);\r\n    final Rankings rankings = new Rankings(entries.size());\r\n    // We are capturing exceptions thrown in Blitzer's child threads into this data structure so that we can properly\r\n    // pass/fail this test.  The reason is that Blitzer doesn't report exceptions, which is a known bug in Blitzer\r\n    // (JMOCK-263).  See https://github.com/jmock-developers/jmock-library/issues/22 for more information.\r\n    final List<Exception> exceptions = Lists.newArrayList();\r\n    Blitzer blitzer = new Blitzer(1000);\r\n    // when\r\n    blitzer.blitz(new Runnable() {\r\n\r\n        public void run() {\r\n            for (Rankable r : entries) {\r\n                try {\r\n                    rankings.updateWith(r);\r\n                } catch (RuntimeException e) {\r\n                    synchronized (exceptions) {\r\n                        exceptions.add(e);\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    });\r\n    blitzer.shutdown();\r\n    // then\r\n    //\r\n    if (!exceptions.isEmpty()) {\r\n        for (Exception e : exceptions) {\r\n            System.err.println(Throwables.getStackTraceAsString(e));\r\n        }\r\n    }\r\n    assertThat(exceptions).isEmpty();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankingsTest.java",
+  "methodName" : "copyShouldReturnCopy",
+  "sourceCode" : "@Test(dataProvider = \"copyRankingsData\")\r\npublic void copyShouldReturnCopy(int topN, List<Rankable> rankables) {\r\n    // given\r\n    Rankings rankings = new Rankings(topN);\r\n    for (Rankable r : rankables) {\r\n        rankings.updateWith(r);\r\n    }\r\n    // when\r\n    Rankings copy = rankings.copy();\r\n    // then\r\n    assertThat(copy.maxSize()).isEqualTo(rankings.maxSize());\r\n    assertThat(copy.getRankings()).isEqualTo(rankings.getRankings());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\RankingsTest.java",
+  "methodName" : "copyShouldReturnDefensiveCopy",
+  "sourceCode" : "@Test(dataProvider = \"defensiveCopyRankingsData\")\r\npublic void copyShouldReturnDefensiveCopy(int topN, List<Rankable> rankables, List<Rankable> changes) {\r\n    // given\r\n    Rankings original = new Rankings(topN);\r\n    for (Rankable r : rankables) {\r\n        original.updateWith(r);\r\n    }\r\n    int expSize = original.size();\r\n    List<Rankable> expRankings = original.getRankings();\r\n    // when\r\n    Rankings copy = original.copy();\r\n    for (Rankable r : changes) {\r\n        copy.updateWith(r);\r\n    }\r\n    copy.pruneZeroCounts();\r\n    // then\r\n    assertThat(original.size()).isEqualTo(expSize);\r\n    assertThat(original.getRankings()).isEqualTo(expRankings);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\SlidingWindowCounterTest.java",
+  "methodName" : "lessThanTwoSlotsShouldThrowIAE",
+  "sourceCode" : "@Test(expectedExceptions = IllegalArgumentException.class, dataProvider = \"illegalWindowLengths\")\r\npublic void lessThanTwoSlotsShouldThrowIAE(int windowLengthInSlots) {\r\n    new SlidingWindowCounter<Object>(windowLengthInSlots);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\SlidingWindowCounterTest.java",
+  "methodName" : "twoOrMoreSlotsShouldBeValid",
+  "sourceCode" : "@Test(dataProvider = \"legalWindowLengths\")\r\npublic void twoOrMoreSlotsShouldBeValid(int windowLengthInSlots) {\r\n    new SlidingWindowCounter<Object>(windowLengthInSlots);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\SlidingWindowCounterTest.java",
+  "methodName" : "newInstanceShouldHaveEmptyCounts",
+  "sourceCode" : "@Test\r\npublic void newInstanceShouldHaveEmptyCounts() {\r\n    // given\r\n    SlidingWindowCounter<Object> counter = new SlidingWindowCounter<Object>(ANY_WINDOW_LENGTH_IN_SLOTS);\r\n    // when\r\n    Map<Object, Long> counts = counter.getCountsThenAdvanceWindow();\r\n    // then\r\n    assertThat(counts).isEmpty();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\SlidingWindowCounterTest.java",
+  "methodName" : "testCounterWithSimulatedRuns",
+  "sourceCode" : "@Test(dataProvider = \"simulatedCounterIterations\")\r\npublic void testCounterWithSimulatedRuns(int windowLengthInSlots, int[] incrementsPerIteration, long[] expCountsPerIteration) {\r\n    // given\r\n    SlidingWindowCounter<Object> counter = new SlidingWindowCounter<Object>(windowLengthInSlots);\r\n    int numIterations = incrementsPerIteration.length;\r\n    for (int i = 0; i < numIterations; i++) {\r\n        int numIncrements = incrementsPerIteration[i];\r\n        long expCounts = expCountsPerIteration[i];\r\n        // Objects are absent if they were zero both this iteration\r\n        // and the last -- if only this one, we need to report zero.\r\n        boolean expAbsent = ((expCounts == 0) && ((i == 0) || (expCountsPerIteration[i - 1] == 0)));\r\n        // given (for this iteration)\r\n        for (int j = 0; j < numIncrements; j++) {\r\n            counter.incrementCount(ANY_OBJECT);\r\n        }\r\n        // when (for this iteration)\r\n        Map<Object, Long> counts = counter.getCountsThenAdvanceWindow();\r\n        // then (for this iteration)\r\n        if (expAbsent) {\r\n            assertThat(counts).doesNotContainKey(ANY_OBJECT);\r\n        } else {\r\n            assertThat(counts.get(ANY_OBJECT)).isEqualTo(expCounts);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\SlotBasedCounterTest.java",
+  "methodName" : "negativeOrZeroNumSlotsShouldThrowIAE",
+  "sourceCode" : "@Test(expectedExceptions = IllegalArgumentException.class, dataProvider = \"illegalNumSlotsData\")\r\npublic void negativeOrZeroNumSlotsShouldThrowIAE(int numSlots) {\r\n    new SlotBasedCounter<Object>(numSlots);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\SlotBasedCounterTest.java",
+  "methodName" : "positiveNumSlotsShouldBeOk",
+  "sourceCode" : "@Test(dataProvider = \"legalNumSlotsData\")\r\npublic void positiveNumSlotsShouldBeOk(int numSlots) {\r\n    new SlotBasedCounter<Object>(numSlots);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\SlotBasedCounterTest.java",
+  "methodName" : "newInstanceShouldHaveEmptyCounts",
+  "sourceCode" : "@Test\r\npublic void newInstanceShouldHaveEmptyCounts() {\r\n    // given\r\n    SlotBasedCounter<Object> counter = new SlotBasedCounter<Object>(ANY_NUM_SLOTS);\r\n    // when\r\n    Map<Object, Long> counts = counter.getCounts();\r\n    // then\r\n    assertThat(counts).isEmpty();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\SlotBasedCounterTest.java",
+  "methodName" : "shouldReturnNonEmptyCountsWhenAtLeastOneObjectWasCounted",
+  "sourceCode" : "@Test\r\npublic void shouldReturnNonEmptyCountsWhenAtLeastOneObjectWasCounted() {\r\n    // given\r\n    SlotBasedCounter<Object> counter = new SlotBasedCounter<Object>(ANY_NUM_SLOTS);\r\n    counter.incrementCount(ANY_OBJECT, ANY_SLOT);\r\n    // when\r\n    Map<Object, Long> counts = counter.getCounts();\r\n    // then\r\n    assertThat(counts).isNotEmpty();\r\n    // additional tests that go beyond what this test is primarily about\r\n    assertThat(counts.size()).isEqualTo(1);\r\n    assertThat(counts.get(ANY_OBJECT)).isEqualTo(1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\SlotBasedCounterTest.java",
+  "methodName" : "shouldIncrementCount",
+  "sourceCode" : "@Test(dataProvider = \"incrementCountData\")\r\npublic void shouldIncrementCount(Object[] objects, int[] expCounts) {\r\n    // given\r\n    SlotBasedCounter<Object> counter = new SlotBasedCounter<Object>(ANY_NUM_SLOTS);\r\n    // when\r\n    for (int i = 0; i < objects.length; i++) {\r\n        Object obj = objects[i];\r\n        int numIncrements = expCounts[i];\r\n        for (int j = 0; j < numIncrements; j++) {\r\n            counter.incrementCount(obj, ANY_SLOT);\r\n        }\r\n    }\r\n    // then\r\n    for (int i = 0; i < objects.length; i++) {\r\n        assertThat(counter.getCount(objects[i], ANY_SLOT)).isEqualTo(expCounts[i]);\r\n    }\r\n    assertThat(counter.getCount(\"nonexistentObject\", ANY_SLOT)).isEqualTo(0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\SlotBasedCounterTest.java",
+  "methodName" : "shouldReturnZeroForNonexistentObject",
+  "sourceCode" : "@Test\r\npublic void shouldReturnZeroForNonexistentObject() {\r\n    // given\r\n    SlotBasedCounter<Object> counter = new SlotBasedCounter<Object>(ANY_NUM_SLOTS);\r\n    // when\r\n    counter.incrementCount(\"somethingElse\", ANY_SLOT);\r\n    // then\r\n    assertThat(counter.getCount(\"nonexistentObject\", ANY_SLOT)).isEqualTo(0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\SlotBasedCounterTest.java",
+  "methodName" : "shouldIncrementCountOnlyOneSlotAtATime",
+  "sourceCode" : "@Test\r\npublic void shouldIncrementCountOnlyOneSlotAtATime() {\r\n    // given\r\n    int numSlots = 3;\r\n    Object obj = Long.valueOf(10);\r\n    SlotBasedCounter<Object> counter = new SlotBasedCounter<Object>(numSlots);\r\n    // when (empty)\r\n    // then\r\n    assertThat(counter.getCount(obj, 0)).isEqualTo(0);\r\n    assertThat(counter.getCount(obj, 1)).isEqualTo(0);\r\n    assertThat(counter.getCount(obj, 2)).isEqualTo(0);\r\n    // when\r\n    counter.incrementCount(obj, 1);\r\n    // then\r\n    assertThat(counter.getCount(obj, 0)).isEqualTo(0);\r\n    assertThat(counter.getCount(obj, 1)).isEqualTo(1);\r\n    assertThat(counter.getCount(obj, 2)).isEqualTo(0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\SlotBasedCounterTest.java",
+  "methodName" : "wipeSlotShouldSetAllCountsInSlotToZero",
+  "sourceCode" : "@Test\r\npublic void wipeSlotShouldSetAllCountsInSlotToZero() {\r\n    // given\r\n    SlotBasedCounter<Object> counter = new SlotBasedCounter<Object>(ANY_NUM_SLOTS);\r\n    Object countWasOne = \"countWasOne\";\r\n    Object countWasThree = \"countWasThree\";\r\n    counter.incrementCount(countWasOne, ANY_SLOT);\r\n    counter.incrementCount(countWasThree, ANY_SLOT);\r\n    counter.incrementCount(countWasThree, ANY_SLOT);\r\n    counter.incrementCount(countWasThree, ANY_SLOT);\r\n    // when\r\n    counter.wipeSlot(ANY_SLOT);\r\n    // then\r\n    assertThat(counter.getCount(countWasOne, ANY_SLOT)).isEqualTo(0);\r\n    assertThat(counter.getCount(countWasThree, ANY_SLOT)).isEqualTo(0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\examples\\storm-starter\\test\\jvm\\storm\\starter\\tools\\SlotBasedCounterTest.java",
+  "methodName" : "wipeZerosShouldRemoveAnyObjectsWithZeroTotalCount",
+  "sourceCode" : "@Test\r\npublic void wipeZerosShouldRemoveAnyObjectsWithZeroTotalCount() {\r\n    // given\r\n    SlotBasedCounter<Object> counter = new SlotBasedCounter<Object>(2);\r\n    int wipeSlot = 0;\r\n    int otherSlot = 1;\r\n    Object willBeRemoved = \"willBeRemoved\";\r\n    Object willContinueToBeTracked = \"willContinueToBeTracked\";\r\n    counter.incrementCount(willBeRemoved, wipeSlot);\r\n    counter.incrementCount(willContinueToBeTracked, wipeSlot);\r\n    counter.incrementCount(willContinueToBeTracked, otherSlot);\r\n    // when\r\n    counter.wipeSlot(wipeSlot);\r\n    counter.wipeZeros();\r\n    // then\r\n    assertThat(counter.getCounts()).doesNotContainKey(willBeRemoved);\r\n    assertThat(counter.getCounts()).containsKey(willContinueToBeTracked);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\FluxBuilderTest.java",
+  "methodName" : "testIsPrimitiveNumber",
+  "sourceCode" : "@Test\r\npublic void testIsPrimitiveNumber() throws Exception {\r\n    assertTrue(FluxBuilder.isPrimitiveNumber(int.class));\r\n    assertFalse(FluxBuilder.isPrimitiveNumber(boolean.class));\r\n    assertFalse(FluxBuilder.isPrimitiveNumber(String.class));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\IntegrationTest.java",
+  "methodName" : "testRunTopologySource",
+  "sourceCode" : "@Test\r\npublic void testRunTopologySource() throws Exception {\r\n    if (!skipTest) {\r\n        Flux.main(new String[] { \"-s\", \"30000\", \"src/test/resources/configs/existing-topology.yaml\" });\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\multilang\\MultilangEnvirontmentTest.java",
+  "methodName" : "testInvokePython",
+  "sourceCode" : "@Test\r\npublic void testInvokePython() throws Exception {\r\n    String[] command = new String[] { \"python\", \"--version\" };\r\n    int exitVal = invokeCommand(command);\r\n    assertEquals(\"Exit value for python is 0.\", 0, exitVal);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\multilang\\MultilangEnvirontmentTest.java",
+  "methodName" : "testInvokeNode",
+  "sourceCode" : "@Test\r\npublic void testInvokeNode() throws Exception {\r\n    String[] command = new String[] { \"node\", \"--version\" };\r\n    int exitVal = invokeCommand(command);\r\n    assertEquals(\"Exit value for node is 0.\", 0, exitVal);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testTCK",
+  "sourceCode" : "@Test\r\npublic void testTCK() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/tck.yaml\", false, true, null, false);\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n    assertNotNull(topology);\r\n    topology.validate();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testShellComponents",
+  "sourceCode" : "@Test\r\npublic void testShellComponents() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/shell_test.yaml\", false, true, null, false);\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n    assertNotNull(topology);\r\n    topology.validate();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testKafkaSpoutConfig",
+  "sourceCode" : "@Test\r\npublic void testKafkaSpoutConfig() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/kafka_test.yaml\", false, true, null, false);\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n    assertNotNull(topology);\r\n    topology.validate();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testLoadFromResource",
+  "sourceCode" : "@Test\r\npublic void testLoadFromResource() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/kafka_test.yaml\", false, true, null, false);\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n    assertNotNull(topology);\r\n    topology.validate();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testHdfs",
+  "sourceCode" : "@Test\r\npublic void testHdfs() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/hdfs_test.yaml\", false, true, null, false);\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n    assertNotNull(topology);\r\n    topology.validate();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testDiamondTopology",
+  "sourceCode" : "@Test\r\npublic void testDiamondTopology() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/diamond-topology.yaml\", false, true, null, false);\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n    assertNotNull(topology);\r\n    topology.validate();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testHbase",
+  "sourceCode" : "@Test\r\npublic void testHbase() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/simple_hbase.yaml\", false, true, null, false);\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n    assertNotNull(topology);\r\n    topology.validate();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testBadHbase",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testBadHbase() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/bad_hbase.yaml\", false, true, null, false);\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n    assertNotNull(topology);\r\n    topology.validate();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testIncludes",
+  "sourceCode" : "@Test\r\npublic void testIncludes() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/include_test.yaml\", false, true, null, false);\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n    assertNotNull(topology);\r\n    assertTrue(topologyDef.getName().equals(\"include-topology\"));\r\n    assertTrue(topologyDef.getBolts().size() > 0);\r\n    assertTrue(topologyDef.getSpouts().size() > 0);\r\n    topology.validate();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testTopologySource",
+  "sourceCode" : "@Test\r\npublic void testTopologySource() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/existing-topology.yaml\", false, true, null, false);\r\n    assertTrue(topologyDef.validate());\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n    assertNotNull(topology);\r\n    topology.validate();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testTopologySourceWithReflection",
+  "sourceCode" : "@Test\r\npublic void testTopologySourceWithReflection() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/existing-topology-reflection.yaml\", false, true, null, false);\r\n    assertTrue(topologyDef.validate());\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n    assertNotNull(topology);\r\n    topology.validate();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testTopologySourceWithConfigParam",
+  "sourceCode" : "@Test\r\npublic void testTopologySourceWithConfigParam() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/existing-topology-reflection-config.yaml\", false, true, null, false);\r\n    assertTrue(topologyDef.validate());\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n    assertNotNull(topology);\r\n    topology.validate();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testTopologySourceWithMethodName",
+  "sourceCode" : "@Test\r\npublic void testTopologySourceWithMethodName() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/existing-topology-method-override.yaml\", false, true, null, false);\r\n    assertTrue(topologyDef.validate());\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n    assertNotNull(topology);\r\n    topology.validate();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testTridentTopologySource",
+  "sourceCode" : "@Test\r\npublic void testTridentTopologySource() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/existing-topology-trident.yaml\", false, true, null, false);\r\n    assertTrue(topologyDef.validate());\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n    assertNotNull(topology);\r\n    topology.validate();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testInvalidTopologySource",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testInvalidTopologySource() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/invalid-existing-topology.yaml\", false, true, null, false);\r\n    assertFalse(\"Topology config is invalid.\", topologyDef.validate());\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testTopologySourceWithGetMethodName",
+  "sourceCode" : "@Test\r\npublic void testTopologySourceWithGetMethodName() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/existing-topology-reflection.yaml\", false, true, null, false);\r\n    assertTrue(topologyDef.validate());\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n    assertNotNull(topology);\r\n    topology.validate();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testTopologySourceWithConfigMethods",
+  "sourceCode" : "@Test\r\npublic void testTopologySourceWithConfigMethods() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/config-methods-test.yaml\", false, true, null, false);\r\n    assertTrue(topologyDef.validate());\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n    assertNotNull(topology);\r\n    topology.validate();\r\n    // make sure the property was actually set\r\n    TestBolt bolt = (TestBolt) context.getBolt(\"bolt-1\");\r\n    assertTrue(bolt.getFoo().equals(\"foo\"));\r\n    assertTrue(bolt.getBar().equals(\"bar\"));\r\n    assertTrue(bolt.getFooBar().equals(\"foobar\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\flux\\flux-core\\src\\test\\java\\org\\apache\\storm\\flux\\TCKTest.java",
+  "methodName" : "testVariableSubstitution",
+  "sourceCode" : "@Test\r\npublic void testVariableSubstitution() throws Exception {\r\n    TopologyDef topologyDef = FluxParser.parseResource(\"/configs/substitution-test.yaml\", false, true, \"src/test/resources/configs/test.properties\", true);\r\n    assertTrue(topologyDef.validate());\r\n    Config conf = FluxBuilder.buildConfig(topologyDef);\r\n    ExecutionContext context = new ExecutionContext(topologyDef, conf);\r\n    StormTopology topology = FluxBuilder.buildTopology(context);\r\n    assertNotNull(topology);\r\n    topology.validate();\r\n    // test basic substitution\r\n    assertEquals(\"Property not replaced.\", \"substitution-topology\", context.getTopologyDef().getName());\r\n    // test environment variable substitution\r\n    // $PATH should be defined on most systems\r\n    String envPath = System.getenv().get(\"PATH\");\r\n    assertEquals(\"ENV variable not replaced.\", envPath, context.getTopologyDef().getConfig().get(\"test.env.value\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\bolt\\AbstractEsBoltTest.java",
+  "methodName" : "constructorsThrowOnNull",
+  "sourceCode" : "@Test\r\npublic void constructorsThrowOnNull() throws Exception {\r\n    new NullPointerTester().setDefault(EsConfig.class, esConfig()).testAllPublicConstructors(getBoltClass());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\bolt\\EsIndexBoltTest.java",
+  "methodName" : "testEsIndexBolt",
+  "sourceCode" : "@Test\r\npublic void testEsIndexBolt() throws Exception {\r\n    String index = \"index1\";\r\n    String type = \"type1\";\r\n    Tuple tuple = createTestTuple(index, type);\r\n    bolt.execute(tuple);\r\n    verify(outputCollector).ack(tuple);\r\n    node.client().admin().indices().prepareRefresh(index).execute().actionGet();\r\n    CountResponse resp = node.client().prepareCount(index).setQuery(new TermQueryBuilder(\"_type\", type)).execute().actionGet();\r\n    Assert.assertEquals(1, resp.getCount());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\bolt\\EsLookupBoltIntegrationTest.java",
+  "methodName" : "anchorsTheTuple",
+  "sourceCode" : "@Test\r\npublic void anchorsTheTuple() throws Exception {\r\n    bolt.execute(tuple);\r\n    verify(outputCollector).emit(anchor.capture(), emmitedValues.capture());\r\n    assertThat(anchor.getValue(), is(tuple));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\bolt\\EsLookupBoltIntegrationTest.java",
+  "methodName" : "emitsExpectedValues",
+  "sourceCode" : "@Test\r\npublic void emitsExpectedValues() throws Exception {\r\n    Values expectedValues = expectedValues();\r\n    bolt.execute(tuple);\r\n    verify(outputCollector).emit(anchor.capture(), emmitedValues.capture());\r\n    assertThat(emmitedValues.getValue(), is(expectedValues));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\bolt\\EsLookupBoltIntegrationTest.java",
+  "methodName" : "acksTuple",
+  "sourceCode" : "@Test\r\npublic void acksTuple() throws Exception {\r\n    bolt.execute(tuple);\r\n    verify(outputCollector).ack(anchor.capture());\r\n    assertThat(anchor.getValue(), is(tuple));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\bolt\\EsLookupBoltTest.java",
+  "methodName" : "failsTupleWhenClientThrows",
+  "sourceCode" : "@Test\r\npublic void failsTupleWhenClientThrows() throws Exception {\r\n    when(client.get(request)).thenThrow(ElasticsearchException.class);\r\n    bolt.execute(tuple);\r\n    verify(outputCollector).fail(tuple);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\bolt\\EsLookupBoltTest.java",
+  "methodName" : "reportsExceptionWhenClientThrows",
+  "sourceCode" : "@Test\r\npublic void reportsExceptionWhenClientThrows() throws Exception {\r\n    ElasticsearchException elasticsearchException = new ElasticsearchException(\"dummy\");\r\n    when(client.get(request)).thenThrow(elasticsearchException);\r\n    bolt.execute(tuple);\r\n    verify(outputCollector).reportError(elasticsearchException);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\bolt\\EsLookupBoltTest.java",
+  "methodName" : "fieldsAreDeclaredThroughProvidedOutput",
+  "sourceCode" : "@Test\r\npublic void fieldsAreDeclaredThroughProvidedOutput() throws Exception {\r\n    Fields fields = new Fields(UUID.randomUUID().toString());\r\n    when(output.fields()).thenReturn(fields);\r\n    OutputFieldsDeclarer declarer = mock(OutputFieldsDeclarer.class);\r\n    bolt.declareOutputFields(declarer);\r\n    ArgumentCaptor<Fields> declaredFields = ArgumentCaptor.forClass(Fields.class);\r\n    verify(declarer).declare(declaredFields.capture());\r\n    assertThat(declaredFields.getValue(), is(fields));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\bolt\\EsPercolateBoltTest.java",
+  "methodName" : "testEsPercolateBolt",
+  "sourceCode" : "@Test\r\npublic void testEsPercolateBolt() throws Exception {\r\n    String source = \"{\\\"user\\\":\\\"user1\\\"}\";\r\n    String index = \"index1\";\r\n    String type = \".percolator\";\r\n    node.client().prepareIndex(\"index1\", \".percolator\").setId(\"1\").setSource(\"{\\\"query\\\":{\\\"match\\\":{\\\"user\\\":\\\"user1\\\"}}}\").execute().actionGet();\r\n    Tuple tuple = EsTestUtil.generateTestTuple(source, index, type, null);\r\n    bolt.execute(tuple);\r\n    verify(outputCollector).ack(tuple);\r\n    verify(outputCollector).emit(new Values(source, any(PercolateResponse.Match.class)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\common\\EsConfigTest.java",
+  "methodName" : "nodesCannotBeEmpty",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void nodesCannotBeEmpty() throws Exception {\r\n    new EsConfig(clusterName, new String[] {});\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\common\\EsConfigTest.java",
+  "methodName" : "settingsContainClusterName",
+  "sourceCode" : "@Test\r\npublic void settingsContainClusterName() throws Exception {\r\n    EsConfig esConfig = new EsConfig(clusterName, nodes);\r\n    assertThat(esConfig.toBasicSettings().get(\"cluster.name\"), is(clusterName));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\common\\EsConfigTest.java",
+  "methodName" : "usesAdditionalConfiguration",
+  "sourceCode" : "@Test\r\npublic void usesAdditionalConfiguration() throws Exception {\r\n    Map<String, String> additionalSettings = additionalSettings();\r\n    EsConfig esConfig = new EsConfig(clusterName, nodes, additionalSettings);\r\n    Settings settings = esConfig.toBasicSettings();\r\n    assertSettingsContainAllAdditionalValues(settings, additionalSettings);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\common\\EsConfigTest.java",
+  "methodName" : "constructorThrowsOnNull",
+  "sourceCode" : "@Test\r\npublic void constructorThrowsOnNull() throws Exception {\r\n    new NullPointerTester().testAllPublicConstructors(EsConfig.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\common\\TransportAddressesTest.java",
+  "methodName" : "readsMultipleHosts",
+  "sourceCode" : "@Test\r\npublic void readsMultipleHosts() throws Exception {\r\n    String[] hosts = new String[] { \"h1:1000\", \"h2:10003\" };\r\n    TransportAddresses addresses = new TransportAddresses(hosts);\r\n    assertThat(addresses, containsInAnyOrder(new InetSocketTransportAddress(\"h1\", 1000), new InetSocketTransportAddress(\"h2\", 10003)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\common\\TransportAddressesTest.java",
+  "methodName" : "stripsSpaces",
+  "sourceCode" : "@Test\r\npublic void stripsSpaces() throws Exception {\r\n    String[] hosts = new String[] { \"h1:1000\", \" h2:10003 \" };\r\n    TransportAddresses addresses = new TransportAddresses(hosts);\r\n    assertThat(addresses, containsInAnyOrder(new InetSocketTransportAddress(\"h1\", 1000), new InetSocketTransportAddress(\"h2\", 10003)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\common\\TransportAddressesTest.java",
+  "methodName" : "readsOneHost",
+  "sourceCode" : "@Test\r\npublic void readsOneHost() throws Exception {\r\n    String[] hosts = new String[] { \"h1:1000\" };\r\n    TransportAddresses addresses = new TransportAddresses(hosts);\r\n    assertThat(addresses, containsInAnyOrder(new InetSocketTransportAddress(\"h1\", 1000)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\common\\TransportAddressesTest.java",
+  "methodName" : "throwsOnNullHosts",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void throwsOnNullHosts() throws Exception {\r\n    new TransportAddresses(null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\common\\TransportAddressesTest.java",
+  "methodName" : "throwsOnEmptyArray",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void throwsOnEmptyArray() throws Exception {\r\n    new TransportAddresses(new String[] {}).iterator();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\common\\TransportAddressesTest.java",
+  "methodName" : "throwsOnInvalidHostAndPortPair",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void throwsOnInvalidHostAndPortPair() throws Exception {\r\n    new TransportAddresses(new String[] { \"h1:1000\", \"h2\" }).iterator();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\common\\TransportAddressesTest.java",
+  "methodName" : "throwsOnInvalidPortValue",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void throwsOnInvalidPortValue() throws Exception {\r\n    new TransportAddresses(new String[] { \"h1:-1000\" }).iterator();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\common\\TransportAddressesTest.java",
+  "methodName" : "throwsOnPortNotANumber",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void throwsOnPortNotANumber() throws Exception {\r\n    new TransportAddresses(new String[] { \"h1:dummy\" }).iterator();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\common\\TransportAddressesTest.java",
+  "methodName" : "throwsOnInvalidHostAndPortFormat",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void throwsOnInvalidHostAndPortFormat() throws Exception {\r\n    new TransportAddresses(new String[] { \"h1:dummy:231\" }).iterator();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-elasticsearch\\src\\test\\java\\org\\apache\\storm\\elasticsearch\\trident\\EsStateFactoryTest.java",
+  "methodName" : "constructorThrowsOnNull",
+  "sourceCode" : "@Test\r\npublic void constructorThrowsOnNull() throws Exception {\r\n    new NullPointerTester().setDefault(EsConfig.class, new EsConfig(\"cluster\", new String[] { \"localhost:9300\" })).testAllPublicConstructors(EsStateFactory.class);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-eventhubs\\src\\test\\java\\org\\apache\\storm\\eventhubs\\spout\\TestEventData.java",
+  "methodName" : "testEventDataComparision",
+  "sourceCode" : "@Test\r\npublic void testEventDataComparision() {\r\n    MessageId messageId1 = MessageId.create(null, \"3\", 1);\r\n    EventData eventData1 = EventData.create(null, messageId1);\r\n    MessageId messageId2 = MessageId.create(null, \"13\", 2);\r\n    EventData eventData2 = EventData.create(null, messageId2);\r\n    assertTrue(eventData2.compareTo(eventData1) > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-eventhubs\\src\\test\\java\\org\\apache\\storm\\eventhubs\\spout\\TestEventHubSpout.java",
+  "methodName" : "testSpoutConfig",
+  "sourceCode" : "@Test\r\npublic void testSpoutConfig() {\r\n    EventHubSpoutConfig conf = new EventHubSpoutConfig(\"username\", \"pas\\\\s+w/ord\", \"namespace\", \"entityname\", 16);\r\n    conf.setZkConnectionString(\"zookeeper\");\r\n    conf.setCheckpointIntervalInSeconds(1);\r\n    assertEquals(conf.getConnectionString(), \"amqps://username:pas%5Cs%2Bw%2Ford@namespace.servicebus.windows.net\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-eventhubs\\src\\test\\java\\org\\apache\\storm\\eventhubs\\spout\\TestEventHubSpout.java",
+  "methodName" : "testSpoutBasic",
+  "sourceCode" : "@Test\r\npublic void testSpoutBasic() {\r\n    //This spout owns 2 partitions: 6 and 14\r\n    EventHubSpoutCallerMock mock = new EventHubSpoutCallerMock(16, 8, 6, 10);\r\n    String result = mock.execute(\"r6,f6_0,a6_1,a6_2,a14_0,a14_2,r4,f14_1,r2\");\r\n    assertEquals(\"6_0,14_0,6_1,14_1,6_2,14_2,6_0,14_3,6_3,14_4,6_4,14_1\", result);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-eventhubs\\src\\test\\java\\org\\apache\\storm\\eventhubs\\spout\\TestEventHubSpout.java",
+  "methodName" : "testSpoutCheckpoint",
+  "sourceCode" : "@Test\r\npublic void testSpoutCheckpoint() {\r\n    //Make sure that even though nextTuple() doesn't receive valid data,\r\n    //the offset will be checkpointed after checkpointInterval seconds.\r\n    //This spout owns 1 partitions: 6\r\n    EventHubSpoutCallerMock mock = new EventHubSpoutCallerMock(8, 8, 6, 1);\r\n    String result = mock.execute(\"r6,a6_0,a6_1,a6_2\");\r\n    try {\r\n        Thread.sleep(2000);\r\n    } catch (InterruptedException ex) {\r\n    }\r\n    EventHubReceiverMock.setPause(true);\r\n    result = mock.execute(\"r3\");\r\n    EventHubReceiverMock.setPause(false);\r\n    assertEquals(\"3\", mock.getCheckpoint(6));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-eventhubs\\src\\test\\java\\org\\apache\\storm\\eventhubs\\spout\\TestPartitionManager.java",
+  "methodName" : "testPartitionManagerNoFail",
+  "sourceCode" : "@Test\r\npublic void testPartitionManagerNoFail() {\r\n    PartitionManagerCallerMock mock = new PartitionManagerCallerMock(\"1\");\r\n    String result = mock.execute(\"r,r,r,a0,a1,a2,r\");\r\n    assertEquals(\"0,1,2,3\", result);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-eventhubs\\src\\test\\java\\org\\apache\\storm\\eventhubs\\spout\\TestPartitionManager.java",
+  "methodName" : "testPartitionManagerResend",
+  "sourceCode" : "@Test\r\npublic void testPartitionManagerResend() {\r\n    PartitionManagerCallerMock mock = new PartitionManagerCallerMock(\"1\");\r\n    String result = mock.execute(\"r,a0,r,r,r,f3,r,f2,f1,r,r,a1,a2,a3,r\");\r\n    assertEquals(\"0,1,2,3,3,1,2,4\", result);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-eventhubs\\src\\test\\java\\org\\apache\\storm\\eventhubs\\spout\\TestPartitionManager.java",
+  "methodName" : "testPMCheckpointWithPending",
+  "sourceCode" : "@Test\r\npublic void testPMCheckpointWithPending() {\r\n    PartitionManagerCallerMock mock = new PartitionManagerCallerMock(\"1\");\r\n    mock.execute(\"r,r,r\");\r\n    //no ack, so return the first of pending list\r\n    assertEquals(\"0\", mock.checkpoint());\r\n    mock.execute(\"a0,a2\");\r\n    //still need to return the first of pending list\r\n    assertEquals(\"1\", mock.checkpoint());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-eventhubs\\src\\test\\java\\org\\apache\\storm\\eventhubs\\spout\\TestPartitionManager.java",
+  "methodName" : "testPMCheckpointWithResend",
+  "sourceCode" : "@Test\r\npublic void testPMCheckpointWithResend() {\r\n    PartitionManagerCallerMock mock = new PartitionManagerCallerMock(\"1\");\r\n    mock.execute(\"r,r,r,f2,f1,f0\");\r\n    //pending is empty, return the smallest in toResend\r\n    assertEquals(\"0\", mock.checkpoint());\r\n    mock.execute(\"r,a0\");\r\n    //pending is still empty\r\n    assertEquals(\"1\", mock.checkpoint());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-eventhubs\\src\\test\\java\\org\\apache\\storm\\eventhubs\\spout\\TestPartitionManager.java",
+  "methodName" : "testPMCheckpointWithPendingAndResend",
+  "sourceCode" : "@Test\r\npublic void testPMCheckpointWithPendingAndResend() {\r\n    PartitionManagerCallerMock mock = new PartitionManagerCallerMock(\"1\");\r\n    mock.execute(\"r,r,r,f2,f1\");\r\n    //return the smaller of pending and toResend\r\n    assertEquals(\"0\", mock.checkpoint());\r\n    mock.execute(\"a0,r\");\r\n    //now pending: [3], toResend: [1,2]\r\n    assertEquals(\"1\", mock.checkpoint());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-eventhubs\\src\\test\\java\\org\\apache\\storm\\eventhubs\\spout\\TestPartitionManager.java",
+  "methodName" : "testPMCheckpointWithNoPendingAndNoResend",
+  "sourceCode" : "@Test\r\npublic void testPMCheckpointWithNoPendingAndNoResend() {\r\n    PartitionManagerCallerMock mock = new PartitionManagerCallerMock(\"1\");\r\n    //if no event sent, no checkpoint shall be created\r\n    assertEquals(null, mock.checkpoint());\r\n    mock.execute(\"r,r,r,f2,f1,r,r,a2,a1,a0\");\r\n    //all events are sent successfully, return last sent offset\r\n    assertEquals(\"2\", mock.checkpoint());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-eventhubs\\src\\test\\java\\org\\apache\\storm\\eventhubs\\spout\\TestPartitionManager.java",
+  "methodName" : "testPartitionManagerMaxPendingMessages",
+  "sourceCode" : "@Test\r\npublic void testPartitionManagerMaxPendingMessages() {\r\n    PartitionManagerCallerMock mock = new PartitionManagerCallerMock(\"1\");\r\n    String result = mock.execute(\"r1024\");\r\n    //any receive call after exceeding max pending messages results in null\r\n    result = mock.execute(\"r2\");\r\n    assertEquals(\"null,null\", result);\r\n    result = mock.execute(\"a0,a1,r2\");\r\n    assertEquals(\"1024,1025\", result);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-eventhubs\\src\\test\\java\\org\\apache\\storm\\eventhubs\\spout\\TestPartitionManager.java",
+  "methodName" : "testPartitionManagerEnqueueTimeFilter",
+  "sourceCode" : "@Test\r\npublic void testPartitionManagerEnqueueTimeFilter() {\r\n    PartitionManagerCallerMock mock = new PartitionManagerCallerMock(\"1\", 123456);\r\n    String result = mock.execute(\"r2\");\r\n    assertEquals(\"123457,123458\", result);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-eventhubs\\src\\test\\java\\org\\apache\\storm\\eventhubs\\trident\\TestTransactionalTridentEmitter.java",
+  "methodName" : "testEmitInSequence",
+  "sourceCode" : "@Test\r\npublic void testEmitInSequence() {\r\n    //test the happy path, emit batches in sequence\r\n    Map meta = emitter.emitPartitionBatchNew(null, collectorMock, partition, null);\r\n    String collected = collectorMock.getBuffer();\r\n    assertTrue(collected.startsWith(\"message\" + 0));\r\n    //System.out.println(\"collected: \" + collected);\r\n    collectorMock.clear();\r\n    emitter.emitPartitionBatchNew(null, collectorMock, partition, meta);\r\n    collected = collectorMock.getBuffer();\r\n    //System.out.println(\"collected: \" + collected);\r\n    assertTrue(collected.startsWith(\"message\" + batchSize));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-eventhubs\\src\\test\\java\\org\\apache\\storm\\eventhubs\\trident\\TestTransactionalTridentEmitter.java",
+  "methodName" : "testReEmit",
+  "sourceCode" : "@Test\r\npublic void testReEmit() {\r\n    //test we can re-emit the second batch\r\n    Map meta = emitter.emitPartitionBatchNew(null, collectorMock, partition, null);\r\n    collectorMock.clear();\r\n    //emit second batch\r\n    Map meta1 = emitter.emitPartitionBatchNew(null, collectorMock, partition, meta);\r\n    String collected0 = collectorMock.getBuffer();\r\n    collectorMock.clear();\r\n    //re-emit second batch\r\n    emitter.emitPartitionBatch(null, collectorMock, partition, meta1);\r\n    String collected1 = collectorMock.getBuffer();\r\n    assertTrue(collected0.equals(collected1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hdfs\\src\\test\\java\\org\\apache\\storm\\hdfs\\bolt\\TestHdfsBolt.java",
+  "methodName" : "testTwoTuplesTwoFiles",
+  "sourceCode" : "@Test\r\npublic void testTwoTuplesTwoFiles() throws IOException {\r\n    HdfsBolt bolt = makeHdfsBolt(hdfsURI, 1, .00001f);\r\n    bolt.prepare(new Config(), topologyContext, collector);\r\n    bolt.execute(tuple1);\r\n    bolt.execute(tuple2);\r\n    verify(collector).ack(tuple1);\r\n    verify(collector).ack(tuple2);\r\n    Assert.assertEquals(2, countNonZeroLengthFiles(testRoot));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hdfs\\src\\test\\java\\org\\apache\\storm\\hdfs\\bolt\\TestHdfsBolt.java",
+  "methodName" : "testTwoTuplesOneFile",
+  "sourceCode" : "@Test\r\npublic void testTwoTuplesOneFile() throws IOException {\r\n    HdfsBolt bolt = makeHdfsBolt(hdfsURI, 2, 10000f);\r\n    bolt.prepare(new Config(), topologyContext, collector);\r\n    bolt.execute(tuple1);\r\n    verifyZeroInteractions(collector);\r\n    bolt.execute(tuple2);\r\n    verify(collector).ack(tuple1);\r\n    verify(collector).ack(tuple2);\r\n    Assert.assertEquals(1, countNonZeroLengthFiles(testRoot));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hdfs\\src\\test\\java\\org\\apache\\storm\\hdfs\\bolt\\TestHdfsBolt.java",
+  "methodName" : "testFailedSync",
+  "sourceCode" : "@Test\r\npublic void testFailedSync() throws IOException {\r\n    HdfsBolt bolt = makeHdfsBolt(hdfsURI, 1, .00001f);\r\n    bolt.prepare(new Config(), topologyContext, collector);\r\n    fs.setSafeMode(SafeModeAction.SAFEMODE_ENTER);\r\n    // All writes/syncs will fail so this should cause a RuntimeException\r\n    thrown.expect(RuntimeException.class);\r\n    bolt.execute(tuple1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hdfs\\src\\test\\java\\org\\apache\\storm\\hdfs\\bolt\\TestHdfsBolt.java",
+  "methodName" : "testFailureFilecount",
+  "sourceCode" : "// One tuple and one rotation should yield one file with data and one zero length file\r\n// The failed executions should not cause rotations and new zero length files\r\n@Test\r\npublic void testFailureFilecount() throws IOException, InterruptedException {\r\n    HdfsBolt bolt = makeHdfsBolt(hdfsURI, 1, .000001f);\r\n    bolt.prepare(new Config(), topologyContext, collector);\r\n    bolt.execute(tuple1);\r\n    fs.setSafeMode(SafeModeAction.SAFEMODE_ENTER);\r\n    try {\r\n        bolt.execute(tuple2);\r\n    } catch (RuntimeException e) {\r\n        //\r\n    }\r\n    try {\r\n        bolt.execute(tuple2);\r\n    } catch (RuntimeException e) {\r\n        //\r\n    }\r\n    try {\r\n        bolt.execute(tuple2);\r\n    } catch (RuntimeException e) {\r\n        //\r\n    }\r\n    Assert.assertEquals(1, countNonZeroLengthFiles(testRoot));\r\n    Assert.assertEquals(1, countZeroLengthFiles(testRoot));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hdfs\\src\\test\\java\\org\\apache\\storm\\hdfs\\bolt\\TestHdfsBolt.java",
+  "methodName" : "testTickTuples",
+  "sourceCode" : "@Test\r\npublic void testTickTuples() throws IOException {\r\n    HdfsBolt bolt = makeHdfsBolt(hdfsURI, 10, 10000f);\r\n    bolt.prepare(new Config(), topologyContext, collector);\r\n    bolt.execute(tuple1);\r\n    //Should not have flushed to file system yet\r\n    Assert.assertEquals(0, countNonZeroLengthFiles(testRoot));\r\n    bolt.execute(MockTupleHelpers.mockTickTuple());\r\n    //Tick should have flushed it\r\n    Assert.assertEquals(1, countNonZeroLengthFiles(testRoot));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hdfs\\src\\test\\java\\org\\apache\\storm\\hdfs\\trident\\HdfsStateTest.java",
+  "methodName" : "testPrepare",
+  "sourceCode" : "@Test\r\npublic void testPrepare() throws Exception {\r\n    HdfsState state = createHdfsState();\r\n    Collection<File> files = FileUtils.listFiles(new File(TEST_OUT_DIR), null, false);\r\n    File hdfsDataFile = Paths.get(TEST_OUT_DIR, FILE_NAME_PREFIX + \"0\").toFile();\r\n    Assert.assertTrue(files.contains(hdfsDataFile));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hdfs\\src\\test\\java\\org\\apache\\storm\\hdfs\\trident\\HdfsStateTest.java",
+  "methodName" : "testIndexFileCreation",
+  "sourceCode" : "@Test\r\npublic void testIndexFileCreation() throws Exception {\r\n    HdfsState state = createHdfsState();\r\n    state.beginCommit(1L);\r\n    Collection<File> files = FileUtils.listFiles(new File(TEST_OUT_DIR), null, false);\r\n    File hdfsIndexFile = Paths.get(TEST_OUT_DIR, INDEX_FILE_PREFIX + TEST_TOPOLOGY_NAME + \".0\").toFile();\r\n    Assert.assertTrue(files.contains(hdfsIndexFile));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hdfs\\src\\test\\java\\org\\apache\\storm\\hdfs\\trident\\HdfsStateTest.java",
+  "methodName" : "testUpdateState",
+  "sourceCode" : "@Test\r\npublic void testUpdateState() throws Exception {\r\n    HdfsState state = createHdfsState();\r\n    state.beginCommit(1L);\r\n    int tupleCount = 100;\r\n    state.updateState(createMockTridentTuples(tupleCount), null);\r\n    state.commit(1L);\r\n    state.close();\r\n    List<String> lines = getLinesFromCurrentDataFile();\r\n    List<String> expected = new ArrayList<>();\r\n    for (int i = 0; i < tupleCount; i++) {\r\n        expected.add(\"data\");\r\n    }\r\n    Assert.assertEquals(tupleCount, lines.size());\r\n    Assert.assertEquals(expected, lines);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hdfs\\src\\test\\java\\org\\apache\\storm\\hdfs\\trident\\HdfsStateTest.java",
+  "methodName" : "testRecoverOneBatch",
+  "sourceCode" : "@Test\r\npublic void testRecoverOneBatch() throws Exception {\r\n    HdfsState state = createHdfsState();\r\n    // batch 1 is played with 25 tuples initially.\r\n    state.beginCommit(1L);\r\n    state.updateState(createMockTridentTuples(25), null);\r\n    // batch 1 is replayed with 50 tuples.\r\n    int replayBatchSize = 50;\r\n    state.beginCommit(1L);\r\n    state.updateState(createMockTridentTuples(replayBatchSize), null);\r\n    state.commit(1L);\r\n    // close the state to force flush\r\n    state.close();\r\n    // Ensure that the original batch1 is discarded and new one is persisted.\r\n    List<String> lines = getLinesFromCurrentDataFile();\r\n    Assert.assertEquals(replayBatchSize, lines.size());\r\n    List<String> expected = new ArrayList<>();\r\n    for (int i = 0; i < replayBatchSize; i++) {\r\n        expected.add(\"data\");\r\n    }\r\n    Assert.assertEquals(expected, lines);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hdfs\\src\\test\\java\\org\\apache\\storm\\hdfs\\trident\\HdfsStateTest.java",
+  "methodName" : "testRecoverMultipleBatches",
+  "sourceCode" : "@Test\r\npublic void testRecoverMultipleBatches() throws Exception {\r\n    HdfsState state = createHdfsState();\r\n    // batch 1\r\n    int batch1Count = 10;\r\n    state.beginCommit(1L);\r\n    state.updateState(createMockTridentTuples(batch1Count), null);\r\n    state.commit(1L);\r\n    // batch 2\r\n    int batch2Count = 20;\r\n    state.beginCommit(2L);\r\n    state.updateState(createMockTridentTuples(batch2Count), null);\r\n    state.commit(2L);\r\n    // batch 3\r\n    int batch3Count = 30;\r\n    state.beginCommit(3L);\r\n    state.updateState(createMockTridentTuples(batch3Count), null);\r\n    state.commit(3L);\r\n    // batch 3 replayed with 40 tuples\r\n    int batch3ReplayCount = 40;\r\n    state.beginCommit(3L);\r\n    state.updateState(createMockTridentTuples(batch3ReplayCount), null);\r\n    state.commit(3L);\r\n    state.close();\r\n    /*\r\n         * total tuples should be\r\n         * recovered (batch-1 + batch-2) + replayed (batch-3)\r\n        */\r\n    List<String> lines = getLinesFromCurrentDataFile();\r\n    int preReplayCount = batch1Count + batch2Count + batch3Count;\r\n    int expectedTupleCount = batch1Count + batch2Count + batch3ReplayCount;\r\n    Assert.assertNotEquals(preReplayCount, lines.size());\r\n    Assert.assertEquals(expectedTupleCount, lines.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hive\\src\\test\\java\\org\\apache\\storm\\hive\\bolt\\TestHiveBolt.java",
+  "methodName" : "testEndpointConnection",
+  "sourceCode" : "@Test\r\npublic void testEndpointConnection() throws Exception {\r\n    // 1) Basic\r\n    HiveEndPoint endPt = new HiveEndPoint(metaStoreURI, dbName, tblName, Arrays.asList(partitionVals.split(\",\")));\r\n    //shouldn't throw\r\n    StreamingConnection connection = endPt.newConnection(false, null);\r\n    connection.close();\r\n    // 2) Leave partition unspecified\r\n    endPt = new HiveEndPoint(metaStoreURI, dbName, tblName, null);\r\n    // should not throw\r\n    endPt.newConnection(false, null).close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hive\\src\\test\\java\\org\\apache\\storm\\hive\\bolt\\TestHiveBolt.java",
+  "methodName" : "testWithByteArrayIdandMessage",
+  "sourceCode" : "@Test\r\npublic void testWithByteArrayIdandMessage() throws Exception {\r\n    DelimitedRecordHiveMapper mapper = new DelimitedRecordHiveMapper().withColumnFields(new Fields(colNames)).withPartitionFields(new Fields(partNames));\r\n    HiveOptions hiveOptions = new HiveOptions(metaStoreURI, dbName, tblName, mapper).withTxnsPerBatch(2).withBatchSize(2);\r\n    bolt = new HiveBolt(hiveOptions);\r\n    bolt.prepare(config, null, collector);\r\n    Integer id = 100;\r\n    String msg = \"test-123\";\r\n    String city = \"sunnyvale\";\r\n    String state = \"ca\";\r\n    checkRecordCountInTable(tblName, dbName, 0);\r\n    Set<Tuple> tupleSet = new HashSet<Tuple>();\r\n    for (int i = 0; i < 4; i++) {\r\n        Tuple tuple = generateTestTuple(id, msg, city, state);\r\n        bolt.execute(tuple);\r\n        tupleSet.add(tuple);\r\n    }\r\n    for (Tuple t : tupleSet) verify(collector).ack(t);\r\n    checkRecordCountInTable(tblName, dbName, 4);\r\n    bolt.cleanup();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hive\\src\\test\\java\\org\\apache\\storm\\hive\\bolt\\TestHiveBolt.java",
+  "methodName" : "testWithoutPartitions",
+  "sourceCode" : "@Test\r\npublic void testWithoutPartitions() throws Exception {\r\n    HiveSetupUtil.dropDB(conf, dbName1);\r\n    HiveSetupUtil.createDbAndTable(conf, dbName1, tblName1, null, colNames, colTypes, null, dbLocation);\r\n    DelimitedRecordHiveMapper mapper = new DelimitedRecordHiveMapper().withColumnFields(new Fields(colNames));\r\n    HiveOptions hiveOptions = new HiveOptions(metaStoreURI, dbName1, tblName1, mapper).withTxnsPerBatch(2).withBatchSize(2).withAutoCreatePartitions(false);\r\n    bolt = new HiveBolt(hiveOptions);\r\n    bolt.prepare(config, null, collector);\r\n    Integer id = 100;\r\n    String msg = \"test-123\";\r\n    String city = \"sunnyvale\";\r\n    String state = \"ca\";\r\n    checkRecordCountInTable(tblName1, dbName1, 0);\r\n    Set<Tuple> tupleSet = new HashSet<Tuple>();\r\n    for (int i = 0; i < 4; i++) {\r\n        Tuple tuple = generateTestTuple(id, msg, city, state);\r\n        bolt.execute(tuple);\r\n        tupleSet.add(tuple);\r\n    }\r\n    for (Tuple t : tupleSet) verify(collector).ack(t);\r\n    bolt.cleanup();\r\n    checkRecordCountInTable(tblName1, dbName1, 4);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hive\\src\\test\\java\\org\\apache\\storm\\hive\\bolt\\TestHiveBolt.java",
+  "methodName" : "testWithTimeformat",
+  "sourceCode" : "@Test\r\npublic void testWithTimeformat() throws Exception {\r\n    String[] partNames1 = { \"date\" };\r\n    String timeFormat = \"yyyy/MM/dd\";\r\n    HiveSetupUtil.dropDB(conf, dbName1);\r\n    HiveSetupUtil.createDbAndTable(conf, dbName1, tblName1, null, colNames, colTypes, partNames1, dbLocation);\r\n    DelimitedRecordHiveMapper mapper = new DelimitedRecordHiveMapper().withColumnFields(new Fields(colNames)).withTimeAsPartitionField(timeFormat);\r\n    HiveOptions hiveOptions = new HiveOptions(metaStoreURI, dbName1, tblName1, mapper).withTxnsPerBatch(2).withBatchSize(1);\r\n    bolt = new HiveBolt(hiveOptions);\r\n    bolt.prepare(config, null, collector);\r\n    Integer id = 100;\r\n    String msg = \"test-123\";\r\n    Date d = new Date();\r\n    SimpleDateFormat parseDate = new SimpleDateFormat(timeFormat);\r\n    String today = parseDate.format(d.getTime());\r\n    checkRecordCountInTable(tblName1, dbName1, 0);\r\n    Set<Tuple> tupleSet = new HashSet<Tuple>();\r\n    for (int i = 0; i < 2; i++) {\r\n        Tuple tuple = generateTestTuple(id, msg, null, null);\r\n        tupleSet.add(tuple);\r\n        bolt.execute(tuple);\r\n    }\r\n    for (Tuple t : tupleSet) verify(collector).ack(t);\r\n    checkDataWritten(tblName1, dbName1, \"100,test-123,\" + today, \"100,test-123,\" + today);\r\n    bolt.cleanup();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hive\\src\\test\\java\\org\\apache\\storm\\hive\\bolt\\TestHiveBolt.java",
+  "methodName" : "testData",
+  "sourceCode" : "@Test\r\npublic void testData() throws Exception {\r\n    DelimitedRecordHiveMapper mapper = new DelimitedRecordHiveMapper().withColumnFields(new Fields(colNames)).withPartitionFields(new Fields(partNames));\r\n    HiveOptions hiveOptions = new HiveOptions(metaStoreURI, dbName, tblName, mapper).withTxnsPerBatch(2).withBatchSize(1);\r\n    bolt = new HiveBolt(hiveOptions);\r\n    bolt.prepare(config, null, new OutputCollector(collector));\r\n    Tuple tuple1 = generateTestTuple(1, \"SJC\", \"Sunnyvale\", \"CA\");\r\n    //Tuple tuple2 = generateTestTuple(2,\"SFO\",\"San Jose\",\"CA\");\r\n    bolt.execute(tuple1);\r\n    verify(collector).ack(tuple1);\r\n    //bolt.execute(tuple2);\r\n    //verify(collector).ack(tuple2);\r\n    checkDataWritten(tblName, dbName, \"1,SJC,Sunnyvale,CA\");\r\n    bolt.cleanup();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hive\\src\\test\\java\\org\\apache\\storm\\hive\\bolt\\TestHiveBolt.java",
+  "methodName" : "testJsonWriter",
+  "sourceCode" : "@Test\r\npublic void testJsonWriter() throws Exception {\r\n    // json record doesn't need columns to be in the same order\r\n    // as table in hive.\r\n    JsonRecordHiveMapper mapper = new JsonRecordHiveMapper().withColumnFields(new Fields(colNames1)).withPartitionFields(new Fields(partNames));\r\n    HiveOptions hiveOptions = new HiveOptions(metaStoreURI, dbName, tblName, mapper).withTxnsPerBatch(2).withBatchSize(1);\r\n    bolt = new HiveBolt(hiveOptions);\r\n    bolt.prepare(config, null, collector);\r\n    Tuple tuple1 = generateTestTuple(1, \"SJC\", \"Sunnyvale\", \"CA\");\r\n    //Tuple tuple2 = generateTestTuple(2,\"SFO\",\"San Jose\",\"CA\");\r\n    bolt.execute(tuple1);\r\n    verify(collector).ack(tuple1);\r\n    //bolt.execute(tuple2);\r\n    //verify(collector).ack(tuple2);\r\n    checkDataWritten(tblName, dbName, \"1,SJC,Sunnyvale,CA\");\r\n    bolt.cleanup();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hive\\src\\test\\java\\org\\apache\\storm\\hive\\bolt\\TestHiveBolt.java",
+  "methodName" : "testNoAcksUntilFlushed",
+  "sourceCode" : "@Test\r\npublic void testNoAcksUntilFlushed() {\r\n    JsonRecordHiveMapper mapper = new JsonRecordHiveMapper().withColumnFields(new Fields(colNames1)).withPartitionFields(new Fields(partNames));\r\n    HiveOptions hiveOptions = new HiveOptions(metaStoreURI, dbName, tblName, mapper).withTxnsPerBatch(2).withBatchSize(2);\r\n    bolt = new HiveBolt(hiveOptions);\r\n    bolt.prepare(config, null, new OutputCollector(collector));\r\n    Tuple tuple1 = generateTestTuple(1, \"SJC\", \"Sunnyvale\", \"CA\");\r\n    Tuple tuple2 = generateTestTuple(2, \"SFO\", \"San Jose\", \"CA\");\r\n    bolt.execute(tuple1);\r\n    verifyZeroInteractions(collector);\r\n    bolt.execute(tuple2);\r\n    verify(collector).ack(tuple1);\r\n    verify(collector).ack(tuple2);\r\n    bolt.cleanup();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hive\\src\\test\\java\\org\\apache\\storm\\hive\\bolt\\TestHiveBolt.java",
+  "methodName" : "testNoAcksIfFlushFails",
+  "sourceCode" : "@Test\r\npublic void testNoAcksIfFlushFails() throws Exception {\r\n    JsonRecordHiveMapper mapper = new JsonRecordHiveMapper().withColumnFields(new Fields(colNames1)).withPartitionFields(new Fields(partNames));\r\n    HiveOptions hiveOptions = new HiveOptions(metaStoreURI, dbName, tblName, mapper).withTxnsPerBatch(2).withBatchSize(2);\r\n    HiveBolt spyBolt = Mockito.spy(new HiveBolt(hiveOptions));\r\n    //This forces a failure of all the flush attempts\r\n    doThrow(new InterruptedException()).when(spyBolt).flushAllWriters(true);\r\n    doThrow(new Exception()).when(spyBolt).flushAndCloseWriters();\r\n    spyBolt.prepare(config, null, new OutputCollector(collector));\r\n    Tuple tuple1 = generateTestTuple(1, \"SJC\", \"Sunnyvale\", \"CA\");\r\n    Tuple tuple2 = generateTestTuple(2, \"SFO\", \"San Jose\", \"CA\");\r\n    spyBolt.execute(tuple1);\r\n    spyBolt.execute(tuple2);\r\n    verify(collector, never()).ack(tuple1);\r\n    verify(collector, never()).ack(tuple2);\r\n    spyBolt.cleanup();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hive\\src\\test\\java\\org\\apache\\storm\\hive\\bolt\\TestHiveBolt.java",
+  "methodName" : "testTickTuple",
+  "sourceCode" : "@Test\r\npublic void testTickTuple() {\r\n    JsonRecordHiveMapper mapper = new JsonRecordHiveMapper().withColumnFields(new Fields(colNames1)).withPartitionFields(new Fields(partNames));\r\n    HiveOptions hiveOptions = new HiveOptions(metaStoreURI, dbName, tblName, mapper).withTxnsPerBatch(2).withBatchSize(2);\r\n    bolt = new HiveBolt(hiveOptions);\r\n    bolt.prepare(config, null, new OutputCollector(collector));\r\n    Tuple tuple1 = generateTestTuple(1, \"SJC\", \"Sunnyvale\", \"CA\");\r\n    Tuple tuple2 = generateTestTuple(2, \"SFO\", \"San Jose\", \"CA\");\r\n    bolt.execute(tuple1);\r\n    //The tick should cause tuple1 to be ack'd\r\n    Tuple mockTick = MockTupleHelpers.mockTickTuple();\r\n    bolt.execute(mockTick);\r\n    verify(collector).ack(tuple1);\r\n    //The second tuple should NOT be ack'd because the batch should be cleared and this will be\r\n    //the first transaction in the new batch\r\n    bolt.execute(tuple2);\r\n    verify(collector, never()).ack(tuple2);\r\n    bolt.cleanup();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hive\\src\\test\\java\\org\\apache\\storm\\hive\\bolt\\TestHiveBolt.java",
+  "methodName" : "testNoTickEmptyBatches",
+  "sourceCode" : "@Test\r\npublic void testNoTickEmptyBatches() throws Exception {\r\n    JsonRecordHiveMapper mapper = new JsonRecordHiveMapper().withColumnFields(new Fields(colNames1)).withPartitionFields(new Fields(partNames));\r\n    HiveOptions hiveOptions = new HiveOptions(metaStoreURI, dbName, tblName, mapper).withTxnsPerBatch(2).withBatchSize(2);\r\n    bolt = new HiveBolt(hiveOptions);\r\n    bolt.prepare(config, null, new OutputCollector(collector));\r\n    //The tick should NOT cause any acks since the batch was empty\r\n    Tuple mockTick = MockTupleHelpers.mockTickTuple();\r\n    bolt.execute(mockTick);\r\n    verifyZeroInteractions(collector);\r\n    bolt.cleanup();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hive\\src\\test\\java\\org\\apache\\storm\\hive\\bolt\\TestHiveBolt.java",
+  "methodName" : "testMultiPartitionTuples",
+  "sourceCode" : "@Test\r\npublic void testMultiPartitionTuples() throws Exception {\r\n    DelimitedRecordHiveMapper mapper = new DelimitedRecordHiveMapper().withColumnFields(new Fields(colNames)).withPartitionFields(new Fields(partNames));\r\n    HiveOptions hiveOptions = new HiveOptions(metaStoreURI, dbName, tblName, mapper).withTxnsPerBatch(10).withBatchSize(10);\r\n    bolt = new HiveBolt(hiveOptions);\r\n    bolt.prepare(config, null, new OutputCollector(collector));\r\n    Integer id = 1;\r\n    String msg = \"test\";\r\n    String city = \"San Jose\";\r\n    String state = \"CA\";\r\n    checkRecordCountInTable(tblName, dbName, 0);\r\n    Set<Tuple> tupleSet = new HashSet<Tuple>();\r\n    for (int i = 0; i < 100; i++) {\r\n        Tuple tuple = generateTestTuple(id, msg, city, state);\r\n        tupleSet.add(tuple);\r\n        bolt.execute(tuple);\r\n    }\r\n    checkRecordCountInTable(tblName, dbName, 100);\r\n    for (Tuple t : tupleSet) verify(collector).ack(t);\r\n    bolt.cleanup();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hive\\src\\test\\java\\org\\apache\\storm\\hive\\common\\TestHiveWriter.java",
+  "methodName" : "testInstantiate",
+  "sourceCode" : "@Test\r\npublic void testInstantiate() throws Exception {\r\n    DelimitedRecordHiveMapper mapper = new DelimitedRecordHiveMapper().withColumnFields(new Fields(colNames)).withPartitionFields(new Fields(partNames));\r\n    HiveEndPoint endPoint = new HiveEndPoint(metaStoreURI, dbName, tblName, Arrays.asList(partitionVals));\r\n    HiveWriter writer = new HiveWriter(endPoint, 10, true, timeout, callTimeoutPool, mapper, ugi);\r\n    writer.close();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hive\\src\\test\\java\\org\\apache\\storm\\hive\\common\\TestHiveWriter.java",
+  "methodName" : "testWriteBasic",
+  "sourceCode" : "@Test\r\npublic void testWriteBasic() throws Exception {\r\n    DelimitedRecordHiveMapper mapper = new DelimitedRecordHiveMapper().withColumnFields(new Fields(colNames)).withPartitionFields(new Fields(partNames));\r\n    HiveEndPoint endPoint = new HiveEndPoint(metaStoreURI, dbName, tblName, Arrays.asList(partitionVals));\r\n    HiveWriter writer = new HiveWriter(endPoint, 10, true, timeout, callTimeoutPool, mapper, ugi);\r\n    writeTuples(writer, mapper, 3);\r\n    writer.flush(false);\r\n    writer.close();\r\n    checkRecordCountInTable(dbName, tblName, 3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-hive\\src\\test\\java\\org\\apache\\storm\\hive\\common\\TestHiveWriter.java",
+  "methodName" : "testWriteMultiFlush",
+  "sourceCode" : "@Test\r\npublic void testWriteMultiFlush() throws Exception {\r\n    DelimitedRecordHiveMapper mapper = new DelimitedRecordHiveMapper().withColumnFields(new Fields(colNames)).withPartitionFields(new Fields(partNames));\r\n    HiveEndPoint endPoint = new HiveEndPoint(metaStoreURI, dbName, tblName, Arrays.asList(partitionVals));\r\n    HiveWriter writer = new HiveWriter(endPoint, 10, true, timeout, callTimeoutPool, mapper, ugi);\r\n    Tuple tuple = generateTestTuple(\"1\", \"abc\");\r\n    writer.write(mapper.mapRecord(tuple));\r\n    checkRecordCountInTable(dbName, tblName, 0);\r\n    writer.flush(true);\r\n    tuple = generateTestTuple(\"2\", \"def\");\r\n    writer.write(mapper.mapRecord(tuple));\r\n    writer.flush(true);\r\n    tuple = generateTestTuple(\"3\", \"ghi\");\r\n    writer.write(mapper.mapRecord(tuple));\r\n    writer.flush(true);\r\n    writer.close();\r\n    checkRecordCountInTable(dbName, tblName, 3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-jdbc\\src\\test\\java\\org\\apache\\storm\\jdbc\\common\\JdbcClientTest.java",
+  "methodName" : "testInsertAndSelect",
+  "sourceCode" : "@Test\r\npublic void testInsertAndSelect() {\r\n    List<Column> row1 = createRow(1, \"bob\");\r\n    List<Column> row2 = createRow(2, \"alice\");\r\n    List<List<Column>> rows = Lists.newArrayList(row1, row2);\r\n    client.insert(tableName, rows);\r\n    List<List<Column>> selectedRows = client.select(\"select * from user_details where id = ?\", Lists.newArrayList(new Column(\"id\", 1, Types.INTEGER)));\r\n    List<List<Column>> expectedRows = Lists.newArrayList();\r\n    expectedRows.add(row1);\r\n    Assert.assertEquals(expectedRows, selectedRows);\r\n    List<Column> row3 = createRow(3, \"frank\");\r\n    List<List<Column>> moreRows = new ArrayList<List<Column>>();\r\n    moreRows.add(row3);\r\n    client.executeInsertQuery(\"insert into user_details values(?,?,?)\", moreRows);\r\n    selectedRows = client.select(\"select * from user_details where id = ?\", Lists.newArrayList(new Column(\"id\", 3, Types.INTEGER)));\r\n    expectedRows = Lists.newArrayList();\r\n    expectedRows.add(row3);\r\n    Assert.assertEquals(expectedRows, selectedRows);\r\n    selectedRows = client.select(\"select * from user_details order by id\", Lists.<Column>newArrayList());\r\n    rows.add(row3);\r\n    Assert.assertEquals(rows, selectedRows);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-jdbc\\src\\test\\java\\org\\apache\\storm\\jdbc\\common\\UtilTest.java",
+  "methodName" : "testBasic",
+  "sourceCode" : "@Test\r\npublic void testBasic() {\r\n    assertEquals(String.class, Util.getJavaType(Types.CHAR));\r\n    assertEquals(String.class, Util.getJavaType(Types.VARCHAR));\r\n    assertEquals(String.class, Util.getJavaType(Types.LONGVARCHAR));\r\n    assertEquals(byte[].class, Util.getJavaType(Types.BINARY));\r\n    assertEquals(byte[].class, Util.getJavaType(Types.VARBINARY));\r\n    assertEquals(byte[].class, Util.getJavaType(Types.LONGVARBINARY));\r\n    assertEquals(Boolean.class, Util.getJavaType(Types.BIT));\r\n    assertEquals(Short.class, Util.getJavaType(Types.TINYINT));\r\n    assertEquals(Short.class, Util.getJavaType(Types.SMALLINT));\r\n    assertEquals(Integer.class, Util.getJavaType(Types.INTEGER));\r\n    assertEquals(Long.class, Util.getJavaType(Types.BIGINT));\r\n    assertEquals(Float.class, Util.getJavaType(Types.REAL));\r\n    assertEquals(Double.class, Util.getJavaType(Types.DOUBLE));\r\n    assertEquals(Double.class, Util.getJavaType(Types.FLOAT));\r\n    assertEquals(Date.class, Util.getJavaType(Types.DATE));\r\n    assertEquals(Time.class, Util.getJavaType(Types.TIME));\r\n    assertEquals(Timestamp.class, Util.getJavaType(Types.TIMESTAMP));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-jdbc\\src\\test\\java\\org\\apache\\storm\\jdbc\\common\\UtilTest.java",
+  "methodName" : "testError",
+  "sourceCode" : "@Test\r\npublic void testError() {\r\n    //This test is rather ugly, but it is the only way to see if the error messages are working correctly.\r\n    try {\r\n        Util.getJavaType(Types.REF);\r\n        fail(\"didn't throw like expected\");\r\n    } catch (Exception e) {\r\n        assertEquals(\"We do not support tables with SqlType: REF\", e.getMessage());\r\n    }\r\n    try {\r\n        Util.getJavaType(-1000);\r\n        fail(\"didn't throw like expected\");\r\n    } catch (Exception e) {\r\n        assertEquals(\"Unknown sqlType -1000\", e.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\bolt\\KafkaBoltTest.java",
+  "methodName" : "shouldAcknowledgeTickTuples",
+  "sourceCode" : "@Test\r\npublic void shouldAcknowledgeTickTuples() throws Exception {\r\n    // Given\r\n    Tuple tickTuple = mockTickTuple();\r\n    // When\r\n    bolt.execute(tickTuple);\r\n    // Then\r\n    verify(collector).ack(tickTuple);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\bolt\\KafkaBoltTest.java",
+  "methodName" : "executeWithKey",
+  "sourceCode" : "@Test\r\npublic void executeWithKey() throws Exception {\r\n    String message = \"value-123\";\r\n    String key = \"key-123\";\r\n    Tuple tuple = generateTestTuple(key, message);\r\n    bolt.execute(tuple);\r\n    verify(collector).ack(tuple);\r\n    verifyMessage(key, message);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\bolt\\KafkaBoltTest.java",
+  "methodName" : "executeWithByteArrayKeyAndMessageSync",
+  "sourceCode" : "/* test synchronous sending */\r\n@Test\r\npublic void executeWithByteArrayKeyAndMessageSync() {\r\n    boolean async = false;\r\n    boolean fireAndForget = false;\r\n    bolt = generateDefaultSerializerBolt(async, fireAndForget);\r\n    String keyString = \"test-key\";\r\n    String messageString = \"test-message\";\r\n    byte[] key = keyString.getBytes();\r\n    byte[] message = messageString.getBytes();\r\n    Tuple tuple = generateTestTuple(key, message);\r\n    bolt.execute(tuple);\r\n    verify(collector).ack(tuple);\r\n    verifyMessage(keyString, messageString);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\bolt\\KafkaBoltTest.java",
+  "methodName" : "executeWithByteArrayKeyAndMessageAsync",
+  "sourceCode" : "/* test asynchronous sending (default) */\r\n@Test\r\npublic void executeWithByteArrayKeyAndMessageAsync() {\r\n    boolean async = true;\r\n    boolean fireAndForget = false;\r\n    bolt = generateDefaultSerializerBolt(async, fireAndForget);\r\n    String keyString = \"test-key\";\r\n    String messageString = \"test-message\";\r\n    byte[] key = keyString.getBytes();\r\n    byte[] message = messageString.getBytes();\r\n    Tuple tuple = generateTestTuple(key, message);\r\n    bolt.execute(tuple);\r\n    try {\r\n        Thread.sleep(1000);\r\n    } catch (InterruptedException ex) {\r\n        Thread.currentThread().interrupt();\r\n    }\r\n    verify(collector).ack(tuple);\r\n    verifyMessage(keyString, messageString);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\bolt\\KafkaBoltTest.java",
+  "methodName" : "executeWithByteArrayKeyAndMessageFire",
+  "sourceCode" : "/* test with fireAndForget option enabled */\r\n@Test\r\npublic void executeWithByteArrayKeyAndMessageFire() {\r\n    boolean async = true;\r\n    boolean fireAndForget = true;\r\n    bolt = generateDefaultSerializerBolt(async, fireAndForget);\r\n    String keyString = \"test-key\";\r\n    String messageString = \"test-message\";\r\n    byte[] key = keyString.getBytes();\r\n    byte[] message = messageString.getBytes();\r\n    Tuple tuple = generateTestTuple(key, message);\r\n    bolt.execute(tuple);\r\n    try {\r\n        Thread.sleep(1000);\r\n    } catch (InterruptedException ex) {\r\n        Thread.currentThread().interrupt();\r\n    }\r\n    verify(collector).ack(tuple);\r\n    verifyMessage(keyString, messageString);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\bolt\\KafkaBoltTest.java",
+  "methodName" : "executeWithBoltSpecifiedProperties",
+  "sourceCode" : "/* test bolt specified properties */\r\n@Test\r\npublic void executeWithBoltSpecifiedProperties() {\r\n    boolean async = false;\r\n    boolean fireAndForget = false;\r\n    bolt = defaultSerializerBoltWithSpecifiedProperties(async, fireAndForget);\r\n    String keyString = \"test-key\";\r\n    String messageString = \"test-message\";\r\n    byte[] key = keyString.getBytes();\r\n    byte[] message = messageString.getBytes();\r\n    Tuple tuple = generateTestTuple(key, message);\r\n    bolt.execute(tuple);\r\n    verify(collector).ack(tuple);\r\n    verifyMessage(keyString, messageString);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\bolt\\KafkaBoltTest.java",
+  "methodName" : "executeWithoutKey",
+  "sourceCode" : "@Test\r\npublic void executeWithoutKey() throws Exception {\r\n    String message = \"value-234\";\r\n    Tuple tuple = generateTestTuple(message);\r\n    bolt.execute(tuple);\r\n    verify(collector).ack(tuple);\r\n    verifyMessage(null, message);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\bolt\\KafkaBoltTest.java",
+  "methodName" : "executeWithBrokerDown",
+  "sourceCode" : "@Test\r\npublic void executeWithBrokerDown() throws Exception {\r\n    broker.shutdown();\r\n    String message = \"value-234\";\r\n    Tuple tuple = generateTestTuple(message);\r\n    bolt.execute(tuple);\r\n    verify(collector).fail(tuple);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\DynamicBrokersReaderTest.java",
+  "methodName" : "testGetBrokerInfo",
+  "sourceCode" : "@Test\r\npublic void testGetBrokerInfo() throws Exception {\r\n    String host = \"localhost\";\r\n    int port = 9092;\r\n    int partition = 0;\r\n    addPartition(partition, host, port);\r\n    GlobalPartitionInformation brokerInfo = dynamicBrokersReader.getBrokerInfo();\r\n    assertEquals(1, brokerInfo.getOrderedPartitions().size());\r\n    assertEquals(port, brokerInfo.getBrokerFor(partition).port);\r\n    assertEquals(host, brokerInfo.getBrokerFor(partition).host);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\DynamicBrokersReaderTest.java",
+  "methodName" : "testMultiplePartitionsOnDifferentHosts",
+  "sourceCode" : "@Test\r\npublic void testMultiplePartitionsOnDifferentHosts() throws Exception {\r\n    String host = \"localhost\";\r\n    int port = 9092;\r\n    int secondPort = 9093;\r\n    int partition = 0;\r\n    int secondPartition = partition + 1;\r\n    addPartition(partition, 0, host, port);\r\n    addPartition(secondPartition, 1, host, secondPort);\r\n    GlobalPartitionInformation brokerInfo = dynamicBrokersReader.getBrokerInfo();\r\n    assertEquals(2, brokerInfo.getOrderedPartitions().size());\r\n    assertEquals(port, brokerInfo.getBrokerFor(partition).port);\r\n    assertEquals(host, brokerInfo.getBrokerFor(partition).host);\r\n    assertEquals(secondPort, brokerInfo.getBrokerFor(secondPartition).port);\r\n    assertEquals(host, brokerInfo.getBrokerFor(secondPartition).host);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\DynamicBrokersReaderTest.java",
+  "methodName" : "testMultiplePartitionsOnSameHost",
+  "sourceCode" : "@Test\r\npublic void testMultiplePartitionsOnSameHost() throws Exception {\r\n    String host = \"localhost\";\r\n    int port = 9092;\r\n    int partition = 0;\r\n    int secondPartition = partition + 1;\r\n    addPartition(partition, 0, host, port);\r\n    addPartition(secondPartition, 0, host, port);\r\n    GlobalPartitionInformation brokerInfo = dynamicBrokersReader.getBrokerInfo();\r\n    assertEquals(2, brokerInfo.getOrderedPartitions().size());\r\n    assertEquals(port, brokerInfo.getBrokerFor(partition).port);\r\n    assertEquals(host, brokerInfo.getBrokerFor(partition).host);\r\n    assertEquals(port, brokerInfo.getBrokerFor(secondPartition).port);\r\n    assertEquals(host, brokerInfo.getBrokerFor(secondPartition).host);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\DynamicBrokersReaderTest.java",
+  "methodName" : "testSwitchHostForPartition",
+  "sourceCode" : "@Test\r\npublic void testSwitchHostForPartition() throws Exception {\r\n    String host = \"localhost\";\r\n    int port = 9092;\r\n    int partition = 0;\r\n    addPartition(partition, host, port);\r\n    GlobalPartitionInformation brokerInfo = dynamicBrokersReader.getBrokerInfo();\r\n    assertEquals(port, brokerInfo.getBrokerFor(partition).port);\r\n    assertEquals(host, brokerInfo.getBrokerFor(partition).host);\r\n    String newHost = host + \"switch\";\r\n    int newPort = port + 1;\r\n    addPartition(partition, newHost, newPort);\r\n    brokerInfo = dynamicBrokersReader.getBrokerInfo();\r\n    assertEquals(newPort, brokerInfo.getBrokerFor(partition).port);\r\n    assertEquals(newHost, brokerInfo.getBrokerFor(partition).host);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\DynamicBrokersReaderTest.java",
+  "methodName" : "testErrorLogsWhenConfigIsMissing",
+  "sourceCode" : "@Test(expected = NullPointerException.class)\r\npublic void testErrorLogsWhenConfigIsMissing() throws Exception {\r\n    String connectionString = server.getConnectString();\r\n    Map conf = new HashMap();\r\n    conf.put(Config.STORM_ZOOKEEPER_SESSION_TIMEOUT, 1000);\r\n    //        conf.put(Config.STORM_ZOOKEEPER_CONNECTION_TIMEOUT, 1000);\r\n    conf.put(Config.STORM_ZOOKEEPER_RETRY_TIMES, 4);\r\n    conf.put(Config.STORM_ZOOKEEPER_RETRY_INTERVAL, 5);\r\n    DynamicBrokersReader dynamicBrokersReader1 = new DynamicBrokersReader(conf, connectionString, masterPath, topic);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\ExponentialBackoffMsgRetryManagerTest.java",
+  "methodName" : "testImmediateRetry",
+  "sourceCode" : "@Test\r\npublic void testImmediateRetry() throws Exception {\r\n    ExponentialBackoffMsgRetryManager manager = new ExponentialBackoffMsgRetryManager(0, 0d, 0);\r\n    manager.failed(TEST_OFFSET);\r\n    Long next = manager.nextFailedMessageToRetry();\r\n    assertEquals(\"expect test offset next available for retry\", TEST_OFFSET, next);\r\n    assertTrue(\"message should be ready for retry immediately\", manager.shouldRetryMsg(TEST_OFFSET));\r\n    manager.retryStarted(TEST_OFFSET);\r\n    manager.failed(TEST_OFFSET);\r\n    next = manager.nextFailedMessageToRetry();\r\n    assertEquals(\"expect test offset next available for retry\", TEST_OFFSET, next);\r\n    assertTrue(\"message should be ready for retry immediately\", manager.shouldRetryMsg(TEST_OFFSET));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\ExponentialBackoffMsgRetryManagerTest.java",
+  "methodName" : "testSingleDelay",
+  "sourceCode" : "@Test\r\npublic void testSingleDelay() throws Exception {\r\n    ExponentialBackoffMsgRetryManager manager = new ExponentialBackoffMsgRetryManager(10, 1d, 100);\r\n    manager.failed(TEST_OFFSET);\r\n    Thread.sleep(5);\r\n    Long next = manager.nextFailedMessageToRetry();\r\n    assertNull(\"expect no message ready for retry yet\", next);\r\n    assertFalse(\"message should not be ready for retry yet\", manager.shouldRetryMsg(TEST_OFFSET));\r\n    Thread.sleep(10);\r\n    next = manager.nextFailedMessageToRetry();\r\n    assertEquals(\"expect test offset next available for retry\", TEST_OFFSET, next);\r\n    assertTrue(\"message should be ready for retry\", manager.shouldRetryMsg(TEST_OFFSET));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\ExponentialBackoffMsgRetryManagerTest.java",
+  "methodName" : "testExponentialBackoff",
+  "sourceCode" : "@Test\r\npublic void testExponentialBackoff() throws Exception {\r\n    final long initial = 10;\r\n    final double mult = 2d;\r\n    ExponentialBackoffMsgRetryManager manager = new ExponentialBackoffMsgRetryManager(initial, mult, initial * 10);\r\n    long expectedWaitTime = initial;\r\n    for (long i = 0L; i < 3L; ++i) {\r\n        manager.failed(TEST_OFFSET);\r\n        Thread.sleep((expectedWaitTime + 1L) / 2L);\r\n        assertFalse(\"message should not be ready for retry yet\", manager.shouldRetryMsg(TEST_OFFSET));\r\n        Thread.sleep((expectedWaitTime + 1L) / 2L);\r\n        Long next = manager.nextFailedMessageToRetry();\r\n        assertEquals(\"expect test offset next available for retry\", TEST_OFFSET, next);\r\n        assertTrue(\"message should be ready for retry\", manager.shouldRetryMsg(TEST_OFFSET));\r\n        manager.retryStarted(TEST_OFFSET);\r\n        expectedWaitTime *= mult;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\ExponentialBackoffMsgRetryManagerTest.java",
+  "methodName" : "testRetryOrder",
+  "sourceCode" : "@Test\r\npublic void testRetryOrder() throws Exception {\r\n    final long initial = 10;\r\n    final double mult = 2d;\r\n    final long max = 20;\r\n    ExponentialBackoffMsgRetryManager manager = new ExponentialBackoffMsgRetryManager(initial, mult, max);\r\n    manager.failed(TEST_OFFSET);\r\n    Thread.sleep(initial);\r\n    manager.retryStarted(TEST_OFFSET);\r\n    manager.failed(TEST_OFFSET);\r\n    manager.failed(TEST_OFFSET2);\r\n    // although TEST_OFFSET failed first, it's retry delay time is longer b/c this is the second retry\r\n    // so TEST_OFFSET2 should come first\r\n    Thread.sleep(initial * 2);\r\n    assertTrue(\"message \" + TEST_OFFSET + \"should be ready for retry\", manager.shouldRetryMsg(TEST_OFFSET));\r\n    assertTrue(\"message \" + TEST_OFFSET2 + \"should be ready for retry\", manager.shouldRetryMsg(TEST_OFFSET2));\r\n    Long next = manager.nextFailedMessageToRetry();\r\n    assertEquals(\"expect first message to retry is \" + TEST_OFFSET2, TEST_OFFSET2, next);\r\n    Thread.sleep(initial);\r\n    // haven't retried yet, so first should still be TEST_OFFSET2\r\n    next = manager.nextFailedMessageToRetry();\r\n    assertEquals(\"expect first message to retry is \" + TEST_OFFSET2, TEST_OFFSET2, next);\r\n    manager.retryStarted(next);\r\n    // now it should be TEST_OFFSET\r\n    next = manager.nextFailedMessageToRetry();\r\n    assertEquals(\"expect message to retry is now \" + TEST_OFFSET, TEST_OFFSET, next);\r\n    manager.retryStarted(next);\r\n    // now none left\r\n    next = manager.nextFailedMessageToRetry();\r\n    assertNull(\"expect no message to retry now\", next);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\ExponentialBackoffMsgRetryManagerTest.java",
+  "methodName" : "testQueriesAfterRetriedAlready",
+  "sourceCode" : "@Test\r\npublic void testQueriesAfterRetriedAlready() throws Exception {\r\n    ExponentialBackoffMsgRetryManager manager = new ExponentialBackoffMsgRetryManager(0, 0d, 0);\r\n    manager.failed(TEST_OFFSET);\r\n    Long next = manager.nextFailedMessageToRetry();\r\n    assertEquals(\"expect test offset next available for retry\", TEST_OFFSET, next);\r\n    assertTrue(\"message should be ready for retry immediately\", manager.shouldRetryMsg(TEST_OFFSET));\r\n    manager.retryStarted(TEST_OFFSET);\r\n    next = manager.nextFailedMessageToRetry();\r\n    assertNull(\"expect no message ready after retried\", next);\r\n    assertFalse(\"message should not be ready after retried\", manager.shouldRetryMsg(TEST_OFFSET));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\ExponentialBackoffMsgRetryManagerTest.java",
+  "methodName" : "testRetryWithoutFail",
+  "sourceCode" : "@Test(expected = IllegalStateException.class)\r\npublic void testRetryWithoutFail() throws Exception {\r\n    ExponentialBackoffMsgRetryManager manager = new ExponentialBackoffMsgRetryManager(0, 0d, 0);\r\n    manager.retryStarted(TEST_OFFSET);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\ExponentialBackoffMsgRetryManagerTest.java",
+  "methodName" : "testFailRetryRetry",
+  "sourceCode" : "@Test(expected = IllegalStateException.class)\r\npublic void testFailRetryRetry() throws Exception {\r\n    ExponentialBackoffMsgRetryManager manager = new ExponentialBackoffMsgRetryManager(0, 0d, 0);\r\n    manager.failed(TEST_OFFSET);\r\n    try {\r\n        manager.retryStarted(TEST_OFFSET);\r\n    } catch (IllegalStateException ise) {\r\n        fail(\"IllegalStateException unexpected here: \" + ise);\r\n    }\r\n    assertFalse(\"message should not be ready for retry\", manager.shouldRetryMsg(TEST_OFFSET));\r\n    manager.retryStarted(TEST_OFFSET);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\ExponentialBackoffMsgRetryManagerTest.java",
+  "methodName" : "testMaxBackoff",
+  "sourceCode" : "@Test\r\npublic void testMaxBackoff() throws Exception {\r\n    final long initial = 10;\r\n    final double mult = 2d;\r\n    final long max = 20;\r\n    ExponentialBackoffMsgRetryManager manager = new ExponentialBackoffMsgRetryManager(initial, mult, max);\r\n    long expectedWaitTime = initial;\r\n    for (long i = 0L; i < 4L; ++i) {\r\n        manager.failed(TEST_OFFSET);\r\n        Thread.sleep((expectedWaitTime + 1L) / 2L);\r\n        assertFalse(\"message should not be ready for retry yet\", manager.shouldRetryMsg(TEST_OFFSET));\r\n        Thread.sleep((expectedWaitTime + 1L) / 2L);\r\n        Long next = manager.nextFailedMessageToRetry();\r\n        assertEquals(\"expect test offset next available for retry\", TEST_OFFSET, next);\r\n        assertTrue(\"message should be ready for retry\", manager.shouldRetryMsg(TEST_OFFSET));\r\n        manager.retryStarted(TEST_OFFSET);\r\n        expectedWaitTime = Math.min((long) (expectedWaitTime * mult), max);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\ExponentialBackoffMsgRetryManagerTest.java",
+  "methodName" : "testFailThenAck",
+  "sourceCode" : "@Test\r\npublic void testFailThenAck() throws Exception {\r\n    ExponentialBackoffMsgRetryManager manager = new ExponentialBackoffMsgRetryManager(0, 0d, 0);\r\n    manager.failed(TEST_OFFSET);\r\n    assertTrue(\"message should be ready for retry\", manager.shouldRetryMsg(TEST_OFFSET));\r\n    manager.acked(TEST_OFFSET);\r\n    Long next = manager.nextFailedMessageToRetry();\r\n    assertNull(\"expect no message ready after acked\", next);\r\n    assertFalse(\"message should not be ready after acked\", manager.shouldRetryMsg(TEST_OFFSET));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\ExponentialBackoffMsgRetryManagerTest.java",
+  "methodName" : "testAckThenFail",
+  "sourceCode" : "@Test\r\npublic void testAckThenFail() throws Exception {\r\n    ExponentialBackoffMsgRetryManager manager = new ExponentialBackoffMsgRetryManager(0, 0d, 0);\r\n    manager.acked(TEST_OFFSET);\r\n    assertFalse(\"message should not be ready after acked\", manager.shouldRetryMsg(TEST_OFFSET));\r\n    manager.failed(TEST_OFFSET);\r\n    Long next = manager.nextFailedMessageToRetry();\r\n    assertEquals(\"expect test offset next available for retry\", TEST_OFFSET, next);\r\n    assertTrue(\"message should be ready for retry\", manager.shouldRetryMsg(TEST_OFFSET));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\ExponentialBackoffMsgRetryManagerTest.java",
+  "methodName" : "testClearInvalidMessages",
+  "sourceCode" : "@Test\r\npublic void testClearInvalidMessages() throws Exception {\r\n    ExponentialBackoffMsgRetryManager manager = new ExponentialBackoffMsgRetryManager(0, 0d, 0);\r\n    manager.failed(TEST_OFFSET);\r\n    manager.failed(TEST_OFFSET2);\r\n    manager.failed(TEST_OFFSET3);\r\n    assertTrue(\"message should be ready for retry\", manager.shouldRetryMsg(TEST_OFFSET));\r\n    assertTrue(\"message should be ready for retry\", manager.shouldRetryMsg(TEST_OFFSET2));\r\n    assertTrue(\"message should be ready for retry\", manager.shouldRetryMsg(TEST_OFFSET3));\r\n    manager.clearInvalidMessages(TEST_NEW_OFFSET);\r\n    Long next = manager.nextFailedMessageToRetry();\r\n    assertEquals(\"expect test offset next available for retry\", TEST_OFFSET3, next);\r\n    manager.acked(TEST_OFFSET3);\r\n    next = manager.nextFailedMessageToRetry();\r\n    assertNull(\"expect no message ready after acked\", next);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaErrorTest.java",
+  "methodName" : "getError",
+  "sourceCode" : "@Test\r\npublic void getError() {\r\n    assertThat(KafkaError.getError(0), is(equalTo(KafkaError.NO_ERROR)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaErrorTest.java",
+  "methodName" : "offsetMetaDataTooLarge",
+  "sourceCode" : "@Test\r\npublic void offsetMetaDataTooLarge() {\r\n    assertThat(KafkaError.getError(12), is(equalTo(KafkaError.OFFSET_METADATA_TOO_LARGE)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaErrorTest.java",
+  "methodName" : "unknownNegative",
+  "sourceCode" : "@Test\r\npublic void unknownNegative() {\r\n    assertThat(KafkaError.getError(-1), is(equalTo(KafkaError.UNKNOWN)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaErrorTest.java",
+  "methodName" : "unknownPositive",
+  "sourceCode" : "@Test\r\npublic void unknownPositive() {\r\n    assertThat(KafkaError.getError(75), is(equalTo(KafkaError.UNKNOWN)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaErrorTest.java",
+  "methodName" : "unknown",
+  "sourceCode" : "@Test\r\npublic void unknown() {\r\n    assertThat(KafkaError.getError(13), is(equalTo(KafkaError.UNKNOWN)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaUtilsTest.java",
+  "methodName" : "topicDoesNotExist",
+  "sourceCode" : "@Test(expected = FailedFetchException.class)\r\npublic void topicDoesNotExist() throws Exception {\r\n    KafkaUtils.fetchMessages(config, simpleConsumer, new Partition(Broker.fromString(broker.getBrokerConnectionString()), 0), 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaUtilsTest.java",
+  "methodName" : "brokerIsDown",
+  "sourceCode" : "@Test(expected = FailedFetchException.class)\r\npublic void brokerIsDown() throws Exception {\r\n    int port = broker.getPort();\r\n    broker.shutdown();\r\n    SimpleConsumer simpleConsumer = new SimpleConsumer(\"localhost\", port, 100, 1024, \"testClient\");\r\n    try {\r\n        KafkaUtils.fetchMessages(config, simpleConsumer, new Partition(Broker.fromString(broker.getBrokerConnectionString()), 0), OffsetRequest.LatestTime());\r\n    } finally {\r\n        simpleConsumer.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaUtilsTest.java",
+  "methodName" : "fetchMessage",
+  "sourceCode" : "@Test\r\npublic void fetchMessage() throws Exception {\r\n    String value = \"test\";\r\n    createTopicAndSendMessage(value);\r\n    long offset = KafkaUtils.getOffset(simpleConsumer, config.topic, 0, OffsetRequest.LatestTime()) - 1;\r\n    ByteBufferMessageSet messageAndOffsets = KafkaUtils.fetchMessages(config, simpleConsumer, new Partition(Broker.fromString(broker.getBrokerConnectionString()), 0), offset);\r\n    String message = new String(Utils.toByteArray(messageAndOffsets.iterator().next().message().payload()));\r\n    assertThat(message, is(equalTo(value)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaUtilsTest.java",
+  "methodName" : "fetchMessagesWithInvalidOffsetAndDefaultHandlingDisabled",
+  "sourceCode" : "@Test(expected = FailedFetchException.class)\r\npublic void fetchMessagesWithInvalidOffsetAndDefaultHandlingDisabled() throws Exception {\r\n    config.useStartOffsetTimeIfOffsetOutOfRange = false;\r\n    KafkaUtils.fetchMessages(config, simpleConsumer, new Partition(Broker.fromString(broker.getBrokerConnectionString()), 0), -99);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaUtilsTest.java",
+  "methodName" : "fetchMessagesWithInvalidOffsetAndDefaultHandlingEnabled",
+  "sourceCode" : "@Test(expected = TopicOffsetOutOfRangeException.class)\r\npublic void fetchMessagesWithInvalidOffsetAndDefaultHandlingEnabled() throws Exception {\r\n    config = new KafkaConfig(brokerHosts, \"newTopic\");\r\n    String value = \"test\";\r\n    createTopicAndSendMessage(value);\r\n    KafkaUtils.fetchMessages(config, simpleConsumer, new Partition(Broker.fromString(broker.getBrokerConnectionString()), 0), -99);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaUtilsTest.java",
+  "methodName" : "getOffsetFromConfigAndDontForceFromStart",
+  "sourceCode" : "@Test\r\npublic void getOffsetFromConfigAndDontForceFromStart() {\r\n    config.ignoreZkOffsets = false;\r\n    config.startOffsetTime = OffsetRequest.EarliestTime();\r\n    createTopicAndSendMessage();\r\n    long latestOffset = KafkaUtils.getOffset(simpleConsumer, config.topic, 0, OffsetRequest.EarliestTime());\r\n    long offsetFromConfig = KafkaUtils.getOffset(simpleConsumer, config.topic, 0, config);\r\n    assertThat(latestOffset, is(equalTo(offsetFromConfig)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaUtilsTest.java",
+  "methodName" : "getOffsetFromConfigAndFroceFromStart",
+  "sourceCode" : "@Test\r\npublic void getOffsetFromConfigAndFroceFromStart() {\r\n    config.ignoreZkOffsets = true;\r\n    config.startOffsetTime = OffsetRequest.EarliestTime();\r\n    createTopicAndSendMessage();\r\n    long earliestOffset = KafkaUtils.getOffset(simpleConsumer, config.topic, 0, OffsetRequest.EarliestTime());\r\n    long offsetFromConfig = KafkaUtils.getOffset(simpleConsumer, config.topic, 0, config);\r\n    assertThat(earliestOffset, is(equalTo(offsetFromConfig)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaUtilsTest.java",
+  "methodName" : "generateTuplesWithoutKeyAndKeyValueScheme",
+  "sourceCode" : "@Test\r\npublic void generateTuplesWithoutKeyAndKeyValueScheme() {\r\n    config.scheme = new KeyValueSchemeAsMultiScheme(new StringKeyValueScheme());\r\n    runGetValueOnlyTuplesTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaUtilsTest.java",
+  "methodName" : "generateTuplesWithKeyAndKeyValueScheme",
+  "sourceCode" : "@Test\r\npublic void generateTuplesWithKeyAndKeyValueScheme() {\r\n    config.scheme = new KeyValueSchemeAsMultiScheme(new StringKeyValueScheme());\r\n    config.useStartOffsetTimeIfOffsetOutOfRange = false;\r\n    String value = \"value\";\r\n    String key = \"key\";\r\n    createTopicAndSendMessage(key, value);\r\n    ByteBufferMessageSet messageAndOffsets = getLastMessage();\r\n    for (MessageAndOffset msg : messageAndOffsets) {\r\n        Iterable<List<Object>> lists = KafkaUtils.generateTuples(config, msg.message());\r\n        assertEquals(ImmutableMap.of(key, value), lists.iterator().next().get(0));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaUtilsTest.java",
+  "methodName" : "generateTupelsWithValueScheme",
+  "sourceCode" : "@Test\r\npublic void generateTupelsWithValueScheme() {\r\n    config.scheme = new SchemeAsMultiScheme(new StringScheme());\r\n    runGetValueOnlyTuplesTest();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaUtilsTest.java",
+  "methodName" : "generateTuplesWithValueSchemeAndKeyValueMessage",
+  "sourceCode" : "@Test\r\npublic void generateTuplesWithValueSchemeAndKeyValueMessage() {\r\n    config.scheme = new SchemeAsMultiScheme(new StringScheme());\r\n    String value = \"value\";\r\n    String key = \"key\";\r\n    createTopicAndSendMessage(key, value);\r\n    ByteBufferMessageSet messageAndOffsets = getLastMessage();\r\n    for (MessageAndOffset msg : messageAndOffsets) {\r\n        Iterable<List<Object>> lists = KafkaUtils.generateTuples(config, msg.message());\r\n        assertEquals(value, lists.iterator().next().get(0));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaUtilsTest.java",
+  "methodName" : "assignOnePartitionPerTask",
+  "sourceCode" : "@Test\r\npublic void assignOnePartitionPerTask() {\r\n    runPartitionToTaskMappingTest(16, 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaUtilsTest.java",
+  "methodName" : "assignTwoPartitionsPerTask",
+  "sourceCode" : "@Test\r\npublic void assignTwoPartitionsPerTask() {\r\n    runPartitionToTaskMappingTest(16, 2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaUtilsTest.java",
+  "methodName" : "assignAllPartitionsToOneTask",
+  "sourceCode" : "@Test\r\npublic void assignAllPartitionsToOneTask() {\r\n    runPartitionToTaskMappingTest(32, 32);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaUtilsTest.java",
+  "methodName" : "moreTasksThanPartitions",
+  "sourceCode" : "@Test\r\npublic void moreTasksThanPartitions() {\r\n    GlobalPartitionInformation globalPartitionInformation = TestUtils.buildPartitionInfo(1);\r\n    int numTasks = 2;\r\n    assertEquals(1, KafkaUtils.calculatePartitionsForTask(globalPartitionInformation, numTasks, 0).size());\r\n    assertEquals(0, KafkaUtils.calculatePartitionsForTask(globalPartitionInformation, numTasks, 1).size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\KafkaUtilsTest.java",
+  "methodName" : "assignInvalidTask",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void assignInvalidTask() {\r\n    GlobalPartitionInformation globalPartitionInformation = new GlobalPartitionInformation();\r\n    KafkaUtils.calculatePartitionsForTask(globalPartitionInformation, 1, 1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\StringKeyValueSchemeTest.java",
+  "methodName" : "testDeserialize",
+  "sourceCode" : "@Test\r\npublic void testDeserialize() throws Exception {\r\n    assertEquals(Arrays.asList(\"test\"), scheme.deserialize(\"test\".getBytes()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\StringKeyValueSchemeTest.java",
+  "methodName" : "testGetOutputFields",
+  "sourceCode" : "@Test\r\npublic void testGetOutputFields() throws Exception {\r\n    Fields outputFields = scheme.getOutputFields();\r\n    assertTrue(outputFields.contains(StringScheme.STRING_SCHEME_KEY));\r\n    assertEquals(1, outputFields.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\StringKeyValueSchemeTest.java",
+  "methodName" : "testDeserializeWithNullKeyAndValue",
+  "sourceCode" : "@Test\r\npublic void testDeserializeWithNullKeyAndValue() throws Exception {\r\n    assertEquals(Arrays.asList(\"test\"), scheme.deserializeKeyAndValue(null, \"test\".getBytes()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\StringKeyValueSchemeTest.java",
+  "methodName" : "testDeserializeWithKeyAndValue",
+  "sourceCode" : "@Test\r\npublic void testDeserializeWithKeyAndValue() throws Exception {\r\n    assertEquals(Arrays.asList(ImmutableMap.of(\"key\", \"test\")), scheme.deserializeKeyAndValue(\"key\".getBytes(), \"test\".getBytes()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\TridentKafkaTest.java",
+  "methodName" : "testKeyValue",
+  "sourceCode" : "@Test\r\npublic void testKeyValue() {\r\n    String keyString = \"key-123\";\r\n    String valString = \"message-123\";\r\n    int batchSize = 10;\r\n    List<TridentTuple> tridentTuples = generateTupleBatch(keyString, valString, batchSize);\r\n    state.updateState(tridentTuples, null);\r\n    for (int i = 0; i < batchSize; i++) {\r\n        TestUtils.verifyMessage(keyString, valString, broker, simpleConsumer);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\ZkCoordinatorTest.java",
+  "methodName" : "testOnePartitionPerTask",
+  "sourceCode" : "@Test\r\npublic void testOnePartitionPerTask() throws Exception {\r\n    int totalTasks = 64;\r\n    int partitionsPerTask = 1;\r\n    List<ZkCoordinator> coordinatorList = buildCoordinators(totalTasks / partitionsPerTask);\r\n    when(reader.getBrokerInfo()).thenReturn(TestUtils.buildPartitionInfo(totalTasks));\r\n    for (ZkCoordinator coordinator : coordinatorList) {\r\n        List<PartitionManager> myManagedPartitions = coordinator.getMyManagedPartitions();\r\n        assertEquals(partitionsPerTask, myManagedPartitions.size());\r\n        assertEquals(coordinator._taskIndex, myManagedPartitions.get(0).getPartition().partition);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\external\\storm-kafka\\src\\test\\storm\\kafka\\ZkCoordinatorTest.java",
+  "methodName" : "testPartitionsChange",
+  "sourceCode" : "@Test\r\npublic void testPartitionsChange() throws Exception {\r\n    final int totalTasks = 64;\r\n    int partitionsPerTask = 2;\r\n    List<ZkCoordinator> coordinatorList = buildCoordinators(totalTasks / partitionsPerTask);\r\n    when(reader.getBrokerInfo()).thenReturn(TestUtils.buildPartitionInfo(totalTasks, 9092));\r\n    List<List<PartitionManager>> partitionManagersBeforeRefresh = getPartitionManagers(coordinatorList);\r\n    waitForRefresh();\r\n    when(reader.getBrokerInfo()).thenReturn(TestUtils.buildPartitionInfo(totalTasks, 9093));\r\n    List<List<PartitionManager>> partitionManagersAfterRefresh = getPartitionManagers(coordinatorList);\r\n    assertEquals(partitionManagersAfterRefresh.size(), partitionManagersAfterRefresh.size());\r\n    Iterator<List<PartitionManager>> iterator = partitionManagersAfterRefresh.iterator();\r\n    for (List<PartitionManager> partitionManagersBefore : partitionManagersBeforeRefresh) {\r\n        List<PartitionManager> partitionManagersAfter = iterator.next();\r\n        assertPartitionsAreDifferent(partitionManagersBefore, partitionManagersAfter, partitionsPerTask);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\grouping\\PartialKeyGroupingTest.java",
+  "methodName" : "testChooseTasks",
+  "sourceCode" : "@Test\r\npublic void testChooseTasks() {\r\n    PartialKeyGrouping pkg = new PartialKeyGrouping();\r\n    pkg.prepare(null, null, Lists.newArrayList(0, 1, 2, 3, 4, 5));\r\n    Values message = new Values(\"key1\");\r\n    List<Integer> choice1 = pkg.chooseTasks(0, message);\r\n    assertThat(choice1.size(), is(1));\r\n    List<Integer> choice2 = pkg.chooseTasks(0, message);\r\n    assertThat(choice2, is(not(choice1)));\r\n    List<Integer> choice3 = pkg.chooseTasks(0, message);\r\n    assertThat(choice3, is(not(choice2)));\r\n    assertThat(choice3, is(choice1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\grouping\\PartialKeyGroupingTest.java",
+  "methodName" : "testChooseTasksFields",
+  "sourceCode" : "@Test\r\npublic void testChooseTasksFields() {\r\n    PartialKeyGrouping pkg = new PartialKeyGrouping(new Fields(\"test\"));\r\n    WorkerTopologyContext context = mock(WorkerTopologyContext.class);\r\n    when(context.getComponentOutputFields(any(GlobalStreamId.class))).thenReturn(new Fields(\"test\"));\r\n    pkg.prepare(context, null, Lists.newArrayList(0, 1, 2, 3, 4, 5));\r\n    Values message = new Values(\"key1\");\r\n    List<Integer> choice1 = pkg.chooseTasks(0, message);\r\n    assertThat(choice1.size(), is(1));\r\n    List<Integer> choice2 = pkg.chooseTasks(0, message);\r\n    assertThat(choice2, is(not(choice1)));\r\n    List<Integer> choice3 = pkg.chooseTasks(0, message);\r\n    assertThat(choice3, is(not(choice2)));\r\n    assertThat(choice3, is(choice1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\serialization\\GzipBridgeSerializationDelegateTest.java",
+  "methodName" : "testDeserialize_readingFromGzip",
+  "sourceCode" : "@Test\r\npublic void testDeserialize_readingFromGzip() throws Exception {\r\n    TestPojo pojo = new TestPojo();\r\n    pojo.name = \"foo\";\r\n    pojo.age = 100;\r\n    byte[] serialized = new GzipSerializationDelegate().serialize(pojo);\r\n    TestPojo pojo2 = (TestPojo) testDelegate.deserialize(serialized, TestPojo.class);\r\n    assertEquals(pojo2.name, pojo.name);\r\n    assertEquals(pojo2.age, pojo.age);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\serialization\\GzipBridgeSerializationDelegateTest.java",
+  "methodName" : "testDeserialize_readingFromGzipBridge",
+  "sourceCode" : "@Test\r\npublic void testDeserialize_readingFromGzipBridge() throws Exception {\r\n    TestPojo pojo = new TestPojo();\r\n    pojo.name = \"bar\";\r\n    pojo.age = 200;\r\n    byte[] serialized = new GzipBridgeSerializationDelegate().serialize(pojo);\r\n    TestPojo pojo2 = (TestPojo) testDelegate.deserialize(serialized, TestPojo.class);\r\n    assertEquals(pojo2.name, pojo.name);\r\n    assertEquals(pojo2.age, pojo.age);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\serialization\\GzipBridgeSerializationDelegateTest.java",
+  "methodName" : "testDeserialize_readingFromDefault",
+  "sourceCode" : "@Test\r\npublic void testDeserialize_readingFromDefault() throws Exception {\r\n    TestPojo pojo = new TestPojo();\r\n    pojo.name = \"baz\";\r\n    pojo.age = 300;\r\n    byte[] serialized = new DefaultSerializationDelegate().serialize(pojo);\r\n    TestPojo pojo2 = (TestPojo) testDelegate.deserialize(serialized, TestPojo.class);\r\n    assertEquals(pojo2.name, pojo.name);\r\n    assertEquals(pojo2.age, pojo.age);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\serialization\\GzipBridgeThriftSerializationDelegateTest.java",
+  "methodName" : "testDeserialize_readingFromGzip",
+  "sourceCode" : "@Test\r\npublic void testDeserialize_readingFromGzip() throws Exception {\r\n    GlobalStreamId id = new GlobalStreamId(\"first\", \"second\");\r\n    byte[] serialized = new GzipThriftSerializationDelegate().serialize(id);\r\n    GlobalStreamId id2 = testDelegate.deserialize(serialized, GlobalStreamId.class);\r\n    assertEquals(id2.get_componentId(), id.get_componentId());\r\n    assertEquals(id2.get_streamId(), id.get_streamId());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\serialization\\GzipBridgeThriftSerializationDelegateTest.java",
+  "methodName" : "testDeserialize_readingFromGzipBridge",
+  "sourceCode" : "@Test\r\npublic void testDeserialize_readingFromGzipBridge() throws Exception {\r\n    GlobalStreamId id = new GlobalStreamId(\"first\", \"second\");\r\n    byte[] serialized = new GzipBridgeThriftSerializationDelegate().serialize(id);\r\n    GlobalStreamId id2 = testDelegate.deserialize(serialized, GlobalStreamId.class);\r\n    assertEquals(id2.get_componentId(), id.get_componentId());\r\n    assertEquals(id2.get_streamId(), id.get_streamId());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\serialization\\GzipBridgeThriftSerializationDelegateTest.java",
+  "methodName" : "testDeserialize_readingFromDefault",
+  "sourceCode" : "@Test\r\npublic void testDeserialize_readingFromDefault() throws Exception {\r\n    GlobalStreamId id = new GlobalStreamId(\"A\", \"B\");\r\n    byte[] serialized = new ThriftSerializationDelegate().serialize(id);\r\n    GlobalStreamId id2 = testDelegate.deserialize(serialized, GlobalStreamId.class);\r\n    assertEquals(id2.get_componentId(), id.get_componentId());\r\n    assertEquals(id2.get_streamId(), id.get_streamId());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\serialization\\ThriftBridgeSerializationDelegateTest.java",
+  "methodName" : "testThriftInstance",
+  "sourceCode" : "@Test\r\npublic void testThriftInstance() throws Exception {\r\n    ErrorInfo errorInfo = new ErrorInfo();\r\n    errorInfo.set_error(\"error\");\r\n    errorInfo.set_error_time_secs(1);\r\n    errorInfo.set_host(\"host\");\r\n    errorInfo.set_port(1);\r\n    byte[] serialized = new ThriftSerializationDelegate().serialize(errorInfo);\r\n    ErrorInfo errorInfo2 = testDelegate.deserialize(serialized, ErrorInfo.class);\r\n    assertEquals(errorInfo, errorInfo2);\r\n    serialized = testDelegate.serialize(errorInfo);\r\n    errorInfo2 = new ThriftSerializationDelegate().deserialize(serialized, ErrorInfo.class);\r\n    assertEquals(errorInfo, errorInfo2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "validConfigTest",
+  "sourceCode" : "@Test\r\npublic void validConfigTest() throws InstantiationException, IllegalAccessException, NoSuchFieldException, NoSuchMethodException, InvocationTargetException {\r\n    Map<String, Object> conf = new HashMap<String, Object>();\r\n    conf.put(Config.STORM_MESSAGING_NETTY_SOCKET_BACKLOG, 5);\r\n    conf.put(Config.STORM_MESSAGING_NETTY_MIN_SLEEP_MS, 500);\r\n    conf.put(Config.STORM_MESSAGING_NETTY_AUTHENTICATION, true);\r\n    ConfigValidation.validateFields(conf);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "invalidConfigTest",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void invalidConfigTest() throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException {\r\n    Map<String, Object> conf = new HashMap<String, Object>();\r\n    conf.put(Config.STORM_MESSAGING_NETTY_SOCKET_BACKLOG, 5);\r\n    conf.put(Config.STORM_MESSAGING_NETTY_MIN_SLEEP_MS, 500);\r\n    conf.put(Config.STORM_MESSAGING_NETTY_AUTHENTICATION, \"invalid\");\r\n    ConfigValidation.validateFields(conf);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "defaultYamlTest",
+  "sourceCode" : "@Test\r\npublic void defaultYamlTest() throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException {\r\n    Map conf = Utils.readStormConfig();\r\n    ConfigValidation.validateFields(conf);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "testTopologyWorkersIsInteger",
+  "sourceCode" : "@Test\r\npublic void testTopologyWorkersIsInteger() throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException {\r\n    Map<String, Object> conf = new HashMap<String, Object>();\r\n    conf.put(Config.TOPOLOGY_WORKERS, 42);\r\n    ConfigValidation.validateFields(conf);\r\n    conf.put(Config.TOPOLOGY_WORKERS, 3.14159);\r\n    try {\r\n        ConfigValidation.validateFields(conf);\r\n        Assert.fail(\"Expected Exception not Thrown\");\r\n    } catch (IllegalArgumentException ex) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "testTopologyStatsSampleRateIsFloat",
+  "sourceCode" : "@Test\r\npublic void testTopologyStatsSampleRateIsFloat() throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException {\r\n    Map<String, Object> conf = new HashMap<String, Object>();\r\n    conf.put(Config.TOPOLOGY_STATS_SAMPLE_RATE, 0.5);\r\n    ConfigValidation.validateFields(conf);\r\n    conf.put(Config.TOPOLOGY_STATS_SAMPLE_RATE, 10);\r\n    ConfigValidation.validateFields(conf);\r\n    conf.put(Config.TOPOLOGY_STATS_SAMPLE_RATE, Double.MAX_VALUE);\r\n    ConfigValidation.validateFields(conf);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "testIsolationSchedulerMachinesIsMap",
+  "sourceCode" : "@Test\r\npublic void testIsolationSchedulerMachinesIsMap() throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException {\r\n    Map<String, Object> conf = new HashMap<String, Object>();\r\n    Map<String, Integer> isolationMap = new HashMap<String, Integer>();\r\n    conf.put(Config.ISOLATION_SCHEDULER_MACHINES, isolationMap);\r\n    ConfigValidation.validateFields(conf);\r\n    isolationMap.put(\"host0\", 1);\r\n    isolationMap.put(\"host1\", 2);\r\n    conf.put(Config.ISOLATION_SCHEDULER_MACHINES, isolationMap);\r\n    ConfigValidation.validateFields(conf);\r\n    conf.put(Config.ISOLATION_SCHEDULER_MACHINES, 42);\r\n    try {\r\n        ConfigValidation.validateFields(conf);\r\n        Assert.fail(\"Expected Exception not Thrown\");\r\n    } catch (IllegalArgumentException ex) {\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "testWorkerChildoptsIsStringOrStringList",
+  "sourceCode" : "@Test\r\npublic void testWorkerChildoptsIsStringOrStringList() throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException {\r\n    Map<String, Object> conf = new HashMap<String, Object>();\r\n    Collection<Object> passCases = new LinkedList<Object>();\r\n    Collection<Object> failCases = new LinkedList<Object>();\r\n    passCases.add(null);\r\n    passCases.add(\"some string\");\r\n    String[] stuff = { \"some\", \"string\", \"list\" };\r\n    passCases.add(Arrays.asList(stuff));\r\n    failCases.add(42);\r\n    Integer[] wrongStuff = { 1, 2, 3 };\r\n    failCases.add(Arrays.asList(wrongStuff));\r\n    //worker.childopts validates\r\n    for (Object value : passCases) {\r\n        conf.put(Config.WORKER_CHILDOPTS, value);\r\n        ConfigValidation.validateFields(conf);\r\n    }\r\n    for (Object value : failCases) {\r\n        try {\r\n            conf.put(Config.WORKER_CHILDOPTS, value);\r\n            ConfigValidation.validateFields(conf);\r\n            Assert.fail(\"Expected Exception not Thrown for value: \" + value);\r\n        } catch (IllegalArgumentException Ex) {\r\n        }\r\n    }\r\n    //topology.worker.childopts validates\r\n    conf = new HashMap<String, Object>();\r\n    for (Object value : passCases) {\r\n        conf.put(Config.TOPOLOGY_WORKER_CHILDOPTS, value);\r\n        ConfigValidation.validateFields(conf);\r\n    }\r\n    for (Object value : failCases) {\r\n        try {\r\n            conf.put(Config.TOPOLOGY_WORKER_CHILDOPTS, value);\r\n            ConfigValidation.validateFields(conf);\r\n            Assert.fail(\"Expected Exception not Thrown for value: \" + value);\r\n        } catch (IllegalArgumentException Ex) {\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "testSupervisorSlotsPorts",
+  "sourceCode" : "@Test\r\npublic void testSupervisorSlotsPorts() throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException {\r\n    Map<String, Object> conf = new HashMap<String, Object>();\r\n    Collection<Object> passCases = new LinkedList<Object>();\r\n    Collection<Object> failCases = new LinkedList<Object>();\r\n    Integer[] test1 = { 1233, 1234, 1235 };\r\n    Integer[] test2 = { 1233 };\r\n    passCases.add(Arrays.asList(test1));\r\n    passCases.add(Arrays.asList(test2));\r\n    String[] test3 = { \"1233\", \"1234\", \"1235\" };\r\n    //duplicate case\r\n    Integer[] test4 = { 1233, 1233, 1235 };\r\n    failCases.add(test3);\r\n    failCases.add(test4);\r\n    failCases.add(null);\r\n    failCases.add(\"1234\");\r\n    failCases.add(1234);\r\n    for (Object value : passCases) {\r\n        conf.put(Config.SUPERVISOR_SLOTS_PORTS, value);\r\n        ConfigValidation.validateFields(conf);\r\n    }\r\n    for (Object value : failCases) {\r\n        try {\r\n            conf.put(Config.SUPERVISOR_SLOTS_PORTS, value);\r\n            ConfigValidation.validateFields(conf);\r\n            Assert.fail(\"Expected Exception not Thrown for value: \" + value);\r\n        } catch (IllegalArgumentException Ex) {\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "testValidity",
+  "sourceCode" : "@Test\r\npublic void testValidity() {\r\n    Map<String, Object> conf = new HashMap<String, Object>();\r\n    conf.put(Config.TOPOLOGY_DEBUG, true);\r\n    conf.put(\"q\", \"asasdasd\");\r\n    conf.put(\"aaa\", new Integer(\"123\"));\r\n    conf.put(\"bbb\", new Long(\"456\"));\r\n    List<Object> testList = new ArrayList<Object>();\r\n    testList.add(1);\r\n    testList.add(2);\r\n    testList.add(new Integer(\"3\"));\r\n    testList.add(new Long(\"4\"));\r\n    conf.put(\"eee\", testList);\r\n    Utils.isValidConf(conf);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "testPowerOf2Validator",
+  "sourceCode" : "@Test\r\npublic void testPowerOf2Validator() {\r\n    PowerOf2Validator validator = new PowerOf2Validator();\r\n    Object[] failCases = { 42.42, 42, -33, 23423423423.0, -32, -1, -0.00001, 0, -0, \"Forty-two\" };\r\n    for (Object value : failCases) {\r\n        try {\r\n            validator.validateField(\"test\", value);\r\n            Assert.fail(\"Expected Exception not Thrown for value: \" + value);\r\n        } catch (IllegalArgumentException Ex) {\r\n        }\r\n    }\r\n    Object[] passCases = { 64, 4294967296.0, 1, null };\r\n    for (Object value : passCases) {\r\n        validator.validateField(\"test\", value);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "testPositiveNumberValidator",
+  "sourceCode" : "@Test\r\npublic void testPositiveNumberValidator() {\r\n    PositiveNumberValidator validator = new PositiveNumberValidator();\r\n    Object[] passCases = { null, 1.0, 0.01, 1, 2147483647, 42 };\r\n    for (Object value : passCases) {\r\n        validator.validateField(\"test\", value);\r\n    }\r\n    Object[] failCases = { -1.0, -1, -0.01, 0.0, 0, \"43\", \"string\" };\r\n    for (Object value : failCases) {\r\n        try {\r\n            validator.validateField(\"test\", value);\r\n            Assert.fail(\"Expected Exception not Thrown for value: \" + value);\r\n        } catch (IllegalArgumentException Ex) {\r\n        }\r\n    }\r\n    Object[] passCasesIncludeZero = { null, 1.0, 0.01, 0, 2147483647, 0.0 };\r\n    for (Object value : passCasesIncludeZero) {\r\n        validator.validateField(\"test\", true, value);\r\n    }\r\n    Object[] failCasesIncludeZero = { -1.0, -1, -0.01, \"43\", \"string\" };\r\n    for (Object value : failCasesIncludeZero) {\r\n        try {\r\n            validator.validateField(\"test\", true, value);\r\n            Assert.fail(\"Expected Exception not Thrown for value: \" + value);\r\n        } catch (IllegalArgumentException Ex) {\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "testIntegerValidator",
+  "sourceCode" : "@Test\r\npublic void testIntegerValidator() {\r\n    IntegerValidator validator = new IntegerValidator();\r\n    Object[] passCases = { null, 1000, Integer.MAX_VALUE };\r\n    for (Object value : passCases) {\r\n        validator.validateField(\"test\", value);\r\n    }\r\n    Object[] failCases = { 1.34, new Long(Integer.MAX_VALUE) + 1 };\r\n    for (Object value : failCases) {\r\n        try {\r\n            validator.validateField(\"test\", value);\r\n            Assert.fail(\"Expected Exception not Thrown for value: \" + value);\r\n        } catch (IllegalArgumentException Ex) {\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "NoDuplicateInListValidator",
+  "sourceCode" : "@Test\r\npublic void NoDuplicateInListValidator() {\r\n    NoDuplicateInListValidator validator = new NoDuplicateInListValidator();\r\n    Collection<Object> passCases = new LinkedList<Object>();\r\n    Collection<Object> failCases = new LinkedList<Object>();\r\n    Object[] passCase1 = { 1000, 0, -1000 };\r\n    Object[] passCase2 = { \"one\", \"two\", \"three\" };\r\n    Object[] passCase3 = { false, true };\r\n    Object[] passCase4 = { false, true, 1000, 0, -1000, \"one\", \"two\", \"three\" };\r\n    Object[] passCase5 = { 1000.0, 0.0, -1000.0 };\r\n    passCases.add(Arrays.asList(passCase1));\r\n    passCases.add(Arrays.asList(passCase2));\r\n    passCases.add(Arrays.asList(passCase3));\r\n    passCases.add(Arrays.asList(passCase4));\r\n    passCases.add(Arrays.asList(passCase5));\r\n    passCases.add(null);\r\n    for (Object value : passCases) {\r\n        validator.validateField(\"test\", value);\r\n    }\r\n    Object[] failCase1 = { 1000, 0, 1000 };\r\n    Object[] failCase2 = { \"one\", \"one\", \"two\" };\r\n    Object[] failCase3 = { 5.0, 5.0, 6 };\r\n    failCases.add(Arrays.asList(failCase1));\r\n    failCases.add(Arrays.asList(failCase2));\r\n    failCases.add(Arrays.asList(failCase3));\r\n    for (Object value : failCases) {\r\n        try {\r\n            validator.validateField(\"test\", value);\r\n            Assert.fail(\"Expected Exception not Thrown for value: \" + value);\r\n        } catch (IllegalArgumentException Ex) {\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "testListEntryTypeValidator",
+  "sourceCode" : "@Test\r\npublic void testListEntryTypeValidator() {\r\n    Collection<Object> testCases1 = new LinkedList<Object>();\r\n    Collection<Object> testCases2 = new LinkedList<Object>();\r\n    Collection<Object> testCases3 = new LinkedList<Object>();\r\n    Object[] testCase1 = { \"one\", \"two\", \"three\" };\r\n    ;\r\n    Object[] testCase2 = { \"three\" };\r\n    testCases1.add(Arrays.asList(testCase1));\r\n    testCases1.add(Arrays.asList(testCase2));\r\n    for (Object value : testCases1) {\r\n        ListEntryTypeValidator.validateField(\"test\", String.class, value);\r\n    }\r\n    for (Object value : testCases1) {\r\n        try {\r\n            ListEntryTypeValidator.validateField(\"test\", Number.class, value);\r\n            Assert.fail(\"Expected Exception not Thrown for value: \" + value);\r\n        } catch (IllegalArgumentException Ex) {\r\n        }\r\n    }\r\n    Object[] testCase3 = { 1000, 0, 1000 };\r\n    Object[] testCase4 = { 5 };\r\n    Object[] testCase5 = { 5.0, 5.0, 6 };\r\n    testCases2.add(Arrays.asList(testCase3));\r\n    testCases2.add(Arrays.asList(testCase4));\r\n    testCases2.add(Arrays.asList(testCase5));\r\n    for (Object value : testCases2) {\r\n        try {\r\n            ListEntryTypeValidator.validateField(\"test\", String.class, value);\r\n            Assert.fail(\"Expected Exception not Thrown for value: \" + value);\r\n        } catch (IllegalArgumentException Ex) {\r\n        }\r\n    }\r\n    for (Object value : testCases2) {\r\n        ListEntryTypeValidator.validateField(\"test\", Number.class, value);\r\n    }\r\n    Object[] testCase6 = { 1000, 0, 1000, \"5\" };\r\n    Object[] testCase7 = { \"4\", \"5\", 5 };\r\n    testCases3.add(Arrays.asList(testCase6));\r\n    testCases3.add(Arrays.asList(testCase7));\r\n    for (Object value : testCases3) {\r\n        try {\r\n            ListEntryTypeValidator.validateField(\"test\", String.class, value);\r\n            Assert.fail(\"Expected Exception not Thrown for value: \" + value);\r\n        } catch (IllegalArgumentException Ex) {\r\n        }\r\n    }\r\n    for (Object value : testCases1) {\r\n        try {\r\n            ListEntryTypeValidator.validateField(\"test\", Number.class, value);\r\n            Assert.fail(\"Expected Exception not Thrown for value: \" + value);\r\n        } catch (IllegalArgumentException Ex) {\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "testMapEntryTypeAnnotation",
+  "sourceCode" : "@Test\r\npublic void testMapEntryTypeAnnotation() throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException {\r\n    TestConfig config = new TestConfig();\r\n    Collection<Object> passCases = new LinkedList<Object>();\r\n    Collection<Object> failCases = new LinkedList<Object>();\r\n    Map<Object, Object> passCase1 = new HashMap<Object, Object>();\r\n    passCase1.put(\"aaa\", 5);\r\n    passCase1.put(\"bbb\", 6);\r\n    passCase1.put(\"ccc\", 7);\r\n    passCases.add(passCase1);\r\n    passCases.add(null);\r\n    for (Object value : passCases) {\r\n        config.put(TestConfig.TEST_MAP_CONFIG, value);\r\n        ConfigValidation.validateFields(config, TestConfig.class);\r\n    }\r\n    Map<Object, Object> failCase1 = new HashMap<Object, Object>();\r\n    failCase1.put(\"aaa\", 5);\r\n    failCase1.put(5, 6);\r\n    failCase1.put(\"ccc\", 7);\r\n    Map<Object, Object> failCase2 = new HashMap<Object, Object>();\r\n    failCase2.put(\"aaa\", \"str\");\r\n    failCase2.put(\"bbb\", 6);\r\n    failCase2.put(\"ccc\", 7);\r\n    failCases.add(failCase1);\r\n    failCases.add(failCase2);\r\n    for (Object value : failCases) {\r\n        try {\r\n            config.put(TestConfig.TEST_MAP_CONFIG, value);\r\n            ConfigValidation.validateFields(config, TestConfig.class);\r\n            Assert.fail(\"Expected Exception not Thrown for value: \" + value);\r\n        } catch (IllegalArgumentException Ex) {\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "testMapEntryCustomAnnotation",
+  "sourceCode" : "@Test\r\npublic void testMapEntryCustomAnnotation() throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException {\r\n    TestConfig config = new TestConfig();\r\n    Collection<Object> passCases = new LinkedList<Object>();\r\n    Collection<Object> failCases = new LinkedList<Object>();\r\n    Map<Object, Object> passCase1 = new HashMap<Object, Object>();\r\n    passCase1.put(\"aaa\", 5);\r\n    passCase1.put(\"bbb\", 100);\r\n    passCase1.put(\"ccc\", Integer.MAX_VALUE);\r\n    passCases.add(passCase1);\r\n    passCases.add(null);\r\n    for (Object value : passCases) {\r\n        config.put(TestConfig.TEST_MAP_CONFIG_2, value);\r\n        ConfigValidation.validateFields(config, TestConfig.class);\r\n    }\r\n    Map<Object, Object> failCase1 = new HashMap<Object, Object>();\r\n    failCase1.put(\"aaa\", 5);\r\n    failCase1.put(5, 6);\r\n    failCase1.put(\"ccc\", 7);\r\n    Map<Object, Object> failCase2 = new HashMap<Object, Object>();\r\n    failCase2.put(\"aaa\", \"str\");\r\n    failCase2.put(\"bbb\", 6);\r\n    failCase2.put(\"ccc\", 7);\r\n    Map<Object, Object> failCase3 = new HashMap<Object, Object>();\r\n    failCase3.put(\"aaa\", -1);\r\n    failCase3.put(\"bbb\", 6);\r\n    failCase3.put(\"ccc\", 7);\r\n    Map<Object, Object> failCase4 = new HashMap<Object, Object>();\r\n    failCase4.put(\"aaa\", 1);\r\n    failCase4.put(\"bbb\", 6);\r\n    failCase4.put(\"ccc\", 7.4);\r\n    failCases.add(failCase1);\r\n    failCases.add(failCase2);\r\n    failCases.add(failCase3);\r\n    failCases.add(failCase4);\r\n    for (Object value : failCases) {\r\n        try {\r\n            config.put(TestConfig.TEST_MAP_CONFIG_2, value);\r\n            ConfigValidation.validateFields(config, TestConfig.class);\r\n            Assert.fail(\"Expected Exception not Thrown for value: \" + value);\r\n        } catch (IllegalArgumentException Ex) {\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "testListEntryTypeAnnotation",
+  "sourceCode" : "@Test\r\npublic void testListEntryTypeAnnotation() throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException {\r\n    TestConfig config = new TestConfig();\r\n    Collection<Object> passCases = new LinkedList<Object>();\r\n    Collection<Object> failCases = new LinkedList<Object>();\r\n    Object[] passCase1 = { 1, 5.0, -0.01, 0, Integer.MAX_VALUE, Double.MIN_VALUE };\r\n    Object[] passCase2 = { 1 };\r\n    passCases.add(Arrays.asList(passCase1));\r\n    passCases.add(Arrays.asList(passCase2));\r\n    for (Object value : passCases) {\r\n        config.put(TestConfig.TEST_MAP_CONFIG_3, value);\r\n        ConfigValidation.validateFields(config, TestConfig.class);\r\n    }\r\n    Object[] failCase1 = { 1, 5.0, -0.01, 0, \"aaa\" };\r\n    Object[] failCase2 = { \"aaa\" };\r\n    failCases.add(failCase1);\r\n    failCases.add(failCase2);\r\n    failCases.add(1);\r\n    failCases.add(\"b\");\r\n    failCases.add(null);\r\n    for (Object value : failCases) {\r\n        try {\r\n            config.put(TestConfig.TEST_MAP_CONFIG_3, value);\r\n            ConfigValidation.validateFields(config, TestConfig.class);\r\n            Assert.fail(\"Expected Exception not Thrown for value: \" + value);\r\n        } catch (IllegalArgumentException Ex) {\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\TestConfigValidate.java",
+  "methodName" : "testListEntryCustomAnnotation",
+  "sourceCode" : "@Test\r\npublic void testListEntryCustomAnnotation() throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException {\r\n    TestConfig config = new TestConfig();\r\n    Collection<Object> passCases = new LinkedList<Object>();\r\n    Collection<Object> failCases = new LinkedList<Object>();\r\n    Object[] passCase1 = { 1, 5.0, 0.01, Double.MAX_VALUE };\r\n    Object[] passCase2 = { 1 };\r\n    passCases.add(Arrays.asList(passCase1));\r\n    passCases.add(Arrays.asList(passCase2));\r\n    for (Object value : passCases) {\r\n        config.put(TestConfig.TEST_MAP_CONFIG_4, value);\r\n        ConfigValidation.validateFields(config, TestConfig.class);\r\n    }\r\n    Object[] failCase1 = { 1, 5.0, -0.01, 3.0 };\r\n    Object[] failCase2 = { 1, 5.0, -0.01, 1 };\r\n    Object[] failCase3 = { \"aaa\", \"bbb\", \"aaa\" };\r\n    Object[] failCase4 = { 1, 5.0, null, 1 };\r\n    Object[] failCase5 = { 1, 5.0, 0, 1 };\r\n    failCases.add(Arrays.asList(failCase1));\r\n    failCases.add(Arrays.asList(failCase2));\r\n    failCases.add(Arrays.asList(failCase3));\r\n    failCases.add(Arrays.asList(failCase4));\r\n    failCases.add(Arrays.asList(failCase5));\r\n    failCases.add(1);\r\n    failCases.add(\"b\");\r\n    for (Object value : failCases) {\r\n        try {\r\n            config.put(TestConfig.TEST_MAP_CONFIG_4, value);\r\n            ConfigValidation.validateFields(config, TestConfig.class);\r\n            Assert.fail(\"Expected Exception not Thrown for value: \" + value);\r\n        } catch (IllegalArgumentException Ex) {\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\topology\\TopologyBuilderTest.java",
+  "methodName" : "testSetRichBolt",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testSetRichBolt() {\r\n    builder.setBolt(\"bolt\", mock(IRichBolt.class), 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\topology\\TopologyBuilderTest.java",
+  "methodName" : "testSetBasicBolt",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testSetBasicBolt() {\r\n    builder.setBolt(\"bolt\", mock(IBasicBolt.class), 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\topology\\TopologyBuilderTest.java",
+  "methodName" : "testSetSpout",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testSetSpout() {\r\n    builder.setSpout(\"spout\", mock(IRichSpout.class), 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\utils\\DisruptorQueueBackpressureTest.java",
+  "methodName" : "testBackPressureCallback",
+  "sourceCode" : "@Test\r\npublic void testBackPressureCallback() throws Exception {\r\n    final DisruptorQueue queue = createQueue(\"testBackPressure\", CAPACITY);\r\n    queue.setEnableBackpressure(true);\r\n    queue.setHighWaterMark(HIGH_WATERMARK);\r\n    queue.setLowWaterMark(LOW_WATERMARK);\r\n    final AtomicBoolean throttleOn = new AtomicBoolean(false);\r\n    // we need to record the cursor because the DisruptorQueue does not update the readPos during batch consuming\r\n    final AtomicLong consumerCursor = new AtomicLong(-1);\r\n    DisruptorBackpressureCallbackImpl cb = new DisruptorBackpressureCallbackImpl(queue, throttleOn, consumerCursor);\r\n    queue.registerBackpressureCallback(cb);\r\n    queue.consumerStarted();\r\n    for (int i = 0; i < MESSAGES; i++) {\r\n        queue.publish(String.valueOf(i));\r\n    }\r\n    queue.consumeBatchWhenAvailable(new EventHandler<Object>() {\r\n\r\n        @Override\r\n        public void onEvent(Object o, long l, boolean b) throws Exception {\r\n            consumerCursor.set(l);\r\n        }\r\n    });\r\n    Assert.assertEquals(\"Check the calling time of throttle on. \", cb.highWaterMarkCalledPopulation, queue.getHighWaterMark());\r\n    Assert.assertEquals(\"Checking the calling time of throttle off. \", cb.lowWaterMarkCalledPopulation, queue.getLowWaterMark());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\utils\\DisruptorQueueTest.java",
+  "methodName" : "testFirstMessageFirst",
+  "sourceCode" : "@Test\r\npublic void testFirstMessageFirst() throws InterruptedException {\r\n    for (int i = 0; i < 100; i++) {\r\n        DisruptorQueue queue = createQueue(\"firstMessageOrder\", 16);\r\n        queue.publish(\"FIRST\");\r\n        Runnable producer = new Producer(queue, String.valueOf(i));\r\n        final AtomicReference<Object> result = new AtomicReference<Object>();\r\n        Runnable consumer = new Consumer(queue, new EventHandler<Object>() {\r\n\r\n            private boolean head = true;\r\n\r\n            @Override\r\n            public void onEvent(Object obj, long sequence, boolean endOfBatch) throws Exception {\r\n                if (head) {\r\n                    head = false;\r\n                    result.set(obj);\r\n                }\r\n            }\r\n        });\r\n        run(producer, consumer);\r\n        Assert.assertEquals(\"We expect to receive first published message first, but received \" + result.get(), \"FIRST\", result.get());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\utils\\DisruptorQueueTest.java",
+  "methodName" : "testConsumerHang",
+  "sourceCode" : "@Test\r\npublic void testConsumerHang() throws InterruptedException {\r\n    final AtomicBoolean messageConsumed = new AtomicBoolean(false);\r\n    // Set queue length to 1, so that the RingBuffer can be easily full\r\n    // to trigger consumer blocking\r\n    DisruptorQueue queue = createQueue(\"consumerHang\", 1);\r\n    Runnable producer = new Producer(queue, \"msg\");\r\n    Runnable consumer = new Consumer(queue, new EventHandler<Object>() {\r\n\r\n        @Override\r\n        public void onEvent(Object obj, long sequence, boolean endOfBatch) throws Exception {\r\n            messageConsumed.set(true);\r\n        }\r\n    });\r\n    run(producer, consumer);\r\n    Assert.assertTrue(\"disruptor message is never consumed due to consumer thread hangs\", messageConsumed.get());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\utils\\RateTrackerTest.java",
+  "methodName" : "testExactRate",
+  "sourceCode" : "@Test\r\npublic void testExactRate() {\r\n    //This test is in two phases.  The first phase fills up the 10 buckets with 10 tuples each\r\n    // We purposely simulate a 1 second bucket size so the rate will always be 10 per second.\r\n    final long interval = 1000l;\r\n    long time = 0l;\r\n    RateTracker rt = new RateTracker(10000, 10, time);\r\n    double[] expected = new double[] { 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0 };\r\n    for (int i = 0; i < expected.length; i++) {\r\n        double exp = expected[i];\r\n        rt.notify(10);\r\n        time += interval;\r\n        double actual = rt.reportRate(time);\r\n        rt.forceRotate(1, interval);\r\n        assertEquals(\"Expected rate on iteration \" + i + \" is wrong.\", exp, actual, 0.00001);\r\n    }\r\n    //In the second part of the test the rate doubles to 20 per second but the rate tracker\r\n    // increases its result slowly as we push the 10 tuples per second buckets out and relpace them\r\n    // with 20 tuples per second.\r\n    expected = new double[] { 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0 };\r\n    for (int i = 0; i < expected.length; i++) {\r\n        double exp = expected[i];\r\n        rt.notify(20);\r\n        time += interval;\r\n        double actual = rt.reportRate(time);\r\n        rt.forceRotate(1, interval);\r\n        assertEquals(\"Expected rate on iteration \" + i + \" is wrong.\", exp, actual, 0.00001);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\utils\\RateTrackerTest.java",
+  "methodName" : "testEclipsedAllWindows",
+  "sourceCode" : "@Test\r\npublic void testEclipsedAllWindows() {\r\n    long time = 0;\r\n    RateTracker rt = new RateTracker(10000, 10, time);\r\n    rt.notify(10);\r\n    rt.forceRotate(10, 1000l);\r\n    assertEquals(0.0, rt.reportRate(10000l), 0.00001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\utils\\RateTrackerTest.java",
+  "methodName" : "testEclipsedOneWindow",
+  "sourceCode" : "@Test\r\npublic void testEclipsedOneWindow() {\r\n    long time = 0;\r\n    RateTracker rt = new RateTracker(10000, 10, time);\r\n    rt.notify(1);\r\n    double r1 = rt.reportRate(1000l);\r\n    rt.forceRotate(1, 1000l);\r\n    rt.notify(1);\r\n    double r2 = rt.reportRate(2000l);\r\n    assertEquals(r1, r2, 0.00001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\utils\\RateTrackerTest.java",
+  "methodName" : "testEclipsedNineWindows",
+  "sourceCode" : "@Test\r\npublic void testEclipsedNineWindows() {\r\n    long time = 0;\r\n    RateTracker rt = new RateTracker(10000, 10, time);\r\n    rt.notify(1);\r\n    double r1 = rt.reportRate(1000);\r\n    rt.forceRotate(9, 1000);\r\n    rt.notify(9);\r\n    double r2 = rt.reportRate(10000);\r\n    assertEquals(r1, r2, 0.00001);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\utils\\StormBoundedExponentialBackoffRetryTest.java",
+  "methodName" : "testExponentialSleepLargeRetries",
+  "sourceCode" : "@Test\r\npublic void testExponentialSleepLargeRetries() throws Exception {\r\n    int baseSleepMs = 10;\r\n    int maxSleepMs = 1000;\r\n    int maxRetries = 900;\r\n    validateSleepTimes(baseSleepMs, maxSleepMs, maxRetries);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\utils\\StormBoundedExponentialBackoffRetryTest.java",
+  "methodName" : "testExponentialSleep",
+  "sourceCode" : "@Test\r\npublic void testExponentialSleep() throws Exception {\r\n    int baseSleepMs = 10;\r\n    int maxSleepMs = 100;\r\n    int maxRetries = 40;\r\n    validateSleepTimes(baseSleepMs, maxSleepMs, maxRetries);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\utils\\StormBoundedExponentialBackoffRetryTest.java",
+  "methodName" : "testExponentialSleepSmallMaxRetries",
+  "sourceCode" : "@Test\r\npublic void testExponentialSleepSmallMaxRetries() throws Exception {\r\n    int baseSleepMs = 1000;\r\n    int maxSleepMs = 5000;\r\n    int maxRetries = 10;\r\n    validateSleepTimes(baseSleepMs, maxSleepMs, maxRetries);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\utils\\StormBoundedExponentialBackoffRetryTest.java",
+  "methodName" : "testExponentialSleepZeroMaxTries",
+  "sourceCode" : "@Test\r\npublic void testExponentialSleepZeroMaxTries() throws Exception {\r\n    int baseSleepMs = 10;\r\n    int maxSleepMs = 100;\r\n    int maxRetries = 0;\r\n    validateSleepTimes(baseSleepMs, maxSleepMs, maxRetries);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Storm\\storm-core\\test\\jvm\\backtype\\storm\\utils\\StormBoundedExponentialBackoffRetryTest.java",
+  "methodName" : "testExponentialSleepSmallMaxTries",
+  "sourceCode" : "@Test\r\npublic void testExponentialSleepSmallMaxTries() throws Exception {\r\n    int baseSleepMs = 10;\r\n    int maxSleepMs = 100;\r\n    int maxRetries = 10;\r\n    validateSleepTimes(baseSleepMs, maxSleepMs, maxRetries);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

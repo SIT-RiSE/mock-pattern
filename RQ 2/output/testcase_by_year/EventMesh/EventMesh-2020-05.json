@@ -1,0 +1,373 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\BrokerFuseTest.java",
+  "methodName" : "testProcessRequestFuse",
+  "sourceCode" : "@Test\r\npublic void testProcessRequestFuse() throws Exception {\r\n    //fuse condition\r\n    ConsumeQueueWaterMark minWaterMark = new ConsumeQueueWaterMark(consumeGroup, topic, 1, 1000, 800);\r\n    PowerMockito.mockStatic(ConsumeQueueManager.class);\r\n    when(ConsumeQueueManager.onlyInstance()).thenReturn(deFiQueueManager);\r\n    when(deFiQueueManager.getMaxQueueDepth(topic)).thenReturn((long) 500);\r\n    when(deFiQueueManager.getMinAccumulated(topic, queueId)).thenReturn(minWaterMark);\r\n    when(deFiQueueManager.getBrokerController()).thenReturn(brokerController);\r\n    deFiSendMessageProcessor = new DeFiSendMessageProcessor(brokerController);\r\n    //send message request\r\n    final RemotingCommand request = createSendMsgCommand(RequestCode.SEND_MESSAGE);\r\n    RemotingCommand response = deFiSendMessageProcessor.processRequest(handlerContext, request);\r\n    Assert.assertEquals(response.getCode(), DeFiBusResponseCode.CONSUME_DIFF_SPAN_TOO_LONG);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\BrokerFuseTest.java",
+  "methodName" : "testAutoUpdateDepth",
+  "sourceCode" : "@Test\r\npublic void testAutoUpdateDepth() throws Exception {\r\n    ConcurrentHashMap<String, ConsumerGroupInfo> /* Group */\r\n    consumerTable = new ConcurrentHashMap<String, ConsumerGroupInfo>(1024);\r\n    DeFiConsumerGroupInfo deFiConsumerGroupInfo = new DeFiConsumerGroupInfo(consumeGroup, ConsumeType.CONSUME_ACTIVELY, MessageModel.CLUSTERING, ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);\r\n    consumerTable.put(consumeGroup, deFiConsumerGroupInfo);\r\n    SubscriptionData subscriptionData = new SubscriptionData(topic, \"test\");\r\n    HashSet<SubscriptionData> hashSet = new HashSet<>();\r\n    hashSet.add(subscriptionData);\r\n    deFiConsumerGroupInfo.registerClientId(hashSet, \"123\");\r\n    ConsumeQueueManager consumeQueueManager = ConsumeQueueManager.onlyInstance();\r\n    consumeQueueManager.setBrokerController(brokerController);\r\n    ConsumerManager consumerManager = brokerController.getConsumerManager();\r\n    ConsumerOffsetManager consumerOffsetManager = brokerController.getConsumerOffsetManager();\r\n    consumerOffsetManager.commitOffset(\"resetByBroker\", consumeGroup, topic, queueId, 100);\r\n    TopicConfig topicConfig = new TopicConfig(topic, 4, 4, 6);\r\n    Assert.assertEquals(consumerOffsetManager.queryOffset(consumeGroup, topic, queueId), 100);\r\n    when(brokerController.getTopicConfigManager()).thenReturn(topicConfigManager);\r\n    when(topicConfigManager.selectTopicConfig(topic)).thenReturn(topicConfig);\r\n    Field field = ConsumerManager.class.getDeclaredField(\"consumerTable\");\r\n    field.setAccessible(true);\r\n    field.set(consumerManager, consumerTable);\r\n    Method method = ConsumeQueueManager.class.getDeclaredMethod(\"autoUpdateDepth\", String.class, String.class, int.class, long.class, long.class);\r\n    method.setAccessible(true);\r\n    method.invoke(consumeQueueManager, consumeGroup, topic, queueId, 500, 1500);\r\n    Assert.assertEquals(consumerOffsetManager.queryOffset(consumeGroup, topic, queueId), 1500 - 500 * 0.65, 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\client\\AdjustQueueNumStrategyTest.java",
+  "methodName" : "testIsCanAdjustReadQueueSizeByFalse",
+  "sourceCode" : "@Test\r\npublic void testIsCanAdjustReadQueueSizeByFalse() {\r\n    deFiBrokerController.getTopicConfigManager().updateTopicConfig(createTopic());\r\n    when(messageStore.getMaxOffsetInQueue(anyString(), anyInt())).thenReturn(1000L);\r\n    when(messageStore.getMessageStoreTimeStamp(anyString(), anyInt(), anyLong())).thenReturn(System.currentTimeMillis());\r\n    boolean flag = adjustQueueNumStrategy.isCanAdjustReadQueueSize(topic, 3);\r\n    assertThat(flag).isFalse();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\client\\AdjustQueueNumStrategyTest.java",
+  "methodName" : "testIsCanAdjustReadQueueSizeByTrue",
+  "sourceCode" : "@Test\r\npublic void testIsCanAdjustReadQueueSizeByTrue() {\r\n    deFiBrokerController.getTopicConfigManager().updateTopicConfig(createTopic());\r\n    boolean flag = adjustQueueNumStrategy.isCanAdjustReadQueueSize(topic, 4);\r\n    assertThat(flag).isTrue();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\client\\DeFiConsumerManagerTest.java",
+  "methodName" : "testRegisterAndUnregisterConsumer",
+  "sourceCode" : "@Test\r\npublic void testRegisterAndUnregisterConsumer() {\r\n    assertThat(deFiConsumerManager.getConsumerTable().size()).isEqualTo(1);\r\n    deFiConsumerManager.unregisterConsumer(consumerData.getGroupName(), clientChannelInfo, false);\r\n    assertThat(deFiConsumerManager.getConsumerTable().size()).isEqualTo(0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\client\\DeFiConsumerManagerTest.java",
+  "methodName" : "testDoChannelCloseEvent",
+  "sourceCode" : "@Test\r\npublic void testDoChannelCloseEvent() {\r\n    assertThat(deFiConsumerManager.getConsumerTable().size()).isEqualTo(1);\r\n    deFiConsumerManager.doChannelCloseEvent(\"127.0.0.1\", mockChannel);\r\n    assertThat(deFiConsumerManager.getConsumerTable().size()).isEqualTo(0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\client\\DeFiProducerManagerTest.java",
+  "methodName" : "doChannelCloseEvent",
+  "sourceCode" : "@Test\r\npublic void doChannelCloseEvent() throws Exception {\r\n    deFiProducerManager.registerProducer(group, clientInfo);\r\n    assertThat(deFiProducerManager.getGroupChannelTable().get(group).get(channel)).isNotNull();\r\n    assertThat(deFiProducerManager.getProducerChannelTable().get(clientInfo.getClientId())).isNotNull();\r\n    assertThat(deFiProducerManager.getProducerChannelTable().get(clientInfo.getClientId())).isEqualTo(clientInfo);\r\n    deFiProducerManager.doChannelCloseEvent(\"127.0.0.1\", channel);\r\n    assertThat(deFiProducerManager.getGroupChannelTable().get(group).get(channel)).isNull();\r\n    assertThat(deFiProducerManager.getProducerChannelTable().get(clientInfo.getClientId())).isNull();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\client\\DeFiProducerManagerTest.java",
+  "methodName" : "testRegisterProducer",
+  "sourceCode" : "@Test\r\npublic void testRegisterProducer() throws Exception {\r\n    deFiProducerManager.registerProducer(group, clientInfo);\r\n    HashMap<Channel, ClientChannelInfo> channelMap = deFiProducerManager.getGroupChannelTable().get(group);\r\n    assertThat(channelMap).isNotNull();\r\n    assertThat(channelMap.get(channel)).isEqualTo(clientInfo);\r\n    assertThat(deFiProducerManager.getProducerChannelTable().get(clientInfo.getClientId())).isNotNull();\r\n    assertThat(deFiProducerManager.getProducerChannelTable().get(clientInfo.getClientId())).isEqualTo(clientInfo);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\client\\DeFiProducerManagerTest.java",
+  "methodName" : "unregisterProducer",
+  "sourceCode" : "@Test\r\npublic void unregisterProducer() throws Exception {\r\n    deFiProducerManager.registerProducer(group, clientInfo);\r\n    HashMap<Channel, ClientChannelInfo> channelMap = deFiProducerManager.getGroupChannelTable().get(group);\r\n    assertThat(channelMap).isNotNull();\r\n    assertThat(channelMap.get(channel)).isEqualTo(clientInfo);\r\n    assertThat(deFiProducerManager.getProducerChannelTable().get(clientInfo.getClientId())).isNotNull();\r\n    assertThat(deFiProducerManager.getProducerChannelTable().get(clientInfo.getClientId())).isEqualTo(clientInfo);\r\n    deFiProducerManager.unregisterProducer(group, clientInfo);\r\n    channelMap = deFiProducerManager.getGroupChannelTable().get(group);\r\n    assertThat(channelMap).isNull();\r\n    assertThat(deFiProducerManager.getProducerChannelTable().get(clientInfo.getClientId())).isNull();\r\n    assertThat(deFiProducerManager.getProducerChannelTable().get(clientInfo.getClientId())).isNull();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\consumequeue\\ConsumeQueueManagerTest.java",
+  "methodName" : "testRecordAndScanUnsubscribedTopic",
+  "sourceCode" : "@Test\r\npublic void testRecordAndScanUnsubscribedTopic() {\r\n    consumeQueueManager.recordLastDeliverOffset(group, topic, queueId, offSet);\r\n    long deliverOffset = consumeQueueManager.queryDeliverOffset(group, topic, queueId);\r\n    assertThat(deliverOffset).isEqualTo(offSet);\r\n    consumeQueueManager.scanUnsubscribedTopic();\r\n    long deliverOffsetNew = consumeQueueManager.queryDeliverOffset(group, topic, queueId);\r\n    assertThat(deliverOffsetNew).isEqualTo(-1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\consumequeue\\ConsumeQueueManagerTest.java",
+  "methodName" : "testGetMinAccumulated",
+  "sourceCode" : "@Test\r\npublic void testGetMinAccumulated() throws Exception {\r\n    clientChannelInfo = new ClientChannelInfo(channel, clientId, LanguageCode.JAVA, 100);\r\n    ConsumerData consumerData = createConsumerData(group, topic);\r\n    deFiBrokerController.getConsumerManager().registerConsumer(consumerData.getGroupName(), clientChannelInfo, consumerData.getConsumeType(), consumerData.getMessageModel(), consumerData.getConsumeFromWhere(), consumerData.getSubscriptionDataSet(), false);\r\n    deFiBrokerController.getConsumerOffsetManager().commitOffset(clientId, group, topic, queueId, offSet);\r\n    consumeQueueManager.setBrokerController(deFiBrokerController);\r\n    when(messageStore.getMaxOffsetInQueue(topic, queueId)).thenReturn(1025L);\r\n    ConsumeQueueWaterMark mark = consumeQueueManager.getMinAccumulated(topic, queueId);\r\n    assertThat(mark).isNotNull();\r\n    assertThat(mark.getTopic()).isEqualTo(topic);\r\n    assertThat(mark.getConsumerGroup()).isEqualTo(group);\r\n    assertThat(mark.getAccumulated()).isEqualTo(1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\consumequeue\\MessageRedirectManagerTest.java",
+  "methodName" : "testRedirectMessageToWhichQueue",
+  "sourceCode" : "@Test\r\npublic void testRedirectMessageToWhichQueue() throws Exception {\r\n    MessageRedirectManager.RedirectResult result = messageRedirectManager.redirectMessageToWhichQueue(createSendMsgRequestHeader(), \"flag\");\r\n    assertThat(result.getStates()).isEqualTo(MessageRedirectManager.RedirectStates.REDIRECT_OK);\r\n    assertThat(result.getRedirectQueueId()).isEqualTo(1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\DeFiBrokerControllerTest.java",
+  "methodName" : "testBrokerRestart",
+  "sourceCode" : "@Test\r\npublic void testBrokerRestart() throws Exception {\r\n    DeFiBrokerController brokerController = new DeFiBrokerController(new BrokerConfig(), new NettyServerConfig(), new NettyClientConfig(), new MessageStoreConfig(), new DeFiBusBrokerConfig());\r\n    assertThat(brokerController.initialize());\r\n    brokerController.start();\r\n    brokerController.shutdown();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\DeFiBusBrokerStartupTest.java",
+  "methodName" : "testProperties2SystemEnv",
+  "sourceCode" : "@Test\r\npublic void testProperties2SystemEnv() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {\r\n    Properties properties = new Properties();\r\n    Class<DeFiBusBrokerStartup> clazz = DeFiBusBrokerStartup.class;\r\n    Method method = clazz.getDeclaredMethod(\"parsePropertie2SystemEnv\", Properties.class);\r\n    method.setAccessible(true);\r\n    System.setProperty(\"rocketmq.namesrv.domain\", \"jmenv.tbsite.net\");\r\n    method.invoke(null, properties);\r\n    Assert.assertEquals(\"jmenv.tbsite.net\", System.getProperty(\"rocketmq.namesrv.domain\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\monitor\\QueueListeningMonitorTest.java",
+  "methodName" : "testQueueListeningMonitorStart",
+  "sourceCode" : "@Test\r\npublic void testQueueListeningMonitorStart() throws Exception {\r\n    deFiBrokerController.start();\r\n    verify(queueListeningMonitor).start();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\plugin\\DeFiPluginMessageStoreTest.java",
+  "methodName" : "testPutMessage",
+  "sourceCode" : "@Test\r\npublic void testPutMessage() {\r\n    MessageExtBrokerInner inner = new MessageExtBrokerInner();\r\n    when(messageStore.putMessage(inner)).thenReturn(new PutMessageResult(PutMessageStatus.PUT_OK, new AppendMessageResult(AppendMessageStatus.PUT_OK)));\r\n    PutMessageResult result = deFiPluginMessageStore.putMessage(inner);\r\n    assertThat(result.getPutMessageStatus()).isEqualTo(PutMessageStatus.PUT_OK);\r\n    assertTrue(result.getAppendMessageResult().isOk());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\plugin\\DeFiPluginMessageStoreTest.java",
+  "methodName" : "testGetMessage",
+  "sourceCode" : "@Test\r\npublic void testGetMessage() {\r\n    GetMessageResult getMessageResult = new GetMessageResult();\r\n    getMessageResult.setStatus(GetMessageStatus.FOUND);\r\n    getMessageResult.setNextBeginOffset(1);\r\n    when(messageStore.getMessage(group, topic, 1, 0, 0, null)).thenReturn(getMessageResult);\r\n    GetMessageResult result = deFiPluginMessageStore.getMessage(group, topic, 1, 0, 0, null);\r\n    assertThat(result.getStatus()).isEqualTo(GetMessageStatus.FOUND);\r\n    assertThat(result.getNextBeginOffset()).isEqualTo(1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\plugin\\PluginStoreStatServiceTest.java",
+  "methodName" : "testRecordPutTime",
+  "sourceCode" : "@Test\r\npublic void testRecordPutTime() {\r\n    long value = 999;\r\n    while (true) {\r\n        pluginStoreStatService.recordPutTime(value);\r\n        value = value * 10;\r\n        if (value > 1000000000)\r\n            break;\r\n    }\r\n    pluginStoreStatService.printStoreStat();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\plugin\\PluginStoreStatServiceTest.java",
+  "methodName" : "testRecordGetTime",
+  "sourceCode" : "@Test\r\npublic void testRecordGetTime() {\r\n    long value = 999;\r\n    while (true) {\r\n        pluginStoreStatService.recordGetTime(value);\r\n        value = value * 10;\r\n        if (value > 1000000000)\r\n            break;\r\n    }\r\n    pluginStoreStatService.printStoreStat();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\processor\\DeFiAdminBrokerProcessorTest.java",
+  "methodName" : "testProcessRequestUpdateAndCreateTopic",
+  "sourceCode" : "@Test\r\npublic void testProcessRequestUpdateAndCreateTopic() throws RemotingCommandException {\r\n    RemotingCommand request = createCommand(RequestCode.UPDATE_AND_CREATE_TOPIC);\r\n    final RemotingCommand[] response = new RemotingCommand[1];\r\n    doAnswer(new Answer() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock invocation) throws Throwable {\r\n            response[0] = (RemotingCommand) invocation.getArguments()[0];\r\n            return null;\r\n        }\r\n    }).when(handlerContext).writeAndFlush(any(Object.class));\r\n    RemotingCommand responseToReturn = deFiAdminBrokerProcessor.processRequest(handlerContext, request);\r\n    if (responseToReturn != null) {\r\n        Assert.assertNull(response[0]);\r\n        response[0] = responseToReturn;\r\n    }\r\n    Assert.assertEquals(response[0].getCode(), ResponseCode.SUCCESS);\r\n    Assert.assertEquals(response[0].getOpaque(), request.getOpaque());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\processor\\DeFiAdminBrokerProcessorTest.java",
+  "methodName" : "testProcessRequestUpdateAndCreateTopic_fail",
+  "sourceCode" : "@Test\r\npublic void testProcessRequestUpdateAndCreateTopic_fail() throws RemotingCommandException {\r\n    RemotingCommand request = createCommand(RequestCode.UPDATE_AND_CREATE_TOPIC);\r\n    RemotingCommand response = deFiAdminBrokerProcessor.processRequest(handlerContext, request);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\processor\\DeFiAdminBrokerProcessorTest.java",
+  "methodName" : "testProcessRequest_GET_CONSUME_STATS_V2",
+  "sourceCode" : "@Test\r\npublic void testProcessRequest_GET_CONSUME_STATS_V2() throws RemotingCommandException {\r\n    RemotingCommand request = createCommand(DeFiBusRequestCode.GET_CONSUME_STATS_V2);\r\n    deFiBrokerController.getTopicConfigManager().createTopicInSendMessageBackMethod(topic, 1, 6, 0);\r\n    RemotingCommand response = deFiAdminBrokerProcessor.processRequest(handlerContext, request);\r\n    assertThat(response.getCode()).isEqualTo(ResponseCode.SUCCESS);\r\n    DeFiBusConsumeStats consumerStats = RemotingSerializable.decode(response.getBody(), DeFiBusConsumeStats.class);\r\n    assertThat(consumerStats).isNotNull();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\processor\\DeFiClientManageProcessorTest.java",
+  "methodName" : "processRequest_GetConsumerListByGroupAndTopic",
+  "sourceCode" : "@Test\r\npublic void processRequest_GetConsumerListByGroupAndTopic() throws Exception {\r\n    ConsumerGroupInfo consumerGroupInfo = deFiBrokerController.getConsumerManager().getConsumerGroupInfo(group);\r\n    assertThat(consumerGroupInfo).isNotNull();\r\n    RemotingCommand request = GetConsumerListCommand();\r\n    RemotingCommand response = deFiClientManageProcessor.processRequest(handlerContext, request);\r\n    assertThat(response).isNotNull();\r\n    assertThat(response.getCode()).isEqualTo(ResponseCode.SUCCESS);\r\n    GetConsumerListByGroupResponseBody body = RemotingSerializable.decode(response.getBody(), GetConsumerListByGroupResponseBody.class);\r\n    List<String> clientIdList = body.getConsumerIdList();\r\n    assertThat(clientIdList).isNotNull();\r\n    assertThat(clientIdList.get(0)).isEqualTo(clientId);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\processor\\DeFiClientManageProcessorTest.java",
+  "methodName" : "processRequest_GetConsumerListByGroupAndTopicIsNull",
+  "sourceCode" : "@Test\r\npublic void processRequest_GetConsumerListByGroupAndTopicIsNull() throws Exception {\r\n    ConsumerGroupInfo consumerGroupInfo = deFiBrokerController.getConsumerManager().getConsumerGroupInfo(group);\r\n    assertThat(consumerGroupInfo).isNotNull();\r\n    RemotingCommand request = GetConsumerListCommandWithNoTopic();\r\n    RemotingCommand response = response = deFiClientManageProcessor.processRequest(handlerContext, request);\r\n    assertThat(response).isNotNull();\r\n    assertThat(response.getCode()).isEqualTo(ResponseCode.SUCCESS);\r\n    GetConsumerListByGroupResponseBody body = RemotingSerializable.decode(response.getBody(), GetConsumerListByGroupResponseBody.class);\r\n    List<String> clientIdList = body.getConsumerIdList();\r\n    assertThat(clientIdList).isNotNull();\r\n    assertThat(clientIdList.get(0)).isEqualTo(clientId);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\processor\\DeFiPullMessageProcessorTest.java",
+  "methodName" : "testProcessRequest_SubNotLatest",
+  "sourceCode" : "@Test\r\npublic void testProcessRequest_SubNotLatest() throws RemotingCommandException {\r\n    final RemotingCommand request = createPullMsgCommand(RequestCode.PULL_MESSAGE);\r\n    request.addExtField(\"subVersion\", String.valueOf(101));\r\n    RemotingCommand response = deFiPullMessageProcessor.processRequest(handlerContext, request);\r\n    assertThat(response).isNotNull();\r\n    assertThat(response.getCode()).isEqualTo(ResponseCode.PULL_NOT_FOUND);\r\n    assertThat(response.getRemark()).contains(\"subscription not latest\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\processor\\DeFiReplyMessageProcessorTest.java",
+  "methodName" : "assertReplyResult",
+  "sourceCode" : "@Test\r\npublic void assertReplyResult() throws RemotingCommandException {\r\n    final RemotingCommand request = createReplyMsgCommand(DeFiBusRequestCode.SEND_DIRECT_MESSAGE);\r\n    final RemotingCommand[] response = new RemotingCommand[1];\r\n    doAnswer(new Answer() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock invocation) throws Throwable {\r\n            response[0] = (RemotingCommand) invocation.getArguments()[0];\r\n            return null;\r\n        }\r\n    }).when(channelHandlerContext).writeAndFlush(any(Object.class));\r\n    RemotingCommand responseToReturn = deFiReplyMessageProcessor.processRequest(channelHandlerContext, request);\r\n    if (responseToReturn != null) {\r\n        Assert.assertNull(response[0]);\r\n        response[0] = responseToReturn;\r\n    }\r\n    Assert.assertEquals(response[0].getCode(), ResponseCode.SUCCESS);\r\n    Assert.assertEquals(response[0].getOpaque(), request.getOpaque());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-broker\\src\\test\\java\\cn\\webank\\defibus\\broker\\processor\\DeFiSendMessageProcessorTest.java",
+  "methodName" : "testProcessRequest",
+  "sourceCode" : "@Test\r\npublic void testProcessRequest() throws RemotingCommandException {\r\n    when(messageStore.putMessage(any(MessageExtBrokerInner.class))).thenReturn(new PutMessageResult(PutMessageStatus.PUT_OK, new AppendMessageResult(AppendMessageStatus.PUT_OK)));\r\n    assertPutResult(ResponseCode.SUCCESS);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\common\\DeFiBusCLientUtilTest.java",
+  "methodName" : "createReplyMessage_Success",
+  "sourceCode" : "@Test\r\npublic void createReplyMessage_Success() {\r\n    MessageExt msg = new MessageExt();\r\n    msg.setTopic(\"Test\");\r\n    msg.putUserProperty(DeFiBusConstant.PROPERTY_MESSAGE_CLUSTER, \"ClusterName\");\r\n    msg.putUserProperty(DeFiBusConstant.PROPERTY_MESSAGE_REPLY_TO, \"reply_to\");\r\n    msg.putUserProperty(DeFiBusConstant.PROPERTY_RR_REQUEST_ID, \"w/request_id\");\r\n    msg.putUserProperty(DeFiBusConstant.PROPERTY_MESSAGE_BROKER, \"BrokerName\");\r\n    byte[] replyContent = \"reply content\".getBytes();\r\n    Message replyMsg = DeFiBusClientUtil.createReplyMessage(msg, replyContent);\r\n    assertThat(replyMsg).isNotNull();\r\n    assertThat(replyContent).isEqualTo(replyMsg.getBody());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\common\\DeFiBusCLientUtilTest.java",
+  "methodName" : "createReplyMessage_Fail",
+  "sourceCode" : "@Test\r\npublic void createReplyMessage_Fail() {\r\n    MessageExt msg = new MessageExt();\r\n    msg.setTopic(\"Test\");\r\n    msg.putUserProperty(DeFiBusConstant.PROPERTY_MESSAGE_REPLY_TO, \"reply_to\");\r\n    msg.putUserProperty(DeFiBusConstant.PROPERTY_RR_REQUEST_ID, \"w/request_id\");\r\n    byte[] replyContent = \"reply content\".getBytes();\r\n    Message replyMsg = DeFiBusClientUtil.createReplyMessage(msg, replyContent);\r\n    assertThat(replyMsg).isNull();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\consumer\\DeFiBusMessageListenerConcurrentlyOnceTest.java",
+  "methodName" : "testPullMessage_ConsumeSuccess",
+  "sourceCode" : "@Test\r\npublic void testPullMessage_ConsumeSuccess() throws Exception {\r\n    PullMessageService pullMessageService = defiBusClientFactory.getPullMessageService();\r\n    pullMessageService.executePullRequestImmediately(createPullRequest());\r\n    countDownLatch.await(5000, TimeUnit.MILLISECONDS);\r\n    Thread.sleep(2000);\r\n    assertThat(consumeCount.get()).isEqualTo(totalMsg);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\consumer\\DeFiBusMessageListenerConcurrentlyTest.java",
+  "methodName" : "testPullMessage_ConsumeSuccess",
+  "sourceCode" : "@Test\r\npublic void testPullMessage_ConsumeSuccess() throws Exception {\r\n    PullMessageService pullMessageService = defiBusClientFactory.getPullMessageService();\r\n    pullMessageService.executePullRequestImmediately(createPullRequest());\r\n    countDownLatch.await();\r\n    Thread.sleep(2000);\r\n    ConsumerStatsManager mgr = pushConsumer.getDefaultMQPushConsumer().getDefaultMQPushConsumerImpl().getConsumerStatsManager();\r\n    Field statItmeSetField = mgr.getClass().getDeclaredField(\"topicAndGroupConsumeOKTPS\");\r\n    statItmeSetField.setAccessible(true);\r\n    StatsItemSet itemSet = (StatsItemSet) statItmeSetField.get(mgr);\r\n    StatsItem item = itemSet.getAndCreateStatsItem(topic + \"@\" + pushConsumer.getDefaultMQPushConsumer().getDefaultMQPushConsumerImpl().groupName());\r\n    assertThat(item.getValue().get()).isGreaterThan(0L);\r\n    assertThat(messageExts[0].getTopic()).isEqualTo(topic);\r\n    assertThat(messageExts[0].getBody()).isEqualTo(new byte[] { 'a' });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\consumer\\DeFiBusPushConsumerTest.java",
+  "methodName" : "test_unsubscribe",
+  "sourceCode" : "@Test\r\npublic void test_unsubscribe() throws MQClientException {\r\n    DeFiBusPushConsumer pushConsumer = new DeFiBusPushConsumer();\r\n    pushConsumer.subscribe(topic);\r\n    assertTrue(pushConsumer.getDefaultMQPushConsumer().getDefaultMQPushConsumerImpl().getRebalanceImpl().getSubscriptionInner().containsKey(topic));\r\n    pushConsumer.unsubscribe(topic);\r\n    assertFalse(pushConsumer.getDefaultMQPushConsumer().getDefaultMQPushConsumerImpl().getRebalanceImpl().getSubscriptionInner().containsKey(topic));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\DeFiBusClientAPIImplTest.java",
+  "methodName" : "testSendMessageTypeOfReply_Success",
+  "sourceCode" : "@Test\r\npublic void testSendMessageTypeOfReply_Success() throws Exception {\r\n    doAnswer(new Answer() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock mock) throws Throwable {\r\n            InvokeCallback callback = mock.getArgument(3);\r\n            RemotingCommand request = mock.getArgument(1);\r\n            ResponseFuture responseFuture = new ResponseFuture(null, request.getOpaque(), 3 * 1000, null, null);\r\n            responseFuture.setResponseCommand(createSuccessResponse(request));\r\n            callback.operationComplete(responseFuture);\r\n            return null;\r\n        }\r\n    }).when(remotingClient).invokeAsync(anyString(), any(RemotingCommand.class), anyLong(), any(InvokeCallback.class));\r\n    SendMessageContext sendMessageContext = new SendMessageContext();\r\n    sendMessageContext.setProducer(new DefaultMQProducerImpl(new DefaultMQProducer()));\r\n    msg.getProperties().put(\"msgType\", \"reply\");\r\n    deFiBusClientAPI.sendMessage(brokerAddr, brokerName, msg, new SendMessageRequestHeader(), 3 * 1000, CommunicationMode.ASYNC, new SendCallback() {\r\n\r\n        @Override\r\n        public void onSuccess(SendResult sendResult) {\r\n            assertThat(sendResult.getSendStatus()).isEqualTo(SendStatus.SEND_OK);\r\n            assertThat(sendResult.getOffsetMsgId()).isEqualTo(\"123\");\r\n            assertThat(sendResult.getQueueOffset()).isEqualTo(123L);\r\n            assertThat(sendResult.getMessageQueue().getQueueId()).isEqualTo(1);\r\n        }\r\n\r\n        @Override\r\n        public void onException(Throwable e) {\r\n        }\r\n    }, null, null, 0, sendMessageContext, defaultMQProducerImpl);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\DeFiBusClientAPIImplTest.java",
+  "methodName" : "testSendMessagetypeOfnull_Success",
+  "sourceCode" : "@Test\r\npublic void testSendMessagetypeOfnull_Success() throws RemotingException, InterruptedException, MQBrokerException {\r\n    doAnswer(new Answer() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock mock) throws Throwable {\r\n            InvokeCallback callback = mock.getArgument(3);\r\n            RemotingCommand request = mock.getArgument(1);\r\n            ResponseFuture responseFuture = new ResponseFuture(null, request.getOpaque(), 3 * 1000, null, null);\r\n            responseFuture.setResponseCommand(createSuccessResponse(request));\r\n            callback.operationComplete(responseFuture);\r\n            return null;\r\n        }\r\n    }).when(remotingClient).invokeAsync(anyString(), any(RemotingCommand.class), anyLong(), any(InvokeCallback.class));\r\n    SendMessageContext sendMessageContext = new SendMessageContext();\r\n    sendMessageContext.setProducer(new DefaultMQProducerImpl(new DefaultMQProducer()));\r\n    deFiBusClientAPI.sendMessage(brokerAddr, brokerName, msg, new SendMessageRequestHeader(), 3 * 1000, CommunicationMode.ASYNC, new SendCallback() {\r\n\r\n        @Override\r\n        public void onSuccess(SendResult sendResult) {\r\n            assertThat(sendResult.getSendStatus()).isEqualTo(SendStatus.SEND_OK);\r\n            assertThat(sendResult.getOffsetMsgId()).isEqualTo(\"123\");\r\n            assertThat(sendResult.getQueueOffset()).isEqualTo(123L);\r\n            assertThat(sendResult.getMessageQueue().getQueueId()).isEqualTo(1);\r\n        }\r\n\r\n        @Override\r\n        public void onException(Throwable e) {\r\n        }\r\n    }, null, null, 0, sendMessageContext, defaultMQProducerImpl);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\DeFiBusClientAPIImplTest.java",
+  "methodName" : "testGetConsumerIdListByGroupAndTopic_Success",
+  "sourceCode" : "@Test\r\npublic void testGetConsumerIdListByGroupAndTopic_Success() throws Exception {\r\n    doAnswer(new Answer() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock mock) throws Throwable {\r\n            RemotingCommand request = mock.getArgument(1);\r\n            GetConsumerListByGroupResponseBody body = new GetConsumerListByGroupResponseBody();\r\n            List<String> cidList = new ArrayList<>();\r\n            for (int i = 0; i < 10; i++) {\r\n                cidList.add(i + \"\");\r\n            }\r\n            body.setConsumerIdList(cidList);\r\n            request.setBody(body.encode());\r\n            request.setCode(ResponseCode.SUCCESS);\r\n            request.setOpaque(request.getOpaque());\r\n            return request;\r\n        }\r\n    }).when(remotingClient).invokeSync(anyString(), any(RemotingCommand.class), anyLong());\r\n    List<String> list = deFiBusClientAPI.getConsumerIdListByGroupAndTopic(brokerAddr, group, topic, 3 * 1000);\r\n    assertThat(list.size()).isEqualTo(10);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\DeFiBusClientAPIImplTest.java",
+  "methodName" : "testGetConsumerIdListByGroupAndTopic_OnException",
+  "sourceCode" : "@Test(expected = MQBrokerException.class)\r\npublic void testGetConsumerIdListByGroupAndTopic_OnException() throws Exception {\r\n    doAnswer(new Answer() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock mock) throws Throwable {\r\n            RemotingCommand request = mock.getArgument(1);\r\n            request.setCode(ResponseCode.SYSTEM_ERROR);\r\n            return request;\r\n        }\r\n    }).when(remotingClient).invokeSync(anyString(), any(RemotingCommand.class), anyLong());\r\n    deFiBusClientAPI.getConsumerIdListByGroupAndTopic(brokerAddr, group, topic, 3 * 1000);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\hook\\DeFiBusClientHookFactoryTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() {\r\n    DeFiBusClientHookFactory.createRPCHook(null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\hook\\DeFiBusClientHookFactoryTest.java",
+  "methodName" : "test_doBefore_doAfter",
+  "sourceCode" : "@Test\r\npublic void test_doBefore_doAfter() {\r\n    AtomicInteger invokeTimes = new AtomicInteger(0);\r\n    RPCHook rpcHook = new RPCHook() {\r\n\r\n        @Override\r\n        public void doBeforeRequest(String remoteAddr, RemotingCommand request) {\r\n            invokeTimes.getAndIncrement();\r\n        }\r\n\r\n        @Override\r\n        public void doAfterResponse(String remoteAddr, RemotingCommand request, RemotingCommand response) {\r\n            invokeTimes.getAndIncrement();\r\n        }\r\n    };\r\n    DeFiBusClientHookFactory.createRPCHook(rpcHook);\r\n    rpcHook.doBeforeRequest(\"\", null);\r\n    assertThat(invokeTimes.get()).isEqualTo(1);\r\n    rpcHook.doAfterResponse(\"\", null, null);\r\n    assertThat(invokeTimes.get()).isEqualTo(2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\producer\\MessageQueueHealthManagerTest.java",
+  "methodName" : "testMarkQueueFault",
+  "sourceCode" : "@Test\r\npublic void testMarkQueueFault() throws Exception {\r\n    MessageQueue mq = new MessageQueue(\"topic1\", \"brokerName1\", 0);\r\n    messageQueueHealthManager.markQueueFault(mq);\r\n    assertTrue(messageQueueHealthManager.isQueueFault(mq));\r\n    Thread.sleep(isoTime + 10);\r\n    assertFalse(messageQueueHealthManager.isQueueFault(mq));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\producer\\MessageQueueHealthManagerTest.java",
+  "methodName" : "testMarkQueueHealthy",
+  "sourceCode" : "@Test\r\npublic void testMarkQueueHealthy() throws Exception {\r\n    MessageQueue mq = new MessageQueue(\"topic1\", \"brokerName1\", 0);\r\n    messageQueueHealthManager.markQueueFault(mq);\r\n    assertTrue(messageQueueHealthManager.isQueueFault(mq));\r\n    messageQueueHealthManager.markQueueHealthy(mq);\r\n    assertTrue(messageQueueHealthManager.isQueueHealthy(mq));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\producer\\RRResponseFutureTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() {\r\n    RRResponseFuture responseFuture = new RRResponseFuture();\r\n    ResponseTable.getRrResponseFurtureConcurrentHashMap().put(\"key1\", responseFuture);\r\n    RRResponseFuture responseFuture2 = new RRResponseFuture(new RRCallback() {\r\n\r\n        @Override\r\n        public void onSuccess(Message msg) {\r\n        }\r\n\r\n        @Override\r\n        public void onException(Throwable e) {\r\n        }\r\n    });\r\n    ResponseTable.getRrResponseFurtureConcurrentHashMap().put(\"key2\", responseFuture2);\r\n    RRResponseFuture responseFuture3 = new RRResponseFuture(new RRCallback() {\r\n\r\n        @Override\r\n        public void onSuccess(Message msg) {\r\n        }\r\n\r\n        @Override\r\n        public void onException(Throwable e) {\r\n        }\r\n    }, 3000);\r\n    ResponseTable.getRrResponseFurtureConcurrentHashMap().put(\"key3\", responseFuture3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\producer\\RRResponseFutureTest.java",
+  "methodName" : "test_watiSuccess",
+  "sourceCode" : "@Test\r\npublic void test_watiSuccess() throws InterruptedException {\r\n    RRResponseFuture responseFuture = new RRResponseFuture(new RRCallback() {\r\n\r\n        @Override\r\n        public void onSuccess(Message msg) {\r\n        }\r\n\r\n        @Override\r\n        public void onException(Throwable e) {\r\n        }\r\n    }, 3000);\r\n    Message rspMsg = new Message();\r\n    rspMsg.setTopic(\"FooBar\");\r\n    Thread thread = new Thread(new Runnable() {\r\n\r\n        @Override\r\n        public void run() {\r\n            try {\r\n                Thread.sleep(1000);\r\n                responseFuture.putResponse(rspMsg);\r\n            } catch (InterruptedException e) {\r\n                e.printStackTrace();\r\n            }\r\n        }\r\n    });\r\n    thread.setDaemon(true);\r\n    thread.start();\r\n    Message rsp = responseFuture.waitResponse(3000);\r\n    assertThat(rsp).isNotNull();\r\n    assertThat(rsp).isEqualTo(rspMsg);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\producer\\RRResponseFutureTest.java",
+  "methodName" : "test_watiTimeout",
+  "sourceCode" : "@Test\r\npublic void test_watiTimeout() throws InterruptedException {\r\n    RRResponseFuture responseFuture = new RRResponseFuture(new RRCallback() {\r\n\r\n        @Override\r\n        public void onSuccess(Message msg) {\r\n        }\r\n\r\n        @Override\r\n        public void onException(Throwable e) {\r\n        }\r\n    }, 1000);\r\n    Message rsp = responseFuture.waitResponse(1000);\r\n    assertThat(rsp).isNull();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\rebalance\\AllocateMessageQueueByIDCTest.java",
+  "methodName" : "test_CurrentCIDisNull",
+  "sourceCode" : "@Test\r\npublic void test_CurrentCIDisNull() {\r\n    thrown.expect(IllegalArgumentException.class);\r\n    thrown.expectMessage(\"currentCID is empty\");\r\n    allocateMessageQueueByIDC.allocate(\"group\", null, null, null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\rebalance\\AllocateMessageQueueByIDCTest.java",
+  "methodName" : "test_mqAllIsNull",
+  "sourceCode" : "@Test\r\npublic void test_mqAllIsNull() {\r\n    List<MessageQueue> result = allocateMessageQueueByIDC.allocate(\"group\", \"currentCid\", null, new ArrayList<>());\r\n    assertThat(result).isEmpty();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\rebalance\\AllocateMessageQueueByIDCTest.java",
+  "methodName" : "test_cidAllIsNull",
+  "sourceCode" : "@Test\r\npublic void test_cidAllIsNull() {\r\n    List<MessageQueue> mqAll = new ArrayList<>();\r\n    MessageQueue mq = new MessageQueue();\r\n    mqAll.add(mq);\r\n    List<MessageQueue> result = allocateMessageQueueByIDC.allocate(\"group\", \"currentCid\", mqAll, null);\r\n    assertThat(result).isEmpty();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\rebalance\\AllocateMessageQueueByIDCTest.java",
+  "methodName" : "test_allocateSuccess",
+  "sourceCode" : "@Test\r\npublic void test_allocateSuccess() {\r\n    List<String> cidAll = prepareCidList(\"A\", 4);\r\n    cidAll.addAll(prepareCidList(\"B\", 5));\r\n    cidAll.add(currentCid);\r\n    List<MessageQueue> mqAll = prepareMqList(topic, \"A\", 4);\r\n    mqAll.addAll(prepareMqList(topic, \"B\", 5));\r\n    ConcurrentHashMap<String, TopicRouteData> topicRouteTable = new ConcurrentHashMap<>();\r\n    TopicRouteData topicRouteData = prepareRouteData();\r\n    topicRouteData.getBrokerDatas().addAll(prepareBrokerData(\"A\", 5));\r\n    topicRouteData.getBrokerDatas().addAll(prepareBrokerData(\"B\", 5));\r\n    topicRouteTable.put(topic, topicRouteData);\r\n    allocateMessageQueueByIDC.setMqClientInstance(mqClientInstance);\r\n    when(mqClientInstance.getTopicRouteTable()).thenReturn(new ConcurrentHashMap<>()).thenReturn(topicRouteTable);\r\n    when(mqClientInstance.updateTopicRouteInfoFromNameServer(anyString())).thenReturn(true);\r\n    List<MessageQueue> result = allocateMessageQueueByIDC.allocate(\"group\", currentCid, mqAll, cidAll);\r\n    assertThat(result.size()).isEqualTo(1);\r\n    assertThat(result.get(0)).isEqualTo(mqAll.get(0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\rebalance\\AllocateMessageQueueByIDCTest.java",
+  "methodName" : "test_allocateWithUnknownIdc",
+  "sourceCode" : "@Test\r\npublic void test_allocateWithUnknownIdc() {\r\n    List<String> cidAll = prepareCidList(\"A\", 4);\r\n    cidAll.addAll(prepareCidList(\"B\", 5));\r\n    cidAll.add(currentCid);\r\n    List<MessageQueue> mqAll = prepareMqList(topic, \"A\", 4);\r\n    mqAll.addAll(prepareMqList(topic, \"B\", 5));\r\n    List<MessageQueue> mqInC = prepareMqList(topic, \"C\", 5);\r\n    mqAll.addAll(mqInC);\r\n    ConcurrentHashMap<String, TopicRouteData> topicRouteTable = new ConcurrentHashMap<>();\r\n    TopicRouteData topicRouteData = prepareRouteData();\r\n    topicRouteData.getBrokerDatas().addAll(prepareBrokerData(\"A\", 5));\r\n    topicRouteData.getBrokerDatas().addAll(prepareBrokerData(\"B\", 5));\r\n    topicRouteTable.put(topic, topicRouteData);\r\n    allocateMessageQueueByIDC.setMqClientInstance(mqClientInstance);\r\n    when(mqClientInstance.getTopicRouteTable()).thenReturn(new ConcurrentHashMap<>()).thenReturn(topicRouteTable);\r\n    when(mqClientInstance.updateTopicRouteInfoFromNameServer(anyString())).thenReturn(true);\r\n    List<MessageQueue> result = allocateMessageQueueByIDC.allocate(\"group\", currentCid, mqAll, cidAll);\r\n    assertThat(result.size()).isEqualTo(6);\r\n    assertThat(result.get(0)).isEqualTo(mqAll.get(0));\r\n    assertThat(result.containsAll(mqInC)).isTrue();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\rebalance\\AllocateMessageQueueByIDCTest.java",
+  "methodName" : "test_allocateOtherIdc",
+  "sourceCode" : "@Test\r\npublic void test_allocateOtherIdc() {\r\n    List<String> cidAll = prepareCidList(\"A\", 4);\r\n    cidAll.add(currentCid);\r\n    List<MessageQueue> mqAll = prepareMqList(topic, \"A\", 4);\r\n    List<MessageQueue> mqInB = prepareMqList(topic, \"B\", 5);\r\n    mqAll.addAll(mqInB);\r\n    ConcurrentHashMap<String, TopicRouteData> topicRouteTable = new ConcurrentHashMap<>();\r\n    TopicRouteData topicRouteData = prepareRouteData();\r\n    topicRouteData.getBrokerDatas().addAll(prepareBrokerData(\"A\", 5));\r\n    topicRouteData.getBrokerDatas().addAll(prepareBrokerData(\"B\", 5));\r\n    topicRouteTable.put(topic, topicRouteData);\r\n    allocateMessageQueueByIDC.setMqClientInstance(mqClientInstance);\r\n    when(mqClientInstance.getTopicRouteTable()).thenReturn(new ConcurrentHashMap<>()).thenReturn(topicRouteTable);\r\n    when(mqClientInstance.updateTopicRouteInfoFromNameServer(anyString())).thenReturn(true);\r\n    List<MessageQueue> result = allocateMessageQueueByIDC.allocate(\"group\", currentCid, mqAll, cidAll);\r\n    assertThat(result.size()).isEqualTo(2);\r\n    assertThat(result.get(0)).isEqualTo(mqAll.get(0));\r\n    assertThat(result.get(1)).isEqualTo(mqInB.get(0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\impl\\rebalance\\AllocateMessageQueueByIDCTest.java",
+  "methodName" : "test_allocate_notContainCurrentCID",
+  "sourceCode" : "@Test\r\npublic void test_allocate_notContainCurrentCID() {\r\n    List<String> cidAll = prepareCidList(\"A\", 4);\r\n    cidAll.addAll(prepareCidList(\"B\", 5));\r\n    List<MessageQueue> mqAll = prepareMqList(topic, \"A\", 4);\r\n    mqAll.addAll(prepareMqList(topic, \"B\", 5));\r\n    ConcurrentHashMap<String, TopicRouteData> topicRouteTable = new ConcurrentHashMap<>();\r\n    TopicRouteData topicRouteData = prepareRouteData();\r\n    topicRouteData.getBrokerDatas().addAll(prepareBrokerData(\"A\", 5));\r\n    topicRouteData.getBrokerDatas().addAll(prepareBrokerData(\"B\", 5));\r\n    topicRouteTable.put(topic, topicRouteData);\r\n    allocateMessageQueueByIDC.setMqClientInstance(mqClientInstance);\r\n    List<MessageQueue> result = allocateMessageQueueByIDC.allocate(\"group\", currentCid, mqAll, cidAll);\r\n    assertThat(result).isNotNull();\r\n    assertThat(result.size()).isEqualTo(0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\producer\\ClientFuseTest.java",
+  "methodName" : "testProcessResponseFuse",
+  "sourceCode" : "@Test\r\npublic void testProcessResponseFuse() throws Exception {\r\n    when(mqClientAPIImpl.getTopicRouteInfoFromNameServer(anyString(), anyLong())).thenReturn(createTopicRoute());\r\n    CountDownLatch countDownLatch = new CountDownLatch(1);\r\n    Field fieldSelector = DeFiBusProducerImpl.class.getDeclaredField(\"messageQueueSelector\");\r\n    fieldSelector.setAccessible(true);\r\n    Field fieldProducer = DeFiBusProducer.class.getDeclaredField(\"deFiBusProducerImpl\");\r\n    fieldProducer.setAccessible(true);\r\n    MessageQueueHealthManager messageQueueHealthManager = ((HealthyMessageQueueSelector) fieldSelector.get(fieldProducer.get(deFiBusProducer))).getMessageQueueHealthManager();\r\n    Assert.assertEquals(0, messageQueueHealthManager.faultMap.size());\r\n    deFiBusProducer.publish(msg, new SendCallback() {\r\n\r\n        @Override\r\n        public void onSuccess(SendResult sendResult) {\r\n        }\r\n\r\n        @Override\r\n        public void onException(Throwable e) {\r\n            Assert.fail(e.getMessage());\r\n            countDownLatch.countDown();\r\n        }\r\n    });\r\n    countDownLatch.await(3000L, TimeUnit.MILLISECONDS);\r\n    Assert.assertEquals(3, messageQueueHealthManager.faultMap.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\producer\\HealthyMessageQueueSelectorTest.java",
+  "methodName" : "testLocalValidQueue",
+  "sourceCode" : "@Test\r\npublic void testLocalValidQueue() {\r\n    final DeFiBusProducerImpl producerImplMock = Mockito.mock(DeFiBusProducerImpl.class);\r\n    Message msg = new Message();\r\n    msg.setTopic(\"testtopic\");\r\n    Set<String> locBrokers = new HashSet<>();\r\n    locBrokers.add(\"localIDC\");\r\n    //        PowerMockito.when(producerImplMock.getLocalBrokers()).thenReturn(locBrokers);\r\n    MessageQueueHealthManager manager = new MessageQueueHealthManager(60 * 1000);\r\n    HealthyMessageQueueSelector selector = new HealthyMessageQueueSelector(manager, 1);\r\n    selector.setLocalBrokers(locBrokers);\r\n    List<MessageQueue> mqs = new ArrayList<>();\r\n    for (int i = 1; i <= 10; i++) {\r\n        MessageQueue m = new MessageQueue(\"testtopic\", \"localIDC\", i);\r\n        mqs.add(m);\r\n    }\r\n    final AtomicReference<MessageQueue> selectedResultRef = new AtomicReference<MessageQueue>();\r\n    MessageQueue select = selector.select(mqs, msg, selectedResultRef);\r\n    Assert.assertTrue(select != null && !(select.getBrokerName().equalsIgnoreCase(\"dummyBroker\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\producer\\HealthyMessageQueueSelectorTest.java",
+  "methodName" : "testErrorQueue",
+  "sourceCode" : "@Test\r\npublic void testErrorQueue() {\r\n    Set<String> locBrokers = new HashSet<>();\r\n    locBrokers.add(\"localIDC\");\r\n    MessageQueueHealthManager manager = new MessageQueueHealthManager(60 * 1000);\r\n    HealthyMessageQueueSelector selector = new HealthyMessageQueueSelector(manager, 1);\r\n    selector.setLocalBrokers(locBrokers);\r\n    List<MessageQueue> mqs = new ArrayList<>();\r\n    for (int i = 1; i <= 10; i++) {\r\n        MessageQueue m = new MessageQueue(\"testtopic\", \"localIDC\", i);\r\n        mqs.add(m);\r\n        //设置为熔断queue\r\n        manager.faultMap.put(m, System.currentTimeMillis() + 60 * 1000);\r\n    }\r\n    MessageQueue m = new MessageQueue(\"testtopic\", \"dummyBroker\", 0);\r\n    mqs.add(m);\r\n    final AtomicReference<MessageQueue> selectedResultRef = new AtomicReference<MessageQueue>();\r\n    //List<MessageQueue> mqs, Message msg, final Object selectedResultRef\r\n    Message msg = new Message();\r\n    msg.setTopic(\"testtopic\");\r\n    MessageQueue select = selector.select(mqs, msg, selectedResultRef);\r\n    Assert.assertTrue(select != null && select.getBrokerName().equalsIgnoreCase(\"dummyBroker\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\producer\\HealthyMessageQueueSelectorTest.java",
+  "methodName" : "testOtherValidQueue",
+  "sourceCode" : "@Test\r\npublic void testOtherValidQueue() {\r\n    Set<String> locBrokers = new HashSet<>();\r\n    locBrokers.add(\"localIDC\");\r\n    MessageQueueHealthManager manager = new MessageQueueHealthManager(60 * 1000);\r\n    HealthyMessageQueueSelector selector = new HealthyMessageQueueSelector(manager, 1);\r\n    selector.setLocalBrokers(locBrokers);\r\n    List<MessageQueue> mqs = new ArrayList<>();\r\n    for (int i = 1; i <= 10; i++) {\r\n        MessageQueue m = new MessageQueue(\"testtopic\", \"localIDC1\", i);\r\n        mqs.add(m);\r\n    }\r\n    final AtomicReference<MessageQueue> selectedResultRef = new AtomicReference<MessageQueue>();\r\n    //List<MessageQueue> mqs, Message msg, final Object selectedResultRef\r\n    Message msg = new Message();\r\n    msg.setTopic(\"testtopic\");\r\n    MessageQueue select = selector.select(mqs, msg, selectedResultRef);\r\n    Assert.assertTrue(select != null && !(select.getBrokerName().equalsIgnoreCase(\"dummyBroker\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\producer\\HealthyMessageQueueSelectorTest.java",
+  "methodName" : "testBizTopic",
+  "sourceCode" : "@Test\r\npublic void testBizTopic() {\r\n    String bizTopic = \"XX0-s-00000000-01-0\";\r\n    String localBrokerName = \"localIdcBroker\";\r\n    String otherIdcBrokerName = \"otherIdcBroker\";\r\n    Message msg = new Message();\r\n    msg.setTopic(bizTopic);\r\n    Set<String> localBrokers = new HashSet<>();\r\n    localBrokers.add(localBrokerName);\r\n    MessageQueueHealthManager manager = new MessageQueueHealthManager(60 * 1000);\r\n    HealthyMessageQueueSelector selector = new HealthyMessageQueueSelector(manager, 1);\r\n    selector.setLocalBrokers(localBrokers);\r\n    //construct mq data\r\n    List<MessageQueue> localMqs = new ArrayList<>();\r\n    List<MessageQueue> otherMqs = new ArrayList<>();\r\n    List<MessageQueue> mqs = new ArrayList<>();\r\n    for (int i = 0; i < 3; i++) {\r\n        MessageQueue m = new MessageQueue(bizTopic, localBrokerName, i);\r\n        mqs.add(m);\r\n        localMqs.add(m);\r\n    }\r\n    for (int i = 0; i < 3; i++) {\r\n        MessageQueue m = new MessageQueue(bizTopic, otherIdcBrokerName, i);\r\n        mqs.add(m);\r\n        otherMqs.add(m);\r\n    }\r\n    Collections.sort(mqs);\r\n    //case 1:There are mqs that aren't isolated in this IDC, select from this IDC\r\n    for (int i = 0; i < mqs.size(); i++) {\r\n        final AtomicReference<MessageQueue> selectedResultRef = new AtomicReference<MessageQueue>();\r\n        MessageQueue selectResult = selector.select(mqs, msg, selectedResultRef);\r\n        Assert.assertTrue(selectResult != null && localBrokers.contains(selectResult.getBrokerName()));\r\n        Assert.assertTrue(!selector.getMessageQueueHealthManager().faultMap.containsKey(selectResult));\r\n    }\r\n    //case 2:All mqs in this IDC are isolated, select mq from other IDC.\r\n    for (MessageQueue mq : localMqs) {\r\n        selector.getMessageQueueHealthManager().markQueueFault(mq);\r\n    }\r\n    for (int i = 0; i < mqs.size(); i++) {\r\n        final AtomicReference<MessageQueue> selectedResultRef = new AtomicReference<MessageQueue>();\r\n        MessageQueue selectResult = selector.select(mqs, msg, selectedResultRef);\r\n        Assert.assertTrue(selectResult != null && !localBrokers.contains(selectResult.getBrokerName()));\r\n        Assert.assertTrue(!selector.getMessageQueueHealthManager().faultMap.containsKey(selectResult));\r\n    }\r\n    //case 3:All mqs are isolated, select one randomly\r\n    for (MessageQueue mq : otherMqs) {\r\n        selector.getMessageQueueHealthManager().markQueueFault(mq);\r\n    }\r\n    for (int i = 0; i < mqs.size(); i++) {\r\n        final AtomicReference<MessageQueue> selectedResultRef = new AtomicReference<MessageQueue>();\r\n        MessageQueue selectResult = selector.select(mqs, msg, selectedResultRef);\r\n        Assert.assertTrue(selectResult != null && (selectResult.getBrokerName().equals(localBrokerName) || selectResult.getBrokerName().equals(otherIdcBrokerName)));\r\n        Assert.assertTrue(selector.getMessageQueueHealthManager().faultMap.containsKey(selectResult));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-client\\src\\test\\java\\cn\\webank\\defibus\\client\\producer\\HealthyMessageQueueSelectorTest.java",
+  "methodName" : "testRetryBizTopic",
+  "sourceCode" : "@Test\r\npublic void testRetryBizTopic() {\r\n    String bizTopic = \"XX0-s-00000000-01-0\";\r\n    String localBrokerNamePrefix = \"localIdcBroker\";\r\n    String otherIdcBrokerNamePrefix = \"otherIdcBroker\";\r\n    Message msg = new Message();\r\n    msg.setTopic(bizTopic);\r\n    Set<String> localBrokers = new HashSet<>();\r\n    for (int i = 1; i <= 3; i++) {\r\n        localBrokers.add(localBrokerNamePrefix + i);\r\n    }\r\n    MessageQueueHealthManager manager = new MessageQueueHealthManager(60 * 1000);\r\n    HealthyMessageQueueSelector selector = new HealthyMessageQueueSelector(manager, 1);\r\n    selector.setLocalBrokers(localBrokers);\r\n    //construct mq data\r\n    List<MessageQueue> localMqs = new ArrayList<>();\r\n    List<MessageQueue> otherMqs = new ArrayList<>();\r\n    List<MessageQueue> mqs = new ArrayList<>();\r\n    for (int i = 0; i < 3; i++) {\r\n        for (int j = 1; j < 3; j++) {\r\n            MessageQueue m = new MessageQueue(bizTopic, localBrokerNamePrefix + j, i);\r\n            mqs.add(m);\r\n            localMqs.add(m);\r\n        }\r\n    }\r\n    for (int i = 0; i < 3; i++) {\r\n        for (int j = 0; j <= 3; j++) {\r\n            MessageQueue m = new MessageQueue(bizTopic, otherIdcBrokerNamePrefix + j, i);\r\n            mqs.add(m);\r\n            otherMqs.add(m);\r\n        }\r\n    }\r\n    Collections.sort(mqs);\r\n    //case 1:There are mqs that aren't isolated in this IDC, select from this IDC\r\n    MessageQueue lastSelectedMq = localMqs.get(0);\r\n    for (int i = 0; i < mqs.size(); i++) {\r\n        final AtomicReference<MessageQueue> selectedResultRef = new AtomicReference<MessageQueue>();\r\n        selectedResultRef.set(lastSelectedMq);\r\n        MessageQueue selectResult = selector.select(mqs, msg, selectedResultRef);\r\n        Assert.assertTrue(selectResult != null && localBrokers.contains(selectResult.getBrokerName()) && !selectResult.getBrokerName().equals(lastSelectedMq.getBrokerName()));\r\n        Assert.assertTrue(!selector.getMessageQueueHealthManager().faultMap.containsKey(selectResult));\r\n    }\r\n    //case 2:All mqs in this IDC are isolated, select mq from other IDC.\r\n    for (MessageQueue mq : localMqs) {\r\n        selector.getMessageQueueHealthManager().markQueueFault(mq);\r\n    }\r\n    for (int i = 0; i < mqs.size(); i++) {\r\n        final AtomicReference<MessageQueue> selectedResultRef = new AtomicReference<MessageQueue>();\r\n        selectedResultRef.set(lastSelectedMq);\r\n        MessageQueue selectResult = selector.select(mqs, msg, selectedResultRef);\r\n        Assert.assertTrue(selectResult != null && !localBrokers.contains(selectResult.getBrokerName()) && !selectResult.getBrokerName().equals(lastSelectedMq.getBrokerName()));\r\n        Assert.assertTrue(!selector.getMessageQueueHealthManager().faultMap.containsKey(selectResult));\r\n    }\r\n    //case 3:All mqs are isolated, select one randomly\r\n    for (MessageQueue mq : otherMqs) {\r\n        selector.getMessageQueueHealthManager().markQueueFault(mq);\r\n    }\r\n    for (int i = 0; i < mqs.size(); i++) {\r\n        final AtomicReference<MessageQueue> selectedResultRef = new AtomicReference<MessageQueue>();\r\n        selectedResultRef.set(lastSelectedMq);\r\n        MessageQueue selectResult = selector.select(mqs, msg, selectedResultRef);\r\n        Assert.assertTrue(selectResult != null && !selectResult.getBrokerName().equals(lastSelectedMq.getBrokerName()));\r\n        Assert.assertTrue(selector.getMessageQueueHealthManager().faultMap.containsKey(selectResult));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-common\\src\\test\\java\\cn\\webank\\defibus\\common\\admin\\DeFiBusConsumeStatsTest.java",
+  "methodName" : "testComputeTotalDiff",
+  "sourceCode" : "@Test\r\npublic void testComputeTotalDiff() throws Exception {\r\n    long totalDiff = createOffsetTable(10);\r\n    deFiBusConsumeStats.setOffsetTable(offsetTable);\r\n    long i = deFiBusConsumeStats.computeTotalDiff();\r\n    assertTrue(totalDiff == deFiBusConsumeStats.computeTotalDiff());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-common\\src\\test\\java\\cn\\webank\\defibus\\common\\DeFiBusBrokerConfigTest.java",
+  "methodName" : "testDeFiBusBrokerConfigDefaultValue",
+  "sourceCode" : "@Test\r\npublic void testDeFiBusBrokerConfigDefaultValue() throws Exception {\r\n    DeFiBusBrokerConfig deFiBusBrokerConfig = new DeFiBusBrokerConfig();\r\n    assertTrue(deFiBusBrokerConfig.getSendReplyMessageThreadPoolNums() == 64);\r\n    assertTrue(deFiBusBrokerConfig.getPushReplyMessageThreadPoolNums() == 64);\r\n    assertTrue(deFiBusBrokerConfig.getSendReplyThreadPoolQueueCapacity() == 10000);\r\n    assertTrue(deFiBusBrokerConfig.isRejectSendWhenMaxDepth() == true);\r\n    assertTrue(deFiBusBrokerConfig.isRedirectMessageEnable() == true);\r\n    assertTrue(deFiBusBrokerConfig.isAutoUpdateDepth() == true);\r\n    assertTrue(deFiBusBrokerConfig.getDepthCheckInterval() == 30 * 1000);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-common\\src\\test\\java\\cn\\webank\\defibus\\common\\protocol\\DeFiBusTopicConfigTest.java",
+  "methodName" : "testEcodeAndDecode",
+  "sourceCode" : "@Test\r\npublic void testEcodeAndDecode() throws Exception {\r\n    DeFiBusTopicConfig deFiBusTopicConfig = new DeFiBusTopicConfig(topic);\r\n    String ecodeMsg = deFiBusTopicConfig.encode();\r\n    assertTrue(deFiBusTopicConfig.decode(ecodeMsg));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-common\\src\\test\\java\\cn\\webank\\defibus\\common\\protocol\\DeFiBusTopicConfigTest.java",
+  "methodName" : "testAttribute",
+  "sourceCode" : "@Test\r\npublic void testAttribute() {\r\n    DeFiBusTopicConfig deFiBusTopicConfig = new DeFiBusTopicConfig();\r\n    deFiBusTopicConfig.setTopicName(topic);\r\n    deFiBusTopicConfig.setMaxQueueDepth(500);\r\n    assertThat(deFiBusTopicConfig.getTopicName()).isEqualTo(topic);\r\n    assertThat(deFiBusTopicConfig.getMaxQueueDepth()).isEqualTo(500);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-common\\src\\test\\java\\cn\\webank\\defibus\\common\\util\\DeFiBusRequestIDUtilTest.java",
+  "methodName" : "testCreateUniqueNameByPrefix",
+  "sourceCode" : "@Test\r\npublic void testCreateUniqueNameByPrefix() {\r\n    String prefix = \"w\";\r\n    String UniqueName = DeFiBusRequestIDUtil.createUniqueName(prefix);\r\n    String prefix2 = UniqueName.split(\"/\")[0];\r\n    assertTrue(prefix.equals(prefix2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\EventMesh\\defibus-common\\src\\test\\java\\cn\\webank\\defibus\\common\\util\\DeFiBusRequestIDUtilTest.java",
+  "methodName" : "testCreateUniqueNameNoPrefix",
+  "sourceCode" : "@Test(expected = ArrayIndexOutOfBoundsException.class)\r\npublic void testCreateUniqueNameNoPrefix() {\r\n    String UniqueName = DeFiBusRequestIDUtil.createUniqueName(null);\r\n    String prefix2 = UniqueName.split(\"/\")[1];\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

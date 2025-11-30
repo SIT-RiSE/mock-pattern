@@ -1,0 +1,554 @@
+[
+  {
+    "rawMockObjectId": 1,
+    "variableName": "sv",
+    "variableType": "SelectionVector4",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.drill.exec.physical.impl.partitionsender",
+      "filePath": "C:\\Java_projects\\temp_projects\\Drill\\exec\\java-exec\\src\\test\\java\\org\\apache\\drill\\exec\\physical\\impl\\partitionsender\\TestPartitionSender.java"
+    },
+    "statements": [
+      {
+        "code": "final SelectionVector4 sv = Mockito.mock(SelectionVector4.class, \"SelectionVector4\");",
+        "line": 145,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testPartitionSenderCostToThreads",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic /**\r\n * Main test to go over different scenarios\r\n * @throws Exception\r\n */\r\nvoid testPartitionSenderCostToThreads() throws Exception {\r\n    final VectorContainer container = new VectorContainer();\r\n    container.buildSchema(SelectionVectorMode.FOUR_BYTE);\r\n    final SelectionVector4 sv = Mockito.mock(SelectionVector4.class, \"SelectionVector4\");\r\n    Mockito.when(sv.getCount()).thenReturn(100);\r\n    Mockito.when(sv.getTotalCount()).thenReturn(100);\r\n    for (int i = 0; i < 100; i++) {\r\n        Mockito.when(sv.get(i)).thenReturn(i);\r\n    }\r\n    final TopNBatch.SimpleRecordBatch incoming = new TopNBatch.SimpleRecordBatch(container, sv, null);\r\n    updateTestCluster(DRILLBITS_COUNT, null);\r\n    test(\"ALTER SESSION SET `planner.slice_target`=1\");\r\n    String plan = getPlanInString(\"EXPLAIN PLAN FOR \" + groupByQuery, JSON_FORMAT);\r\n    System.out.println(\"Plan: \" + plan);\r\n    final DrillbitContext drillbitContext = getDrillbitContext();\r\n    final PhysicalPlanReader planReader = drillbitContext.getPlanReader();\r\n    final PhysicalPlan physicalPlan = planReader.readPhysicalPlan(plan);\r\n    final Fragment rootFragment = PopUnitTestBase.getRootFragmentFromPlanString(planReader, plan);\r\n    final PlanningSet planningSet = new PlanningSet();\r\n    final FunctionImplementationRegistry registry = new FunctionImplementationRegistry(config);\r\n    // Create a planningSet to get the assignment of major fragment ids to fragments.\r\n    PARALLELIZER.initFragmentWrappers(rootFragment, planningSet);\r\n    final List<PhysicalOperator> operators = physicalPlan.getSortedOperators(false);\r\n    // get HashToRandomExchange physical operator\r\n    HashToRandomExchange hashToRandomExchange = null;\r\n    for (PhysicalOperator operator : operators) {\r\n        if (operator instanceof HashToRandomExchange) {\r\n            hashToRandomExchange = (HashToRandomExchange) operator;\r\n            break;\r\n        }\r\n    }\r\n    final OptionList options = new OptionList();\r\n    // try multiple scenarios with different set of options\r\n    options.add(OptionValue.createLong(OptionType.SESSION, \"planner.slice_target\", 1));\r\n    testThreadsHelper(hashToRandomExchange, drillbitContext, options, incoming, registry, planReader, planningSet, rootFragment, 1);\r\n    options.clear();\r\n    options.add(OptionValue.createLong(OptionType.SESSION, \"planner.slice_target\", 1));\r\n    options.add(OptionValue.createLong(OptionType.SESSION, \"planner.partitioner_sender_max_threads\", 10));\r\n    hashToRandomExchange.setCost(1000);\r\n    testThreadsHelper(hashToRandomExchange, drillbitContext, options, incoming, registry, planReader, planningSet, rootFragment, 10);\r\n    options.clear();\r\n    options.add(OptionValue.createLong(OptionType.SESSION, \"planner.slice_target\", 1000));\r\n    options.add(OptionValue.createLong(OptionType.SESSION, \"planner.partitioner_sender_threads_factor\", 2));\r\n    hashToRandomExchange.setCost(14000);\r\n    testThreadsHelper(hashToRandomExchange, drillbitContext, options, incoming, registry, planReader, planningSet, rootFragment, 2);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(sv.getCount()).thenReturn(100);",
+        "line": 146,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testPartitionSenderCostToThreads",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic /**\r\n * Main test to go over different scenarios\r\n * @throws Exception\r\n */\r\nvoid testPartitionSenderCostToThreads() throws Exception {\r\n    final VectorContainer container = new VectorContainer();\r\n    container.buildSchema(SelectionVectorMode.FOUR_BYTE);\r\n    final SelectionVector4 sv = Mockito.mock(SelectionVector4.class, \"SelectionVector4\");\r\n    Mockito.when(sv.getCount()).thenReturn(100);\r\n    Mockito.when(sv.getTotalCount()).thenReturn(100);\r\n    for (int i = 0; i < 100; i++) {\r\n        Mockito.when(sv.get(i)).thenReturn(i);\r\n    }\r\n    final TopNBatch.SimpleRecordBatch incoming = new TopNBatch.SimpleRecordBatch(container, sv, null);\r\n    updateTestCluster(DRILLBITS_COUNT, null);\r\n    test(\"ALTER SESSION SET `planner.slice_target`=1\");\r\n    String plan = getPlanInString(\"EXPLAIN PLAN FOR \" + groupByQuery, JSON_FORMAT);\r\n    System.out.println(\"Plan: \" + plan);\r\n    final DrillbitContext drillbitContext = getDrillbitContext();\r\n    final PhysicalPlanReader planReader = drillbitContext.getPlanReader();\r\n    final PhysicalPlan physicalPlan = planReader.readPhysicalPlan(plan);\r\n    final Fragment rootFragment = PopUnitTestBase.getRootFragmentFromPlanString(planReader, plan);\r\n    final PlanningSet planningSet = new PlanningSet();\r\n    final FunctionImplementationRegistry registry = new FunctionImplementationRegistry(config);\r\n    // Create a planningSet to get the assignment of major fragment ids to fragments.\r\n    PARALLELIZER.initFragmentWrappers(rootFragment, planningSet);\r\n    final List<PhysicalOperator> operators = physicalPlan.getSortedOperators(false);\r\n    // get HashToRandomExchange physical operator\r\n    HashToRandomExchange hashToRandomExchange = null;\r\n    for (PhysicalOperator operator : operators) {\r\n        if (operator instanceof HashToRandomExchange) {\r\n            hashToRandomExchange = (HashToRandomExchange) operator;\r\n            break;\r\n        }\r\n    }\r\n    final OptionList options = new OptionList();\r\n    // try multiple scenarios with different set of options\r\n    options.add(OptionValue.createLong(OptionType.SESSION, \"planner.slice_target\", 1));\r\n    testThreadsHelper(hashToRandomExchange, drillbitContext, options, incoming, registry, planReader, planningSet, rootFragment, 1);\r\n    options.clear();\r\n    options.add(OptionValue.createLong(OptionType.SESSION, \"planner.slice_target\", 1));\r\n    options.add(OptionValue.createLong(OptionType.SESSION, \"planner.partitioner_sender_max_threads\", 10));\r\n    hashToRandomExchange.setCost(1000);\r\n    testThreadsHelper(hashToRandomExchange, drillbitContext, options, incoming, registry, planReader, planningSet, rootFragment, 10);\r\n    options.clear();\r\n    options.add(OptionValue.createLong(OptionType.SESSION, \"planner.slice_target\", 1000));\r\n    options.add(OptionValue.createLong(OptionType.SESSION, \"planner.partitioner_sender_threads_factor\", 2));\r\n    hashToRandomExchange.setCost(14000);\r\n    testThreadsHelper(hashToRandomExchange, drillbitContext, options, incoming, registry, planReader, planningSet, rootFragment, 2);\r\n}"
+        }
+      },
+      {
+        "code": "Mockito.when(sv.getTotalCount()).thenReturn(100);",
+        "line": 147,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testPartitionSenderCostToThreads",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic /**\r\n * Main test to go over different scenarios\r\n * @throws Exception\r\n */\r\nvoid testPartitionSenderCostToThreads() throws Exception {\r\n    final VectorContainer container = new VectorContainer();\r\n    container.buildSchema(SelectionVectorMode.FOUR_BYTE);\r\n    final SelectionVector4 sv = Mockito.mock(SelectionVector4.class, \"SelectionVector4\");\r\n    Mockito.when(sv.getCount()).thenReturn(100);\r\n    Mockito.when(sv.getTotalCount()).thenReturn(100);\r\n    for (int i = 0; i < 100; i++) {\r\n        Mockito.when(sv.get(i)).thenReturn(i);\r\n    }\r\n    final TopNBatch.SimpleRecordBatch incoming = new TopNBatch.SimpleRecordBatch(container, sv, null);\r\n    updateTestCluster(DRILLBITS_COUNT, null);\r\n    test(\"ALTER SESSION SET `planner.slice_target`=1\");\r\n    String plan = getPlanInString(\"EXPLAIN PLAN FOR \" + groupByQuery, JSON_FORMAT);\r\n    System.out.println(\"Plan: \" + plan);\r\n    final DrillbitContext drillbitContext = getDrillbitContext();\r\n    final PhysicalPlanReader planReader = drillbitContext.getPlanReader();\r\n    final PhysicalPlan physicalPlan = planReader.readPhysicalPlan(plan);\r\n    final Fragment rootFragment = PopUnitTestBase.getRootFragmentFromPlanString(planReader, plan);\r\n    final PlanningSet planningSet = new PlanningSet();\r\n    final FunctionImplementationRegistry registry = new FunctionImplementationRegistry(config);\r\n    // Create a planningSet to get the assignment of major fragment ids to fragments.\r\n    PARALLELIZER.initFragmentWrappers(rootFragment, planningSet);\r\n    final List<PhysicalOperator> operators = physicalPlan.getSortedOperators(false);\r\n    // get HashToRandomExchange physical operator\r\n    HashToRandomExchange hashToRandomExchange = null;\r\n    for (PhysicalOperator operator : operators) {\r\n        if (operator instanceof HashToRandomExchange) {\r\n            hashToRandomExchange = (HashToRandomExchange) operator;\r\n            break;\r\n        }\r\n    }\r\n    final OptionList options = new OptionList();\r\n    // try multiple scenarios with different set of options\r\n    options.add(OptionValue.createLong(OptionType.SESSION, \"planner.slice_target\", 1));\r\n    testThreadsHelper(hashToRandomExchange, drillbitContext, options, incoming, registry, planReader, planningSet, rootFragment, 1);\r\n    options.clear();\r\n    options.add(OptionValue.createLong(OptionType.SESSION, \"planner.slice_target\", 1));\r\n    options.add(OptionValue.createLong(OptionType.SESSION, \"planner.partitioner_sender_max_threads\", 10));\r\n    hashToRandomExchange.setCost(1000);\r\n    testThreadsHelper(hashToRandomExchange, drillbitContext, options, incoming, registry, planReader, planningSet, rootFragment, 10);\r\n    options.clear();\r\n    options.add(OptionValue.createLong(OptionType.SESSION, \"planner.slice_target\", 1000));\r\n    options.add(OptionValue.createLong(OptionType.SESSION, \"planner.partitioner_sender_threads_factor\", 2));\r\n    hashToRandomExchange.setCost(14000);\r\n    testThreadsHelper(hashToRandomExchange, drillbitContext, options, incoming, registry, planReader, planningSet, rootFragment, 2);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 2,
+    "variableName": "valueVector",
+    "variableType": "ValueVector",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.drill.exec.vector.accessor",
+      "filePath": "C:\\Java_projects\\temp_projects\\Drill\\exec\\java-exec\\src\\test\\java\\org\\apache\\drill\\exec\\vector\\accessor\\GenericAccessorTest.java",
+      "className": "GenericAccessorTest"
+    },
+    "statements": [
+      {
+        "code": "private ValueVector valueVector;",
+        "line": 40,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "valueVector = mock(ValueVector.class);",
+        "line": 77,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    // Set up a mock accessor that has two columns, one non-null and one null\r\n    accessor = mock(ValueVector.Accessor.class);\r\n    when(accessor.getObject(anyInt())).thenAnswer(new Answer<Object>() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Object[] args = invocationOnMock.getArguments();\r\n            Integer index = (Integer) args[0];\r\n            if (index == 0) {\r\n                return NON_NULL_VALUE;\r\n            }\r\n            if (index == 1) {\r\n                return null;\r\n            }\r\n            throw new IndexOutOfBoundsException(\"Index out of bounds\");\r\n        }\r\n    });\r\n    when(accessor.isNull(anyInt())).thenAnswer(new Answer<Object>() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Object[] args = invocationOnMock.getArguments();\r\n            Integer index = (Integer) args[0];\r\n            if (index == 0) {\r\n                return false;\r\n            }\r\n            return true;\r\n        }\r\n    });\r\n    metadata = UserBitShared.SerializedField.getDefaultInstance();\r\n    valueVector = mock(ValueVector.class);\r\n    when(valueVector.getAccessor()).thenReturn(accessor);\r\n    when(valueVector.getMetadata()).thenReturn(metadata);\r\n    genericAccessor = new GenericAccessor(valueVector);\r\n}"
+        }
+      },
+      {
+        "code": "when(valueVector.getAccessor()).thenReturn(accessor);",
+        "line": 78,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    // Set up a mock accessor that has two columns, one non-null and one null\r\n    accessor = mock(ValueVector.Accessor.class);\r\n    when(accessor.getObject(anyInt())).thenAnswer(new Answer<Object>() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Object[] args = invocationOnMock.getArguments();\r\n            Integer index = (Integer) args[0];\r\n            if (index == 0) {\r\n                return NON_NULL_VALUE;\r\n            }\r\n            if (index == 1) {\r\n                return null;\r\n            }\r\n            throw new IndexOutOfBoundsException(\"Index out of bounds\");\r\n        }\r\n    });\r\n    when(accessor.isNull(anyInt())).thenAnswer(new Answer<Object>() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Object[] args = invocationOnMock.getArguments();\r\n            Integer index = (Integer) args[0];\r\n            if (index == 0) {\r\n                return false;\r\n            }\r\n            return true;\r\n        }\r\n    });\r\n    metadata = UserBitShared.SerializedField.getDefaultInstance();\r\n    valueVector = mock(ValueVector.class);\r\n    when(valueVector.getAccessor()).thenReturn(accessor);\r\n    when(valueVector.getMetadata()).thenReturn(metadata);\r\n    genericAccessor = new GenericAccessor(valueVector);\r\n}"
+        }
+      },
+      {
+        "code": "when(valueVector.getMetadata()).thenReturn(metadata);",
+        "line": 79,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    // Set up a mock accessor that has two columns, one non-null and one null\r\n    accessor = mock(ValueVector.Accessor.class);\r\n    when(accessor.getObject(anyInt())).thenAnswer(new Answer<Object>() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Object[] args = invocationOnMock.getArguments();\r\n            Integer index = (Integer) args[0];\r\n            if (index == 0) {\r\n                return NON_NULL_VALUE;\r\n            }\r\n            if (index == 1) {\r\n                return null;\r\n            }\r\n            throw new IndexOutOfBoundsException(\"Index out of bounds\");\r\n        }\r\n    });\r\n    when(accessor.isNull(anyInt())).thenAnswer(new Answer<Object>() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Object[] args = invocationOnMock.getArguments();\r\n            Integer index = (Integer) args[0];\r\n            if (index == 0) {\r\n                return false;\r\n            }\r\n            return true;\r\n        }\r\n    });\r\n    metadata = UserBitShared.SerializedField.getDefaultInstance();\r\n    valueVector = mock(ValueVector.class);\r\n    when(valueVector.getAccessor()).thenReturn(accessor);\r\n    when(valueVector.getMetadata()).thenReturn(metadata);\r\n    genericAccessor = new GenericAccessor(valueVector);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 3,
+    "variableName": "accessor",
+    "variableType": "ValueVector.Accessor",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.drill.exec.vector.accessor",
+      "filePath": "C:\\Java_projects\\temp_projects\\Drill\\exec\\java-exec\\src\\test\\java\\org\\apache\\drill\\exec\\vector\\accessor\\GenericAccessorTest.java",
+      "className": "GenericAccessorTest"
+    },
+    "statements": [
+      {
+        "code": "private ValueVector.Accessor accessor;",
+        "line": 41,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "// Set up a mock accessor that has two columns, one non-null and one null\r\naccessor = mock(ValueVector.Accessor.class);",
+        "line": 47,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    // Set up a mock accessor that has two columns, one non-null and one null\r\n    accessor = mock(ValueVector.Accessor.class);\r\n    when(accessor.getObject(anyInt())).thenAnswer(new Answer<Object>() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Object[] args = invocationOnMock.getArguments();\r\n            Integer index = (Integer) args[0];\r\n            if (index == 0) {\r\n                return NON_NULL_VALUE;\r\n            }\r\n            if (index == 1) {\r\n                return null;\r\n            }\r\n            throw new IndexOutOfBoundsException(\"Index out of bounds\");\r\n        }\r\n    });\r\n    when(accessor.isNull(anyInt())).thenAnswer(new Answer<Object>() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Object[] args = invocationOnMock.getArguments();\r\n            Integer index = (Integer) args[0];\r\n            if (index == 0) {\r\n                return false;\r\n            }\r\n            return true;\r\n        }\r\n    });\r\n    metadata = UserBitShared.SerializedField.getDefaultInstance();\r\n    valueVector = mock(ValueVector.class);\r\n    when(valueVector.getAccessor()).thenReturn(accessor);\r\n    when(valueVector.getMetadata()).thenReturn(metadata);\r\n    genericAccessor = new GenericAccessor(valueVector);\r\n}"
+        }
+      },
+      {
+        "code": "when(accessor.getObject(anyInt())).thenAnswer(new Answer<Object>() {\r\n\r\n    @Override\r\n    public Object answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n        Object[] args = invocationOnMock.getArguments();\r\n        Integer index = (Integer) args[0];\r\n        if (index == 0) {\r\n            return NON_NULL_VALUE;\r\n        }\r\n        if (index == 1) {\r\n            return null;\r\n        }\r\n        throw new IndexOutOfBoundsException(\"Index out of bounds\");\r\n    }\r\n});",
+        "line": 48,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    // Set up a mock accessor that has two columns, one non-null and one null\r\n    accessor = mock(ValueVector.Accessor.class);\r\n    when(accessor.getObject(anyInt())).thenAnswer(new Answer<Object>() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Object[] args = invocationOnMock.getArguments();\r\n            Integer index = (Integer) args[0];\r\n            if (index == 0) {\r\n                return NON_NULL_VALUE;\r\n            }\r\n            if (index == 1) {\r\n                return null;\r\n            }\r\n            throw new IndexOutOfBoundsException(\"Index out of bounds\");\r\n        }\r\n    });\r\n    when(accessor.isNull(anyInt())).thenAnswer(new Answer<Object>() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Object[] args = invocationOnMock.getArguments();\r\n            Integer index = (Integer) args[0];\r\n            if (index == 0) {\r\n                return false;\r\n            }\r\n            return true;\r\n        }\r\n    });\r\n    metadata = UserBitShared.SerializedField.getDefaultInstance();\r\n    valueVector = mock(ValueVector.class);\r\n    when(valueVector.getAccessor()).thenReturn(accessor);\r\n    when(valueVector.getMetadata()).thenReturn(metadata);\r\n    genericAccessor = new GenericAccessor(valueVector);\r\n}"
+        }
+      },
+      {
+        "code": "when(accessor.isNull(anyInt())).thenAnswer(new Answer<Object>() {\r\n\r\n    @Override\r\n    public Object answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n        Object[] args = invocationOnMock.getArguments();\r\n        Integer index = (Integer) args[0];\r\n        if (index == 0) {\r\n            return false;\r\n        }\r\n        return true;\r\n    }\r\n});",
+        "line": 63,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    // Set up a mock accessor that has two columns, one non-null and one null\r\n    accessor = mock(ValueVector.Accessor.class);\r\n    when(accessor.getObject(anyInt())).thenAnswer(new Answer<Object>() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Object[] args = invocationOnMock.getArguments();\r\n            Integer index = (Integer) args[0];\r\n            if (index == 0) {\r\n                return NON_NULL_VALUE;\r\n            }\r\n            if (index == 1) {\r\n                return null;\r\n            }\r\n            throw new IndexOutOfBoundsException(\"Index out of bounds\");\r\n        }\r\n    });\r\n    when(accessor.isNull(anyInt())).thenAnswer(new Answer<Object>() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Object[] args = invocationOnMock.getArguments();\r\n            Integer index = (Integer) args[0];\r\n            if (index == 0) {\r\n                return false;\r\n            }\r\n            return true;\r\n        }\r\n    });\r\n    metadata = UserBitShared.SerializedField.getDefaultInstance();\r\n    valueVector = mock(ValueVector.class);\r\n    when(valueVector.getAccessor()).thenReturn(accessor);\r\n    when(valueVector.getMetadata()).thenReturn(metadata);\r\n    genericAccessor = new GenericAccessor(valueVector);\r\n}"
+        }
+      },
+      {
+        "code": "when(valueVector.getAccessor()).thenReturn(accessor);",
+        "line": 78,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    // Set up a mock accessor that has two columns, one non-null and one null\r\n    accessor = mock(ValueVector.Accessor.class);\r\n    when(accessor.getObject(anyInt())).thenAnswer(new Answer<Object>() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Object[] args = invocationOnMock.getArguments();\r\n            Integer index = (Integer) args[0];\r\n            if (index == 0) {\r\n                return NON_NULL_VALUE;\r\n            }\r\n            if (index == 1) {\r\n                return null;\r\n            }\r\n            throw new IndexOutOfBoundsException(\"Index out of bounds\");\r\n        }\r\n    });\r\n    when(accessor.isNull(anyInt())).thenAnswer(new Answer<Object>() {\r\n\r\n        @Override\r\n        public Object answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Object[] args = invocationOnMock.getArguments();\r\n            Integer index = (Integer) args[0];\r\n            if (index == 0) {\r\n                return false;\r\n            }\r\n            return true;\r\n        }\r\n    });\r\n    metadata = UserBitShared.SerializedField.getDefaultInstance();\r\n    valueVector = mock(ValueVector.class);\r\n    when(valueVector.getAccessor()).thenReturn(accessor);\r\n    when(valueVector.getMetadata()).thenReturn(metadata);\r\n    genericAccessor = new GenericAccessor(valueVector);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 4,
+    "variableName": "exampleIntField",
+    "variableType": "MaterializedField",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.drill.jdbc",
+      "filePath": "C:\\Java_projects\\temp_projects\\Drill\\exec\\jdbc\\src\\test\\java\\org\\apache\\drill\\jdbc\\DrillColumnMetaDataListTest.java"
+    },
+    "statements": [
+      {
+        "code": "// Create mock columns\r\nfinal MaterializedField exampleIntField = mock(MaterializedField.class);",
+        "line": 71,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      },
+      {
+        "code": "when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));",
+        "line": 73,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      },
+      {
+        "code": "when(exampleIntField.getType()).thenReturn(exampleIntType);",
+        "line": 74,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      },
+      {
+        "code": "when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);",
+        "line": 75,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      },
+      {
+        "code": "doAnswer(new Answer<MaterializedField>() {\r\n\r\n    @Override\r\n    public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n        Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n        if (index == 0) {\r\n            return exampleIntField;\r\n        }\r\n        return null;\r\n    }\r\n}).when(oneElementSchema).getColumn(Mockito.anyInt());",
+        "line": 86,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      },
+      {
+        "code": "doAnswer(new Answer<MaterializedField>() {\r\n\r\n    @Override\r\n    public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n        Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n        if (index == 0) {\r\n            return exampleIntField;\r\n        } else if (index == 1) {\r\n            return exampleStringField;\r\n        }\r\n        return null;\r\n    }\r\n}).when(twoElementSchema).getColumn(Mockito.anyInt());",
+        "line": 107,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 5,
+    "variableName": "exampleStringField",
+    "variableType": "MaterializedField",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.drill.jdbc",
+      "filePath": "C:\\Java_projects\\temp_projects\\Drill\\exec\\jdbc\\src\\test\\java\\org\\apache\\drill\\jdbc\\DrillColumnMetaDataListTest.java"
+    },
+    "statements": [
+      {
+        "code": "final MaterializedField exampleStringField = mock(MaterializedField.class);",
+        "line": 77,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      },
+      {
+        "code": "when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));",
+        "line": 79,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      },
+      {
+        "code": "when(exampleStringField.getType()).thenReturn(exampleStringType);",
+        "line": 80,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      },
+      {
+        "code": "when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);",
+        "line": 81,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      },
+      {
+        "code": "doAnswer(new Answer<MaterializedField>() {\r\n\r\n    @Override\r\n    public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n        Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n        if (index == 0) {\r\n            return exampleIntField;\r\n        } else if (index == 1) {\r\n            return exampleStringField;\r\n        }\r\n        return null;\r\n    }\r\n}).when(twoElementSchema).getColumn(Mockito.anyInt());",
+        "line": 107,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 6,
+    "variableName": "oneElementSchema",
+    "variableType": "BatchSchema",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.drill.jdbc",
+      "filePath": "C:\\Java_projects\\temp_projects\\Drill\\exec\\jdbc\\src\\test\\java\\org\\apache\\drill\\jdbc\\DrillColumnMetaDataListTest.java"
+    },
+    "statements": [
+      {
+        "code": "BatchSchema oneElementSchema = mock(BatchSchema.class);",
+        "line": 84,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      },
+      {
+        "code": "when(oneElementSchema.getFieldCount()).thenReturn(1);",
+        "line": 85,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      },
+      {
+        "code": "doAnswer(new Answer<MaterializedField>() {\r\n\r\n    @Override\r\n    public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n        Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n        if (index == 0) {\r\n            return exampleIntField;\r\n        }\r\n        return null;\r\n    }\r\n}).when(oneElementSchema).getColumn(Mockito.anyInt());",
+        "line": 86,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      },
+      {
+        "code": "oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);",
+        "line": 101,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 7,
+    "variableName": "twoElementSchema",
+    "variableType": "BatchSchema",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "org.apache.drill.jdbc",
+      "filePath": "C:\\Java_projects\\temp_projects\\Drill\\exec\\jdbc\\src\\test\\java\\org\\apache\\drill\\jdbc\\DrillColumnMetaDataListTest.java"
+    },
+    "statements": [
+      {
+        "code": "BatchSchema twoElementSchema = mock(BatchSchema.class);",
+        "line": 105,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      },
+      {
+        "code": "when(twoElementSchema.getFieldCount()).thenReturn(2);",
+        "line": 106,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      },
+      {
+        "code": "doAnswer(new Answer<MaterializedField>() {\r\n\r\n    @Override\r\n    public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n        Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n        if (index == 0) {\r\n            return exampleIntField;\r\n        } else if (index == 1) {\r\n            return exampleStringField;\r\n        }\r\n        return null;\r\n    }\r\n}).when(twoElementSchema).getColumn(Mockito.anyInt());",
+        "line": 107,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      },
+      {
+        "code": "twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);",
+        "line": 125,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    emptyList = new DrillColumnMetaDataList();\r\n    // Create mock columns\r\n    final MaterializedField exampleIntField = mock(MaterializedField.class);\r\n    MajorType exampleIntType = MajorType.newBuilder().setMinorType(MinorType.INT).build();\r\n    when(exampleIntField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testInt\"));\r\n    when(exampleIntField.getType()).thenReturn(exampleIntType);\r\n    when(exampleIntField.getDataMode()).thenReturn(DataMode.OPTIONAL);\r\n    final MaterializedField exampleStringField = mock(MaterializedField.class);\r\n    MajorType exampleStringType = MajorType.newBuilder().setMinorType(MinorType.VARCHAR).build();\r\n    when(exampleStringField.getPath()).thenReturn(SchemaPath.getSimplePath(\"/path/to/testString\"));\r\n    when(exampleStringField.getType()).thenReturn(exampleStringType);\r\n    when(exampleStringField.getDataMode()).thenReturn(DataMode.REQUIRED);\r\n    oneElementList = new DrillColumnMetaDataList();\r\n    BatchSchema oneElementSchema = mock(BatchSchema.class);\r\n    when(oneElementSchema.getFieldCount()).thenReturn(1);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(oneElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> oneClassList = new ArrayList<>();\r\n    oneClassList.add(Integer.class);\r\n    oneElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", oneElementSchema, oneClassList);\r\n    twoElementList = new DrillColumnMetaDataList();\r\n    BatchSchema twoElementSchema = mock(BatchSchema.class);\r\n    when(twoElementSchema.getFieldCount()).thenReturn(2);\r\n    doAnswer(new Answer<MaterializedField>() {\r\n\r\n        @Override\r\n        public MaterializedField answer(InvocationOnMock invocationOnMock) throws Throwable {\r\n            Integer index = (Integer) invocationOnMock.getArguments()[0];\r\n            if (index == 0) {\r\n                return exampleIntField;\r\n            } else if (index == 1) {\r\n                return exampleStringField;\r\n            }\r\n            return null;\r\n        }\r\n    }).when(twoElementSchema).getColumn(Mockito.anyInt());\r\n    List<Class<?>> twoClassList = new ArrayList<>();\r\n    twoClassList.add(Integer.class);\r\n    twoClassList.add(String.class);\r\n    twoElementList.updateColumnMetaData(\"testCatalog\", \"testSchema\", \"testTable\", twoElementSchema, twoClassList);\r\n}"
+        }
+      }
+    ]
+  }
+]

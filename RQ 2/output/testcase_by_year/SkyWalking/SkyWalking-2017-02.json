@@ -1,0 +1,115 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-application-toolkit\\skywalking-toolkit-opentracing\\src\\test\\java\\com\\a\\eye\\skywalking\\toolkit\\opentracing\\SkyWalkingTracerTest.java",
+  "methodName" : "testBuildSpan",
+  "sourceCode" : "@Test\r\npublic void testBuildSpan() {\r\n    Tracer tracer = SkyWalkingTracer.INSTANCE;\r\n    Tracer.SpanBuilder spanBuilder = tracer.buildSpan(\"/http/serviceName\");\r\n    SpanContext context = new TextMapContext(new TextMap() {\r\n\r\n        @Override\r\n        public Iterator<Map.Entry<String, String>> iterator() {\r\n            throw new UnsupportedOperationException(\"TextMapInjectAdapter should only be used with Tracer.inject()\");\r\n        }\r\n\r\n        @Override\r\n        public void put(String key, String value) {\r\n        }\r\n    });\r\n    spanBuilder.asChildOf(context).withTag(\"example.tag\", \"testtag\");\r\n    Span span = spanBuilder.start();\r\n    span.finish();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-commons\\skywalking-trace\\src\\test\\java\\com\\a\\eye\\skywalking\\trace\\LogDataTestCase.java",
+  "methodName" : "testHoldValue",
+  "sourceCode" : "@Test\r\npublic void testHoldValue() {\r\n    Map<String, ?> fields = new HashMap<String, String>();\r\n    LogData logData = new LogData(123L, fields);\r\n    Assert.assertEquals(123, logData.getTime());\r\n    Assert.assertEquals(fields, logData.getFields());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-commons\\skywalking-trace\\src\\test\\java\\com\\a\\eye\\skywalking\\trace\\SpanTestCase.java",
+  "methodName" : "testConstructors",
+  "sourceCode" : "@Test\r\npublic void testConstructors() {\r\n    Span span1 = new Span(0, \"serviceA\");\r\n    Span span2 = new Span(2, span1, \"serviceA\");\r\n    Assert.assertEquals(-1, span1.getParentSpanId());\r\n    Assert.assertEquals(0, span2.getParentSpanId());\r\n    Assert.assertTrue(span1.getStartTime() > 0);\r\n    Assert.assertTrue(span2.getStartTime() > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-commons\\skywalking-trace\\src\\test\\java\\com\\a\\eye\\skywalking\\trace\\SpanTestCase.java",
+  "methodName" : "testFinish",
+  "sourceCode" : "@Test\r\npublic void testFinish() {\r\n    TraceSegment owner = new TraceSegment(\"trace_1\");\r\n    Span span1 = new Span(0, \"serviceA\");\r\n    Assert.assertTrue(span1.getEndTime() == 0);\r\n    span1.finish(owner);\r\n    Assert.assertEquals(span1, owner.getSpans().get(0));\r\n    Assert.assertTrue(span1.getEndTime() > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-commons\\skywalking-trace\\src\\test\\java\\com\\a\\eye\\skywalking\\trace\\SpanTestCase.java",
+  "methodName" : "testSetTag",
+  "sourceCode" : "@Test\r\npublic void testSetTag() {\r\n    Span span1 = new Span(0, \"serviceA\");\r\n    Tags.SPAN_LAYER.asHttp(span1);\r\n    Tags.COMPONENT.set(span1, \"Spring\");\r\n    Tags.PEER_HOST.set(span1, ipToInt(\"127.0.0.1\"));\r\n    Tags.ERROR.set(span1, true);\r\n    Tags.STATUS_CODE.set(span1, 302);\r\n    Tags.URL.set(span1, \"http://127.0.0.1/serviceA\");\r\n    Tags.DB_URL.set(span1, \"jdbc:127.0.0.1:user\");\r\n    Tags.DB_STATEMENT.set(span1, \"select * from users\");\r\n    Map<String, Object> tags = span1.getTags();\r\n    Assert.assertEquals(8, tags.size());\r\n    Assert.assertTrue(Tags.SPAN_LAYER.isHttp(span1));\r\n    Assert.assertEquals(\"127.0.0.1\", intToIp(Tags.PEER_HOST.get(span1)));\r\n    Assert.assertTrue(Tags.ERROR.get(span1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-commons\\skywalking-trace\\src\\test\\java\\com\\a\\eye\\skywalking\\trace\\SpanTestCase.java",
+  "methodName" : "testLogException",
+  "sourceCode" : "@Test\r\npublic void testLogException() {\r\n    Span span1 = new Span(0, \"serviceA\");\r\n    Exception exp = new Exception(\"exception msg\");\r\n    span1.log(exp);\r\n    List<LogData> logs = span1.getLogs();\r\n    Assert.assertEquals(\"java.lang.Exception\", logs.get(0).getFields().get(\"error.kind\"));\r\n    Assert.assertEquals(\"exception msg\", logs.get(0).getFields().get(\"message\"));\r\n    Assert.assertNotNull(logs.get(0).getFields().get(\"stack\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-commons\\skywalking-trace\\src\\test\\java\\com\\a\\eye\\skywalking\\trace\\TraceSegmentTestCase.java",
+  "methodName" : "testConstructor",
+  "sourceCode" : "@Test\r\npublic void testConstructor() {\r\n    TraceSegment segment = new TraceSegment(\"trace_1\");\r\n    Assert.assertEquals(\"trace_1\", segment.getTraceSegmentId());\r\n    Assert.assertTrue(segment.getStartTime() > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-commons\\skywalking-trace\\src\\test\\java\\com\\a\\eye\\skywalking\\trace\\TraceSegmentTestCase.java",
+  "methodName" : "testRef",
+  "sourceCode" : "@Test\r\npublic void testRef() {\r\n    TraceSegment segment = new TraceSegment(\"trace_3\");\r\n    TraceSegmentRef ref1 = new TraceSegmentRef();\r\n    ref1.setTraceSegmentId(\"parent_trace_0\");\r\n    ref1.setSpanId(1);\r\n    segment.ref(ref1);\r\n    TraceSegmentRef ref2 = new TraceSegmentRef();\r\n    ref2.setTraceSegmentId(\"parent_trace_1\");\r\n    ref2.setSpanId(5);\r\n    segment.ref(ref2);\r\n    TraceSegmentRef ref3 = new TraceSegmentRef();\r\n    ref3.setTraceSegmentId(\"parent_trace_1\");\r\n    ref3.setSpanId(5);\r\n    segment.ref(ref3);\r\n    Assert.assertEquals(ref1, segment.getPrimaryRef());\r\n    Assert.assertEquals(ref2, segment.getRefs().get(0));\r\n    Assert.assertEquals(ref3, segment.getRefs().get(1));\r\n    Assert.assertEquals(\"parent_trace_0\", segment.getPrimaryRef().getTraceSegmentId());\r\n    Assert.assertEquals(1, segment.getPrimaryRef().getSpanId());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-commons\\skywalking-trace\\src\\test\\java\\com\\a\\eye\\skywalking\\trace\\TraceSegmentTestCase.java",
+  "methodName" : "testArchiveSpan",
+  "sourceCode" : "@Test\r\npublic void testArchiveSpan() {\r\n    TraceSegment segment = new TraceSegment(\"trace_1\");\r\n    Span span1 = new Span(1, \"/serviceA\");\r\n    segment.archive(span1);\r\n    Span span2 = new Span(2, \"/db/sql\");\r\n    segment.archive(span2);\r\n    Assert.assertEquals(span1, segment.getSpans().get(0));\r\n    Assert.assertEquals(span2, segment.getSpans().get(1));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-commons\\skywalking-trace\\src\\test\\java\\com\\a\\eye\\skywalking\\trace\\TraceSegmentTestCase.java",
+  "methodName" : "testFinish",
+  "sourceCode" : "@Test\r\npublic void testFinish() {\r\n    TraceSegment segment = new TraceSegment(\"trace_1\");\r\n    Assert.assertTrue(segment.getEndTime() == 0);\r\n    segment.finish();\r\n    Assert.assertTrue(segment.getEndTime() > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-sniffer\\skywalking-api\\src\\test\\java\\com\\a\\eye\\skywalking\\api\\context\\ContextCarrierTestCase.java",
+  "methodName" : "testSerialize",
+  "sourceCode" : "@Test\r\npublic void testSerialize() {\r\n    ContextCarrier carrier = new ContextCarrier();\r\n    carrier.setTraceSegmentId(\"trace_id_A\");\r\n    carrier.setSpanId(100);\r\n    Assert.assertEquals(\"trace_id_A|100\", carrier.serialize());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-sniffer\\skywalking-api\\src\\test\\java\\com\\a\\eye\\skywalking\\api\\context\\ContextCarrierTestCase.java",
+  "methodName" : "testDeserialize",
+  "sourceCode" : "@Test\r\npublic void testDeserialize() {\r\n    ContextCarrier carrier = new ContextCarrier();\r\n    carrier.deserialize(\"trace_id_A|100\");\r\n    Assert.assertEquals(\"trace_id_A\", carrier.getTraceSegmentId());\r\n    Assert.assertEquals(100, carrier.getSpanId());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-sniffer\\skywalking-api\\src\\test\\java\\com\\a\\eye\\skywalking\\api\\context\\ContextCarrierTestCase.java",
+  "methodName" : "testIllegalDeserialize",
+  "sourceCode" : "@Test\r\npublic void testIllegalDeserialize() {\r\n    ContextCarrier carrier = new ContextCarrier();\r\n    carrier.deserialize(\"abcde\");\r\n    Assert.assertFalse(carrier.isValid());\r\n    carrier = new ContextCarrier();\r\n    carrier.deserialize(\"trace_id|-100\");\r\n    Assert.assertFalse(carrier.isValid());\r\n    carrier = new ContextCarrier();\r\n    carrier.deserialize(\"trace_id|illegal-spanid\");\r\n    Assert.assertFalse(carrier.isValid());\r\n    carrier = new ContextCarrier();\r\n    carrier.deserialize(\"trace_id|100|other-illegal\");\r\n    Assert.assertFalse(carrier.isValid());\r\n    carrier = new ContextCarrier();\r\n    carrier.deserialize(\"trace_id|100\");\r\n    Assert.assertTrue(carrier.isValid());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-sniffer\\skywalking-api\\src\\test\\java\\com\\a\\eye\\skywalking\\api\\context\\ContextManagerTestCase.java",
+  "methodName" : "testDelegateToTracerContext",
+  "sourceCode" : "@Test\r\npublic void testDelegateToTracerContext() {\r\n    Span span = ContextManager.INSTANCE.createSpan(\"serviceA\");\r\n    Tags.COMPONENT.set(span, \"test\");\r\n    Assert.assertEquals(span, ContextManager.INSTANCE.activeSpan());\r\n    TracerContext.ListenerManager.add(TestTracerContextListener.INSTANCE);\r\n    ContextManager.INSTANCE.stopSpan();\r\n    TraceSegment segment = TestTracerContextListener.INSTANCE.finishedSegmentCarrier[0];\r\n    Assert.assertEquals(span, segment.getSpans().get(0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-sniffer\\skywalking-api\\src\\test\\java\\com\\a\\eye\\skywalking\\api\\context\\TracerContextTestCase.java",
+  "methodName" : "testSpanLifeCycle",
+  "sourceCode" : "@Test\r\npublic void testSpanLifeCycle() {\r\n    TracerContext context = new TracerContext();\r\n    Span span = context.createSpan(\"/serviceA\");\r\n    Assert.assertEquals(span, context.activeSpan());\r\n    TracerContext.ListenerManager.add(TestTracerContextListener.INSTANCE);\r\n    final TraceSegment[] finishedSegmentCarrier = TestTracerContextListener.INSTANCE.finishedSegmentCarrier;\r\n    context.stopSpan(span);\r\n    Assert.assertNotNull(finishedSegmentCarrier[0]);\r\n    Assert.assertEquals(1, finishedSegmentCarrier[0].getSpans().size());\r\n    Assert.assertEquals(span, finishedSegmentCarrier[0].getSpans().get(0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-sniffer\\skywalking-api\\src\\test\\java\\com\\a\\eye\\skywalking\\api\\context\\TracerContextTestCase.java",
+  "methodName" : "testChildOfSpan",
+  "sourceCode" : "@Test\r\npublic void testChildOfSpan() {\r\n    TracerContext context = new TracerContext();\r\n    Span serviceSpan = context.createSpan(\"/serviceA\");\r\n    Span dbSpan = context.createSpan(\"db/preparedStatement/execute\");\r\n    Assert.assertEquals(dbSpan, context.activeSpan());\r\n    TracerContext.ListenerManager.add(TestTracerContextListener.INSTANCE);\r\n    final TraceSegment[] finishedSegmentCarrier = TestTracerContextListener.INSTANCE.finishedSegmentCarrier;\r\n    try {\r\n        context.stopSpan(serviceSpan);\r\n    } catch (Throwable t) {\r\n        Assert.assertTrue(t instanceof IllegalStateException);\r\n    }\r\n    context.stopSpan(dbSpan);\r\n    context.stopSpan(serviceSpan);\r\n    Assert.assertNotNull(finishedSegmentCarrier[0]);\r\n    Assert.assertEquals(2, finishedSegmentCarrier[0].getSpans().size());\r\n    Assert.assertEquals(dbSpan, finishedSegmentCarrier[0].getSpans().get(0));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-sniffer\\skywalking-api\\src\\test\\java\\com\\a\\eye\\skywalking\\api\\context\\TracerContextTestCase.java",
+  "methodName" : "testInject",
+  "sourceCode" : "@Test\r\npublic void testInject() {\r\n    TracerContext context = new TracerContext();\r\n    Span serviceSpan = context.createSpan(\"/serviceA\");\r\n    Span dbSpan = context.createSpan(\"db/preparedStatement/execute\");\r\n    ContextCarrier carrier = new ContextCarrier();\r\n    context.inject(carrier);\r\n    Assert.assertTrue(carrier.isValid());\r\n    Assert.assertEquals(1, carrier.getSpanId());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-sniffer\\skywalking-api\\src\\test\\java\\com\\a\\eye\\skywalking\\api\\context\\TracerContextTestCase.java",
+  "methodName" : "testExtract",
+  "sourceCode" : "@Test\r\npublic void testExtract() {\r\n    ContextCarrier carrier = new ContextCarrier();\r\n    carrier.setTraceSegmentId(\"trace_id_1\");\r\n    carrier.setSpanId(5);\r\n    Assert.assertTrue(carrier.isValid());\r\n    TracerContext context = new TracerContext();\r\n    context.extract(carrier);\r\n    Span span = context.createSpan(\"/serviceC\");\r\n    TracerContext.ListenerManager.add(TestTracerContextListener.INSTANCE);\r\n    final TraceSegment[] finishedSegmentCarrier = TestTracerContextListener.INSTANCE.finishedSegmentCarrier;\r\n    context.stopSpan(span);\r\n    Assert.assertEquals(\"trace_id_1\", finishedSegmentCarrier[0].getPrimaryRef().getTraceSegmentId());\r\n    Assert.assertEquals(5, finishedSegmentCarrier[0].getPrimaryRef().getSpanId());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\SkyWalking\\skywalking-sniffer\\skywalking-api\\src\\test\\java\\com\\a\\eye\\skywalking\\api\\plugin\\PluginMainTest.java",
+  "methodName" : "testMain",
+  "sourceCode" : "@Test\r\npublic void testMain() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, PluginException {\r\n    TracingBootstrap.main(new String[] { \"PluginMainTest\" });\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

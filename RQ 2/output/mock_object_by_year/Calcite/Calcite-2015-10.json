@@ -1,0 +1,129 @@
+[
+  {
+    "rawMockObjectId": 1,
+    "variableName": "service",
+    "variableType": "Service",
+    "isGlobal": true,
+    "mockPatternLevel": 2,
+    "classContext": {
+      "packageName": "org.apache.calcite.avatica.remote",
+      "filePath": "C:\\Java_projects\\temp_projects\\Calcite\\avatica\\src\\test\\java\\org\\apache\\calcite\\avatica\\remote\\ProtobufHandlerTest.java",
+      "className": "ProtobufHandlerTest"
+    },
+    "statements": [
+      {
+        "code": "// Mocks\r\nprivate Service service;",
+        "line": 45,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "// Mocks\r\nservice = Mockito.mock(Service.class);",
+        "line": 54,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setupMocks",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setupMocks() {\r\n    // Mocks\r\n    service = Mockito.mock(Service.class);\r\n    translation = Mockito.mock(ProtobufTranslation.class);\r\n    // Real objects\r\n    handler = new ProtobufHandler(service, translation);\r\n}"
+        }
+      },
+      {
+        "code": "when(service.apply(request)).thenReturn(response);",
+        "line": 89,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testFetch",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testFetch() throws Exception {\r\n    final String connectionId = \"cnxn1\";\r\n    final int statementId = 30;\r\n    final long offset = 10;\r\n    final int fetchMaxRowCount = 100;\r\n    final List<Common.TypedValue> values = new ArrayList<>();\r\n    values.add(Common.TypedValue.newBuilder().setType(Common.Rep.BOOLEAN).setBoolValue(true).build());\r\n    values.add(Common.TypedValue.newBuilder().setType(Common.Rep.STRING).setStringValue(\"my_string\").build());\r\n    Requests.FetchRequest protoRequest = Requests.FetchRequest.newBuilder().setConnectionId(connectionId).setStatementId(statementId).setOffset(offset).setFetchMaxRowCount(fetchMaxRowCount).build();\r\n    byte[] serializedRequest = protoRequest.toByteArray();\r\n    FetchRequest request = new FetchRequest().deserialize(protoRequest);\r\n    List<Object> frameRows = new ArrayList<>();\r\n    frameRows.add(new Object[] { true, \"my_string\" });\r\n    Meta.Frame frame = Frame.create(0, true, frameRows);\r\n    FetchResponse response = new FetchResponse(frame);\r\n    when(translation.parseRequest(serializedRequest)).thenReturn(request);\r\n    when(service.apply(request)).thenReturn(response);\r\n    when(translation.serializeResponse(response)).thenReturn(response.serialize().toByteArray());\r\n    byte[] serializedResponse = handler.apply(serializedRequest);\r\n    Responses.FetchResponse protoResponse = Responses.FetchResponse.parseFrom(serializedResponse);\r\n    Common.Frame protoFrame = protoResponse.getFrame();\r\n    assertEquals(frame.offset, protoFrame.getOffset());\r\n    assertEquals(frame.done, protoFrame.getDone());\r\n    List<Common.Row> rows = protoFrame.getRowsList();\r\n    assertEquals(1, rows.size());\r\n    Common.Row row = rows.get(0);\r\n    List<Common.TypedValue> rowValues = row.getValueList();\r\n    assertEquals(2, rowValues.size());\r\n    Iterator<Common.TypedValue> iter = rowValues.iterator();\r\n    assertTrue(iter.hasNext());\r\n    Common.TypedValue value = iter.next();\r\n    assertEquals(Common.Rep.BOOLEAN, value.getType());\r\n    assertEquals(true, value.getBoolValue());\r\n    assertTrue(iter.hasNext());\r\n    value = iter.next();\r\n    assertEquals(Common.Rep.STRING, value.getType());\r\n    assertEquals(\"my_string\", value.getStringValue());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 2,
+    "variableName": "translation",
+    "variableType": "ProtobufTranslation",
+    "isGlobal": true,
+    "mockPatternLevel": 2,
+    "classContext": {
+      "packageName": "org.apache.calcite.avatica.remote",
+      "filePath": "C:\\Java_projects\\temp_projects\\Calcite\\avatica\\src\\test\\java\\org\\apache\\calcite\\avatica\\remote\\ProtobufHandlerTest.java",
+      "className": "ProtobufHandlerTest"
+    },
+    "statements": [
+      {
+        "code": "private ProtobufTranslation translation;",
+        "line": 46,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "translation = Mockito.mock(ProtobufTranslation.class);",
+        "line": 55,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setupMocks",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setupMocks() {\r\n    // Mocks\r\n    service = Mockito.mock(Service.class);\r\n    translation = Mockito.mock(ProtobufTranslation.class);\r\n    // Real objects\r\n    handler = new ProtobufHandler(service, translation);\r\n}"
+        }
+      },
+      {
+        "code": "when(translation.parseRequest(serializedRequest)).thenReturn(request);",
+        "line": 88,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testFetch",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testFetch() throws Exception {\r\n    final String connectionId = \"cnxn1\";\r\n    final int statementId = 30;\r\n    final long offset = 10;\r\n    final int fetchMaxRowCount = 100;\r\n    final List<Common.TypedValue> values = new ArrayList<>();\r\n    values.add(Common.TypedValue.newBuilder().setType(Common.Rep.BOOLEAN).setBoolValue(true).build());\r\n    values.add(Common.TypedValue.newBuilder().setType(Common.Rep.STRING).setStringValue(\"my_string\").build());\r\n    Requests.FetchRequest protoRequest = Requests.FetchRequest.newBuilder().setConnectionId(connectionId).setStatementId(statementId).setOffset(offset).setFetchMaxRowCount(fetchMaxRowCount).build();\r\n    byte[] serializedRequest = protoRequest.toByteArray();\r\n    FetchRequest request = new FetchRequest().deserialize(protoRequest);\r\n    List<Object> frameRows = new ArrayList<>();\r\n    frameRows.add(new Object[] { true, \"my_string\" });\r\n    Meta.Frame frame = Frame.create(0, true, frameRows);\r\n    FetchResponse response = new FetchResponse(frame);\r\n    when(translation.parseRequest(serializedRequest)).thenReturn(request);\r\n    when(service.apply(request)).thenReturn(response);\r\n    when(translation.serializeResponse(response)).thenReturn(response.serialize().toByteArray());\r\n    byte[] serializedResponse = handler.apply(serializedRequest);\r\n    Responses.FetchResponse protoResponse = Responses.FetchResponse.parseFrom(serializedResponse);\r\n    Common.Frame protoFrame = protoResponse.getFrame();\r\n    assertEquals(frame.offset, protoFrame.getOffset());\r\n    assertEquals(frame.done, protoFrame.getDone());\r\n    List<Common.Row> rows = protoFrame.getRowsList();\r\n    assertEquals(1, rows.size());\r\n    Common.Row row = rows.get(0);\r\n    List<Common.TypedValue> rowValues = row.getValueList();\r\n    assertEquals(2, rowValues.size());\r\n    Iterator<Common.TypedValue> iter = rowValues.iterator();\r\n    assertTrue(iter.hasNext());\r\n    Common.TypedValue value = iter.next();\r\n    assertEquals(Common.Rep.BOOLEAN, value.getType());\r\n    assertEquals(true, value.getBoolValue());\r\n    assertTrue(iter.hasNext());\r\n    value = iter.next();\r\n    assertEquals(Common.Rep.STRING, value.getType());\r\n    assertEquals(\"my_string\", value.getStringValue());\r\n}"
+        }
+      },
+      {
+        "code": "when(translation.serializeResponse(response)).thenReturn(response.serialize().toByteArray());",
+        "line": 90,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testFetch",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testFetch() throws Exception {\r\n    final String connectionId = \"cnxn1\";\r\n    final int statementId = 30;\r\n    final long offset = 10;\r\n    final int fetchMaxRowCount = 100;\r\n    final List<Common.TypedValue> values = new ArrayList<>();\r\n    values.add(Common.TypedValue.newBuilder().setType(Common.Rep.BOOLEAN).setBoolValue(true).build());\r\n    values.add(Common.TypedValue.newBuilder().setType(Common.Rep.STRING).setStringValue(\"my_string\").build());\r\n    Requests.FetchRequest protoRequest = Requests.FetchRequest.newBuilder().setConnectionId(connectionId).setStatementId(statementId).setOffset(offset).setFetchMaxRowCount(fetchMaxRowCount).build();\r\n    byte[] serializedRequest = protoRequest.toByteArray();\r\n    FetchRequest request = new FetchRequest().deserialize(protoRequest);\r\n    List<Object> frameRows = new ArrayList<>();\r\n    frameRows.add(new Object[] { true, \"my_string\" });\r\n    Meta.Frame frame = Frame.create(0, true, frameRows);\r\n    FetchResponse response = new FetchResponse(frame);\r\n    when(translation.parseRequest(serializedRequest)).thenReturn(request);\r\n    when(service.apply(request)).thenReturn(response);\r\n    when(translation.serializeResponse(response)).thenReturn(response.serialize().toByteArray());\r\n    byte[] serializedResponse = handler.apply(serializedRequest);\r\n    Responses.FetchResponse protoResponse = Responses.FetchResponse.parseFrom(serializedResponse);\r\n    Common.Frame protoFrame = protoResponse.getFrame();\r\n    assertEquals(frame.offset, protoFrame.getOffset());\r\n    assertEquals(frame.done, protoFrame.getDone());\r\n    List<Common.Row> rows = protoFrame.getRowsList();\r\n    assertEquals(1, rows.size());\r\n    Common.Row row = rows.get(0);\r\n    List<Common.TypedValue> rowValues = row.getValueList();\r\n    assertEquals(2, rowValues.size());\r\n    Iterator<Common.TypedValue> iter = rowValues.iterator();\r\n    assertTrue(iter.hasNext());\r\n    Common.TypedValue value = iter.next();\r\n    assertEquals(Common.Rep.BOOLEAN, value.getType());\r\n    assertEquals(true, value.getBoolValue());\r\n    assertTrue(iter.hasNext());\r\n    value = iter.next();\r\n    assertEquals(Common.Rep.STRING, value.getType());\r\n    assertEquals(\"my_string\", value.getStringValue());\r\n}"
+        }
+      }
+    ]
+  }
+]

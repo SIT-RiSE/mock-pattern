@@ -1,0 +1,349 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\ArrayListTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() {\r\n    ArrayList<String> list = new ArrayList<String>();\r\n    list.insert(\"B\", 0);\r\n    list.insert(\"C\", 1);\r\n    list.insert(\"D\", 2);\r\n    list.insert(\"A\", 0);\r\n    Object[] array = list.toArray();\r\n    assertEquals(array[0], \"A\");\r\n    assertEquals(ArrayList.binarySearch(list, \"A\"), 0);\r\n    list.remove(0, 1);\r\n    assertEquals(list.get(0), \"B\");\r\n    assertEquals(list.getLength(), 3);\r\n    assertEquals(list.indexOf(\"C\"), 1);\r\n    Sequence<String> removed = list.remove(1, 1);\r\n    assertNotNull(removed.get(0));\r\n    assertTrue(removed.get(0).equals(\"C\"));\r\n    list.trimToSize();\r\n    list.ensureCapacity(10);\r\n    assertEquals(list.getCapacity(), 10);\r\n    list.insert(\"E\", 1);\r\n    assertEquals(list.getLength(), 3);\r\n    assertNotNull(list.get(1));\r\n    assertTrue(list.get(1).equals(\"E\"));\r\n    assertTrue(list.equals(new ArrayList<String>(\"B\", \"E\", \"D\")));\r\n    assertFalse(list.equals(new ArrayList<String>(\"B\", \"E\", \"D\", \"C\")));\r\n    assertFalse(list.equals(new ArrayList<String>(\"E\", \"C\", \"D\")));\r\n    ArrayList<String> copy = new ArrayList<String>(\"B\", \"E\", \"D\");\r\n    int i = 0;\r\n    for (String item : list) {\r\n        assertEquals(item, copy.get(i++));\r\n    }\r\n    int j = 0;\r\n    List.ItemIterator<String> iterator = list.iterator();\r\n    while (j < list.getLength()) {\r\n        iterator.next();\r\n        j++;\r\n    }\r\n    while (iterator.hasPrevious()) {\r\n        String s = iterator.previous();\r\n        assertEquals(s, copy.get(--j));\r\n    }\r\n    iterator = list.iterator();\r\n    assertEquals(iterator.next(), \"B\");\r\n    assertEquals(iterator.next(), \"E\");\r\n    assertEquals(iterator.previous(), \"E\");\r\n    assertEquals(iterator.previous(), \"B\");\r\n    assertEquals(iterator.next(), \"B\");\r\n    iterator = list.iterator();\r\n    iterator.insert(\"M\");\r\n    assertEquals(list, new ArrayList<String>(\"M\", \"B\", \"E\", \"D\"));\r\n    assertEquals(iterator.next(), \"M\");\r\n    iterator.insert(\"N\");\r\n    assertEquals(list, new ArrayList<String>(\"M\", \"N\", \"B\", \"E\", \"D\"));\r\n    iterator = list.iterator();\r\n    iterator.toEnd();\r\n    assertEquals(iterator.previous(), \"D\");\r\n    iterator.toStart();\r\n    assertEquals(iterator.next(), \"M\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\ArrayListTest.java",
+  "methodName" : "copyConstructorTest",
+  "sourceCode" : "@Test\r\n@SuppressWarnings(\"unchecked\")\r\npublic void copyConstructorTest() {\r\n    ArrayList<Object> list = new ArrayList<Object>(\"a\", \"b\", \"c\");\r\n    Sequence<?> sequence = list;\r\n    list = new ArrayList<Object>((Sequence<Object>) sequence);\r\n    assertEquals(list.getLength(), 3);\r\n    assertEquals(list.get(0), \"a\");\r\n    assertEquals(list.get(1), \"b\");\r\n    assertEquals(list.get(2), \"c\");\r\n}",
+  "annotations" : [ "Test", "SuppressWarnings" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\EnumListTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() {\r\n    EnumList<TestEnum> enumList = new EnumList<TestEnum>(TestEnum.class);\r\n    assertEquals(enumList.get(0), TestEnum.A);\r\n    assertEquals(enumList.get(1), TestEnum.B);\r\n    assertEquals(enumList.getLength(), 3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\EnumMapTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() {\r\n    EnumMap<TestEnum, String> enumMap = new EnumMap<TestEnum, String>(TestEnum.class);\r\n    enumMap.put(TestEnum.A, \"a\");\r\n    assertTrue(enumMap.containsKey(TestEnum.A));\r\n    assertEquals(enumMap.get(TestEnum.A), \"a\");\r\n    enumMap.put(TestEnum.C, \"c\");\r\n    assertTrue(enumMap.containsKey(TestEnum.C));\r\n    assertEquals(enumMap.get(TestEnum.C), \"c\");\r\n    for (TestEnum key : enumMap) {\r\n        assertEquals(key.toString().toLowerCase(), enumMap.get(key));\r\n    }\r\n    enumMap.remove(TestEnum.A);\r\n    assertTrue(!enumMap.containsKey(TestEnum.A));\r\n    enumMap.remove(TestEnum.C);\r\n    assertTrue(enumMap.isEmpty());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\FilteredListTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() {\r\n    // Create a list\r\n    ArrayList<String> sourceList = new ArrayList<String>(\"Apple\", \"Banana\", \"Cherry\", \"Donut\");\r\n    FilteredList<String> filteredList = new FilteredList<String>(sourceList);\r\n    assertEquals(filteredList.getLength(), 4);\r\n    for (int i = 0, n = filteredList.getLength(); i < n; i++) {\r\n        assertEquals(filteredList.get(i), sourceList.get(i));\r\n    }\r\n    // Filter the list\r\n    filteredList.setFilter(new Filter<String>() {\r\n\r\n        @Override\r\n        public boolean include(String string) {\r\n            return !string.startsWith(\"D\");\r\n        }\r\n    });\r\n    assertEquals(filteredList.getLength(), 3);\r\n    for (int i = 0, n = filteredList.getLength(); i < n; i++) {\r\n        assertEquals(filteredList.get(i), sourceList.get(i));\r\n    }\r\n    // Add items to the source list\r\n    sourceList.add(\"Eggplant\");\r\n    sourceList.add(\"Dr. Pepper\");\r\n    assertEquals(filteredList.getLength(), 4);\r\n    // Add items to the filtered list\r\n    filteredList.add(\"Fig\");\r\n    filteredList.add(\"Diet Coke\");\r\n    assertEquals(filteredList.getLength(), 5);\r\n    assertEquals(sourceList.getLength(), 8);\r\n    // Remove items from the source list\r\n    sourceList.remove(\"Banana\");\r\n    assertEquals(filteredList.getLength(), 4);\r\n    assertEquals(sourceList.getLength(), 7);\r\n    sourceList.remove(\"Diet Coke\");\r\n    assertEquals(filteredList.getLength(), 4);\r\n    assertEquals(sourceList.getLength(), 6);\r\n    // Remove items from the filtered list\r\n    filteredList.remove(\"Cherry\");\r\n    assertEquals(filteredList.getLength(), 3);\r\n    assertEquals(sourceList.getLength(), 5);\r\n    // Update items in the source list\r\n    sourceList.update(0, \"Doorknob\");\r\n    assertEquals(filteredList.getLength(), 2);\r\n    sourceList.update(0, \"Window\");\r\n    assertEquals(filteredList.getLength(), 3);\r\n    // Update items in the filtered list\r\n    filteredList.update(0, \"Pickle\");\r\n    assertEquals(filteredList.get(0), \"Pickle\");\r\n    try {\r\n        filteredList.update(0, \"Delivery\");\r\n    } catch (IllegalArgumentException exception) {\r\n        assertTrue(true);\r\n    }\r\n    // Apply different comparators\r\n    sourceList.setComparator(new Comparator<String>() {\r\n\r\n        @Override\r\n        public int compare(String s1, String s2) {\r\n            return -s1.compareTo(s2);\r\n        }\r\n    });\r\n    filteredList.setComparator(new Comparator<String>() {\r\n\r\n        @Override\r\n        public int compare(String s1, String s2) {\r\n            return s1.compareTo(s2);\r\n        }\r\n    });\r\n    assertEquals(sourceList.get(0), \"Window\");\r\n    assertEquals(filteredList.get(2), \"Window\");\r\n    // Clear the filtered list\r\n    filteredList.clear();\r\n    assertEquals(sourceList.getLength(), 2);\r\n    for (String string : sourceList) {\r\n        assertEquals(Character.toLowerCase(string.charAt(0)), 'd');\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashMapTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() {\r\n    HashMap<String, Integer> map = new HashMap<String, Integer>();\r\n    assertTrue(map.isEmpty());\r\n    assertEquals(0, map.getCount());\r\n    assertNull(map.getComparator());\r\n    assertFalse(map.containsKey(\"a\"));\r\n    assertNotNull(map.getMapListeners());\r\n    assertNotNull(map.toString());\r\n    assertNull(map.put(\"a\", Integer.valueOf(1)));\r\n    assertEquals(1, (int) map.put(\"a\", 2));\r\n    assertEquals(2, (int) map.get(\"a\"));\r\n    assertEquals(1, map.getCount());\r\n    assertEquals(2, (int) map.remove(\"a\"));\r\n    assertEquals(0, map.getCount());\r\n    map.put(\"a\", 1);\r\n    assertEquals(1, map.getCount());\r\n    map.put(\"b\", 2);\r\n    assertEquals(2, map.getCount());\r\n    map.put(\"c\", 3);\r\n    assertEquals(3, map.getCount());\r\n    assertEquals(1, (int) map.get(\"a\"));\r\n    assertEquals(2, (int) map.get(\"b\"));\r\n    assertEquals(3, (int) map.get(\"c\"));\r\n    Iterator<String> iter = map.iterator();\r\n    int count = 0;\r\n    while (iter.hasNext()) {\r\n        String s = iter.next();\r\n        if (!map.containsKey(s)) {\r\n            fail(\"Unknown element in map \" + s);\r\n        }\r\n        count++;\r\n    }\r\n    assertEquals(3, count);\r\n    iter = map.iterator();\r\n    while (iter.hasNext()) {\r\n        iter.next();\r\n        iter.remove();\r\n    }\r\n    assertEquals(0, map.getCount());\r\n    map.put(\"a\", 1);\r\n    map.put(\"b\", 2);\r\n    map.put(\"c\", 3);\r\n    map.clear();\r\n    assertEquals(0, map.getCount());\r\n    assertEquals(null, map.get(\"a\"));\r\n    assertEquals(null, map.get(\"b\"));\r\n    assertEquals(null, map.get(\"c\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashMapTest.java",
+  "methodName" : "constructorTests",
+  "sourceCode" : "@Test\r\n@SuppressWarnings(\"unchecked\")\r\npublic void constructorTests() throws Exception {\r\n    // TODO Verify that this does not generate a warning under JDK 7\r\n    HashMap<String, Integer> map = new HashMap<String, Integer>(new Map.Pair<String, Integer>(\"a\", 1), new Map.Pair<String, Integer>(\"b\", 2));\r\n    assertEquals(2, map.getCount());\r\n    map = new HashMap<String, Integer>(map);\r\n    assertEquals(2, map.getCount());\r\n    map = new HashMap<String, Integer>(map);\r\n    assertEquals(2, map.getCount());\r\n}",
+  "annotations" : [ "Test", "SuppressWarnings" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashMapTest.java",
+  "methodName" : "comparatorTest",
+  "sourceCode" : "@Test\r\npublic void comparatorTest() {\r\n    Comparator<Character> comparator = new Comparator<Character>() {\r\n\r\n        @Override\r\n        public int compare(Character c1, Character c2) {\r\n            return c1.compareTo(c2);\r\n        }\r\n    };\r\n    HashMap<Character, Integer> map = new HashMap<Character, Integer>(comparator);\r\n    ArrayList<Character> keys = new ArrayList<Character>('c', 'a', 'x', 'r', 'd', 'n', 'f');\r\n    int n = keys.getLength();\r\n    int i = 0;\r\n    while (i < n) {\r\n        map.put(keys.get(i), i++);\r\n    }\r\n    keys.setComparator(comparator);\r\n    int j = 0;\r\n    for (Character c : keys) {\r\n        assertEquals(keys.get(j++), c);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashMapTest.java",
+  "methodName" : "iteratorConcurrentModificationTest",
+  "sourceCode" : "@Test\r\npublic void iteratorConcurrentModificationTest() {\r\n    HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();\r\n    map.put(1, 1);\r\n    map.put(2, 2);\r\n    Iterator<Integer> iter = map.iterator();\r\n    iter.next();\r\n    map.put(3, 3);\r\n    try {\r\n        iter.next();\r\n        fail(\"Expecting \" + ConcurrentModificationException.class);\r\n    } catch (ConcurrentModificationException ex) {\r\n        // expecting this\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashMapTest.java",
+  "methodName" : "pivotHashMapSpeedTest",
+  "sourceCode" : "@Test\r\npublic void pivotHashMapSpeedTest() {\r\n    long t0 = System.currentTimeMillis();\r\n    HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();\r\n    for (int i = 0; i < LOAD_COUNT; i++) {\r\n        map.put(Integer.valueOf(i), Integer.valueOf(i));\r\n    }\r\n    long t1 = System.currentTimeMillis();\r\n    System.out.println(\"org.apache.pivot.HashMap \" + (t1 - t0) + \"ms\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashMapTest.java",
+  "methodName" : "javaHashMapSpeedTest",
+  "sourceCode" : "@Test\r\npublic void javaHashMapSpeedTest() {\r\n    long t0 = System.currentTimeMillis();\r\n    java.util.HashMap<Integer, Integer> map = new java.util.HashMap<Integer, Integer>();\r\n    for (int i = 0; i < LOAD_COUNT; i++) {\r\n        map.put(Integer.valueOf(i), Integer.valueOf(i));\r\n    }\r\n    long t1 = System.currentTimeMillis();\r\n    System.out.println(\"java.util.HashMap \" + (t1 - t0) + \"ms\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashMapTest.java",
+  "methodName" : "iteratorTest",
+  "sourceCode" : "@Test\r\npublic void iteratorTest() {\r\n    HashMap<String, Object> map = new HashMap<String, Object>();\r\n    map.put(\"font\", \"Verdana 11\");\r\n    map.put(\"colors\", \"#ff0000\");\r\n    Iterator<String> iterator = map.iterator();\r\n    while (iterator.hasNext()) {\r\n        String key = iterator.next();\r\n        System.out.println(key);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashMapTest.java",
+  "methodName" : "equalsTest",
+  "sourceCode" : "@Test\r\npublic void equalsTest() {\r\n    HashMap<String, String> map1 = new HashMap<String, String>();\r\n    map1.put(\"a\", \"one\");\r\n    map1.put(\"b\", \"two\");\r\n    map1.put(\"c\", \"three\");\r\n    HashMap<String, String> map2 = new HashMap<String, String>();\r\n    map2.put(\"a\", \"one\");\r\n    map2.put(\"b\", \"two\");\r\n    map2.put(\"c\", \"three\");\r\n    // Same\r\n    assertTrue(map1.equals(map2));\r\n    // Different values\r\n    map2.put(\"c\", \"four\");\r\n    assertFalse(map1.equals(map2));\r\n    map1.put(\"c\", null);\r\n    assertFalse(map1.equals(map2));\r\n    // Null comparison\r\n    map2.put(\"c\", null);\r\n    assertTrue(map1.equals(map2));\r\n    // Different lengths\r\n    map2.put(\"d\", \"four\");\r\n    assertFalse(map1.equals(map2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashSetTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() {\r\n    HashSet<String> set = new HashSet<String>();\r\n    set.add(\"A\");\r\n    assertTrue(set.contains(\"A\"));\r\n    set.add(\"B\");\r\n    assertTrue(set.contains(\"A\"));\r\n    assertTrue(set.contains(\"B\"));\r\n    assertEquals(set.getCount(), 2);\r\n    int i = 0;\r\n    for (String element : set) {\r\n        assertTrue(element.equals(\"A\") || element.equals(\"B\"));\r\n        i++;\r\n    }\r\n    assertEquals(i, 2);\r\n    set.remove(\"B\");\r\n    assertFalse(set.contains(\"B\"));\r\n    set.remove(\"A\");\r\n    assertFalse(set.contains(\"A\"));\r\n    assertTrue(set.isEmpty());\r\n    set.add(\"A\");\r\n    set.add(\"B\");\r\n    set.add(\"C\");\r\n    Iterator<String> iter = set.iterator();\r\n    int count = 0;\r\n    while (iter.hasNext()) {\r\n        String s = iter.next();\r\n        if (!set.contains(s)) {\r\n            fail(\"Unknown element in set \" + s);\r\n        }\r\n        count++;\r\n    }\r\n    assertEquals(3, count);\r\n    iter = set.iterator();\r\n    while (iter.hasNext()) {\r\n        iter.next();\r\n        iter.remove();\r\n    }\r\n    assertEquals(0, set.getCount());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\HashSetTest.java",
+  "methodName" : "equalsTest",
+  "sourceCode" : "@Test\r\npublic void equalsTest() {\r\n    HashSet<String> set1 = new HashSet<String>();\r\n    set1.add(\"one\");\r\n    set1.add(\"two\");\r\n    set1.add(\"three\");\r\n    HashSet<String> set2 = new HashSet<String>();\r\n    set2.add(\"one\");\r\n    set2.add(\"two\");\r\n    set2.add(\"three\");\r\n    // Same\r\n    assertTrue(set1.equals(set2));\r\n    // Different values\r\n    set2.remove(\"three\");\r\n    set2.add(\"four\");\r\n    assertFalse(set1.equals(set2));\r\n    // Different lengths\r\n    set2.add(\"three\");\r\n    assertFalse(set1.equals(set2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\LinkedListTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() {\r\n    LinkedList<String> list = new LinkedList<String>();\r\n    list.insert(\"B\", 0);\r\n    list.insert(\"C\", 1);\r\n    list.insert(\"D\", 2);\r\n    list.insert(\"A\", 0);\r\n    assertEquals(list.indexOf(\"A\"), 0);\r\n    list.remove(0, 1);\r\n    assertEquals(list.get(0), \"B\");\r\n    assertEquals(list.getLength(), 3);\r\n    assertEquals(list.indexOf(\"C\"), 1);\r\n    Sequence<String> removed = list.remove(1, 1);\r\n    assertNotNull(removed.get(0));\r\n    assertTrue(removed.get(0).equals(\"C\"));\r\n    list.insert(\"E\", 1);\r\n    assertEquals(list.getLength(), 3);\r\n    assertNotNull(list.get(1));\r\n    assertTrue(list.get(1).equals(\"E\"));\r\n    list.update(1, \"F\");\r\n    assertNotNull(list.get(1));\r\n    assertTrue(list.get(1).equals(\"F\"));\r\n    list.insert(\"G\", 0);\r\n    assertTrue(list.equals(new LinkedList<String>(\"G\", \"B\", \"F\", \"D\")));\r\n    assertFalse(list.equals(new LinkedList<String>(\"G\", \"B\", \"F\", \"D\", \"E\")));\r\n    assertFalse(list.equals(new LinkedList<String>(\"B\", \"F\", \"E\")));\r\n    assertEquals(4, list.getLength());\r\n    ArrayList<String> copy = new ArrayList<String>(\"G\", \"B\", \"F\", \"D\");\r\n    int i = 0;\r\n    for (String item : list) {\r\n        assertEquals(item, copy.get(i++));\r\n    }\r\n    int j = 0;\r\n    List.ItemIterator<String> iterator = list.iterator();\r\n    while (j < list.getLength()) {\r\n        iterator.next();\r\n        j++;\r\n    }\r\n    while (iterator.hasPrevious()) {\r\n        String s = iterator.previous();\r\n        assertEquals(s, copy.get(--j));\r\n    }\r\n    iterator = list.iterator();\r\n    assertEquals(iterator.next(), \"G\");\r\n    assertEquals(iterator.next(), \"B\");\r\n    assertEquals(iterator.previous(), \"B\");\r\n    assertEquals(iterator.previous(), \"G\");\r\n    assertEquals(iterator.next(), \"G\");\r\n    iterator = list.iterator();\r\n    iterator.insert(\"M\");\r\n    assertEquals(list, new LinkedList<String>(\"M\", \"G\", \"B\", \"F\", \"D\"));\r\n    assertEquals(iterator.next(), \"M\");\r\n    iterator.insert(\"N\");\r\n    assertEquals(list, new LinkedList<String>(\"M\", \"N\", \"G\", \"B\", \"F\", \"D\"));\r\n    iterator = list.iterator();\r\n    iterator.toEnd();\r\n    assertEquals(iterator.previous(), \"D\");\r\n    iterator.toStart();\r\n    assertEquals(iterator.next(), \"M\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\LinkedListTest.java",
+  "methodName" : "sortTest1",
+  "sourceCode" : "@Test\r\npublic void sortTest1() {\r\n    LinkedList<String> linkedList = new LinkedList<String>();\r\n    linkedList.setComparator(new Comparator<String>() {\r\n\r\n        @Override\r\n        public int compare(String s1, String s2) {\r\n            return s1.toLowerCase().compareTo(s2.toLowerCase());\r\n        }\r\n    });\r\n    linkedList.add(\"N\");\r\n    linkedList.add(\"P\");\r\n    linkedList.add(\"d\");\r\n    linkedList.add(\"A\");\r\n    linkedList.add(\"z\");\r\n    assertEquals(linkedList, new LinkedList<String>(\"A\", \"d\", \"N\", \"P\", \"z\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\LinkedListTest.java",
+  "methodName" : "sortTest2",
+  "sourceCode" : "@Test\r\npublic void sortTest2() {\r\n    LinkedList<String> linkedList = new LinkedList<String>();\r\n    linkedList.add(\"N\");\r\n    linkedList.add(\"P\");\r\n    linkedList.add(\"d\");\r\n    linkedList.add(\"A\");\r\n    linkedList.add(\"z\");\r\n    linkedList.setComparator(new Comparator<String>() {\r\n\r\n        @Override\r\n        public int compare(String s1, String s2) {\r\n            return s1.toLowerCase().compareTo(s2.toLowerCase());\r\n        }\r\n    });\r\n    assertEquals(linkedList, new LinkedList<String>(\"A\", \"d\", \"N\", \"P\", \"z\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\LinkedListTest.java",
+  "methodName" : "simpleConcurrentModificationTest",
+  "sourceCode" : "@Test(expected = ConcurrentModificationException.class)\r\npublic void simpleConcurrentModificationTest() {\r\n    LinkedList<String> linkedList = new LinkedList<String>(\"a\", \"b\", \"c\", \"d\", \"e\");\r\n    List.ItemIterator<String> iterator = linkedList.iterator();\r\n    linkedList.remove(0, 1);\r\n    iterator.next();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\LinkedListTest.java",
+  "methodName" : "advancedConcurrentModificationTest",
+  "sourceCode" : "@Test(expected = ConcurrentModificationException.class)\r\npublic void advancedConcurrentModificationTest() {\r\n    LinkedList<String> linkedList = new LinkedList<String>(\"a\", \"b\", \"c\", \"d\", \"e\");\r\n    List.ItemIterator<String> iterator1 = linkedList.iterator();\r\n    List.ItemIterator<String> iterator2 = linkedList.iterator();\r\n    iterator1.next();\r\n    iterator2.next();\r\n    iterator1.insert(\"a1\");\r\n    iterator2.next();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\QueueTest.java",
+  "methodName" : "queueTest",
+  "sourceCode" : "@Test\r\npublic void queueTest() {\r\n    testQueue(new ArrayQueue<String>(5));\r\n    testQueue(new LinkedQueue<String>());\r\n    testSortedQueue(new ArrayQueue<String>(5));\r\n    testSortedQueue(new LinkedQueue<String>());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\StackTest.java",
+  "methodName" : "stackTest",
+  "sourceCode" : "@Test\r\npublic void stackTest() {\r\n    testStack(new ArrayStack<String>(5));\r\n    testStack(new LinkedStack<String>());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\SynchronizedQueueTest.java",
+  "methodName" : "synchronizedQueueTest",
+  "sourceCode" : "@Test\r\npublic void synchronizedQueueTest() {\r\n    testSynchronizedQueue(new ArrayQueue<String>());\r\n    testSynchronizedQueue(new LinkedQueue<String>());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\collections\\test\\SynchronizedStackTest.java",
+  "methodName" : "synchronizedStackTest",
+  "sourceCode" : "@Test\r\npublic void synchronizedStackTest() {\r\n    testSynchronizedStack(new ArrayStack<String>());\r\n    testSynchronizedStack(new LinkedStack<String>());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\BindTest.java",
+  "methodName" : "testBind",
+  "sourceCode" : "@Test\r\npublic void testBind() throws IOException, SerializationException {\r\n    JSONSerializer jsonSerializer = new JSONSerializer();\r\n    Object sampleObject = jsonSerializer.readObject(getClass().getResourceAsStream(\"sample.json\"));\r\n    SampleBean sampleBean = JSON.bind(sampleObject, SampleBean.class);\r\n    assertEquals(sampleBean.getA(), JSON.get(sampleObject, \"a\"));\r\n    assertEquals(sampleBean.getB(), JSON.get(sampleObject, \"b\"));\r\n    assertEquals(sampleBean.getC(), JSON.get(sampleObject, \"c\"));\r\n    assertEquals(sampleBean.getD(), JSON.get(sampleObject, \"d\"));\r\n    assertEquals(sampleBean.getE(), JSON.get(sampleObject, \"e\"));\r\n    assertEquals(sampleBean.getI().getA(), JSON.get(sampleObject, \"i.a\"));\r\n    assertEquals(sampleBean.getJ()[0], JSON.get(sampleObject, \"j[0]\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\JSONSerializerTest.java",
+  "methodName" : "testCarriageReturns",
+  "sourceCode" : "@Test\r\npublic void testCarriageReturns() {\r\n    List<?> emptyList;\r\n    try {\r\n        emptyList = JSONSerializer.parseList(\"[\\n]\");\r\n    } catch (SerializationException exception) {\r\n        throw new RuntimeException(exception);\r\n    }\r\n    assertEquals(0, emptyList.getLength());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\JSONSerializerTest.java",
+  "methodName" : "testInvalidNumbers",
+  "sourceCode" : "@Test(expected = RuntimeException.class)\r\npublic void testInvalidNumbers() {\r\n    JSONSerializer.toString(Float.NaN);\r\n    JSONSerializer.toString(Float.NEGATIVE_INFINITY);\r\n    JSONSerializer.toString(Float.POSITIVE_INFINITY);\r\n    JSONSerializer.toString(Double.NaN);\r\n    JSONSerializer.toString(Double.NEGATIVE_INFINITY);\r\n    JSONSerializer.toString(Double.POSITIVE_INFINITY);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\json\\test\\JSONSerializerTest.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "@Test\r\npublic void testEquals() throws IOException, SerializationException {\r\n    JSONSerializer jsonSerializer = new JSONSerializer();\r\n    Object o1 = jsonSerializer.readObject(getClass().getResourceAsStream(\"sample.json\"));\r\n    Object o2 = jsonSerializer.readObject(getClass().getResourceAsStream(\"sample.json\"));\r\n    assertTrue(o1.equals(o2));\r\n    List<?> d = JSON.getList(o1, \"d\");\r\n    d.remove(0, 1);\r\n    assertFalse(o1.equals(o2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\BinarySerializerTest.java",
+  "methodName" : "testBinarySerializer",
+  "sourceCode" : "@Test\r\npublic void testBinarySerializer() {\r\n    Serializer<Object> serializer = new BinarySerializer();\r\n    Object[] outputData = { \"Hello World\", 123.456, true };\r\n    Object[] inputData;\r\n    try {\r\n        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();\r\n        try {\r\n            serializer.writeObject(outputData, outputStream);\r\n        } finally {\r\n            outputStream.close();\r\n        }\r\n        ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());\r\n        try {\r\n            inputData = (Object[]) serializer.readObject(inputStream);\r\n        } finally {\r\n            inputStream.close();\r\n        }\r\n        assertArrayEquals(outputData, inputData);\r\n    } catch (Exception exception) {\r\n        fail(exception.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testBasicReadObject",
+  "sourceCode" : "@Test\r\n@SuppressWarnings(\"unchecked\")\r\npublic void testBasicReadObject() throws IOException, SerializationException {\r\n    // Test multiple line break formats\r\n    StringBuilder buf = new StringBuilder();\r\n    buf.append(\"a1,b1,c1\\r\\n\");\r\n    buf.append(\"a2,b2,c2\\n\");\r\n    buf.append(\"a3,b3,c3\\r\");\r\n    buf.append(\"a4,b4,c4\");\r\n    StringReader reader = new StringReader(buf.toString());\r\n    CSVSerializer serializer = new CSVSerializer();\r\n    serializer.getKeys().add(\"A\");\r\n    serializer.getKeys().add(\"B\");\r\n    serializer.getKeys().add(\"C\");\r\n    List<?> result = serializer.readObject(reader);\r\n    Dictionary<String, Object> row;\r\n    // Test the first row\r\n    row = (Dictionary<String, Object>) result.get(0);\r\n    assertEquals(row.get(\"A\"), \"a1\");\r\n    assertEquals(row.get(\"B\"), \"b1\");\r\n    assertEquals(row.get(\"C\"), \"c1\");\r\n    // Test the second row\r\n    row = (Dictionary<String, Object>) result.get(1);\r\n    assertEquals(row.get(\"A\"), \"a2\");\r\n    assertEquals(row.get(\"B\"), \"b2\");\r\n    assertEquals(row.get(\"C\"), \"c2\");\r\n    // Test the third row\r\n    row = (Dictionary<String, Object>) result.get(2);\r\n    assertEquals(row.get(\"A\"), \"a3\");\r\n    assertEquals(row.get(\"B\"), \"b3\");\r\n    assertEquals(row.get(\"C\"), \"c3\");\r\n    // Test the fourth row\r\n    row = (Dictionary<String, Object>) result.get(3);\r\n    assertEquals(row.get(\"A\"), \"a4\");\r\n    assertEquals(row.get(\"B\"), \"b4\");\r\n    assertEquals(row.get(\"C\"), \"c4\");\r\n}",
+  "annotations" : [ "Test", "SuppressWarnings" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testQuotedCommaReadObject",
+  "sourceCode" : "@Test\r\n@SuppressWarnings(\"unchecked\")\r\npublic void testQuotedCommaReadObject() throws IOException, SerializationException {\r\n    StringBuilder buf = new StringBuilder();\r\n    buf.append(\"a,\\\",b,\\\",c\\r\\n\");\r\n    StringReader reader = new StringReader(buf.toString());\r\n    CSVSerializer serializer = new CSVSerializer();\r\n    serializer.getKeys().add(\"A\");\r\n    serializer.getKeys().add(\"B\");\r\n    serializer.getKeys().add(\"C\");\r\n    List<?> result = serializer.readObject(reader);\r\n    Dictionary<String, Object> row = (Dictionary<String, Object>) result.get(0);\r\n    assertEquals(\"a\", row.get(\"A\"));\r\n    assertEquals(\",b,\", row.get(\"B\"));\r\n    assertEquals(\"c\", row.get(\"C\"));\r\n}",
+  "annotations" : [ "Test", "SuppressWarnings" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testQuotedQuoteReadObject",
+  "sourceCode" : "@Test\r\n@SuppressWarnings(\"unchecked\")\r\npublic void testQuotedQuoteReadObject() throws IOException, SerializationException {\r\n    StringBuilder buf = new StringBuilder();\r\n    buf.append(\"a,\\\"\\\"\\\"b\\\"\\\"\\\",c\\r\\n\");\r\n    StringReader reader = new StringReader(buf.toString());\r\n    CSVSerializer serializer = new CSVSerializer();\r\n    serializer.getKeys().add(\"A\");\r\n    serializer.getKeys().add(\"B\");\r\n    serializer.getKeys().add(\"C\");\r\n    List<?> result = serializer.readObject(reader);\r\n    Dictionary<String, Object> row = (Dictionary<String, Object>) result.get(0);\r\n    assertEquals(\"a\", row.get(\"A\"));\r\n    assertEquals(\"\\\"b\\\"\", row.get(\"B\"));\r\n    assertEquals(\"c\", row.get(\"C\"));\r\n}",
+  "annotations" : [ "Test", "SuppressWarnings" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testQuotedNewlineReadObject",
+  "sourceCode" : "@Test\r\n@SuppressWarnings(\"unchecked\")\r\npublic void testQuotedNewlineReadObject() throws IOException, SerializationException {\r\n    StringBuilder buf = new StringBuilder();\r\n    buf.append(\"a,\\\"\\nb\\n\\\",c\\r\\n\");\r\n    StringReader reader = new StringReader(buf.toString());\r\n    CSVSerializer serializer = new CSVSerializer();\r\n    serializer.getKeys().add(\"A\");\r\n    serializer.getKeys().add(\"B\");\r\n    serializer.getKeys().add(\"C\");\r\n    List<?> result = serializer.readObject(reader);\r\n    Dictionary<String, Object> row = (Dictionary<String, Object>) result.get(0);\r\n    assertEquals(\"a\", row.get(\"A\"));\r\n    assertEquals(\"\\nb\\n\", row.get(\"B\"));\r\n    assertEquals(\"c\", row.get(\"C\"));\r\n}",
+  "annotations" : [ "Test", "SuppressWarnings" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testBasicWriteObject",
+  "sourceCode" : "@Test\r\n@SuppressWarnings(\"unchecked\")\r\npublic void testBasicWriteObject() throws IOException {\r\n    List<Object> items = new ArrayList<Object>();\r\n    items.add(new HashMap<String, Object>(new Dictionary.Pair<String, Object>(\"A\", \"a1\"), new Dictionary.Pair<String, Object>(\"B\", \"b1\"), new Dictionary.Pair<String, Object>(\"C\", \"c1\")));\r\n    items.add(new HashMap<String, Object>(new Dictionary.Pair<String, Object>(\"A\", \"a2\"), new Dictionary.Pair<String, Object>(\"B\", \"b2\"), new Dictionary.Pair<String, Object>(\"C\", \"c2\")));\r\n    StringWriter writer = new StringWriter();\r\n    CSVSerializer serializer = new CSVSerializer();\r\n    serializer.getKeys().add(\"A\");\r\n    serializer.getKeys().add(\"B\");\r\n    serializer.getKeys().add(\"C\");\r\n    serializer.writeObject(items, writer);\r\n    assertEquals(\"a1,b1,c1\\r\\na2,b2,c2\\r\\n\", writer.toString());\r\n}",
+  "annotations" : [ "Test", "SuppressWarnings" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testQuotedCommaWriteObject",
+  "sourceCode" : "@Test\r\n@SuppressWarnings(\"unchecked\")\r\npublic void testQuotedCommaWriteObject() throws IOException {\r\n    List<Object> items = new ArrayList<Object>();\r\n    items.add(new HashMap<String, Object>(new Dictionary.Pair<String, Object>(\"A\", \"a\"), new Dictionary.Pair<String, Object>(\"B\", \",b,\"), new Dictionary.Pair<String, Object>(\"C\", \"c\")));\r\n    StringWriter writer = new StringWriter();\r\n    CSVSerializer serializer = new CSVSerializer();\r\n    serializer.getKeys().add(\"A\");\r\n    serializer.getKeys().add(\"B\");\r\n    serializer.getKeys().add(\"C\");\r\n    serializer.writeObject(items, writer);\r\n    assertEquals(\"a,\\\",b,\\\",c\\r\\n\", writer.toString());\r\n}",
+  "annotations" : [ "Test", "SuppressWarnings" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testQuotedQuoteWriteObject",
+  "sourceCode" : "@Test\r\n@SuppressWarnings(\"unchecked\")\r\npublic void testQuotedQuoteWriteObject() throws IOException {\r\n    List<Object> items = new ArrayList<Object>();\r\n    items.add(new HashMap<String, Object>(new Dictionary.Pair<String, Object>(\"A\", \"a\"), new Dictionary.Pair<String, Object>(\"B\", \"\\\"b\\\"\"), new Dictionary.Pair<String, Object>(\"C\", \"c\")));\r\n    StringWriter writer = new StringWriter();\r\n    CSVSerializer serializer = new CSVSerializer();\r\n    serializer.getKeys().add(\"A\");\r\n    serializer.getKeys().add(\"B\");\r\n    serializer.getKeys().add(\"C\");\r\n    serializer.writeObject(items, writer);\r\n    assertEquals(\"a,\\\"\\\"\\\"b\\\"\\\"\\\",c\\r\\n\", writer.toString());\r\n}",
+  "annotations" : [ "Test", "SuppressWarnings" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testQuotedNewlineWriteObject",
+  "sourceCode" : "@Test\r\n@SuppressWarnings(\"unchecked\")\r\npublic void testQuotedNewlineWriteObject() throws IOException {\r\n    List<Object> items = new ArrayList<Object>();\r\n    items.add(new HashMap<String, Object>(new Dictionary.Pair<String, Object>(\"A\", \"a\"), new Dictionary.Pair<String, Object>(\"B\", \"\\nb\\n\"), new Dictionary.Pair<String, Object>(\"C\", \"c\")));\r\n    StringWriter writer = new StringWriter();\r\n    CSVSerializer serializer = new CSVSerializer();\r\n    serializer.getKeys().add(\"A\");\r\n    serializer.getKeys().add(\"B\");\r\n    serializer.getKeys().add(\"C\");\r\n    serializer.writeObject(items, writer);\r\n    assertEquals(\"a,\\\"\\nb\\n\\\",c\\r\\n\", writer.toString());\r\n}",
+  "annotations" : [ "Test", "SuppressWarnings" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\serialization\\test\\CSVSerializerTest.java",
+  "methodName" : "testStreamReader",
+  "sourceCode" : "@Test\r\npublic void testStreamReader() {\r\n    // TODO\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\concurrent\\test\\TaskTest.java",
+  "methodName" : "testTaskSequence",
+  "sourceCode" : "@Test\r\npublic void testTaskSequence() {\r\n    TaskListener<Void> taskListener = new TaskListener<Void>() {\r\n\r\n        @Override\r\n        public synchronized void taskExecuted(Task<Void> task) {\r\n            System.out.println(\"EXECUTED\");\r\n            notify();\r\n        }\r\n\r\n        @Override\r\n        public synchronized void executeFailed(Task<Void> task) {\r\n            System.out.println(\"FAILED: \" + task.getFault());\r\n            notify();\r\n        }\r\n    };\r\n    TaskSequence taskSequence = new TaskSequence();\r\n    SleepTask task1 = new SleepTask(500);\r\n    taskSequence.add(task1);\r\n    SleepTask task2 = new SleepTask(1000);\r\n    taskSequence.add(task2);\r\n    SleepTask task3 = new SleepTask(2000);\r\n    taskSequence.add(task3);\r\n    synchronized (taskListener) {\r\n        taskSequence.execute(taskListener);\r\n        try {\r\n            taskListener.wait();\r\n        } catch (InterruptedException exception) {\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\concurrent\\test\\TaskTest.java",
+  "methodName" : "testTaskGroup",
+  "sourceCode" : "@Test\r\npublic void testTaskGroup() {\r\n    TaskListener<Void> taskListener = new TaskListener<Void>() {\r\n\r\n        @Override\r\n        public synchronized void taskExecuted(Task<Void> task) {\r\n            System.out.println(\"EXECUTED\");\r\n            notify();\r\n        }\r\n\r\n        @Override\r\n        public synchronized void executeFailed(Task<Void> task) {\r\n            System.out.println(\"FAILED: \" + task.getFault());\r\n            notify();\r\n        }\r\n    };\r\n    TaskGroup taskGroup = new TaskGroup();\r\n    SleepTask task1 = new SleepTask(500);\r\n    taskGroup.add(task1);\r\n    SleepTask task2 = new SleepTask(1000);\r\n    taskGroup.add(task2);\r\n    SleepTask task3 = new SleepTask(2000);\r\n    taskGroup.add(task3);\r\n    synchronized (taskListener) {\r\n        taskGroup.execute(taskListener);\r\n        try {\r\n            taskListener.wait();\r\n        } catch (InterruptedException exception) {\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\MIMETypeTest.java",
+  "methodName" : "testMIMEType",
+  "sourceCode" : "@Test\r\npublic void testMIMEType() {\r\n    MIMEType mimeType = MIMEType.decode(\"foo; a=123; b=456; c=789\");\r\n    assertEquals(mimeType.getBaseType(), \"foo\");\r\n    assertEquals(mimeType.get(\"a\"), \"123\");\r\n    assertEquals(mimeType.get(\"b\"), \"456\");\r\n    assertEquals(mimeType.get(\"c\"), \"789\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testString",
+  "sourceCode" : "@Test\r\npublic void testString() throws Exception {\r\n    assertNotNull(\"In main only\", main.getString(\"mainKeyString\"));\r\n    assertEquals(\"In parent\", \"From Parent\", main.getParent().getString(\"someMagicString\"));\r\n    assertEquals(\"In both\", \"From Main\", main.getString(\"someMagicString\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testNumber",
+  "sourceCode" : "@Test\r\npublic void testNumber() throws Exception {\r\n    assertNotNull(\"In main only\", main.getNumber(\"mainKeyNumber\"));\r\n    assertEquals(\"In parent\", Integer.valueOf(100), main.getParent().getNumber(\"someMagicNumber\"));\r\n    assertEquals(\"In both\", Integer.valueOf(200), main.getNumber(\"someMagicNumber\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testInteger",
+  "sourceCode" : "@Test\r\npublic void testInteger() throws Exception {\r\n    assertNotNull(\"In main only\", main.getInteger(\"mainKeyNumber\"));\r\n    assertEquals(\"In parent\", Integer.valueOf(100), main.getParent().getInteger(\"someMagicNumber\"));\r\n    assertEquals(\"In both\", Integer.valueOf(200), main.getInteger(\"someMagicNumber\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testLong",
+  "sourceCode" : "@Test\r\npublic void testLong() throws Exception {\r\n    assertNotNull(\"In main only\", main.getLong(\"mainKeyNumber\"));\r\n    assertEquals(\"In parent\", Long.valueOf(100), main.getParent().getLong(\"someMagicNumber\"));\r\n    assertEquals(\"In both\", Long.valueOf(200), main.getLong(\"someMagicNumber\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testShort",
+  "sourceCode" : "@Test\r\npublic void testShort() throws Exception {\r\n    assertNotNull(\"In main only\", main.getShort(\"mainKeyNumber\"));\r\n    assertEquals(\"In parent\", Short.valueOf((short) 100), main.getParent().getShort(\"someMagicNumber\"));\r\n    assertEquals(\"In both\", Short.valueOf((short) 200), main.getShort(\"someMagicNumber\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testFloat",
+  "sourceCode" : "@Test\r\npublic void testFloat() throws Exception {\r\n    assertNotNull(\"In main only\", main.getFloat(\"mainKeyNumber\"));\r\n    assertEquals(\"In parent\", new Float(100), main.getParent().getFloat(\"someMagicNumber\"));\r\n    assertEquals(\"In both\", new Float(200), main.getFloat(\"someMagicNumber\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testDouble",
+  "sourceCode" : "@Test\r\npublic void testDouble() throws Exception {\r\n    assertNotNull(\"In main only\", main.getDouble(\"mainKeyNumber\"));\r\n    assertEquals(\"In parent\", new Double(100), main.getParent().getDouble(\"someMagicNumber\"));\r\n    assertEquals(\"In both\", new Double(200), main.getDouble(\"someMagicNumber\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testBoolean",
+  "sourceCode" : "@Test\r\npublic void testBoolean() throws Exception {\r\n    assertNotNull(\"In main only\", main.getBoolean(\"mainKeyBoolean\"));\r\n    assertEquals(\"In parent\", false, main.getParent().getBoolean(\"someMagicBoolean\"));\r\n    assertEquals(\"In both\", true, main.getBoolean(\"someMagicBoolean\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testMyMap",
+  "sourceCode" : "@Test\r\npublic void testMyMap() {\r\n    assertFalse(\"not contains noMap\", main.containsKey(\"noMap\"));\r\n    assertTrue(\"contains myMap\", main.containsKey(\"myMap\"));\r\n    assertNotNull(\"myMap as object not null\", main.get(\"myMap\"));\r\n    assertNull(\"noMap as map is null\", main.getMap(\"noMap\"));\r\n    assertNotNull(\"myMap as map not null\", main.getMap(\"myMap\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testList",
+  "sourceCode" : "@Test\r\npublic void testList() {\r\n    List<?> list = main.getList(\"aList\");\r\n    assertNotNull(\"aList not null\", list);\r\n    assertEquals(\"6 items\", 6, list.getLength());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testLanguage",
+  "sourceCode" : "@Test\r\npublic void testLanguage() {\r\n    assertEquals(\"Language\", \"This is specifically English\", main.getString(\"languageKey\"));\r\n    assertEquals(\"Language in parent\", \"This is not a specific language and is in the parent.\", parent.getString(\"languageKey\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\ParentResourcesTest.java",
+  "methodName" : "testConstructors",
+  "sourceCode" : "@Test\r\npublic void testConstructors() throws Exception {\r\n    main = new Resources(parent, getClass().getName(), Charset.defaultCharset());\r\n    testString();\r\n    main = new Resources(parent, getClass().getName(), Charset.defaultCharset());\r\n    testString();\r\n    main = new Resources(parent, getClass().getName(), Locale.ENGLISH);\r\n    testString();\r\n    main = new Resources(parent, getClass().getName(), Locale.ENGLISH, Charset.defaultCharset());\r\n    testString();\r\n    main = new Resources(parent, getClass().getName(), Locale.ENGLISH, Charset.defaultCharset());\r\n    testString();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\util\\test\\TimeTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() {\r\n    Time time = new Time();\r\n    System.out.println(time);\r\n    time = new Time(time.toMilliseconds());\r\n    System.out.println(time);\r\n    time = Time.decode(time.toString());\r\n    System.out.println(time);\r\n    time = new Time(0, 0, 0);\r\n    System.out.println(time.subtract(new Time(0, 0, 1)));\r\n    System.out.println(time.subtract(new Time(23, 59, 59, 999)));\r\n    time = new Time(0, 0, 0);\r\n    System.out.println(time.add(1));\r\n    System.out.println(time.add(Time.MILLISECONDS_PER_DAY + 1));\r\n    System.out.println(time.add(-1));\r\n    System.out.println(time.add(-Time.MILLISECONDS_PER_DAY - 1));\r\n    System.out.println(time.add(1000));\r\n    System.out.println(time.add(-1000));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\xml\\test\\XMLSerializerTest.java",
+  "methodName" : "basicTest",
+  "sourceCode" : "@Test\r\npublic void basicTest() throws IOException, SerializationException {\r\n    XMLSerializer xmlSerializer = new XMLSerializer();\r\n    Element root = xmlSerializer.readObject(getClass().getResourceAsStream(\"sample.xml\"));\r\n    assertEquals(root.getName(), \"root\");\r\n    Element a = XML.getElement(root, \"a\");\r\n    assertEquals(a.getName(), \"a\");\r\n    assertEquals(a.get(\"id\"), \"x\");\r\n    Element b = XML.getElement(root, \"a/b\");\r\n    assertEquals(b.getName(), \"b\");\r\n    assertEquals(b.get(\"id\"), \"y\");\r\n    b = XML.getElement(a, \"b\");\r\n    assertEquals(b.getName(), \"b\");\r\n    assertEquals(b.get(\"id\"), \"y\");\r\n    List<Element> cs = XML.getElements(root, \"a/b\", \"c\");\r\n    assertEquals(cs.getLength(), 1);\r\n    List<Element> fs = XML.getElements(root, \"d/e\", \"f\");\r\n    assertEquals(fs.getLength(), 4);\r\n    Element e = XML.getElement(root, \"d/e\");\r\n    Element f = XML.getElement(e, \"f\");\r\n    assertEquals(f.getName(), \"f\");\r\n    Element g = XML.getElement(e, \"g\");\r\n    assertEquals(g.getName(), \"g\");\r\n    String ft = XML.getText(root, \"d/e/f\");\r\n    assertEquals(ft, \"1\");\r\n    String gt = XML.getText(root, \"d/e/g\");\r\n    assertEquals(gt, \"4\");\r\n    assertNull(XML.getElement(root, \"a/b/n\"));\r\n    assertNull(XML.getText(root, \"a/b/n\"));\r\n    assertEquals(XML.getElements(root, \"a/b\", \"n\").getLength(), 0);\r\n    assertEquals(XML.getText(root, \"d/foo:h\"), \"Hello\");\r\n    List<Element> is = XML.getElements(e, \"is\", \"i\");\r\n    assertEquals(is.getLength(), 3);\r\n    assertEquals(XML.getText(root, \"d[0]/e[0]/f[2]\"), \"3\");\r\n    assertEquals(XML.getText(root, \"d[0]/e[1]\"), null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\core\\test\\org\\apache\\pivot\\xml\\test\\XMLSerializerTest.java",
+  "methodName" : "equalsTest",
+  "sourceCode" : "@Test\r\npublic void equalsTest() throws IOException, SerializationException {\r\n    XMLSerializer xmlSerializer = new XMLSerializer();\r\n    Element root1 = xmlSerializer.readObject(getClass().getResourceAsStream(\"sample.xml\"));\r\n    Element root2 = xmlSerializer.readObject(getClass().getResourceAsStream(\"sample.xml\"));\r\n    assertTrue(root1.equals(root2));\r\n    Element a = XML.getElement(root2, \"a\");\r\n    a.getAttributes().remove(0, 1);\r\n    assertFalse(root1.equals(root2));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\demos\\src\\org\\apache\\pivot\\demos\\rest\\RESTDemoTest.java",
+  "methodName" : "testCRUD",
+  "sourceCode" : "@Test\r\npublic void testCRUD() throws IOException, SerializationException, QueryException {\r\n    JSONSerializer jsonSerializer = new JSONSerializer();\r\n    Object contact = jsonSerializer.readObject(getClass().getResourceAsStream(\"contact.json\"));\r\n    // Create\r\n    PostQuery postQuery = new PostQuery(hostname, port, \"/pivot-demos/rest_demo\", secure);\r\n    postQuery.setValue(contact);\r\n    URL location = postQuery.execute();\r\n    assertNotNull(location);\r\n    String path = location.getPath();\r\n    // Read\r\n    GetQuery getQuery = new GetQuery(hostname, port, path, secure);\r\n    assertEquals(contact, getQuery.execute());\r\n    // Update\r\n    JSON.put(contact, \"name\", \"Joseph User\");\r\n    PutQuery putQuery = new PutQuery(hostname, port, path, secure);\r\n    putQuery.setValue(contact);\r\n    boolean created = putQuery.execute();\r\n    assertFalse(created);\r\n    assertEquals(contact, getQuery.execute());\r\n    // Delete\r\n    DeleteQuery deleteQuery = new DeleteQuery(hostname, port, path, secure);\r\n    deleteQuery.execute();\r\n    assertEquals(deleteQuery.getStatus(), Query.Status.NO_CONTENT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Pivot\\web\\test\\org\\apache\\pivot\\web\\test\\QueryDictionaryTest.java",
+  "methodName" : "testQueryDictionary",
+  "sourceCode" : "@Test(expected = IndexOutOfBoundsException.class)\r\npublic void testQueryDictionary() {\r\n    QueryDictionary dict = new QueryDictionary(true);\r\n    assertNull(dict.get(\"key\"));\r\n    dict.put(\"key\", \"value\");\r\n    assertNotNull(dict.get(\"key\"));\r\n    assertEquals(\"value\", dict.get(\"key\", 0));\r\n    assertEquals(1, dict.getLength(\"key\"));\r\n    dict.get(\"key\", 1);\r\n    assertEquals(\"value\", dict.put(\"key\", \"value2\"));\r\n    assertEquals(\"value2\", dict.get(\"key\"));\r\n    dict.add(\"key\", \"another value\");\r\n    assertEquals(\"another value\", dict.get(\"key\", 1));\r\n    assertEquals(0, dict.getLength(\"nokey\"));\r\n    assertEquals(0, dict.add(\"key2\", \"new value\"));\r\n    dict.insert(\"key\", \"yet another value\", 0);\r\n    assertEquals(3, dict.getLength(\"key\"));\r\n    dict.insert(\"key\", \"bad value\", 10);\r\n    assertEquals(\"yet another value\", dict.remove(\"key\"));\r\n    assertNull(dict.remove(\"key\"));\r\n    dict.add(\"key2\", \"2nd value\");\r\n    assertEquals(\"new value\", dict.remove(\"key2\", 0));\r\n    dict.remove(\"key2\", 10);\r\n    dict.add(\"key3\", \"something\");\r\n    Set<String> validKeys = new HashSet<String>();\r\n    validKeys.add(\"key2\");\r\n    validKeys.add(\"key3\");\r\n    for (String s : dict) {\r\n        assertTrue(s, validKeys.remove(s));\r\n    }\r\n    assertEquals(0, validKeys.size());\r\n    assertTrue(dict.containsKey(\"key2\"));\r\n    dict.clear();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

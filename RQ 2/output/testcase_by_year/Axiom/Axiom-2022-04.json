@@ -1,0 +1,451 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\axiom-weaver\\src\\test\\java\\org\\apache\\axiom\\weaver\\clinit\\StaticInitializerTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() throws Exception {\r\n    ClassLoader cl = StaticInitializerTest.class.getClassLoader();\r\n    Weaver weaver = new Weaver(cl, new SimpleImplementationClassNameMapper(\"impl\"));\r\n    weaver.loadWeavablePackage(\"org.apache.axiom.weaver.clinit\");\r\n    weaver.addInterfaceToImplement(Iface.class);\r\n    Iface instance = weaver.toClassLoader(cl).loadClass(\"impl.IfaceImpl\").asSubclass(Iface.class).getConstructor().newInstance();\r\n    assertThat(instance.getObject()).isNotNull();\r\n    assertThat(instance.getInt()).isEqualTo(-1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\axiom-weaver\\src\\test\\java\\org\\apache\\axiom\\weaver\\ctor\\ConstructorTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() throws Exception {\r\n    ClassLoader cl = ConstructorTest.class.getClassLoader();\r\n    Weaver weaver = new Weaver(cl, new SimpleImplementationClassNameMapper(\"impl\"));\r\n    weaver.loadWeavablePackage(\"org.apache.axiom.weaver.ctor\");\r\n    weaver.addInterfaceToImplement(Iface.class);\r\n    Iface instance = weaver.toClassLoader(cl).loadClass(\"impl.IfaceImpl\").asSubclass(Iface.class).getConstructor().newInstance();\r\n    assertThat(instance.getValue()).isEqualTo(-1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\axiom-weaver\\src\\test\\java\\org\\apache\\axiom\\weaver\\innerclass\\InnerClassTest.java",
+  "methodName" : "testInnerclass",
+  "sourceCode" : "@Test\r\npublic void testInnerclass() throws Exception {\r\n    ClassLoader cl = InnerClassTest.class.getClassLoader();\r\n    Weaver weaver = new Weaver(cl, new SimpleImplementationClassNameMapper(\"impl\"));\r\n    weaver.loadWeavablePackage(\"org.apache.axiom.weaver.innerclass\");\r\n    weaver.addInterfaceToImplement(Iface.class);\r\n    weaver.toClassLoader(cl).loadClass(\"impl.IfaceImpl\").asSubclass(Iface.class).getConstructor().newInstance().doSomething();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\axiom-weaver\\src\\test\\java\\org\\apache\\axiom\\weaver\\noabstract\\NoAbstractMethodTest.java",
+  "methodName" : "testMixinWithAbstractMethod",
+  "sourceCode" : "@Test\r\npublic void testMixinWithAbstractMethod() {\r\n    ClassLoader cl = InnerClassTest.class.getClassLoader();\r\n    Weaver weaver = new Weaver(cl, new SimpleImplementationClassNameMapper(\"impl\"));\r\n    assertThrows(MixinFactoryException.class, () -> weaver.loadWeavablePackage(\"org.apache.axiom.weaver.noabstract\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\axiom-weaver\\src\\test\\java\\org\\apache\\axiom\\weaver\\tree\\TreeTest.java",
+  "methodName" : "testInnerclass",
+  "sourceCode" : "@Test\r\npublic void testInnerclass() throws Exception {\r\n    ClassLoader cl = TreeTest.class.getClassLoader();\r\n    Weaver weaver = new Weaver(cl, new SimpleImplementationClassNameMapper(\"impl\"));\r\n    weaver.addInterfaceToImplement(Root.class);\r\n    weaver.addInterfaceToImplement(Directory.class);\r\n    weaver.addInterfaceToImplement(Leaf.class);\r\n    weaver.addInterfaceToImplement(Factory.class);\r\n    Factory factory = (Factory) weaver.toClassLoader(cl).loadClass(\"impl.FactoryImpl\").getField(\"INSTANCE\").get(null);\r\n    Root root = factory.createRoot();\r\n    assertThat(root.getFactory()).isSameInstanceAs(factory);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\dom\\input\\DOMReaderTest.java",
+  "methodName" : "testSimpleDocument",
+  "sourceCode" : "@Test\r\npublic void testSimpleDocument() throws Exception {\r\n    Document document = DOMImplementation.XERCES.newDocument();\r\n    Element root = document.createElementNS(\"urn:test\", \"p:root\");\r\n    document.appendChild(root);\r\n    root.setTextContent(\"test\");\r\n    XmlHandler handler = mock(XmlHandler.class);\r\n    DOMReader reader = new DOMReader(handler, document, false);\r\n    assertThat(reader.proceed()).isFalse();\r\n    verify(handler).startDocument(null, \"1.0\", null, false);\r\n    verifyNoMoreInteractions(handler);\r\n    assertThat(reader.proceed()).isFalse();\r\n    verify(handler).startElement(\"urn:test\", \"root\", \"p\");\r\n    verify(handler).attributesCompleted();\r\n    verifyNoMoreInteractions(handler);\r\n    assertThat(reader.proceed()).isFalse();\r\n    verify(handler).processCharacterData(\"test\", false);\r\n    verifyNoMoreInteractions(handler);\r\n    assertThat(reader.proceed()).isFalse();\r\n    verify(handler).endElement();\r\n    verifyNoMoreInteractions(handler);\r\n    assertThat(reader.proceed()).isTrue();\r\n    verify(handler).completed();\r\n    verifyNoMoreInteractions(handler);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\NamespaceRepairingFilterTest.java",
+  "methodName" : "testNamespaceDeclarationConflictingWithElementName",
+  "sourceCode" : "@Test(expected = ConflictingNamespaceDeclarationException.class)\r\npublic void testNamespaceDeclarationConflictingWithElementName() throws StreamException {\r\n    XmlHandler handler = new NamespaceRepairingFilter(null, false).createFilterHandler(NullXmlHandler.INSTANCE);\r\n    handler.startFragment();\r\n    handler.startElement(\"urn:ns1\", \"test\", \"p\");\r\n    handler.processNamespaceDeclaration(\"p\", \"urn:ns2\");\r\n    handler.attributesCompleted();\r\n    handler.endElement();\r\n    handler.completed();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\serializer\\SerializerTest.java",
+  "methodName" : "testEmptyElement",
+  "sourceCode" : "@Test\r\npublic void testEmptyElement() throws Exception {\r\n    StringWriter sw = new StringWriter();\r\n    Serializer handler = new Serializer(sw);\r\n    handler.startFragment();\r\n    handler.startElement(\"\", \"test\", \"\");\r\n    handler.attributesCompleted();\r\n    handler.endElement();\r\n    handler.completed();\r\n    assertThat(sw.toString()).matches(\"<test ?/>\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\serializer\\SerializerTest.java",
+  "methodName" : "testMixedContentAfterEmptyElement",
+  "sourceCode" : "/**\r\n * Tests the scenario described in AXIOM-509.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testMixedContentAfterEmptyElement() throws Exception {\r\n    StringWriter sw = new StringWriter();\r\n    Serializer handler = new Serializer(sw);\r\n    handler.startFragment();\r\n    handler.startElement(\"\", \"test\", \"\");\r\n    handler.attributesCompleted();\r\n    handler.endElement();\r\n    handler.processCharacterData(\"R&D\", false);\r\n    handler.completed();\r\n    assertThat(sw.toString()).matches(\"<test ?/>R&amp;D\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\serializer\\SerializerTest.java",
+  "methodName" : "testUnmappableCharacterInCharacterData",
+  "sourceCode" : "/**\r\n * Test that characters are converted to entities only when necessary.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testUnmappableCharacterInCharacterData() throws Exception {\r\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    Serializer handler = new Serializer(baos, \"iso-8859-15\");\r\n    handler.startFragment();\r\n    handler.startElement(\"\", \"test\", \"\");\r\n    handler.attributesCompleted();\r\n    // 20AC = Euro sign\r\n    handler.processCharacterData(\"a\\u03A3\\u20AC\", false);\r\n    handler.endElement();\r\n    handler.completed();\r\n    assertThat(new String(baos.toByteArray(), \"iso-8859-15\")).isEqualTo(\"<test>a&#931;\\u20AC</test>\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\serializer\\SerializerTest.java",
+  "methodName" : "testUnmappableCharacterInAttributeValue",
+  "sourceCode" : "@Test\r\npublic void testUnmappableCharacterInAttributeValue() throws Exception {\r\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    Serializer handler = new Serializer(baos, \"ascii\");\r\n    handler.startFragment();\r\n    handler.startElement(\"\", \"test\", \"\");\r\n    handler.processAttribute(\"\", \"attr\", \"\", \"néant\", \"CDATA\", true);\r\n    handler.attributesCompleted();\r\n    handler.endElement();\r\n    handler.completed();\r\n    assertThat(new String(baos.toByteArray(), \"ascii\")).isEqualTo(\"<test attr=\\\"n&#233;ant\\\"/>\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\serializer\\SerializerTest.java",
+  "methodName" : "testUnmappableSurrogatePairInAttributeValue",
+  "sourceCode" : "/**\r\n * Tests the scenario described in XALANJ-2593.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testUnmappableSurrogatePairInAttributeValue() throws Exception {\r\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    Serializer handler = new Serializer(baos, \"ascii\");\r\n    handler.startFragment();\r\n    handler.startElement(\"\", \"x\", \"\");\r\n    handler.processAttribute(\"\", \"y\", \"\", \"\\uD84C\\uDFB4 - \\uD841\\uDE28\", \"CDATA\", true);\r\n    handler.attributesCompleted();\r\n    handler.endElement();\r\n    handler.completed();\r\n    assertThat(new String(baos.toByteArray(), \"ascii\")).isEqualTo(\"<x y=\\\"&#144308; - &#132648;\\\"/>\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\serializer\\SerializerTest.java",
+  "methodName" : "testUnmappableCharacterInComment",
+  "sourceCode" : "@Test(expected = StreamException.class)\r\npublic void testUnmappableCharacterInComment() throws Exception {\r\n    Serializer handler = new Serializer(NullOutputStream.NULL_OUTPUT_STREAM, \"iso-8859-1\");\r\n    handler.startFragment();\r\n    handler.startComment();\r\n    handler.processCharacterData(\"\\u20AC\", false);\r\n    handler.endComment();\r\n    handler.completed();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\serializer\\SerializerTest.java",
+  "methodName" : "testUnmappableCharacterInCDATASection",
+  "sourceCode" : "@Test(expected = StreamException.class)\r\npublic void testUnmappableCharacterInCDATASection() throws Exception {\r\n    Serializer handler = new Serializer(NullOutputStream.NULL_OUTPUT_STREAM, \"ascii\");\r\n    handler.startFragment();\r\n    handler.startCDATASection();\r\n    handler.processCharacterData(\"c'est la fête!\", false);\r\n    handler.endCDATASection();\r\n    handler.completed();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\serializer\\SerializerTest.java",
+  "methodName" : "testUnmappableCharacterInProcessingInstruction",
+  "sourceCode" : "@Test(expected = StreamException.class)\r\npublic void testUnmappableCharacterInProcessingInstruction() throws Exception {\r\n    Serializer handler = new Serializer(NullOutputStream.NULL_OUTPUT_STREAM, \"ascii\");\r\n    handler.startFragment();\r\n    handler.startProcessingInstruction(\"test\");\r\n    handler.processCharacterData(\"c'est la fête!\", false);\r\n    handler.endProcessingInstruction();\r\n    handler.completed();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\serializer\\SerializerTest.java",
+  "methodName" : "testUnmappableCharacterInName",
+  "sourceCode" : "@Test(expected = StreamException.class)\r\npublic void testUnmappableCharacterInName() throws Exception {\r\n    Serializer handler = new Serializer(NullOutputStream.NULL_OUTPUT_STREAM, \"iso-8859-15\");\r\n    handler.startFragment();\r\n    handler.startElement(\"\", \"\\u0370\", \"\");\r\n    handler.attributesCompleted();\r\n    handler.endElement();\r\n    handler.completed();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\serializer\\SerializerTest.java",
+  "methodName" : "testIllegalCharacterSequenceInComment",
+  "sourceCode" : "@Test(expected = IllegalCharacterSequenceException.class)\r\npublic void testIllegalCharacterSequenceInComment() throws Exception {\r\n    Serializer handler = new Serializer(new NullWriter());\r\n    handler.startFragment();\r\n    handler.startComment();\r\n    handler.processCharacterData(\"abc--def\", false);\r\n    handler.endComment();\r\n    handler.completed();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\serializer\\SerializerTest.java",
+  "methodName" : "testIllegalCharacterSequenceInProcessingInstruction",
+  "sourceCode" : "@Test(expected = IllegalCharacterSequenceException.class)\r\npublic void testIllegalCharacterSequenceInProcessingInstruction() throws Exception {\r\n    Serializer handler = new Serializer(new NullWriter());\r\n    handler.startFragment();\r\n    handler.startProcessingInstruction(\"test\");\r\n    handler.processCharacterData(\"aaa???>bbb\", false);\r\n    handler.endProcessingInstruction();\r\n    handler.completed();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\serializer\\SerializerTest.java",
+  "methodName" : "testIllegalCharacterSequenceInCDATASection",
+  "sourceCode" : "@Test(expected = IllegalCharacterSequenceException.class)\r\npublic void testIllegalCharacterSequenceInCDATASection() throws Exception {\r\n    Serializer handler = new Serializer(new NullWriter());\r\n    handler.startFragment();\r\n    handler.startCDATASection();\r\n    handler.processCharacterData(\"xxx]]]\", false);\r\n    handler.processCharacterData(\">yyy\", false);\r\n    handler.endCDATASection();\r\n    handler.completed();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\serializer\\SerializerTest.java",
+  "methodName" : "testGTEscapedAfterSquareBrackets",
+  "sourceCode" : "@Test\r\npublic void testGTEscapedAfterSquareBrackets() throws Exception {\r\n    String sequence = \"xxx]]>yyy\";\r\n    for (int i = 1; i < sequence.length() - 1; i++) {\r\n        StringWriter sw = new StringWriter();\r\n        Serializer handler = new Serializer(sw);\r\n        handler.startFragment();\r\n        handler.processCharacterData(sequence.substring(0, i), false);\r\n        handler.processCharacterData(sequence.substring(i), false);\r\n        handler.completed();\r\n        assertThat(sw.toString()).matches(\"xxx]]&gt;yyy\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\serializer\\writer\\OutputStreamXmlWriterTest.java",
+  "methodName" : "testUnmappableCharacterToCharacterReference",
+  "sourceCode" : "@Test\r\npublic void testUnmappableCharacterToCharacterReference() throws Exception {\r\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\r\n    XmlWriter writer = new OutputStreamXmlWriter(baos, Charset.forName(\"iso-8859-1\"));\r\n    writer.setUnmappableCharacterHandler(UnmappableCharacterHandler.CONVERT_TO_CHARACTER_REFERENCE);\r\n    writer.write(\"abc\\u20ACdef\");\r\n    writer.flushBuffer();\r\n    assertThat(baos.toString(\"iso-8859-1\")).isEqualTo(\"abc&#8364;def\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\stax\\pull\\output\\StAXPivotTest.java",
+  "methodName" : "testSuccess",
+  "sourceCode" : "@Test\r\npublic void testSuccess() throws Exception {\r\n    StAXPivot pivot = createStAXPivot(Action.DEFAULT_START_DOCUMENT, h -> h.startElement(\"urn:test\", \"test\", \"p\"), XmlHandler::attributesCompleted, h -> h.processEntityReference(\"ent\", \"foobar\"), XmlHandler::endElement, XmlHandler::completed);\r\n    pivot.require(XMLStreamConstants.START_DOCUMENT, null, null);\r\n    pivot.next();\r\n    pivot.require(XMLStreamConstants.START_ELEMENT, \"urn:test\", \"test\");\r\n    pivot.next();\r\n    pivot.require(XMLStreamConstants.ENTITY_REFERENCE, null, \"ent\");\r\n    pivot.next();\r\n    pivot.require(XMLStreamConstants.END_ELEMENT, \"urn:test\", \"test\");\r\n    pivot.next();\r\n    pivot.require(XMLStreamConstants.END_DOCUMENT, null, null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\stax\\pull\\output\\StAXPivotTest.java",
+  "methodName" : "testEventTypeMismatch",
+  "sourceCode" : "@Test(expected = XMLStreamException.class)\r\npublic void testEventTypeMismatch() throws Exception {\r\n    StAXPivot pivot = createStAXPivot(Action.DEFAULT_START_DOCUMENT);\r\n    pivot.require(XMLStreamConstants.CHARACTERS, null, null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\stax\\pull\\output\\StAXPivotTest.java",
+  "methodName" : "testLocalNameOnStartDocument",
+  "sourceCode" : "@Test(expected = XMLStreamException.class)\r\npublic void testLocalNameOnStartDocument() throws Exception {\r\n    StAXPivot pivot = createStAXPivot(Action.DEFAULT_START_DOCUMENT);\r\n    pivot.require(XMLStreamConstants.START_DOCUMENT, null, \"test\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\stax\\pull\\output\\StAXPivotTest.java",
+  "methodName" : "testLocalNameMismatchOnStartElement",
+  "sourceCode" : "@Test(expected = XMLStreamException.class)\r\npublic void testLocalNameMismatchOnStartElement() throws Exception {\r\n    StAXPivot pivot = createStAXPivot(Action.DEFAULT_START_DOCUMENT, h -> h.startElement(\"urn:test\", \"test\", \"p\"), XmlHandler::attributesCompleted);\r\n    pivot.next();\r\n    pivot.require(XMLStreamConstants.START_ELEMENT, \"urn:test\", \"wrong_name\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\stax\\pull\\output\\StAXPivotTest.java",
+  "methodName" : "testNamespaceURIOnStartDocument",
+  "sourceCode" : "@Test(expected = XMLStreamException.class)\r\npublic void testNamespaceURIOnStartDocument() throws Exception {\r\n    StAXPivot pivot = createStAXPivot(Action.DEFAULT_START_DOCUMENT);\r\n    pivot.require(XMLStreamConstants.START_DOCUMENT, \"http://example.org\", null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\stax\\pull\\output\\StAXPivotTest.java",
+  "methodName" : "testNamespaceURIMismatchOnStartElement",
+  "sourceCode" : "@Test(expected = XMLStreamException.class)\r\npublic void testNamespaceURIMismatchOnStartElement() throws Exception {\r\n    StAXPivot pivot = createStAXPivot(Action.DEFAULT_START_DOCUMENT, h -> h.startElement(\"urn:test\", \"test\", \"p\"), XmlHandler::attributesCompleted);\r\n    pivot.next();\r\n    pivot.require(XMLStreamConstants.START_ELEMENT, \"urn:wrong_uri\", \"test\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\stax\\pull\\output\\StAXPivotTest.java",
+  "methodName" : "testCDATASection",
+  "sourceCode" : "@Test\r\npublic void testCDATASection() throws Exception {\r\n    StAXPivot pivot = createStAXPivot(Action.DEFAULT_START_DOCUMENT, h -> {\r\n        h.startElement(\"\", \"root\", \"\");\r\n        h.attributesCompleted();\r\n    }, h -> {\r\n        h.startCDATASection();\r\n        h.processCharacterData(\"test\", false);\r\n        h.endCDATASection();\r\n    }, XmlHandler::endElement, XmlHandler::completed);\r\n    assertThat(pivot.getEventType()).isEqualTo(XMLStreamReader.START_DOCUMENT);\r\n    assertThat(pivot.next()).isEqualTo(XMLStreamReader.START_ELEMENT);\r\n    assertThat(pivot.next()).isEqualTo(XMLStreamReader.CDATA);\r\n    assertThat(pivot.getText()).isEqualTo(\"test\");\r\n    assertThat(pivot.next()).isEqualTo(XMLStreamReader.END_ELEMENT);\r\n    assertThat(pivot.next()).isEqualTo(XMLStreamReader.END_DOCUMENT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\stax\\pull\\output\\StAXPivotTest.java",
+  "methodName" : "testGetElementText",
+  "sourceCode" : "@Test\r\npublic void testGetElementText() throws Exception {\r\n    StAXPivot pivot = createStAXPivot(Action.DEFAULT_START_DOCUMENT, h -> h.startElement(\"\", \"root\", \"\"), XmlHandler::attributesCompleted, h -> h.processCharacterData(\"abc\", false), XmlHandler::startCDATASection, h -> h.processCharacterData(\"def\", false), XmlHandler::endCDATASection, h -> h.processCharacterData(\"ghi\", false), XmlHandler::startComment, h -> h.processCharacterData(\"jkl\", false), XmlHandler::endComment, h -> h.processCharacterData(\"mno\", false), h -> h.startProcessingInstruction(\"pi\"), h -> h.processCharacterData(\"pqr\", false), XmlHandler::endProcessingInstruction, h -> h.processCharacterData(\"stu\", false), h -> h.processEntityReference(\"ent\", \"vwx\"), h -> h.processCharacterData(\"yz\", false), XmlHandler::endElement, XmlHandler::completed);\r\n    assertThat(pivot.getEventType()).isEqualTo(XMLStreamReader.START_DOCUMENT);\r\n    assertThat(pivot.next()).isEqualTo(XMLStreamReader.START_ELEMENT);\r\n    assertThat(pivot.getElementText()).isEqualTo(\"abcdefghimnostuvwxyz\");\r\n    assertThat(pivot.getEventType()).isEqualTo(XMLStreamReader.END_ELEMENT);\r\n    assertThat(pivot.next()).isEqualTo(XMLStreamReader.END_DOCUMENT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\core-streams\\src\\test\\java\\org\\apache\\axiom\\core\\stream\\stax\\pull\\output\\StAXPivotTest.java",
+  "methodName" : "testGetElementTextUnexpectedChildElement",
+  "sourceCode" : "@Test\r\npublic void testGetElementTextUnexpectedChildElement() throws Exception {\r\n    StAXPivot pivot = createStAXPivot(Action.DEFAULT_START_DOCUMENT, h -> h.startElement(\"\", \"root\", \"\"), XmlHandler::attributesCompleted, h -> h.processCharacterData(\"abc\", false), h -> h.startElement(\"\", \"child\", \"\"), XmlHandler::attributesCompleted);\r\n    assertThat(pivot.getEventType()).isEqualTo(XMLStreamReader.START_DOCUMENT);\r\n    assertThat(pivot.next()).isEqualTo(XMLStreamReader.START_ELEMENT);\r\n    assertThrows(XMLStreamException.class, () -> pivot.getElementText());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\xml-utils\\src\\test\\java\\org\\apache\\axiom\\util\\xml\\NSUtilsTest.java",
+  "methodName" : "testUniqueness",
+  "sourceCode" : "/**\r\n * Test that the generated prefixes are unique for a sample of namespace URIs collected from the\r\n * Axiom source tree.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testUniqueness() throws Exception {\r\n    Set<String> prefixes = new HashSet<String>();\r\n    BufferedReader in = new BufferedReader(new InputStreamReader(NSUtilsTest.class.getResourceAsStream(\"namespaces.txt\"), Charsets.UTF_8));\r\n    try {\r\n        String uri;\r\n        while ((uri = in.readLine()) != null) {\r\n            assertThat(prefixes.add(NSUtils.generatePrefix(uri))).isTrue();\r\n        }\r\n    } finally {\r\n        in.close();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\xml-utils\\src\\test\\java\\org\\apache\\axiom\\util\\xml\\QNameCacheTest.java",
+  "methodName" : "testGetQName",
+  "sourceCode" : "@Test\r\npublic void testGetQName() {\r\n    QName qname = QNameCache.getQName(\"urn:ns1\", \"somename\", \"ns1\");\r\n    assertThat(qname.getNamespaceURI()).isEqualTo(\"urn:ns1\");\r\n    assertThat(qname.getLocalPart()).isEqualTo(\"somename\");\r\n    assertThat(qname.getPrefix()).isEqualTo(\"ns1\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\xml-utils\\src\\test\\java\\org\\apache\\axiom\\util\\xml\\QNameCacheTest.java",
+  "methodName" : "testCached",
+  "sourceCode" : "@Test\r\npublic void testCached() {\r\n    QName[] qnames = new QName[2];\r\n    for (int i = 0; i < 2; i++) {\r\n        qnames[i] = QNameCache.getQName(\"urn:test\", \"test\", \"p\");\r\n    }\r\n    assertThat(qnames[1]).isSameInstanceAs(qnames[0]);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\xml-utils\\src\\test\\java\\org\\apache\\axiom\\util\\xml\\QNameCacheTest.java",
+  "methodName" : "testPrefixIsRelevant",
+  "sourceCode" : "@Test\r\npublic void testPrefixIsRelevant() {\r\n    QName qname1 = QNameCache.getQName(\"urn:ns2\", \"foo\", \"p\");\r\n    QName qname2 = QNameCache.getQName(\"urn:ns2\", \"foo\", \"\");\r\n    assertThat(qname2).isNotSameInstanceAs(qname1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\xml-utils\\src\\test\\java\\org\\apache\\axiom\\util\\xml\\QNameMapTest.java",
+  "methodName" : "testGetWithNullNamespaceURI",
+  "sourceCode" : "@Test\r\npublic void testGetWithNullNamespaceURI() {\r\n    QNameMap<String> map = new QNameMap<String>();\r\n    map.put(new QName(null, \"name\"), \"value\");\r\n    assertThat(map.get(null, \"name\")).isEqualTo(\"value\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\xml-utils\\src\\test\\java\\org\\apache\\axiom\\util\\xml\\QNameMapTest.java",
+  "methodName" : "testGetWithNullLocalPart",
+  "sourceCode" : "@Test(expected = IllegalArgumentException.class)\r\npublic void testGetWithNullLocalPart() {\r\n    new QNameMap<Object>().get(\"urn:test\", null);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\xml-utils\\src\\test\\java\\org\\apache\\axiom\\util\\xml\\QNameMapTest.java",
+  "methodName" : "testReplaceExisting",
+  "sourceCode" : "@Test\r\npublic void testReplaceExisting() {\r\n    QNameMap<String> map = new QNameMap<String>();\r\n    map.put(new QName(\"urn:test\", \"name\"), \"value1\");\r\n    map.put(new QName(\"urn:test\", \"name\"), \"value2\");\r\n    assertThat(map.get(\"urn:test\", \"name\")).isEqualTo(\"value2\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\components\\xml-utils\\src\\test\\java\\org\\apache\\axiom\\util\\xml\\QNameMapTest.java",
+  "methodName" : "testHashCollision",
+  "sourceCode" : "@Test\r\npublic void testHashCollision() {\r\n    QNameMap<String> map = new QNameMap<String>();\r\n    map.put(new QName(\"a\", \"b\"), \"value1\");\r\n    map.put(new QName(\"b\", \"a\"), \"value2\");\r\n    assertThat(map.get(\"a\", \"b\")).isEqualTo(\"value1\");\r\n    assertThat(map.get(\"b\", \"a\")).isEqualTo(\"value2\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\mixins\\dom-mixins\\src\\test\\java\\org\\apache\\axiom\\dom\\DOMExceptionTranslatorTest.java",
+  "methodName" : "testMessage",
+  "sourceCode" : "@Test\r\npublic void testMessage() {\r\n    DOMException ex = DOMExceptionUtil.newDOMException(DOMException.NOT_FOUND_ERR);\r\n    assertThat(ex.getMessage()).isEqualTo(\"NOT_FOUND_ERR: An attempt is made to reference a node in a context where it does not exist.\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\mixins\\om-mixins\\src\\test\\java\\org\\apache\\axiom\\om\\impl\\common\\util\\LocaleUtilTest.java",
+  "methodName" : "testGetMatchScore",
+  "sourceCode" : "@Test\r\npublic void testGetMatchScore() {\r\n    assertCloserMatch(new Locale(\"de\", \"DE\"), new Locale(\"de\", \"DE\"), new Locale(\"de\"));\r\n    // English is always preferred over other non matching languages\r\n    assertCloserMatch(new Locale(\"de\"), new Locale(\"en\"), new Locale(\"fr\"));\r\n    // Prefer locale without country\r\n    assertCloserMatch(new Locale(\"fr\", \"CA\"), new Locale(\"fr\"), new Locale(\"fr\", \"FR\"));\r\n    assertCloserMatch(new Locale(\"de\"), new Locale(\"en\"), new Locale(\"en\", \"US\"));\r\n    // No locale is better than a non matching locale\r\n    assertCloserMatch(new Locale(\"de\"), null, new Locale(\"fr\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\compat-tests\\src\\test\\java\\DataHandlerTest.java",
+  "methodName" : "testLLOM",
+  "sourceCode" : "@Test\r\npublic void testLLOM() {\r\n    test(OMAbstractFactory.FEATURE_DEFAULT);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\compat-tests\\src\\test\\java\\DataHandlerTest.java",
+  "methodName" : "testDOOM",
+  "sourceCode" : "@Test\r\npublic void testDOOM() {\r\n    test(OMAbstractFactory.FEATURE_DOM);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\eclipse-tests\\src\\test\\java\\EclipseTest.java",
+  "methodName" : "testLLOM",
+  "sourceCode" : "@Test\r\npublic void testLLOM() {\r\n    OMElement element = OMXMLBuilderFactory.createOMBuilder(new StringReader(\"<ns:test xmlns:ns='urn:ns'>test</ns:test>\")).getDocumentElement();\r\n    assertEquals(new QName(\"urn:ns\", \"test\"), element.getQName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\eclipse-tests\\src\\test\\java\\EclipseTest.java",
+  "methodName" : "testDOOM",
+  "sourceCode" : "@Test\r\npublic void testDOOM() throws Exception {\r\n    DOMMetaFactory metaFactory = (DOMMetaFactory) OMAbstractFactory.getMetaFactory(OMAbstractFactory.FEATURE_DOM);\r\n    Document document = metaFactory.newDocumentBuilderFactory().newDocumentBuilder().newDocument();\r\n    Element element = document.createElementNS(\"urn:test\", \"p:root\");\r\n    assertEquals(new QName(\"urn:test\", \"root\"), ((OMElement) element).getQName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\jaxws-tests\\src\\test\\java\\MTOMTest.java",
+  "methodName" : "testSOAP12",
+  "sourceCode" : "/**\r\n * Regression test for <a href=\"https://issues.apache.org/jira/browse/AXIOM-492\">AXIOM-492</a>.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testSOAP12() throws Exception {\r\n    Server server = new Server();\r\n    ServerConnector connector = new ServerConnector(server);\r\n    connector.setPort(0);\r\n    server.setConnectors(new Connector[] { connector });\r\n    ServletContextHandler handler = new ServletContextHandler(server, \"/\");\r\n    HttpServlet servlet = new HttpServlet() {\r\n\r\n        @Override\r\n        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {\r\n            MultipartBody mp = MultipartBody.builder().setInputStream(request.getInputStream()).setContentType(request.getContentType()).build();\r\n            OMXMLBuilderFactory.createSOAPModelBuilder(mp);\r\n            SOAPFactory factory = OMAbstractFactory.getSOAP12Factory();\r\n            SOAPMessage message = factory.createDefaultSOAPMessage();\r\n            OMElement responseElement = factory.createOMElement(\"uploadImageResponse\", factory.createOMNamespace(\"http://example.org/\", \"ns\"), message.getSOAPEnvelope().getBody());\r\n            factory.createOMElement(\"return\", null, responseElement).setText(\"OK\");\r\n            response.setContentType(factory.getSOAPVersion().getMediaType().toString());\r\n            try {\r\n                message.serialize(response.getOutputStream());\r\n            } catch (XMLStreamException ex) {\r\n                throw new ServletException(ex);\r\n            }\r\n        }\r\n    };\r\n    ServletHolder servletHolder = new ServletHolder(servlet);\r\n    servletHolder.setName(\"test\");\r\n    servletHolder.setInitOrder(1);\r\n    handler.addServlet(servletHolder, \"/\");\r\n    server.start();\r\n    try {\r\n        ImageServicePort imageService = new ImageService().getImageServicePort(new MTOMFeature());\r\n        ((BindingProvider) imageService).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, String.format(\"http://localhost:%d/\", connector.getLocalPort()));\r\n        assertThat(imageService.uploadImage(new byte[4096])).isEqualTo(\"OK\");\r\n    } finally {\r\n        server.stop();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\osgi-tests\\src\\test\\java\\org\\apache\\axiom\\test\\BlueprintTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() throws Exception {\r\n    Assert.assertEquals(\"<test/>\", testService.doSomething());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\osgi-tests\\src\\test\\java\\org\\apache\\axiom\\test\\DataSourceUtilsTest.java",
+  "methodName" : "testGetSize",
+  "sourceCode" : "@Test\r\npublic void testGetSize() {\r\n    assertEquals(123, DataSourceUtils.getSize(new ByteArrayDataSource(new byte[123], \"application/octet-stream\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\osgi-tests\\src\\test\\java\\org\\apache\\axiom\\test\\FactoryTest.java",
+  "methodName" : "testGetOMFactory",
+  "sourceCode" : "@Test\r\npublic void testGetOMFactory() throws Exception {\r\n    assertNotNull(OMAbstractFactory.getOMFactory());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\osgi-tests\\src\\test\\java\\org\\apache\\axiom\\test\\FactoryTest.java",
+  "methodName" : "testGetSOAP11Factory",
+  "sourceCode" : "@Test\r\npublic void testGetSOAP11Factory() throws Exception {\r\n    assertNotNull(OMAbstractFactory.getSOAP11Factory());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\osgi-tests\\src\\test\\java\\org\\apache\\axiom\\test\\FactoryTest.java",
+  "methodName" : "testGetSOAP12Factory",
+  "sourceCode" : "@Test\r\npublic void testGetSOAP12Factory() throws Exception {\r\n    assertNotNull(OMAbstractFactory.getSOAP12Factory());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\osgi-tests\\src\\test\\java\\org\\apache\\axiom\\test\\FactoryTest.java",
+  "methodName" : "testLLOMMetaFactoryServicePresent",
+  "sourceCode" : "@Test\r\npublic void testLLOMMetaFactoryServicePresent() throws Exception {\r\n    ServiceReference<?>[] omfactRefs = context.getServiceReferences(\"org.apache.axiom.om.OMMetaFactory\", \"(implementationName=llom)\");\r\n    assertNotNull(omfactRefs);\r\n    assertEquals(1, omfactRefs.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\osgi-tests\\src\\test\\java\\org\\apache\\axiom\\test\\FactoryTest.java",
+  "methodName" : "testDOOMMetaFactoryServicePresent",
+  "sourceCode" : "@Test\r\npublic void testDOOMMetaFactoryServicePresent() throws Exception {\r\n    ServiceReference<?>[] omfactRefs = context.getServiceReferences(\"org.apache.axiom.om.OMMetaFactory\", \"(implementationName=doom)\");\r\n    assertNotNull(omfactRefs);\r\n    assertEquals(2, omfactRefs.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\osgi-tests\\src\\test\\java\\org\\apache\\axiom\\test\\FactoryTest.java",
+  "methodName" : "testLookupByFeature",
+  "sourceCode" : "@Test\r\npublic void testLookupByFeature() throws Exception {\r\n    ServiceReference<?>[] omfactRefs = context.getServiceReferences(\"org.apache.axiom.om.OMMetaFactory\", \"(feature=dom)\");\r\n    assertNotNull(omfactRefs);\r\n    assertEquals(1, omfactRefs.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\osgi-tests\\src\\test\\java\\org\\apache\\axiom\\test\\FactoryTest.java",
+  "methodName" : "testLookupDOMMetaFactory",
+  "sourceCode" : "@Test\r\npublic void testLookupDOMMetaFactory() throws Exception {\r\n    ServiceReference<?>[] omfactRefs = context.getServiceReferences(\"org.apache.axiom.om.dom.DOMMetaFactory\", null);\r\n    assertNotNull(omfactRefs);\r\n    assertEquals(1, omfactRefs.length);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\osgi-tests\\src\\test\\java\\org\\apache\\axiom\\test\\FactoryTest.java",
+  "methodName" : "testCreateOMBuilder",
+  "sourceCode" : "@Test\r\npublic void testCreateOMBuilder() throws Exception {\r\n    OMElement oe = OMXMLBuilderFactory.createOMBuilder(new StringReader(\"<a:testElement xmlns:a=\\\"http://test/namespace\\\"/>\")).getDocumentElement();\r\n    assertEquals(\"testElement\", oe.getLocalName());\r\n    assertEquals(\"http://test/namespace\", oe.getNamespace().getNamespaceURI());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\osgi-tests\\src\\test\\java\\org\\apache\\axiom\\test\\JAXBTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() throws Exception {\r\n    OMFactory factory = OMAbstractFactory.getOMFactory();\r\n    JAXBContext context = JAXBContext.newInstance(DummyBean.class);\r\n    OMSourcedElement element = factory.createOMElement(new JAXBOMDataSource(context, new DummyBean()));\r\n    element.serialize(new ByteArrayOutputStream());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\osgi-tests\\src\\test\\java\\org\\apache\\axiom\\test\\SJSXPTest.java",
+  "methodName" : "testCreateOMBuilder",
+  "sourceCode" : "@Test\r\npublic void testCreateOMBuilder() throws Exception {\r\n    OMElement oe = OMXMLBuilderFactory.createOMBuilder(new StringReader(\"<a:testElement xmlns:a=\\\"http://test/namespace\\\"/>\")).getDocumentElement();\r\n    assertEquals(\"testElement\", oe.getLocalName());\r\n    assertEquals(\"http://test/namespace\", oe.getNamespace().getNamespaceURI());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\osgi-tests\\src\\test\\java\\org\\apache\\axiom\\test\\SystemDepsTest.java",
+  "methodName" : "testCreateOMBuilder",
+  "sourceCode" : "@Test\r\npublic void testCreateOMBuilder() throws Exception {\r\n    OMElement element = OMXMLBuilderFactory.createOMBuilder(new StringReader(\"<root/>\")).getDocumentElement();\r\n    assertEquals(\"root\", element.getLocalName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\osgi-tests\\src\\test\\java\\org\\apache\\axiom\\test\\UsesConstraintsTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() throws Exception {\r\n    System.setProperty(\"java.protocol.handler.pkgs\", \"org.ops4j.pax.url\");\r\n    Map<String, String> p = new HashMap<String, String>();\r\n    p.put(FRAMEWORK_STORAGE, new File(\"target/felix\").getAbsolutePath());\r\n    p.put(FRAMEWORK_STORAGE_CLEAN, FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);\r\n    FrameworkFactory frameworkFactory = new org.apache.felix.framework.FrameworkFactory();\r\n    Framework framework = frameworkFactory.newFramework(p);\r\n    framework.init();\r\n    BundleContext context = framework.getBundleContext();\r\n    Listener listener = new Listener();\r\n    context.addFrameworkListener(listener);\r\n    List<Bundle> bundles = new ArrayList<Bundle>();\r\n    bundles.add(context.installBundle(\"link:classpath:META-INF/links/org.ops4j.pax.logging.api.link\"));\r\n    bundles.add(context.installBundle(\"link:classpath:org.apache.servicemix.specs.stax-api-1.0.link\"));\r\n    bundles.add(context.installBundle(\"link:classpath:stax2-api.link\"));\r\n    bundles.add(context.installBundle(\"link:classpath:com.fasterxml.woodstox.woodstox-core.link\"));\r\n    bundles.add(context.installBundle(\"link:classpath:com.sun.activation.jakarta.activation.link\"));\r\n    bundles.add(context.installBundle(\"link:classpath:org.apache.james.apache-mime4j-core.link\"));\r\n    bundles.add(context.installBundle(\"link:classpath:org.apache.ws.commons.axiom.axiom-api.link\"));\r\n    // This bundle will be wired to the javax.xml.stream package exported by the ServiceMix stax-api bundle.\r\n    bundles.add(context.installBundle(streamBundle(bundle().set(BUNDLE_SYMBOLICNAME, \"testbundle1\").set(IMPORT_PACKAGE, \"org.apache.axiom.om, javax.xml.stream; version=1.0\").build()).getURL()));\r\n    // This bundle will be wired to the javax.xml.stream package exported by the framework bundle\r\n    bundles.add(context.installBundle(streamBundle(bundle().set(BUNDLE_SYMBOLICNAME, \"testbundle2\").set(IMPORT_PACKAGE, \"org.apache.axiom.om, javax.xml.stream; version=\\\"[0.0.0,1.0)\\\"\").build()).getURL()));\r\n    for (Bundle bundle : bundles) {\r\n        bundle.start();\r\n    }\r\n    framework.start();\r\n    try {\r\n        listener.awaitStart();\r\n        assertTrue(\"Uses constraint violation expected\", listener.gotExpectedError());\r\n    } finally {\r\n        framework.stop();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\psychopath-tests\\src\\test\\java\\PsychoPathTest.java",
+  "methodName" : "testSingleNodeResult",
+  "sourceCode" : "@Test\r\npublic void testSingleNodeResult() throws Exception {\r\n    ResultSequence rs = evaluate(\"/Persons/Person[1]/Name\");\r\n    assertEquals(1, rs.size());\r\n    assertEquals(\"Albert Einstein\", rs.item(0).getStringValue());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\psychopath-tests\\src\\test\\java\\PsychoPathTest.java",
+  "methodName" : "testNodeSetResult",
+  "sourceCode" : "// TODO: doesn't work yet because Node#compareDocumentPosition is not implemented\r\n@Ignore\r\n@Test\r\npublic void testNodeSetResult() throws Exception {\r\n    ResultSequence rs = evaluate(\"/Persons/Person[BirthYear='1664']/Name\");\r\n    assertEquals(2, rs.size());\r\n    assertEquals(\"Jean Meslier\", rs.item(0).getStringValue());\r\n    assertEquals(\"Andreas Schlüter\", rs.item(1).getStringValue());\r\n}",
+  "annotations" : [ "Ignore", "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\wildfly-tests\\src\\test\\java\\org\\apache\\axiom\\systest\\wildfly\\DialectTest.java",
+  "methodName" : "testStAXDialectDetector",
+  "sourceCode" : "/**\r\n * Directly tests {@link StAXDialectDetector}.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testStAXDialectDetector() throws Exception {\r\n    assertFalse(StAXDialectDetector.getDialect(XMLInputFactory.newInstance()).getName().equals(\"Unknown\"));\r\n    assertFalse(StAXDialectDetector.getDialect(XMLOutputFactory.newInstance()).getName().equals(\"Unknown\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\wildfly-tests\\src\\test\\java\\org\\apache\\axiom\\systest\\wildfly\\DialectTest.java",
+  "methodName" : "testDTD",
+  "sourceCode" : "/**\r\n * Tests that Axiom is able to read a DOCTYPE declaration. Since accessing the information in\r\n * the DOCTYPE declaration is not standardized by the StAX specification, this will fail if the\r\n * StAX dialect is not detected correctly.\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testDTD() throws Exception {\r\n    OMDocument document = OMXMLBuilderFactory.createOMBuilder(new StringReader(\"<!DOCTYPE root><root/>\")).getDocument();\r\n    OMDocType dtd = (OMDocType) document.getFirstOMChild();\r\n    assertEquals(\"root\", dtd.getRootName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\wss4j-tests\\src\\test\\java\\WSS4JTest.java",
+  "methodName" : "testSignHeaderAndBody",
+  "sourceCode" : "@Test\r\npublic void testSignHeaderAndBody() throws Exception {\r\n    Vector<WSEncryptionPart> parts = new Vector<WSEncryptionPart>();\r\n    parts.add(new WSEncryptionPart(\"header\", \"urn:ns1\", \"\"));\r\n    parts.add(new WSEncryptionPart(\"Body\", \"http://schemas.xmlsoap.org/soap/envelope/\", \"\"));\r\n    testSignature(\"envelope1.xml\", parts);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\wss4j-tests\\src\\test\\java\\WSS4JTest.java",
+  "methodName" : "testSignPartById",
+  "sourceCode" : "@Test\r\npublic void testSignPartById() throws Exception {\r\n    Vector<WSEncryptionPart> parts = new Vector<WSEncryptionPart>();\r\n    parts.add(new WSEncryptionPart(\"my-id\"));\r\n    testSignature(\"envelope2.xml\", parts);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\systests\\wss4j-tests\\src\\test\\java\\WSS4JTest.java",
+  "methodName" : "testEncryptHeader",
+  "sourceCode" : "@Test\r\npublic void testEncryptHeader() throws Exception {\r\n    Vector<WSEncryptionPart> parts = new Vector<WSEncryptionPart>();\r\n    parts.add(new WSEncryptionPart(\"header\", \"urn:ns1\", \"Header\"));\r\n    WSSecEncrypt encrypt = new WSSecEncrypt();\r\n    encrypt.setUserInfo(\"key2\", \"password\");\r\n    encrypt.setEncryptSymmKey(false);\r\n    encrypt.setParts(parts);\r\n    SOAPMessage message = load(\"envelope1.xml\");\r\n    Document doc = (Document) message;\r\n    WSSecHeader secHeader = new WSSecHeader();\r\n    secHeader.insertSecurityHeader(doc);\r\n    encrypt.build(doc, crypto, secHeader);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\testing\\jaxp-testsuite\\src\\test\\java\\org\\apache\\axiom\\ts\\jaxp\\stax\\StAXImplementationTest.java",
+  "methodName" : "testInstances",
+  "sourceCode" : "@Test\r\npublic void testInstances() {\r\n    for (StAXImplementation implementation : Multiton.getInstances(StAXImplementation.class)) {\r\n        implementation.newXMLInputFactory();\r\n        implementation.newXMLOutputFactory();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\testing\\jaxp-testsuite\\src\\test\\java\\org\\apache\\axiom\\ts\\jaxp\\xslt\\XSLTImplementationTest.java",
+  "methodName" : "testSupportsLexicalHandlerWithStreamSource",
+  "sourceCode" : "@Test\r\npublic void testSupportsLexicalHandlerWithStreamSource() {\r\n    assertThat(XSLTImplementation.SAXON.supportsLexicalHandlerWithStreamSource()).isFalse();\r\n    assertThat(XSLTImplementation.XALAN.supportsLexicalHandlerWithStreamSource()).isTrue();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\testing\\jaxp-testsuite\\src\\test\\java\\org\\apache\\axiom\\ts\\jaxp\\xslt\\XSLTImplementationTest.java",
+  "methodName" : "testSupportsStAXSource",
+  "sourceCode" : "@Test\r\npublic void testSupportsStAXSource() {\r\n    for (XSLTImplementation xsltImplementation : Multiton.getInstances(XSLTImplementation.class)) {\r\n        assertThat(xsltImplementation.supportsStAXSource()).isEqualTo(xsltImplementation != XSLTImplementation.XALAN);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\testing\\xml-truth\\src\\test\\java\\org\\apache\\axiom\\truth\\xml\\DOMTraverserTest.java",
+  "methodName" : "testEntityReferenceExpansion",
+  "sourceCode" : "@Test\r\npublic void testEntityReferenceExpansion() throws Exception {\r\n    Traverser t = new CoalescingFilter(new DOMXML(XMLSample.ENTITY_REFERENCE_NESTED.getDocument()).createTraverser(true));\r\n    assertThat(t.next()).isEqualTo(Event.DOCUMENT_TYPE);\r\n    assertThat(t.next()).isEqualTo(Event.START_ELEMENT);\r\n    assertThat(t.next()).isEqualTo(Event.TEXT);\r\n    assertThat(t.getText().trim()).isEqualTo(\"A B C\");\r\n    assertThat(t.next()).isEqualTo(Event.END_ELEMENT);\r\n    assertThat(t.next()).isNull();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\testing\\xml-truth\\src\\test\\java\\org\\apache\\axiom\\truth\\xml\\StAXTraverserTest.java",
+  "methodName" : "testFragment",
+  "sourceCode" : "@Test\r\npublic void testFragment() throws Exception {\r\n    XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(\"<root><a><b/></a></root>\"));\r\n    reader.next();\r\n    reader.next();\r\n    Traverser t = new StAXTraverser(reader);\r\n    assertThat(t.next()).isEqualTo(Event.START_ELEMENT);\r\n    assertThat(t.getQName()).isEqualTo(new QName(\"a\"));\r\n    assertThat(t.next()).isEqualTo(Event.START_ELEMENT);\r\n    assertThat(t.getQName()).isEqualTo(new QName(\"b\"));\r\n    assertThat(t.next()).isEqualTo(Event.END_ELEMENT);\r\n    assertThat(t.next()).isEqualTo(Event.END_ELEMENT);\r\n    assertThat(t.next()).isNull();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\testing\\xml-truth\\src\\test\\java\\org\\apache\\axiom\\truth\\xml\\XMLSubjectTest.java",
+  "methodName" : "testIgnoringRedundantNamespaceDeclarations1",
+  "sourceCode" : "@Test\r\npublic void testIgnoringRedundantNamespaceDeclarations1() {\r\n    assertAbout(xml()).that(\"<a xmlns:p='#1' xmlns=''><b xmlns:p='#1'/></a>\").ignoringRedundantNamespaceDeclarations().hasSameContentAs(\"<a xmlns:p='#1'><b/></a>\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\testing\\xml-truth\\src\\test\\java\\org\\apache\\axiom\\truth\\xml\\XMLSubjectTest.java",
+  "methodName" : "testIgnoringRedundantNamespaceDeclarations2",
+  "sourceCode" : "@Test(expected = AssertionError.class)\r\npublic void testIgnoringRedundantNamespaceDeclarations2() {\r\n    assertAbout(xml()).that(\"<a xmlns:p='#1'><b xmlns:p='#2'/></a>\").ignoringRedundantNamespaceDeclarations().hasSameContentAs(\"<a xmlns:p='#1'><b/></a>\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\testing\\xml-truth\\src\\test\\java\\org\\apache\\axiom\\truth\\xml\\XMLSubjectTest.java",
+  "methodName" : "testIgnoringNamespaceDeclarationsAndPrefixes",
+  "sourceCode" : "@Test\r\npublic void testIgnoringNamespaceDeclarationsAndPrefixes() {\r\n    // START SNIPPET: sample\r\n    assertAbout(xml()).that(\"<p:a xmlns:p='urn:ns'/>\").ignoringNamespacePrefixes().ignoringNamespaceDeclarations().hasSameContentAs(\"<a xmlns='urn:ns'/>\");\r\n    // END SNIPPET: sample\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Axiom\\testing\\xml-truth\\src\\test\\java\\org\\apache\\axiom\\truth\\xml\\XMLSubjectTest.java",
+  "methodName" : "testIgnoringComments",
+  "sourceCode" : "@Test\r\npublic void testIgnoringComments() {\r\n    assertAbout(xml()).that(\"<a><!-- comment --></a>\").ignoringComments().hasSameContentAs(\"<a/>\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

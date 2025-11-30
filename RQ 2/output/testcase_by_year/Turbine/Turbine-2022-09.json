@@ -1,0 +1,949 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\annotation\\AnnotatedMethodsTest.java",
+  "methodName" : "testTool",
+  "sourceCode" : "/*\r\n     * Class under test for String format(Date, String)\r\n     */\r\n@Test\r\nvoid testTool() throws TurbineException {\r\n    AnnotationProcessor.process(this, true);\r\n    assertNotNull(pullService);\r\n    assertNotNull(asb);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\annotation\\AnnotatedMethodsTest.java",
+  "methodName" : "testProcessingPerformance",
+  "sourceCode" : "// ignore in surefire, activating seems to be still buggy ?\r\n@Tag(\"performance\")\r\n@Test\r\npublic void testProcessingPerformance() throws TurbineException {\r\n    long startTime = System.currentTimeMillis();\r\n    for (int i = 0; i < 100000; i++) {\r\n        AnnotationProcessor.process(this, true);\r\n    }\r\n    System.out.println(System.currentTimeMillis() - startTime);\r\n}",
+  "annotations" : [ "Tag", "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\annotation\\AnnotationProcessorTest.java",
+  "methodName" : "testProcess",
+  "sourceCode" : "@Test\r\npublic void testProcess() throws Exception {\r\n    AnnotationProcessor.process(this);\r\n    assertNotNull(completeConfiguration);\r\n    assertFalse(completeConfiguration.getBoolean(\"module.cache\", true));\r\n    assertNotNull(serverdataDefaultConfiguration);\r\n    assertEquals(80, serverdataDefaultConfiguration.getInt(\"serverPort\"));\r\n    assertFalse(moduleCache);\r\n    assertEquals(20, actionCacheSize);\r\n    assertEquals(\"Index.vm\", templateHomepage);\r\n    assertNotNull(modulePackages);\r\n    assertEquals(3, modulePackages.size());\r\n    assertEquals(\"org.apache.turbine.services.template.modules\", modulePackages.get(1));\r\n    assertEquals(1, notModified);\r\n    assertNotNull(screenLoader);\r\n    assertNotNull(asb);\r\n    assertNotNull(factory);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\annotation\\AnnotationProcessorTest.java",
+  "methodName" : "testRequiredRoleMethodProcess",
+  "sourceCode" : "@Test\r\npublic void testRequiredRoleMethodProcess() throws Exception {\r\n    RunData data = mock(RunData.class);\r\n    TurbineAccessControlList<?> acl = mock(TurbineAccessControlList.class);\r\n    Role role = mock(Role.class);\r\n    when(role.getName()).thenReturn(\"user\");\r\n    // Group group = mock(Group.class);\r\n    when(acl.hasRole(role.getName())).thenReturn(Boolean.TRUE);\r\n    when(data.getACL()).thenReturn(acl);\r\n    Method[] methods = getClass().getMethods();\r\n    for (Method m : methods) {\r\n        if (m.getName().equals(\"guardedMethoded\")) {\r\n            assertTrue(AnnotationProcessor.isAuthorized(m, (TurbineAccessControlList<?>) data.getACL(), ConditionType.ANY));\r\n            assertFalse(AnnotationProcessor.isAuthorized(m, (TurbineAccessControlList<?>) data.getACL(), ConditionType.COMPOUND));\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\annotation\\AnnotationProcessorTest.java",
+  "methodName" : "testRequiredRoleAdminMethodProcess",
+  "sourceCode" : "@Test\r\npublic void testRequiredRoleAdminMethodProcess() throws Exception {\r\n    RunData data = mock(RunData.class);\r\n    TurbineAccessControlList<?> acl = mock(TurbineAccessControlList.class);\r\n    Role role = mock(Role.class);\r\n    when(role.getName()).thenReturn(\"user\");\r\n    // Group group = mock(Group.class);\r\n    when(acl.hasRole(role.getName())).thenReturn(Boolean.TRUE);\r\n    when(data.getACL()).thenReturn(acl);\r\n    Method[] methods = getClass().getMethods();\r\n    for (Method m : methods) {\r\n        if (m.getName().equals(\"guardedMethodedAdmin\")) {\r\n            assertFalse(AnnotationProcessor.isAuthorized(m, (TurbineAccessControlList<?>) data.getACL(), ConditionType.ANY));\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\annotation\\AnnotationProcessorTest.java",
+  "methodName" : "testUnguardedMethodWProcessDefault",
+  "sourceCode" : "@Test\r\npublic void testUnguardedMethodWProcessDefault() throws Exception {\r\n    RunData data = mock(RunData.class);\r\n    TurbineAccessControlList<?> acl = mock(TurbineAccessControlList.class);\r\n    Role role = mock(Role.class);\r\n    when(role.getName()).thenReturn(\"user\");\r\n    // Group group = mock(Group.class);\r\n    when(acl.hasRole(role.getName())).thenReturn(Boolean.FALSE);\r\n    when(data.getACL()).thenReturn(acl);\r\n    Method[] methods = getClass().getMethods();\r\n    for (Method m : methods) {\r\n        if (m.getName().equals(\"unguardedMethoded\")) {\r\n            // default is true, if not annotated\r\n            assertTrue(AnnotationProcessor.isAuthorized(m, (TurbineAccessControlList<?>) data.getACL(), ConditionType.ANY));\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\annotation\\AnnotationProcessorTest.java",
+  "methodName" : "testProcessingPerformance",
+  "sourceCode" : "//@Disabled(\"For performance tests only\")\r\n// ignore in surefire, activating seems to be still buggy ?\r\n@Tag(\"performance\")\r\n@Test\r\npublic void testProcessingPerformance() throws TurbineException {\r\n    long startTime = System.currentTimeMillis();\r\n    for (int i = 0; i < 100000; i++) {\r\n        AnnotationProcessor.process(this);\r\n    }\r\n    System.out.println(System.currentTimeMillis() - startTime);\r\n}",
+  "annotations" : [ "Tag", "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\ConfigurationTest.java",
+  "methodName" : "testCreateTurbineWithConfigurationXML",
+  "sourceCode" : "@Test\r\npublic void testCreateTurbineWithConfigurationXML() throws Exception {\r\n    txc = new TurbineXmlConfig(\".\", \"conf/test/TurbineConfiguration.xml\");\r\n    try {\r\n        txc.initialize();\r\n        Configuration configuration = Turbine.getConfiguration();\r\n        assertNotNull(\"No Configuration Object found!\", configuration);\r\n        assertFalse(\"Make sure we have values\", configuration.isEmpty());\r\n        // overridden value\r\n        String key = \"module.cache\";\r\n        assertEquals(\"Read a config value \" + key + \", received:\" + configuration.getString(key), \"true\", configuration.getString(key));\r\n        // non overridden value\r\n        key = \"scheduledjob.cache.size\";\r\n        assertEquals(\"Read a config value \" + key + \", received:\" + configuration.getString(key), \"10\", configuration.getString(key));\r\n    } catch (Exception e) {\r\n        throw e;\r\n    } finally {\r\n        txc.dispose();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\ConfigurationTest.java",
+  "methodName" : "testCreateTurbineWithConfiguration",
+  "sourceCode" : "@Test\r\npublic void testCreateTurbineWithConfiguration() throws Exception {\r\n    tc = new TurbineConfig(\".\", \"/conf/test/TemplateService.properties\");\r\n    try {\r\n        tc.initialize();\r\n        Configuration configuration = Turbine.getConfiguration();\r\n        assertNotNull(\"No Configuration Object found!\", configuration);\r\n        assertFalse(\"Make sure we have values\", configuration.isEmpty());\r\n        String key = \"scheduledjob.cache.size\";\r\n        assertEquals(\"Read a config value \" + key + \", received:\" + configuration.getString(key), \"10\", configuration.getString(key));\r\n    } catch (Exception e) {\r\n        throw e;\r\n    } finally {\r\n        tc.dispose();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\ConfigurationTest.java",
+  "methodName" : "testCreateConfigurationWithIncludedConfiguration",
+  "sourceCode" : "@Test\r\npublic void testCreateConfigurationWithIncludedConfiguration() throws Exception {\r\n    String confPath = Turbine.getRealPath(\"/conf/test/usersettings.properties\");\r\n    try {\r\n        Configuration configuration = new Configurations().properties(confPath);\r\n        assertNotNull(\"No Configuration Object found!\", configuration);\r\n        assertFalse(\"Make sure we have values\", configuration.isEmpty());\r\n        String key = \"scheduledjob.cache.size\";\r\n        assertEquals(\"Read a config value \" + key + \", received:\" + configuration.getString(key), \"100\", configuration.getString(key));\r\n        String key2 = \"module.cache\";\r\n        assertEquals(\"Read a config value \" + key2 + \", received:\" + configuration.getString(key2), \"false\", configuration.getString(key2));\r\n    } catch (Exception e) {\r\n        throw e;\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\ConfigurationTest.java",
+  "methodName" : "testCreateTurbineWithIncludedConfiguration",
+  "sourceCode" : "@Test\r\npublic void testCreateTurbineWithIncludedConfiguration() throws Exception {\r\n    tc = new TurbineConfig(\".\", \"/conf/test/usersettings.properties\");\r\n    try {\r\n        tc.initialize();\r\n        Configuration configuration = Turbine.getConfiguration();\r\n        assertNotNull(\"No Configuration Object found!\", configuration);\r\n        assertFalse(\"Make sure we have values\", configuration.isEmpty());\r\n        String key = \"scheduledjob.cache.size\";\r\n        assertEquals(\"Read a config value \" + key + \", received:\" + configuration.getString(key), \"100\", configuration.getString(key));\r\n        String key2 = \"module.cache\";\r\n        assertEquals(\"Read a config value \" + key2 + \", received:\" + configuration.getString(key2), \"false\", configuration.getString(key2));\r\n    } catch (Exception e) {\r\n        throw e;\r\n    } finally {\r\n        tc.dispose();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\ConfigurationTest.java",
+  "methodName" : "testCreateTurbineWithXMLBuilderConfiguration",
+  "sourceCode" : "@Test\r\npublic void testCreateTurbineWithXMLBuilderConfiguration() throws Exception {\r\n    String configurationRessourcePath = \"conf/test/ConfigurationBuilder.xml\";\r\n    tc = new TurbineXmlConfig(\".\", configurationRessourcePath);\r\n    try {\r\n        tc.initialize();\r\n        Configuration configuration = Turbine.getConfiguration();\r\n        assertNotNull(\"No Configuration Object found!\", configuration);\r\n        assertFalse(\"Make sure we have values\", configuration.isEmpty());\r\n        //assertTrue(\"Test  combined configuration is\"+ configuration, configuration instanceof CombinedConfiguration);\r\n        // overridden value\r\n        String key = \"scheduledjob.cache.size\";\r\n        assertEquals(\"Read a config value \" + key + \", received:\" + configuration.getInt(key), 100, configuration.getInt(key));\r\n        // double overridden value\r\n        key = \"module.cache\";\r\n        assertEquals(\"Read a config value \" + key + \", received:\" + configuration.getBoolean(key), false, configuration.getBoolean(key));\r\n        // new property\r\n        key = \"tests.test\";\r\n        configuration.addProperty(key, 123);\r\n        assertEquals(\"Read a config value \" + key + \", received:\" + configuration.getInt(key), 123, configuration.getInt(key));\r\n        // not set\r\n        key = \"test.nulltest3\";\r\n        assertEquals(\"Read a included config value \" + key + \", received:\" + configuration.getString(key), null, configuration.getString(key));\r\n        // overridden value\r\n        key = \"services.PullService.earlyInit\";\r\n        assertEquals(\"Read a config value \" + key + \", received:\" + configuration.getBoolean(key), true, configuration.getBoolean(key));\r\n        configuration.setProperty(key, false);\r\n        assertEquals(\"Read a config value \" + key + \", received:\" + configuration.getBoolean(key), false, configuration.getBoolean(key));\r\n        // converts to URL, cft. RFC2396\r\n        URL testURL = FileLocatorUtils.DEFAULT_FILE_SYSTEM.locateFromURL(new File(Turbine.getApplicationRoot()).toURI().toString(), configurationRessourcePath);\r\n        assertNotNull(\"Should be a valid URL\", testURL);\r\n    } finally {\r\n        tc.dispose();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\DestroyTest.java",
+  "methodName" : "testDestroy",
+  "sourceCode" : "@Test\r\npublic void testDestroy() throws Exception {\r\n    Turbine t = new Turbine();\r\n    t.destroy();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\DestroyTest.java",
+  "methodName" : "testInitAndDestroy",
+  "sourceCode" : "@Test\r\npublic void testInitAndDestroy() throws Exception {\r\n    tc.initialize();\r\n    tc.dispose();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\modules\\ActionLoaderTest.java",
+  "methodName" : "testDoPerformBubblesException",
+  "sourceCode" : "/**\r\n * This unit test verifies that if your standard doPerform is called, and it\r\n * throws an Exception, the exception is bubbled up out of the\r\n * ActionLoader...\r\n *\r\n * @throws Exception\r\n *             If something goes wrong with the unit test\r\n */\r\n@Test\r\npublic void testDoPerformBubblesException() throws Exception {\r\n    System.out.println(\"tcturbine:\" + tc.getTurbine());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\modules\\ActionLoaderTest.java",
+  "methodName" : "testActionEventBubblesException",
+  "sourceCode" : "/**\r\n * This unit test verifies that if an Action Event doEventSubmit_ is called,\r\n * and it throws an Exception, the exception is bubbled up out of the\r\n * ActionLoader...\r\n *\r\n * @throws Exception\r\n *             If something goes wrong with the unit test\r\n */\r\n@Test\r\npublic void testActionEventBubblesException() throws Exception {\r\n    when(request.getParameterValues(\"eventSubmit_doCauseexception\")).thenReturn(new String[] { \"foo\" });\r\n    RunData data = getRunData(request, response, config);\r\n    PipelineData pipelineData = new DefaultPipelineData();\r\n    Map<Class<?>, Object> runDataMap = new HashMap<>();\r\n    runDataMap.put(RunData.class, data);\r\n    pipelineData.put(RunData.class, runDataMap);\r\n    data.setAction(\"VelocityActionThrowsException\");\r\n    data.getParameters().add(\"eventSubmit_doCauseexception\", \"foo\");\r\n    assertTrue(data.getParameters().containsKey(\"eventSubmit_doCauseexception\"));\r\n    try {\r\n        ActionLoader.getInstance().exec(data, data.getAction());\r\n        fail(\"Should have bubbled out an exception thrown by the action.\");\r\n    } catch (Exception e) {\r\n        // good\r\n    }\r\n    try {\r\n        ActionLoader.getInstance().exec(pipelineData, data.getAction());\r\n        fail(\"Should have bubbled out an exception thrown by the action.\");\r\n    } catch (Exception e) {\r\n        // good\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\modules\\ActionLoaderTest.java",
+  "methodName" : "testDoPerformDoesntBubbleException",
+  "sourceCode" : "/**\r\n * This unit test verifies that if your standard doPerform is called, and it\r\n * throws an Exception, if the action.event.bubbleexception property is set\r\n * to false then the exception is NOT bubbled up\r\n *\r\n * @throws Exception\r\n *             If something goes wrong with the unit test\r\n */\r\n@Test\r\npublic void testDoPerformDoesntBubbleException() throws Exception {\r\n    Turbine.getConfiguration().setProperty(\"action.event.bubbleexception\", Boolean.FALSE);\r\n    assertFalse(Turbine.getConfiguration().getBoolean(\"action.event.bubbleexception\"));\r\n    RunData data = getRunData(request, response, config);\r\n    PipelineData pipelineData = new DefaultPipelineData();\r\n    Map<Class<?>, Object> runDataMap = new HashMap<>();\r\n    runDataMap.put(RunData.class, data);\r\n    pipelineData.put(RunData.class, runDataMap);\r\n    data.setAction(\"VelocityActionThrowsException\");\r\n    try {\r\n        ActionLoader.getInstance().exec(data, data.getAction());\r\n    } catch (Exception e) {\r\n        fail(\"Should NOT have thrown an exception:\" + e.getMessage());\r\n    }\r\n    try {\r\n        ActionLoader.getInstance().exec(pipelineData, data.getAction());\r\n    } catch (Exception e) {\r\n        fail(\"Should NOT have thrown an exception:\" + e.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\modules\\ActionLoaderTest.java",
+  "methodName" : "testActionEventDoesntBubbleException",
+  "sourceCode" : "/**\r\n * This unit test verifies that if an Action Event doEventSubmit_ is called,\r\n * and it throws an Exception, if the action.event.bubbleexception property\r\n * is set to false then the exception is NOT bubbled up\r\n *\r\n * @throws Exception\r\n *             If something goes wrong with the unit test\r\n */\r\n@Test\r\npublic void testActionEventDoesntBubbleException() throws Exception {\r\n    // can't seem to figure out how to setup the Mock Request with the right\r\n    // parameters...\r\n    Turbine.getConfiguration().setProperty(\"action.event.bubbleexception\", Boolean.FALSE);\r\n    when(request.getParameterValues(\"eventSubmit_doCauseexception\")).thenReturn(new String[] { \"foo\" });\r\n    RunData data = getRunData(request, response, config);\r\n    PipelineData pipelineData = new DefaultPipelineData();\r\n    Map<Class<?>, Object> runDataMap = new HashMap<>();\r\n    runDataMap.put(RunData.class, data);\r\n    pipelineData.put(RunData.class, runDataMap);\r\n    data.setAction(\"VelocityActionThrowsException\");\r\n    data.getParameters().add(\"eventSubmit_doCauseexception\", \"foo\");\r\n    assertTrue(data.getParameters().containsKey(\"eventSubmit_doCauseexception\"));\r\n    try {\r\n        ActionLoader.getInstance().exec(data, data.getAction());\r\n    } catch (Exception e) {\r\n        fail(\"Should NOT have thrown an exception:\" + e.getMessage());\r\n    }\r\n    try {\r\n        ActionLoader.getInstance().exec(pipelineData, data.getAction());\r\n    } catch (Exception e) {\r\n        fail(\"Should NOT have thrown an exception:\" + e.getMessage());\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\modules\\ActionLoaderTest.java",
+  "methodName" : "testActionEventAnnotation",
+  "sourceCode" : "/**\r\n * This unit test verifies that if an Action Event doEventSubmit_ is called,\r\n * a properly annotated method is being called\r\n *\r\n * @throws Exception\r\n *             If something goes wrong with the unit test\r\n */\r\n@Test\r\npublic void testActionEventAnnotation() throws Exception {\r\n    when(request.getParameterValues(\"eventSubmit_annotatedEvent\")).thenReturn(new String[] { \"foo\" });\r\n    RunData data = getRunData(request, response, config);\r\n    PipelineData pipelineData = data;\r\n    data.setAction(\"VelocityActionDoesNothing\");\r\n    data.getParameters().add(\"eventSubmit_annotatedEvent\", \"foo\");\r\n    int numberOfCalls = VelocityActionDoesNothing.numberOfCalls;\r\n    int pipelineDataCalls = VelocityActionDoesNothing.pipelineDataCalls;\r\n    int actionEventCalls = VelocityActionDoesNothing.actionEventCalls;\r\n    try {\r\n        ActionLoader.getInstance().exec(pipelineData, data.getAction());\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail(\"Should not have thrown an exception.\");\r\n    }\r\n    assertEquals(numberOfCalls + 1, VelocityActionDoesNothing.numberOfCalls);\r\n    assertEquals(pipelineDataCalls, VelocityActionDoesNothing.pipelineDataCalls);\r\n    assertEquals(actionEventCalls + 1, VelocityActionDoesNothing.actionEventCalls);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\modules\\ActionLoaderTest.java",
+  "methodName" : "testNonexistentActionCausesError",
+  "sourceCode" : "@Test\r\npublic void testNonexistentActionCausesError() throws Exception {\r\n    RunData data = getRunData(request, response, config);\r\n    PipelineData pipelineData = new DefaultPipelineData();\r\n    Map<Class<?>, Object> runDataMap = new HashMap<>();\r\n    runDataMap.put(RunData.class, data);\r\n    pipelineData.put(RunData.class, runDataMap);\r\n    data.setAction(\"ImaginaryAction\");\r\n    try {\r\n        ActionLoader.getInstance().exec(data, \"boo\");\r\n        fail(\"Should have thrown an exception\");\r\n    } catch (Exception e) {\r\n        // good\r\n    }\r\n    try {\r\n        ActionLoader.getInstance().exec(pipelineData, \"boo\");\r\n        fail(\"Should have thrown an exception\");\r\n    } catch (Exception e) {\r\n        // good\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\modules\\ActionLoaderTest.java",
+  "methodName" : "testDoPerformWithPipelineData",
+  "sourceCode" : "@Test\r\npublic void testDoPerformWithPipelineData() throws Exception {\r\n    RunData data = getRunData(request, response, config);\r\n    PipelineData pipelineData = data;\r\n    data.setAction(\"VelocityActionDoesNothing\");\r\n    int numberOfCalls = VelocityActionDoesNothing.numberOfCalls;\r\n    int pipelineDataCalls = VelocityActionDoesNothing.pipelineDataCalls;\r\n    try {\r\n        ActionLoader.getInstance().exec(pipelineData, data.getAction());\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail(\"Should not have thrown an exception.\");\r\n    }\r\n    assertEquals(numberOfCalls + 1, VelocityActionDoesNothing.numberOfCalls);\r\n    assertEquals(pipelineDataCalls + 1, VelocityActionDoesNothing.pipelineDataCalls);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\modules\\ActionLoaderTest.java",
+  "methodName" : "testDoPerformWithServiceInjection",
+  "sourceCode" : "@Test\r\npublic void testDoPerformWithServiceInjection() throws Exception {\r\n    RunData data = getRunData(request, response, config);\r\n    PipelineData pipelineData = data;\r\n    data.setAction(\"VelocityActionWithServiceInjection\");\r\n    try {\r\n        ActionLoader.getInstance().exec(pipelineData, data.getAction());\r\n        Context context = (Context) data.getTemplateInfo().getTemplateContext(VelocityService.CONTEXT);\r\n        assertTrue(context.get(\"mykey\") != null);\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail(\"Should not have thrown an exception.\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\modules\\GenericLoaderTest.java",
+  "methodName" : "testPackage",
+  "sourceCode" : "@Test\r\npublic void testPackage() {\r\n    assertEquals(\"GenericLoader returned wrong Package!\", GenericLoader.getBasePackage(), \"org.apache.turbine.modules\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\modules\\LayoutLoaderTest.java",
+  "methodName" : "testPipelineDataContainsRunData",
+  "sourceCode" : "@Test\r\npublic void testPipelineDataContainsRunData() {\r\n    try {\r\n        RunData data = getRunData(request, response, config);\r\n        PipelineData pipelineData = data;\r\n        data.setLayout(\"TestVelocityOnlyLayout\");\r\n        int numberOfCalls = TestVelocityOnlyLayout.numberOfCalls;\r\n        try {\r\n            LayoutLoader.getInstance().exec(pipelineData, data.getLayout());\r\n        } catch (Exception e) {\r\n            e.printStackTrace();\r\n            fail(\"Should not have thrown an exception.\");\r\n        }\r\n        assertEquals(numberOfCalls + 1, TestVelocityOnlyLayout.numberOfCalls);\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail(\"Should not have thrown an exception.\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\modules\\LayoutLoaderTest.java",
+  "methodName" : "testDoBuildWithRunData",
+  "sourceCode" : "@Test\r\npublic void testDoBuildWithRunData() {\r\n    try {\r\n        RunData data = getRunData(request, response, config);\r\n        data.setLayout(\"TestVelocityOnlyLayout\");\r\n        int numberOfCalls = TestVelocityOnlyLayout.numberOfCalls;\r\n        try {\r\n            LayoutLoader.getInstance().exec(data, data.getLayout());\r\n        } catch (Exception e) {\r\n            e.printStackTrace();\r\n            fail(\"Should not have thrown an exception.\");\r\n        }\r\n        assertEquals(numberOfCalls + 1, TestVelocityOnlyLayout.numberOfCalls);\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail(\"Should not have thrown an exception.\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\om\\OMToolTest.java",
+  "methodName" : "testGetString",
+  "sourceCode" : "@Test\r\npublic void testGetString() throws Exception {\r\n    assertNotNull(\"RetrieverFactory should not be null\", om.omFactory);\r\n    OMTool.PullHelper ph1 = om.get(\"test1\");\r\n    assertNotNull(\"PullHelper should not be null\", ph1);\r\n    OMTool.PullHelper ph2 = om.get(\"test2\");\r\n    assertNotNull(\"PullHelper should not be null\", ph2);\r\n    assertNotSame(\"Should not be same instance\", ph1, ph2);\r\n    OMTool.PullHelper ph3 = om.get(\"test2\");\r\n    assertNotNull(\"PullHelper should not be null\", ph3);\r\n    assertSame(\"Should be same instance\", ph3, ph2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\om\\OMToolTest.java",
+  "methodName" : "testGetStringString",
+  "sourceCode" : "@Test\r\npublic void testGetStringString() throws Exception {\r\n    Object testString1 = om.get(\"test1\", \"testString\");\r\n    assertNotNull(\"Object should not be null\", testString1);\r\n    assertTrue(\"Object should be a string\", testString1 instanceof String);\r\n    assertEquals(\"Object should be a string\", \"testString\", testString1);\r\n    Object testString2 = om.get(\"test1\", \"testString\");\r\n    assertNotNull(\"Object should not be null\", testString2);\r\n    assertSame(\"Should be same instance\", testString1, testString2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\DefaultACLCreationValveTest.java",
+  "methodName" : "testLoggedInUser",
+  "sourceCode" : "@Test\r\npublic void testLoggedInUser() throws Exception {\r\n    RunData runData = getRunData(request, response, config);\r\n    User tu = new DefaultUserImpl(new TurbineUserImpl());\r\n    tu.setName(\"username\");\r\n    tu.setHasLoggedIn(Boolean.TRUE);\r\n    runData.setAction(\"TestAction\");\r\n    runData.setUser(tu);\r\n    Pipeline pipeline = new TurbinePipeline();\r\n    PipelineData pipelineData = runData;\r\n    DefaultACLCreationValve valve = new DefaultACLCreationValve();\r\n    pipeline.addValve(valve);\r\n    pipeline.initialize();\r\n    pipeline.invoke(pipelineData);\r\n    User user = runData.getUser();\r\n    assertNotNull(user);\r\n    assertEquals(\"username\", user.getName());\r\n    assertTrue(user.hasLoggedIn());\r\n    assertNotNull(runData.getACL());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\DefaultLoginValveTest.java",
+  "methodName" : "testDefaults",
+  "sourceCode" : "/**\r\n * Tests the Valve.\r\n */\r\n@Test\r\npublic void testDefaults() throws Exception {\r\n    Vector<String> v = new Vector<>();\r\n    v.add(LoginUser.CGI_USERNAME);\r\n    v.add(LoginUser.CGI_PASSWORD);\r\n    when(request.getParameterNames()).thenReturn(v.elements());\r\n    when(request.getParameterValues(LoginUser.CGI_USERNAME)).thenReturn(new String[] { \"username\" });\r\n    when(request.getParameterValues(LoginUser.CGI_PASSWORD)).thenReturn(new String[] { \"password\" });\r\n    RunData runData = getRunData(request, response, config);\r\n    runData.setAction(TurbineConstants.ACTION_LOGIN_DEFAULT);\r\n    Pipeline pipeline = new TurbinePipeline();\r\n    PipelineData pipelineData = runData;\r\n    DefaultLoginValve valve = new DefaultLoginValve();\r\n    pipeline.addValve(valve);\r\n    pipeline.initialize();\r\n    pipeline.invoke(pipelineData);\r\n    User user = runData.getUser();\r\n    assertNotNull(user);\r\n    assertEquals(\"username\", user.getName());\r\n    assertTrue(user.hasLoggedIn());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\DefaultLoginValveTest.java",
+  "methodName" : "testLogout",
+  "sourceCode" : "/**\r\n * Tests the LogoutAction.\r\n */\r\n@Test\r\npublic void testLogout() throws Exception {\r\n    User user = securityService.getUser(\"username\");\r\n    user.setHasLoggedIn(Boolean.TRUE);\r\n    session.setAttribute(User.SESSION_KEY, user);\r\n    RunData runData = getRunData(request, response, config);\r\n    runData.setAction(TurbineConstants.ACTION_LOGOUT_DEFAULT);\r\n    Pipeline pipeline = new TurbinePipeline();\r\n    PipelineData pipelineData = runData;\r\n    DefaultLoginValve valve = new DefaultLoginValve();\r\n    pipeline.addValve(valve);\r\n    pipeline.initialize();\r\n    pipeline.invoke(pipelineData);\r\n    user = runData.getUser();\r\n    assertNotNull(user);\r\n    assertTrue(securityService.isAnonymousUser(user));\r\n    assertTrue(securityService.isAnonymousUser((User) session.getAttribute(User.SESSION_KEY)));\r\n    assertFalse(user.hasLoggedIn());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\DefaultSessionTimeoutValveTest.java",
+  "methodName" : "testDefaults",
+  "sourceCode" : "/**\r\n * Tests the Valve.\r\n */\r\n@Test\r\npublic void testDefaults() throws Exception {\r\n    // reset\r\n    Turbine.getConfiguration().setProperty(TurbineConstants.SESSION_TIMEOUT_KEY, Integer.valueOf(TurbineConstants.SESSION_TIMEOUT_DEFAULT));\r\n    Vector<String> v = new Vector<>();\r\n    v.add(URIConstants.CGI_ACTION_PARAM);\r\n    when(request.getParameterNames()).thenReturn(v.elements());\r\n    when(request.getParameterValues(URIConstants.CGI_ACTION_PARAM)).thenReturn(new String[] { \"TestAction\" });\r\n    PipelineData pipelineData = getPipelineData(request, response, config);\r\n    Pipeline pipeline = new TurbinePipeline();\r\n    DefaultSessionTimeoutValve valve = new DefaultSessionTimeoutValve();\r\n    pipeline.addValve(valve);\r\n    pipeline.initialize();\r\n    pipeline.invoke(pipelineData);\r\n    RunData runData = (RunData) pipelineData;\r\n    assertEquals(0, runData.getSession().getMaxInactiveInterval());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\DefaultSessionTimeoutValveTest.java",
+  "methodName" : "testTimeoutSet",
+  "sourceCode" : "/**\r\n * Tests the Valve.\r\n */\r\n@Test\r\npublic void testTimeoutSet() throws Exception {\r\n    Turbine.getConfiguration().setProperty(TurbineConstants.SESSION_TIMEOUT_KEY, \"3600\");\r\n    PipelineData pipelineData = getPipelineData(request, response, config);\r\n    Pipeline pipeline = new TurbinePipeline();\r\n    DefaultSessionTimeoutValve valve = new DefaultSessionTimeoutValve();\r\n    pipeline.addValve(valve);\r\n    pipeline.initialize();\r\n    pipeline.invoke(pipelineData);\r\n    RunData runData = (RunData) pipelineData;\r\n    assertEquals(3600, runData.getSession().getMaxInactiveInterval());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\DefaultSessionValidationValveTest.java",
+  "methodName" : "testAnonymousUser",
+  "sourceCode" : "/**\r\n * Tests the Valve.\r\n */\r\n@Test\r\npublic void testAnonymousUser() throws Exception {\r\n    Vector<String> v = new Vector<>();\r\n    v.add(LoginUser.CGI_USERNAME);\r\n    v.add(LoginUser.CGI_PASSWORD);\r\n    when(request.getParameterNames()).thenReturn(v.elements());\r\n    when(request.getParameterValues(LoginUser.CGI_USERNAME)).thenReturn(new String[] { \"username\" });\r\n    when(request.getParameterValues(LoginUser.CGI_PASSWORD)).thenReturn(new String[] { \"password\" });\r\n    RunData runData = getRunData(request, response, config);\r\n    runData.setAction(TurbineConstants.ACTION_LOGIN_DEFAULT);\r\n    Pipeline pipeline = new TurbinePipeline();\r\n    PipelineData pipelineData = runData;\r\n    DefaultSessionValidationValve valve = new DefaultSessionValidationValve();\r\n    pipeline.addValve(valve);\r\n    pipeline.initialize();\r\n    pipeline.invoke(pipelineData);\r\n    User user = runData.getUser();\r\n    assertNotNull(user);\r\n    assertEquals(\"\", user.getName());\r\n    assertFalse(user.hasLoggedIn());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\DefaultSessionValidationValveTest.java",
+  "methodName" : "testLoggedInUser",
+  "sourceCode" : "@Test\r\npublic void testLoggedInUser() throws Exception {\r\n    Vector<String> v = new Vector<>();\r\n    v.add(LoginUser.CGI_USERNAME);\r\n    v.add(LoginUser.CGI_PASSWORD);\r\n    when(request.getParameterNames()).thenReturn(v.elements());\r\n    when(request.getParameterValues(LoginUser.CGI_USERNAME)).thenReturn(new String[] { \"username\" });\r\n    when(request.getParameterValues(LoginUser.CGI_PASSWORD)).thenReturn(new String[] { \"password\" });\r\n    RunData runData = getRunData(request, response, config);\r\n    User tu = new DefaultUserImpl(new TurbineUserImpl());\r\n    tu.setName(\"username\");\r\n    tu.setHasLoggedIn(Boolean.TRUE);\r\n    runData.setAction(\"TestAction\");\r\n    request.getSession().setAttribute(User.SESSION_KEY, tu);\r\n    Pipeline pipeline = new TurbinePipeline();\r\n    PipelineData pipelineData = runData;\r\n    DefaultSessionValidationValve valve = new DefaultSessionValidationValve();\r\n    pipeline.addValve(valve);\r\n    pipeline.initialize();\r\n    pipeline.invoke(pipelineData);\r\n    User user = runData.getUser();\r\n    assertNotNull(user);\r\n    assertEquals(\"username\", user.getName());\r\n    assertTrue(user.hasLoggedIn());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\DefaultSetEncodingValveTest.java",
+  "methodName" : "testDefaults",
+  "sourceCode" : "/**\r\n * Tests the Valve.\r\n */\r\n@Test\r\npublic void testDefaults() throws Exception {\r\n    // reset\r\n    Turbine.getConfiguration().setProperty(TurbineConstants.PARAMETER_ENCODING_KEY, TurbineConstants.PARAMETER_ENCODING_DEFAULT);\r\n    PipelineData pipelineData = getPipelineData(request, response, config);\r\n    Pipeline pipeline = new TurbinePipeline();\r\n    DefaultSetEncodingValve valve = new DefaultSetEncodingValve();\r\n    pipeline.addValve(valve);\r\n    pipeline.initialize();\r\n    pipeline.invoke(pipelineData);\r\n    RunData runData = (RunData) pipelineData;\r\n    assertEquals(TurbineConstants.PARAMETER_ENCODING_DEFAULT, runData.getCharset().name());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\DefaultSetEncodingValveTest.java",
+  "methodName" : "testEncodingSet",
+  "sourceCode" : "/**\r\n * Tests the Valve.\r\n */\r\n@Test\r\npublic void testEncodingSet() throws Exception {\r\n    Turbine.getConfiguration().setProperty(TurbineConstants.PARAMETER_ENCODING_KEY, \"UTF-8\");\r\n    PipelineData pipelineData = getPipelineData(request, response, config);\r\n    Pipeline pipeline = new TurbinePipeline();\r\n    DefaultSetEncodingValve valve = new DefaultSetEncodingValve();\r\n    pipeline.addValve(valve);\r\n    pipeline.initialize();\r\n    pipeline.invoke(pipelineData);\r\n    RunData runData = (RunData) pipelineData;\r\n    assertEquals(\"UTF-8\", runData.getCharset().name());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\DetermineActionValveTest.java",
+  "methodName" : "testValve",
+  "sourceCode" : "/**\r\n * Tests the Valve.\r\n */\r\n@Test\r\npublic void testValve() throws Exception {\r\n    RunData runData = getRunData(request, response, config);\r\n    Pipeline pipeline = new TurbinePipeline();\r\n    PipelineData pipelineData = runData;\r\n    DetermineActionValve valve = new DetermineActionValve();\r\n    pipeline.addValve(valve);\r\n    pipeline.invoke(pipelineData);\r\n    assertEquals(\"TestAction\", runData.getAction());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\DetermineTargetValveTest.java",
+  "methodName" : "testScreenSet",
+  "sourceCode" : "/**\r\n * Tests the Valve.\r\n */\r\n@Test\r\npublic void testScreenSet() throws Exception {\r\n    Vector<String> v = new Vector<>();\r\n    v.add(URIConstants.CGI_SCREEN_PARAM);\r\n    when(request.getParameterNames()).thenReturn(v.elements());\r\n    when(request.getParameterValues(URIConstants.CGI_SCREEN_PARAM)).thenReturn(new String[] { \"TestScreen\" });\r\n    RunData runData = getRunData(request, response, config);\r\n    Pipeline pipeline = new TurbinePipeline();\r\n    PipelineData pipelineData = runData;\r\n    DetermineTargetValve valve = new DetermineTargetValve();\r\n    pipeline.addValve(valve);\r\n    pipeline.invoke(pipelineData);\r\n    assertEquals(\"TestScreen\", runData.getScreen());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\DetermineTargetValveTest.java",
+  "methodName" : "testScreenNotSet",
+  "sourceCode" : "@Test\r\npublic void testScreenNotSet() throws Exception {\r\n    Vector<String> v = new Vector<>();\r\n    v.add(URIConstants.CGI_SCREEN_PARAM);\r\n    when(request.getParameterNames()).thenReturn(v.elements());\r\n    when(request.getParameterValues(URIConstants.CGI_SCREEN_PARAM)).thenReturn(new String[] { null });\r\n    RunData runData = getRunData(request, response, config);\r\n    Pipeline pipeline = new TurbinePipeline();\r\n    PipelineData pipelineData = runData;\r\n    DetermineTargetValve valve = new DetermineTargetValve();\r\n    pipeline.addValve(valve);\r\n    pipeline.invoke(pipelineData);\r\n    assertEquals(\"\", runData.getScreen());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\ExecutePageValveTest.java",
+  "methodName" : "testValve",
+  "sourceCode" : "@Test\r\npublic void testValve() throws Exception {\r\n    Vector<String> v = new Vector<>();\r\n    v.add(URIConstants.CGI_TEMPLATE_PARAM);\r\n    when(request.getParameterNames()).thenReturn(v.elements());\r\n    when(request.getParameterValues(URIConstants.CGI_TEMPLATE_PARAM)).thenReturn(new String[] { \"Index.vm\" });\r\n    RunData runData = getRunData(request, response, config);\r\n    runData.setScreenTemplate(\"ExistPageWithLayout.vm\");\r\n    User tu = new DefaultUserImpl(new TurbineUserImpl());\r\n    tu.setName(\"username\");\r\n    tu.setHasLoggedIn(Boolean.TRUE);\r\n    String actionName = VelocityActionDoesNothing.class.getName();\r\n    actionName = actionName.substring(actionName.lastIndexOf(\".\") + 1);\r\n    runData.setAction(actionName);\r\n    runData.setUser(tu);\r\n    Pipeline pipeline = new TurbinePipeline();\r\n    PipelineData pipelineData = runData;\r\n    ExecutePageValve valve = new ExecutePageValve();\r\n    pipeline.addValve(valve);\r\n    pipeline.initialize();\r\n    int numberOfCalls = VelocityActionDoesNothing.numberOfCalls;\r\n    pipeline.invoke(pipelineData);\r\n    assertEquals(numberOfCalls + 1, VelocityActionDoesNothing.numberOfCalls, \"Assert action was called\");\r\n    User user = runData.getUser();\r\n    assertNotNull(user);\r\n    assertEquals(\"username\", user.getName());\r\n    assertTrue(user.hasLoggedIn());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\ExecutePageValveTest.java",
+  "methodName" : "testValveWithSecureAction",
+  "sourceCode" : "@Test\r\npublic void testValveWithSecureAction() throws Exception {\r\n    Vector<String> v = new Vector<>();\r\n    v.add(URIConstants.CGI_TEMPLATE_PARAM);\r\n    when(request.getParameterNames()).thenReturn(v.elements());\r\n    when(request.getParameterValues(URIConstants.CGI_TEMPLATE_PARAM)).thenReturn(new String[] { \"Index.vm\" });\r\n    RunData runData = getRunData(request, response, config);\r\n    runData.setScreenTemplate(\"ExistPageWithLayout.vm\");\r\n    User tu = new DefaultUserImpl(new TurbineUserImpl());\r\n    tu.setName(\"username\");\r\n    tu.setHasLoggedIn(Boolean.TRUE);\r\n    String actionName = VelocitySecureActionDoesNothing.class.getName();\r\n    actionName = actionName.substring(actionName.lastIndexOf(\".\") + 1);\r\n    runData.setAction(actionName);\r\n    runData.setUser(tu);\r\n    Pipeline pipeline = new TurbinePipeline();\r\n    PipelineData pipelineData = runData;\r\n    ExecutePageValve valve = new ExecutePageValve();\r\n    pipeline.addValve(valve);\r\n    pipeline.initialize();\r\n    int numberOfCalls = VelocitySecureActionDoesNothing.numberOfCalls;\r\n    int isAuthorizedCalls = VelocitySecureActionDoesNothing.isAuthorizedCalls;\r\n    pipeline.invoke(pipelineData);\r\n    assertEquals(numberOfCalls + 1, VelocitySecureActionDoesNothing.numberOfCalls, \"Assert action was called\");\r\n    assertEquals(isAuthorizedCalls + 1, VelocitySecureActionDoesNothing.isAuthorizedCalls, \"Assert authorization was called\");\r\n    User user = runData.getUser();\r\n    assertNotNull(user);\r\n    assertEquals(\"username\", user.getName());\r\n    assertTrue(user.hasLoggedIn());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\PipelineCreationTest.java",
+  "methodName" : "testSavingPipeline",
+  "sourceCode" : "@Test\r\npublic void testSavingPipeline() throws Exception {\r\n    JAXBContext context = JAXBContext.newInstance(TurbinePipeline.class);\r\n    Marshaller marshaller = context.createMarshaller();\r\n    StringWriter writer = new StringWriter();\r\n    marshaller.marshal(pipeline, writer);\r\n    assertEquals(\"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\" + \"<pipeline><valves>\" + \"<valve>org.apache.turbine.pipeline.SimpleValve</valve>\" + \"<valve>org.apache.turbine.pipeline.DetermineActionValve</valve>\" + \"</valves></pipeline>\", writer.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\PipelineCreationTest.java",
+  "methodName" : "testReadingPipeline",
+  "sourceCode" : "@Test\r\npublic void testReadingPipeline() throws Exception {\r\n    String xml = \"<pipeline name=\\\"default\\\"><valves>\" + \"<valve>org.apache.turbine.pipeline.SimpleValve</valve>\" + \"<valve>org.apache.turbine.pipeline.DetermineActionValve</valve>\" + \"</valves></pipeline>\";\r\n    JAXBContext context = JAXBContext.newInstance(TurbinePipeline.class);\r\n    Unmarshaller unmarshaller = context.createUnmarshaller();\r\n    StringReader reader = new StringReader(xml);\r\n    Pipeline pipeline = (Pipeline) unmarshaller.unmarshal(reader);\r\n    assertEquals(2, pipeline.getValves().length);\r\n    assertTrue(pipeline.getValves()[0] instanceof SimpleValve);\r\n    assertTrue(pipeline.getValves()[1] instanceof DetermineActionValve);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\PipelineTest.java",
+  "methodName" : "testPipeline",
+  "sourceCode" : "/**\r\n * Tests the Pipeline.\r\n */\r\n@Test\r\npublic void testPipeline() throws Exception {\r\n    // Make sure Valves are getting added properly to the\r\n    // Pipeline.\r\n    StringWriter writer = new StringWriter();\r\n    Pipeline pipeline = new TurbinePipeline();\r\n    SimpleValve valve = new SimpleValve();\r\n    valve.setWriter(writer);\r\n    valve.setValue(\"foo\");\r\n    pipeline.addValve(valve);\r\n    valve = new SimpleValve();\r\n    valve.setWriter(writer);\r\n    valve.setValue(\"bar\");\r\n    pipeline.addValve(valve);\r\n    pipeline.invoke(new DefaultPipelineData());\r\n    assertEquals(\"foobar\", writer.toString());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\pipeline\\PipelineTest.java",
+  "methodName" : "testPipelinePerformance",
+  "sourceCode" : "/**\r\n * Tests the Pipeline throughput.\r\n */\r\n//@Disabled(\"For performance tests only\")\r\n@Tag(\"performance\")\r\n@Test\r\npublic void testPipelinePerformance() throws Exception {\r\n    StringWriter writer = new StringWriter();\r\n    Pipeline pipeline = new TurbinePipeline();\r\n    SimpleValve valve = new SimpleValve();\r\n    valve.setWriter(writer);\r\n    valve.setValue(\"foo\");\r\n    pipeline.addValve(valve);\r\n    valve = new SimpleValve();\r\n    valve.setWriter(writer);\r\n    valve.setValue(\"bar\");\r\n    pipeline.addValve(valve);\r\n    Worker[] worker = new Worker[THREADS];\r\n    long startTime = System.currentTimeMillis();\r\n    for (int i = 0; i < THREADS; i++) {\r\n        worker[i] = new Worker(pipeline);\r\n        worker[i].start();\r\n    }\r\n    for (int i = 0; i < THREADS; i++) {\r\n        worker[i].join();\r\n    }\r\n    System.out.println(System.currentTimeMillis() - startTime);\r\n}",
+  "annotations" : [ "Tag", "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\avaloncomponent\\TurbineAvalonComponentServiceTest.java",
+  "methodName" : "testGetAndUseTestComponent",
+  "sourceCode" : "/**\r\n * Initialize the unit test.  The AvalonComponentService will be configured\r\n * and initialized.\r\n */\r\n/**\r\n * Use the service to get an instance of the TestComponent.  The test() method will be called to\r\n * simply write a log message.  The component will then be released.\r\n */\r\n@Test\r\npublic void testGetAndUseTestComponent() {\r\n    ServiceManager serviceManager = TurbineServices.getInstance();\r\n    serviceManager.setApplicationRoot(\".\");\r\n    Configuration cfg = new BaseConfiguration();\r\n    cfg.setProperty(PREFIX + \"classname\", TurbineYaafiComponentService.class.getName());\r\n    // we want to configure the service to load test TEST configuration files\r\n    cfg.setProperty(PREFIX + \"componentConfiguration\", \"src/test/componentConfiguration.xml\");\r\n    cfg.setProperty(PREFIX + \"componentRoles\", \"src/test/componentRoles.xml\");\r\n    serviceManager.setConfiguration(cfg);\r\n    try {\r\n        serviceManager.init();\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail();\r\n    }\r\n    try {\r\n        TestComponent tc = (TestComponent) TurbineServices.getInstance().getService(TestComponent.ROLE);\r\n        assertTrue(tc != null);\r\n        tc.test();\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\cache\\FulcrumCacheComponentTest.java",
+  "methodName" : "testComponentAndFacaded",
+  "sourceCode" : "@Test\r\npublic void testComponentAndFacaded() throws Exception {\r\n    ServiceManager serviceManager = TurbineServices.getInstance();\r\n    GlobalCacheService cache = (GlobalCacheService) serviceManager.getService(GlobalCacheService.ROLE);\r\n    CachedObject<Double> inputObject = new CachedObject<>(Double.valueOf(10.2));\r\n    cache.addObject(\"testObj\", inputObject);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\crypto\\FulcrumCryptoServiceTest.java",
+  "methodName" : "testMd5",
+  "sourceCode" : "@Test\r\npublic void testMd5() {\r\n    String preDefinedResult = \"XSop0mncK19Ii2r2CUe29w==\";\r\n    try {\r\n        CryptoAlgorithm ca = cryptoService.getCryptoAlgorithm(\"default\");\r\n        ca.setCipher(\"MD5\");\r\n        String output = ca.encrypt(preDefinedInput);\r\n        assertEquals(\"MD5 Encryption failed \", preDefinedResult, output);\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\crypto\\FulcrumCryptoServiceTest.java",
+  "methodName" : "testSha1",
+  "sourceCode" : "@Test\r\npublic void testSha1() {\r\n    String preDefinedResult = \"uVDiJHaavRYX8oWt5ctkaa7j1cw=\";\r\n    try {\r\n        CryptoAlgorithm ca = cryptoService.getCryptoAlgorithm(\"default\");\r\n        ca.setCipher(\"SHA1\");\r\n        String output = ca.encrypt(preDefinedInput);\r\n        assertEquals(\"SHA1 Encryption failed \", preDefinedResult, output);\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\intake\\IntakeToolTest.java",
+  "methodName" : "testGet",
+  "sourceCode" : "@Test\r\npublic void testGet() throws Exception {\r\n    File file = new File(\"./target/appData.ser\");\r\n    assertTrue(\"Make sure serialized data file exists:\" + file, file.exists());\r\n    Group group = intakeTool.get(\"LoginGroup\", \"loginGroupKey\");\r\n    assertNotNull(group);\r\n    assertEquals(\"loginGroupKey\", group.getGID());\r\n    assertEquals(\"LoginGroup\", group.getIntakeGroupName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\intake\\IntakeToolTest.java",
+  "methodName" : "testRefresh",
+  "sourceCode" : "/**\r\n * Make sure refresh DOESN'T do anything\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testRefresh() throws Exception {\r\n    int numberOfGroups = intakeTool.getGroups().size();\r\n    intakeTool.refresh();\r\n    assertEquals(numberOfGroups, intakeTool.getGroups().size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\jsonrpc\\JsonrpcServicelTest.java",
+  "methodName" : "testBridgeAccess",
+  "sourceCode" : "@Test\r\npublic void testBridgeAccess() {\r\n    JSONRPCBridge bridge = new JSONRPCBridge();\r\n    assertNotNull(bridge);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\LoadingComponentsTest.java",
+  "methodName" : "testLoadingByAvalonComponentService",
+  "sourceCode" : "/**\r\n * Test to load a couple of Avalon services directly by the\r\n * AvalonComponentService.\r\n *\r\n * @throws Exception loading failed\r\n */\r\n@Test\r\npublic void testLoadingByAvalonComponentService() throws Exception {\r\n    AvalonComponentService avalonComponentService = (AvalonComponentService) TurbineServices.getInstance().getService(AvalonComponentService.SERVICE_NAME);\r\n    assertNotNull(avalonComponentService);\r\n    GlobalCacheService dgcs = (GlobalCacheService) avalonComponentService.lookup(GlobalCacheService.ROLE);\r\n    assertNotNull(dgcs);\r\n    CryptoService cs = (CryptoService) avalonComponentService.lookup(CryptoService.ROLE);\r\n    assertNotNull(cs);\r\n    LocalizationService ls = (LocalizationService) avalonComponentService.lookup(LocalizationService.ROLE);\r\n    assertNotNull(ls);\r\n    IntakeService intake = (IntakeService) avalonComponentService.lookup(IntakeService.ROLE);\r\n    assertNotNull(intake);\r\n    FactoryService fs = (FactoryService) avalonComponentService.lookup(FactoryService.ROLE);\r\n    assertNotNull(fs);\r\n    MimeTypeService mimetype = (MimeTypeService) avalonComponentService.lookup(MimeTypeService.ROLE);\r\n    assertNotNull(mimetype);\r\n    //avalonComponentService.shutdown();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\LoadingComponentsTest.java",
+  "methodName" : "testLoadingByTurbineServices",
+  "sourceCode" : "/**\r\n * Test to load a couple of Avalon services by using the\r\n * TurbineServices which delegate the service retrieval to\r\n * the AvalonComponentService\r\n *\r\n * @throws Exception loading failed\r\n */\r\n@Test\r\npublic void testLoadingByTurbineServices() throws Exception {\r\n    ServiceManager serviceManager = TurbineServices.getInstance();\r\n    GlobalCacheService gcs = (GlobalCacheService) serviceManager.getService(GlobalCacheService.ROLE);\r\n    assertNotNull(gcs);\r\n    CryptoService cs = (CryptoService) serviceManager.getService(CryptoService.ROLE);\r\n    assertNotNull(cs);\r\n    LocalizationService ls = (LocalizationService) serviceManager.getService(LocalizationService.ROLE);\r\n    assertNotNull(ls);\r\n    IntakeService intake = (IntakeService) serviceManager.getService(IntakeService.ROLE);\r\n    assertNotNull(intake);\r\n    FactoryService fs = (FactoryService) serviceManager.getService(FactoryService.ROLE);\r\n    assertNotNull(fs);\r\n    MimeTypeService mimetype = (MimeTypeService) serviceManager.getService(MimeTypeService.ROLE);\r\n    assertNotNull(mimetype);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\LoadingComponentsTest.java",
+  "methodName" : "testLoadingByAnnotation",
+  "sourceCode" : "@Test\r\npublic void testLoadingByAnnotation() throws TurbineException {\r\n    AnnotationProcessor.process(this);\r\n    assertNotNull(cacheService);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\LoadingComponentsTest.java",
+  "methodName" : "testLookupUnknownService",
+  "sourceCode" : "/**\r\n * Lookup up an unknown servie\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testLookupUnknownService() throws Exception {\r\n    ServiceManager serviceManager = TurbineServices.getInstance();\r\n    try {\r\n        serviceManager.getService(\"foo\");\r\n        fail(\"We expect an InstantiationException\");\r\n    } catch (InstantiationException e) {\r\n        // that'w what we expect\r\n        return;\r\n    } catch (Throwable t) {\r\n        fail(\"We expect an InstantiationException\");\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\LoadingComponentsTest.java",
+  "methodName" : "testAvalonComponentServiceShutdown",
+  "sourceCode" : "/**\r\n * Shutdown the AvalonComponentService where the MimeTypeService\r\n * resides and lookup the MimeTypeService. This should trigger\r\n * a late initialization of AvalonComponentService and returns\r\n * a fully functional MimeTypeService.\r\n */\r\n@Test\r\npublic void testAvalonComponentServiceShutdown() throws Exception {\r\n    ServiceManager serviceManager = TurbineServices.getInstance();\r\n    serviceManager.shutdownService(AvalonComponentService.SERVICE_NAME);\r\n    MimeTypeService mimeTypeService = (MimeTypeService) serviceManager.getService(MimeTypeService.class.getName());\r\n    assertNotNull(mimeTypeService);\r\n    Locale locale = new Locale(\"en\", \"US\");\r\n    String s = mimeTypeService.getCharSet(locale);\r\n    assertEquals(\"ISO-8859-1\", s);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\localization\\DateTimeFormatterServiceTest.java",
+  "methodName" : "testTool",
+  "sourceCode" : "/*\r\n     * Class under test for String format(Date, String)\r\n     */\r\n@Order(1)\r\n@Test\r\nvoid testTool() throws Exception {\r\n    RunData rundata = getRunData();\r\n    Context requestContext = vs.getContext(rundata);\r\n    assertNotNull(requestContext);\r\n    pullService.populateContext(requestContext, rundata);\r\n    // taking from request context\r\n    dateTimeFormatterTool = (DateTimeFormatterTool) requestContext.get(\"dateTimeFormatter\");\r\n    assertNotNull(dateTimeFormatterTool);\r\n}",
+  "annotations" : [ "Order", "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\localization\\LocalizationToolTest.java",
+  "methodName" : "testGet",
+  "sourceCode" : "@Test\r\npublic void testGet() throws Exception {\r\n    assertEquals(\"value1\", lt.get(\"key1\"));\r\n    assertEquals(\"value3\", lt.get(\"key3\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\localization\\LocalizationToolTest.java",
+  "methodName" : "testGetLocale",
+  "sourceCode" : "@Test\r\npublic void testGetLocale() throws Exception {\r\n    assertNotNull(lt.getLocale());\r\n    assertEquals(\"US\", lt.getLocale().getCountry());\r\n    assertEquals(\"en\", lt.getLocale().getLanguage());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\localization\\LocalizationToolTest.java",
+  "methodName" : "testInit",
+  "sourceCode" : "@Test\r\npublic void testInit() throws Exception {\r\n    assertNotNull(lt.getLocale());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\localization\\LocalizationToolTest.java",
+  "methodName" : "testRefresh",
+  "sourceCode" : "@Test\r\npublic void testRefresh() throws Exception {\r\n    assertNotNull(lt.getLocale());\r\n    lt.refresh();\r\n    assertNull(lt.getLocale());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\mimetype\\FulcrumMimetypeComponentTest.java",
+  "methodName" : "testComponent",
+  "sourceCode" : "@Test\r\npublic void testComponent() throws Exception {\r\n    ServiceManager serviceManager = TurbineServices.getInstance();\r\n    MimeTypeService mimeTypeService = (MimeTypeService) serviceManager.getService(MimeTypeService.class.getName());\r\n    Locale locale = new Locale(\"en\", \"US\");\r\n    String s = mimeTypeService.getCharSet(locale);\r\n    assertEquals(\"ISO-8859-1\", s);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\pull\\tools\\UIToolTest.java",
+  "methodName" : "testTool",
+  "sourceCode" : "@Test\r\npublic void testTool() {\r\n    assertNotNull(ui);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\pull\\tools\\UIToolTest.java",
+  "methodName" : "testCssSlashes",
+  "sourceCode" : "@Test\r\npublic void testCssSlashes() {\r\n    ui.setSkin(\"myskin\");\r\n    String cssUrl = ui.getStylecss();\r\n    assertEquals(\"CSS URL does not match\", \"http:///conf/test/turbine-resources/turbine-skins/myskin/skins.css\", cssUrl);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\pull\\tools\\UIToolTest.java",
+  "methodName" : "testImageSlashes",
+  "sourceCode" : "@Test\r\npublic void testImageSlashes() {\r\n    ui.setSkin(\"myskin\");\r\n    String img = \"myimage.gif\";\r\n    String imgUrl = ui.image(img);\r\n    assertEquals(\"CSS URL does not match\", \"http:///conf/test/turbine-resources/turbine-skins/myskin/turbine-images/\" + img, imgUrl);\r\n    String img2 = \"foo/myimage.gif\";\r\n    String imgUrl2 = ui.image(img2);\r\n    assertEquals(\"CSS URL does not match\", \"http:///conf/test/turbine-resources/turbine-skins/myskin/turbine-images/\" + img2, imgUrl2);\r\n    String img3 = \"/foo/myimage.gif\";\r\n    String imgUrl3 = ui.image(img3);\r\n    assertEquals(\"CSS URL does not match\", \"http:///conf/test/turbine-resources/turbine-skins/myskin/turbine-images\" + img3, imgUrl3);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\pull\\tools\\UIToolTest.java",
+  "methodName" : "testPathologicalCases",
+  "sourceCode" : "@Test\r\npublic void testPathologicalCases() {\r\n    ui.setSkin(\"myskin\");\r\n    String img = \"\";\r\n    String imgUrl = ui.image(img);\r\n    assertEquals(\"Could not strip empty String\", \"http:///conf/test/turbine-resources/turbine-skins/myskin/turbine-images/\", imgUrl);\r\n    img = \"/\";\r\n    imgUrl = ui.image(img);\r\n    assertEquals(\"Could not strip single Slash\", \"http:///conf/test/turbine-resources/turbine-skins/myskin/turbine-images/\", imgUrl);\r\n    img = \"//\";\r\n    imgUrl = ui.image(img);\r\n    assertEquals(\"Could not strip double Slash\", \"http:///conf/test/turbine-resources/turbine-skins/myskin/turbine-images/\", imgUrl);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\pull\\tools\\UIToolTest.java",
+  "methodName" : "testGetSkinNames",
+  "sourceCode" : "@Test\r\npublic void testGetSkinNames() {\r\n    String[] skinNames = ui.getSkinNames();\r\n    // Remove the \".svn\" dir that may be present.\r\n    skinNames = ArrayUtils.removeElement(skinNames, \".svn\");\r\n    assertEquals(2, skinNames.length);\r\n    assertTrue(ArrayUtils.contains(skinNames, \"myotherskin\"));\r\n    assertTrue(ArrayUtils.contains(skinNames, \"myskin\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\pull\\tools\\UIToolTest.java",
+  "methodName" : "testSkinValues",
+  "sourceCode" : "@Test\r\npublic void testSkinValues() {\r\n    // Default skin\r\n    // skin_property_1 = skin_property_1_my_skin\r\n    assertEquals(\"skin_property_1_my_skin\", ui.get(\"skin_property_1\"));\r\n    ui.setSkin(\"myotherskin\");\r\n    // skin_property_1 = skin_property_1_my_other_skin\r\n    assertEquals(\"skin_property_1_my_other_skin\", ui.get(\"skin_property_1\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\pull\\util\\DateFormatterTest.java",
+  "methodName" : "testFormatDateString",
+  "sourceCode" : "//    /*\r\n//     * Class under test for String format(Date)\r\n//     */\r\n//    public void testFormatDate()\r\n//    {\r\n//        // Need configuration to test.\r\n//    }\r\n/*\r\n     * Class under test for String format(Date, String)\r\n     */\r\n@Test\r\npublic void testFormatDateString() {\r\n    Calendar cal = new GregorianCalendar();\r\n    DateFormatter df = new DateFormatter();\r\n    int day = cal.get(Calendar.DAY_OF_MONTH);\r\n    // zero based\r\n    int month = cal.get(Calendar.MONTH) + 1;\r\n    int year = cal.get(Calendar.YEAR);\r\n    String dayString = (day < 10 ? \"0\" : \"\") + day;\r\n    String monthString = (month < 10 ? \"0\" : \"\") + month;\r\n    String ddmmyyyy = dayString + \"/\" + monthString + \"/\" + year;\r\n    assertEquals(ddmmyyyy, df.format(cal.getTime(), \"dd/MM/yyyy\"));\r\n    String mmddyyyy = \"\" + monthString + \"/\" + dayString + \"/\" + year;\r\n    assertEquals(mmddyyyy, df.format(cal.getTime(), \"MM/dd/yyyy\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\pull\\util\\DateFormatterTest.java",
+  "methodName" : "testFormatDateStringNullString",
+  "sourceCode" : "/*\r\n     * Class under test for String format(null, String)\r\n     */\r\n@Test\r\npublic void testFormatDateStringNullString() {\r\n    DateFormatter df = new DateFormatter();\r\n    assertEquals(\"null argument should produce an empty String\", \"\", df.format(null, \"MM/dd/yyyy\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\pull\\util\\DateFormatterTest.java",
+  "methodName" : "testFormatDateStringEmptyString",
+  "sourceCode" : "/*\r\n     * Class under test for String format(Date, \"\")\r\n     */\r\n@Test\r\npublic void testFormatDateStringEmptyString() {\r\n    Date today = new Date();\r\n    DateFormatter df = new DateFormatter();\r\n    assertEquals(\"Empty pattern should produce empty String\", \"\", df.format(today, \"\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\pull\\util\\DateFormatterTest.java",
+  "methodName" : "testFormatDateStringNullFormat",
+  "sourceCode" : "/*\r\n     * Class under test for String format(Date, \"\")\r\n     */\r\n@Test\r\npublic void testFormatDateStringNullFormat() {\r\n    Date today = new Date();\r\n    DateFormatter df = new DateFormatter();\r\n    assertEquals(\"null pattern should produce empty String\", \"\", df.format(today, null));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\rundata\\DefaultTurbineRunDataTest.java",
+  "methodName" : "testGetDefaultCharSetWithMimeType",
+  "sourceCode" : "@Test\r\npublic void testGetDefaultCharSetWithMimeType() {\r\n    Turbine.getConfiguration().setProperty(TurbineConstants.LOCALE_DEFAULT_CHARSET_KEY, \"\");\r\n    Turbine.getConfiguration().setProperty(TurbineConstants.LOCALE_DEFAULT_COUNTRY_KEY, \"UK\");\r\n    assertEquals(\"ISO-8859-1\", LocaleUtils.getDefaultCharset().name());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\schedule\\JobEntryTest.java",
+  "methodName" : "testCompareTo",
+  "sourceCode" : "/**\r\n * Tests if the job entries are comparable\r\n */\r\n@Test\r\npublic void testCompareTo() {\r\n    assertNotEquals(je1.compareTo(je2), 0);\r\n    je2.setJobId(je1.getJobId());\r\n    assertEquals(je1.compareTo(je2), 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\schedule\\JobQueueTest.java",
+  "methodName" : "testJobQueue",
+  "sourceCode" : "/**\r\n * Test job queue functions\r\n * @throws TurbineException if the queue update fails\r\n */\r\n@Test\r\npublic void testJobQueue() throws TurbineException {\r\n    assertNull(queue.getNext());\r\n    queue.add(je2);\r\n    queue.add(je1);\r\n    assertEquals(2, queue.list().size());\r\n    JobEntryNonPersistent je_a = queue.getNext();\r\n    assertNotNull(je_a);\r\n    assertEquals(je2, je_a);\r\n    assertEquals(1, queue.list().size());\r\n    JobEntryNonPersistent je_b = queue.getJob(je2);\r\n    assertNull(je_b);\r\n    JobEntryNonPersistent je_c = queue.getJob(je1);\r\n    assertNotNull(je_c);\r\n    assertEquals(je1, je_c);\r\n    je_c.setSecond(2);\r\n    queue.updateQueue(je_c);\r\n    assertEquals(1, queue.list().size());\r\n    je2.setSecond(3);\r\n    queue.updateQueue(je2);\r\n    JobEntryNonPersistent je_d = queue.getNext();\r\n    assertNotNull(je_d);\r\n    assertEquals(je1, je_d);\r\n    JobEntryNonPersistent je_e = queue.getNext();\r\n    assertNotNull(je_e);\r\n    assertEquals(je2, je_e);\r\n    // queue should now be empty\r\n    assertNull(queue.list());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\schedule\\QuartzSchedulerServiceTest.java",
+  "methodName" : "testEnableDisable",
+  "sourceCode" : "/**\r\n * Tests the ability to enable and disable the service.\r\n */\r\n@Test\r\npublic void testEnableDisable() {\r\n    try {\r\n        scheduler.startScheduler();\r\n        assertTrue(scheduler.isEnabled());\r\n        scheduler.stopScheduler();\r\n        assertFalse(scheduler.isEnabled());\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\schedule\\QuartzSchedulerServiceTest.java",
+  "methodName" : "testAddRemoveJob",
+  "sourceCode" : "/**\r\n * Tests the ability to add and remove a job.  A list of jobs will be obtained from\r\n * the service to determine if the operation were successful.\r\n */\r\n@Test\r\npublic void testAddRemoveJob() {\r\n    try {\r\n        // get the current job count for later comparison\r\n        int jobCount = scheduler.listJobs().size();\r\n        // Add a new job entry\r\n        JobEntry je = scheduler.newJob(10, -1, -1, -1, -1, \"SimpleJob1\");\r\n        je.setJobId(jobCount + 1);\r\n        scheduler.addJob(je);\r\n        assertEquals(jobCount + 1, scheduler.listJobs().size());\r\n        scheduler.removeJob(je);\r\n        assertEquals(jobCount, scheduler.listJobs().size());\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\schedule\\QuartzSchedulerServiceTest.java",
+  "methodName" : "testGetJob",
+  "sourceCode" : "/**\r\n * Tests the ability to retrieve the job added during initialization.\r\n */\r\n@Test\r\npublic void testGetJob() {\r\n    try {\r\n        JobKey jk = new JobKey(\"SimpleJob\", JobEntryQuartz.DEFAULT_JOB_GROUP_NAME);\r\n        JobEntry je = scheduler.getJob(jk.hashCode());\r\n        assertInstanceOf(JobEntryQuartz.class, je);\r\n        JobEntryQuartz jeq = (JobEntryQuartz) je;\r\n        assertEquals(jeq.getJobTrigger().getJobKey(), jk);\r\n        assertEquals(jeq.getTask(), \"SimpleJob\");\r\n    } catch (TurbineException e) {\r\n        e.printStackTrace();\r\n        fail();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\schedule\\QuartzSchedulerServiceTest.java",
+  "methodName" : "testRunningJob",
+  "sourceCode" : "/**\r\n * Test to make sure a job actually runs.\r\n */\r\n@Test\r\npublic void testRunningJob() {\r\n    try {\r\n        int beforeCount = SimpleJob.getCounter();\r\n        Thread.sleep(1200);\r\n        int afterCount = SimpleJob.getCounter();\r\n        assertTrue(beforeCount < afterCount);\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\schedule\\TurbineNonPersistentSchedulerServiceTest.java",
+  "methodName" : "testEnableDisable",
+  "sourceCode" : "/**\r\n * Tests the ability to enable and disable the service.\r\n */\r\n@Test\r\npublic void testEnableDisable() {\r\n    try {\r\n        scheduler.startScheduler();\r\n        assertTrue(scheduler.isEnabled());\r\n        scheduler.stopScheduler();\r\n        assertFalse(scheduler.isEnabled());\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\schedule\\TurbineNonPersistentSchedulerServiceTest.java",
+  "methodName" : "testAddRemoveJob",
+  "sourceCode" : "/**\r\n * Tests the ability to add and remove a job.  A list of jobs will be obtained from\r\n * the service to determine if the operation were successful.\r\n */\r\n@Test\r\npublic void testAddRemoveJob() {\r\n    try {\r\n        // get the current job count for later comparison\r\n        int jobCount = scheduler.listJobs().size();\r\n        // Add a new job entry\r\n        JobEntry je = scheduler.newJob(0, 1, -1, -1, -1, \"SimpleJob\");\r\n        scheduler.addJob(je);\r\n        assertEquals(jobCount + 1, scheduler.listJobs().size());\r\n        assertTrue(scheduler.listJobs().contains(je));\r\n        scheduler.removeJob(je);\r\n        assertTrue(!scheduler.listJobs().contains(je));\r\n        assertEquals(jobCount, scheduler.listJobs().size());\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\schedule\\TurbineNonPersistentSchedulerServiceTest.java",
+  "methodName" : "testGetJob",
+  "sourceCode" : "/**\r\n * Tests the ability to retrieve the job added during initialization.\r\n */\r\n@Test\r\npublic void testGetJob() {\r\n    try {\r\n        JobEntry je = scheduler.getJob(1);\r\n        assertInstanceOf(JobEntryNonPersistent.class, je);\r\n        JobEntryNonPersistent jenp = (JobEntryNonPersistent) je;\r\n        assertEquals(1, jenp.getJobId());\r\n        assertEquals(1, jenp.getSecond());\r\n        assertEquals(-1, jenp.getMinute());\r\n        assertEquals(-1, jenp.getHour());\r\n        assertEquals(-1, jenp.getDayOfMonth());\r\n        assertEquals(-1, jenp.getWeekDay());\r\n        assertEquals(\"SimpleJob\", jenp.getTask());\r\n    } catch (TurbineException e) {\r\n        e.printStackTrace();\r\n        fail();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\schedule\\TurbineNonPersistentSchedulerServiceTest.java",
+  "methodName" : "testRunningJob",
+  "sourceCode" : "/**\r\n * Test to make sure a job actually runs.\r\n */\r\n@Test\r\npublic void testRunningJob() {\r\n    try {\r\n        int beforeCount = SimpleJob.getCounter();\r\n        // expect at least less than about two seconds\r\n        Thread.sleep(1600);\r\n        int afterCount = SimpleJob.getCounter();\r\n        assertTrue(beforeCount + \" should be before \" + afterCount, beforeCount < afterCount);\r\n    } catch (Exception e) {\r\n        e.printStackTrace();\r\n        fail();\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\security\\SecurityServiceTest.java",
+  "methodName" : "testAccountExists",
+  "sourceCode" : "@Test\r\npublic void testAccountExists() throws Exception {\r\n    User user = new org.apache.turbine.om.security.DefaultUserImpl(new TurbineUserImpl());\r\n    user.setAccessCounter(5);\r\n    assertFalse(securityService.accountExists(user));\r\n    assertFalse(fulcrumSecurityService.getUserManager().checkExists(user));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\security\\SecurityServiceTest.java",
+  "methodName" : "testCreateUser",
+  "sourceCode" : "@Test\r\npublic void testCreateUser() throws Exception {\r\n    User user = new org.apache.turbine.om.security.DefaultUserImpl(new TurbineUserImpl());\r\n    user.setAccessCounter(5);\r\n    user.setName(\"ringo\");\r\n    securityService.addUser(user, \"fakepasswrod\");\r\n    assertTrue(securityService.accountExists(user));\r\n    assertTrue(fulcrumSecurityService.getUserManager().checkExists(user));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\security\\SecurityServiceTest.java",
+  "methodName" : "testGrantUserGroupRole",
+  "sourceCode" : "/**\r\n * Tests Turbine and Fulcrum.\r\n *\r\n * Fulcrum part is similar/duplicated from {@link AbstractTurbineModelManagerTest#testGrantUserGroupRole()}\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testGrantUserGroupRole() throws Exception {\r\n    Group group = fulcrumSecurityService.getGroupManager().getGroupInstance();\r\n    group.setName(\"TEST_GROUP\");\r\n    fulcrumSecurityService.getGroupManager().addGroup(group);\r\n    Role role = fulcrumSecurityService.getRoleManager().getRoleInstance();\r\n    role.setName(\"TEST_Role\");\r\n    fulcrumSecurityService.getRoleManager().addRole(role);\r\n    //  Turbine security service returns a wrapped instance: org.apache.turbine.om.security.DefaultUserImpl\r\n    // which implements org.apache.turbine.om.security.User and contains\r\n    User user = securityService.getUserInstance(\"Clint\");\r\n    // memory\r\n    securityService.addUser(user, \"clint\");\r\n    securityService.grant(user, group, role);\r\n    addUserAndCheck(group, role, user.getUserDelegate());\r\n    // Fulcrum security service returns a raw org.apache.fulcrum.security.model.turbine.entity.impl.TurbineUserImpl,\r\n    org.apache.fulcrum.security.UserManager userManager = fulcrumSecurityService.getUserManager();\r\n    TurbineUser fulcrumUser = userManager.getUserInstance(\"Clint2\");\r\n    // memory\r\n    userManager.addUser(fulcrumUser, \"clint2\");\r\n    ((TurbineModelManager) fulcrumSecurityService.getModelManager()).grant(fulcrumUser, group, role);\r\n    addUserAndCheck(group, role, fulcrumUser);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\security\\TurbineDefaultModelManagerTest.java",
+  "methodName" : "testDummy",
+  "sourceCode" : "@Test\r\npublic void testDummy() {\r\n    // all tests in abstract\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\ClassTest.java",
+  "methodName" : "testTemplateDefaults",
+  "sourceCode" : "@Test\r\npublic void testTemplateDefaults() {\r\n    // Test if the Default-Values for the Screen, Layout and Navigation classes\r\n    assertEquals(\"Default Page failed\", TemplateService.DEFAULT_TEMPLATE_VALUE, ts.getDefaultPage());\r\n    assertEquals(\"Default Screen failed\", TemplateService.DEFAULT_TEMPLATE_VALUE, ts.getDefaultScreen());\r\n    assertEquals(\"Default Layout failed\", TemplateService.DEFAULT_TEMPLATE_VALUE, ts.getDefaultLayout());\r\n    assertEquals(\"Default Navigation failed\", TemplateService.DEFAULT_TEMPLATE_VALUE, ts.getDefaultNavigation());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\ClassTest.java",
+  "methodName" : "testVelocityDefaults",
+  "sourceCode" : "@Test\r\npublic void testVelocityDefaults() {\r\n    // Test if all the Velocity based Defaults for Page, Screen, Layout, Navigation\r\n    assertEquals(\"Default Page failed\", \"VelocityPage\", ts.getDefaultPageName(\"foo.vm\"));\r\n    assertEquals(\"Default Screen failed\", \"VelocityScreen\", ts.getDefaultScreenName(\"foo.vm\"));\r\n    assertEquals(\"Default Layout failed\", \"VelocityOnlyLayout\", ts.getDefaultLayoutName(\"foo.vm\"));\r\n    assertEquals(\"Default Navigation failed\", \"VelocityNavigation\", ts.getDefaultNavigationName(\"foo.vm\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\ClassTest.java",
+  "methodName" : "testNonExistingTemplate",
+  "sourceCode" : "// Here comes the fun\r\n@Test\r\npublic void testNonExistingTemplate() throws Exception {\r\n    //\r\n    // Try a non existing Template. This should render with the default screen class,\r\n    // use the default Layout class and Navigation. It should be rendered with the\r\n    // default Layout Template but the Screen Template itself must not exist.\r\n    String templateName = \"DoesNotExistPage.vm\";\r\n    assertEquals(\"Screen translation failed\", \"VelocityScreen\", ts.getScreenName(templateName));\r\n    assertEquals(\"Layout translation failed\", \"VelocityOnlyLayout\", ts.getLayoutName(templateName));\r\n    assertEquals(\"Navigation translation failed\", \"VelocityNavigation\", ts.getNavigationName(templateName));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\ClassTest.java",
+  "methodName" : "testNonExistingSublevelTemplate",
+  "sourceCode" : "@Test\r\npublic void testNonExistingSublevelTemplate() throws Exception {\r\n    //\r\n    // Try a non existing Template in a sub-path. This should render with the default screen class,\r\n    // use the default Layout class and Navigation.\r\n    String templateName = \"this,template,DoesNotExistPage.vm\";\r\n    assertEquals(\"Screen translation failed\", \"VelocityScreen\", ts.getScreenName(templateName));\r\n    assertEquals(\"Layout translation failed\", \"VelocityOnlyLayout\", ts.getLayoutName(templateName));\r\n    assertEquals(\"Navigation translation failed\", \"VelocityNavigation\", ts.getNavigationName(templateName));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\ClassTest.java",
+  "methodName" : "testExistingTemplate",
+  "sourceCode" : "@Test\r\npublic void testExistingTemplate() throws Exception {\r\n    //\r\n    // Try an existing Template without any backing class. Should also return the default classes\r\n    String templateName = \"ExistPage.vm\";\r\n    assertEquals(\"Screen translation failed\", \"VelocityScreen\", ts.getScreenName(templateName));\r\n    assertEquals(\"Layout translation failed\", \"VelocityOnlyLayout\", ts.getLayoutName(templateName));\r\n    assertEquals(\"Navigation translation failed\", \"VelocityNavigation\", ts.getNavigationName(templateName));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\ClassTest.java",
+  "methodName" : "testExistingSublevelTemplate",
+  "sourceCode" : "@Test\r\npublic void testExistingSublevelTemplate() throws Exception {\r\n    //\r\n    // Try an existing Sublevel Template without any backing class. Should also return the default classes\r\n    String templateName = \"existing,Page.vm\";\r\n    assertEquals(\"Screen translation failed\", \"VelocityScreen\", ts.getScreenName(templateName));\r\n    assertEquals(\"Layout translation failed\", \"VelocityOnlyLayout\", ts.getLayoutName(templateName));\r\n    assertEquals(\"Navigation translation failed\", \"VelocityNavigation\", ts.getNavigationName(templateName));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\ClassTest.java",
+  "methodName" : "testExistingClass",
+  "sourceCode" : "// Now we start checking existing classes.\r\n@Test\r\npublic void testExistingClass() throws Exception {\r\n    //\r\n    // Now we have a class backed template. It has a separate Class for Screen, Navigation and\r\n    // Layout. It should find the matching class names in the screens, navigations and layout\r\n    // packages.\r\n    String templateName = \"ExistPageWithClass.vm\";\r\n    assertEquals(\"Screen translation failed\", \"ExistPageWithClass\", ts.getScreenName(templateName));\r\n    assertEquals(\"Layout translation failed\", \"ExistPageWithClass\", ts.getLayoutName(templateName));\r\n    assertEquals(\"Navigation translation failed\", \"ExistPageWithClass\", ts.getNavigationName(templateName));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\ClassTest.java",
+  "methodName" : "testExistingSublevelClass",
+  "sourceCode" : "@Test\r\npublic void testExistingSublevelClass() throws Exception {\r\n    //\r\n    // Now we have a class backed template. It has a separate Class for Screen, Navigation and\r\n    // Layout. It should find the matching class names in the screens, navigations and layout\r\n    // packages. For a twist, the classes are in a subpackage, so they should also find the\r\n    // classes in the sub packages.\r\n    String templateName = \"existing,PageWithClass.vm\";\r\n    assertEquals(\"Screen translation failed\", \"existing.PageWithClass\", ts.getScreenName(templateName));\r\n    assertEquals(\"Layout translation failed\", \"existing.PageWithClass\", ts.getLayoutName(templateName));\r\n    assertEquals(\"Navigation translation failed\", \"existing.PageWithClass\", ts.getNavigationName(templateName));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\ClassTest.java",
+  "methodName" : "testDefaultSublevelClass",
+  "sourceCode" : "@Test\r\npublic void testDefaultSublevelClass() throws Exception {\r\n    //\r\n    // We look for a specific Template but it has no class. It has, however\r\n    // a Default class in an upper package. So the Loader should find this.\r\n    String templateName = \"existing,dflt,onelevel,twolevel,threelevel,PageWithClass.vm\";\r\n    assertEquals(\"Screen translation failed\", \"existing.dflt.Default\", ts.getScreenName(templateName));\r\n    assertEquals(\"Layout translation failed\", \"existing.dflt.Default\", ts.getLayoutName(templateName));\r\n    assertEquals(\"Navigation translation failed\", \"existing.dflt.Default\", ts.getNavigationName(templateName));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\ClassTest.java",
+  "methodName" : "testIgnoreExistingClass",
+  "sourceCode" : "@Test\r\npublic void testIgnoreExistingClass() throws Exception {\r\n    //\r\n    // This is a test, whether matching classes in upper level packages are ignored.\r\n    // We're looking for classes which don't exist. We have, however, matching names\r\n    // in an upper package. This should still match the Default classes, and not these.\r\n    String templateName = \"sublevel,ExistPageWithClass.vm\";\r\n    assertEquals(\"Screen translation failed\", \"VelocityScreen\", ts.getScreenName(templateName));\r\n    assertEquals(\"Layout translation failed\", \"VelocityOnlyLayout\", ts.getLayoutName(templateName));\r\n    assertEquals(\"Navigation translation failed\", \"VelocityNavigation\", ts.getNavigationName(templateName));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\DefaultsTest.java",
+  "methodName" : "testDefaults",
+  "sourceCode" : "@Test\r\npublic void testDefaults() {\r\n    // Test if the caching property was loaded correctly. (key:module.cache)\r\n    assertFalse(\"isCaching failed!\", ts.isCaching());\r\n    // Test if the default values for Template and Extension were loaded correctly\r\n    assertEquals(\"Default Extension failed\", ts.getDefaultExtension(), \"\");\r\n    assertEquals(\"Default Template failed\", ts.getDefaultTemplate(), TemplateService.DEFAULT_TEMPLATE_VALUE);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\DefaultsTest.java",
+  "methodName" : "testTemplateDefaults",
+  "sourceCode" : "@Test\r\npublic void testTemplateDefaults() {\r\n    // Test if the Default-Values for the Screen, Layout and Navigation classes and the Layout Template are correct.\r\n    assertEquals(\"Default Page failed\", TemplateService.DEFAULT_TEMPLATE_VALUE, ts.getDefaultPage());\r\n    assertEquals(\"Default Screen failed\", TemplateService.DEFAULT_TEMPLATE_VALUE, ts.getDefaultScreen());\r\n    assertEquals(\"Default Layout failed\", TemplateService.DEFAULT_TEMPLATE_VALUE, ts.getDefaultLayout());\r\n    assertEquals(\"Default Navigation failed\", TemplateService.DEFAULT_TEMPLATE_VALUE, ts.getDefaultNavigation());\r\n    assertEquals(\"Default LayoutTemplate failed\", TemplateService.DEFAULT_TEMPLATE_VALUE, ts.getDefaultLayoutTemplate());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\DefaultsTest.java",
+  "methodName" : "testVelocityDefaults",
+  "sourceCode" : "@Test\r\npublic void testVelocityDefaults() {\r\n    // Test if all the Velocity based Defaults for Page, Screen, Layout, Navigation and Layout Template\r\n    assertEquals(\"Default Page failed\", \"VelocityPage\", ts.getDefaultPageName(\"foo.vm\"));\r\n    assertEquals(\"Default Screen failed\", \"VelocityScreen\", ts.getDefaultScreenName(\"foo.vm\"));\r\n    assertEquals(\"Default Layout failed\", \"VelocityOnlyLayout\", ts.getDefaultLayoutName(\"foo.vm\"));\r\n    assertEquals(\"Default Navigation failed\", \"VelocityNavigation\", ts.getDefaultNavigationName(\"foo.vm\"));\r\n    assertEquals(\"Default LayoutTemplate failed\", \"Default.vm\", ts.getDefaultLayoutTemplateName(\"foo.vm\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\InitTest.java",
+  "methodName" : "testService",
+  "sourceCode" : "@Test\r\npublic void testService() throws Exception {\r\n    // Can we start the service?\r\n    assertNotNull(\"Could not load Service!\", ts);\r\n    // Did we register the Velocity Service correctly for \"vm\" templates?\r\n    VelocityService vs = (VelocityService) TurbineServices.getInstance().getService(VelocityService.SERVICE_NAME);\r\n    TemplateEngineService tes = ts.getTemplateEngineService(\"foo.vm\");\r\n    assertEquals(\"Template Service did not return Velocity Service for .vm Templates\", vs, tes);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\TemplateTest.java",
+  "methodName" : "testTemplateDefaults",
+  "sourceCode" : "@Test\r\npublic void testTemplateDefaults() {\r\n    assertEquals(\"Default LayoutTemplate failed\", TemplateService.DEFAULT_TEMPLATE_VALUE, ts.getDefaultLayoutTemplate());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\TemplateTest.java",
+  "methodName" : "testVelocityDefaults",
+  "sourceCode" : "@Test\r\npublic void testVelocityDefaults() {\r\n    assertEquals(\"Default LayoutTemplate failed\", \"Default.vm\", ts.getDefaultLayoutTemplateName(\"foo.vm\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\TemplateTest.java",
+  "methodName" : "testTemplateExtension",
+  "sourceCode" : "@Test\r\npublic void testTemplateExtension() {\r\n    assertEquals(\"Extension extraction failed\", \"vm\", ts.getExtension(\"Default.vm\"));\r\n    assertEquals(\"Extension extraction failed\", \"txt\", ts.getExtension(\"Default.txt\"));\r\n    // TRB-82\r\n    assertEquals(\"Extension extraction failed\", \"vm\", ts.getExtension(\"Default.txt.vm\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\TemplateTest.java",
+  "methodName" : "testNonExistingTemplate",
+  "sourceCode" : "@Test\r\npublic void testNonExistingTemplate() throws Exception {\r\n    //\r\n    // Try a non existing Template. This should render with the default screen class,\r\n    // use the default Layout class and Navigation. It should be rendered with the\r\n    // default Layout Template but the Screen Template itself must not exist.\r\n    String templateName = \"DoesNotExistPage.vm\";\r\n    assertEquals(\"LayoutTemplate translation failed\", \"Default.vm\", ts.getLayoutTemplateName(templateName));\r\n    assertEquals(\"ScreenTemplate translation failed\", null, ts.getScreenTemplateName(templateName));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\TemplateTest.java",
+  "methodName" : "testNonExistingSublevelTemplate",
+  "sourceCode" : "@Test\r\npublic void testNonExistingSublevelTemplate() throws Exception {\r\n    //\r\n    // Try a non existing Template in a sub-path. This should render with the default screen class,\r\n    // use the default Layout class and Navigation. It should be rendered with the\r\n    // default Layout Template but the Screen Template itself must not exist.\r\n    String templateName = \"this,template,DoesNotExistPage.vm\";\r\n    assertEquals(\"LayoutTemplate translation failed\", \"Default.vm\", ts.getLayoutTemplateName(templateName));\r\n    assertEquals(\"ScreenTemplate translation failed\", null, ts.getScreenTemplateName(templateName));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\TemplateTest.java",
+  "methodName" : "testExistingTemplate",
+  "sourceCode" : "@Test\r\npublic void testExistingTemplate() throws Exception {\r\n    //\r\n    // Try an existing Template. As we already know, missing classes are found correctly\r\n    // so we test only Layout and Screen template. This should return the \"Default\" Layout\r\n    // template to render and the Screen Template for the Page to render\r\n    String templateName = \"ExistPage.vm\";\r\n    assertEquals(\"LayoutTemplate translation failed\", \"Default.vm\", ts.getLayoutTemplateName(templateName));\r\n    assertEquals(\"ScreenTemplate translation failed\", \"ExistPage.vm\", ts.getScreenTemplateName(templateName));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\TemplateTest.java",
+  "methodName" : "testExistingLayoutTemplate",
+  "sourceCode" : "@Test\r\npublic void testExistingLayoutTemplate() throws Exception {\r\n    //\r\n    // Try an existing Template. This time we have a backing Layout page. So the getLayoutTemplateName\r\n    // method should not return the Default but our Layout page.\r\n    //\r\n    String templateName = \"ExistPageWithLayout.vm\";\r\n    assertEquals(\"LayoutTemplate translation failed\", \"ExistPageWithLayout.vm\", ts.getLayoutTemplateName(templateName));\r\n    assertEquals(\"ScreenTemplate translation failed\", \"ExistPageWithLayout.vm\", ts.getScreenTemplateName(templateName));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\template\\TemplateTest.java",
+  "methodName" : "testExistingSublevelLayoutTemplate",
+  "sourceCode" : "@Test\r\npublic void testExistingSublevelLayoutTemplate() throws Exception {\r\n    //\r\n    // Try an existing Template. This time we have a backing Layout page. So the getLayoutTemplateName\r\n    // method should not return the Default but our Layout page.\r\n    //\r\n    String templateName = \"existing,ExistSublevelPageWithLayout.vm\";\r\n    assertEquals(\"LayoutTemplate translation failed\", \"existing/ExistSublevelPageWithLayout.vm\", ts.getLayoutTemplateName(templateName));\r\n    assertEquals(\"ScreenTemplate translation failed\", \"existing/ExistSublevelPageWithLayout.vm\", ts.getScreenTemplateName(templateName));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\urlmapper\\model\\URLMappingContainerTest.java",
+  "methodName" : "testGetName",
+  "sourceCode" : "@Test\r\npublic void testGetName() {\r\n    assertNotNull(container);\r\n    assertEquals(\"default\", container.getName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\urlmapper\\model\\URLMappingContainerTest.java",
+  "methodName" : "testGetMapEntries",
+  "sourceCode" : "@Test\r\npublic void testGetMapEntries() {\r\n    assertNotNull(container);\r\n    List<URLMapEntry> mapEntries = container.getMapEntries();\r\n    assertNotNull(mapEntries);\r\n    assertNotEquals(0, mapEntries.size());\r\n    URLMapEntry entry = mapEntries.get(0);\r\n    assertNotNull(entry);\r\n    Pattern pattern = entry.getUrlPattern();\r\n    assertNotNull(pattern);\r\n    assertTrue(pattern.matcher(\"/app/book/123\").matches());\r\n    Map<String, String> implicit = entry.getImplicitParameters();\r\n    assertNotNull(implicit);\r\n    assertEquals(2, implicit.size());\r\n    assertEquals(\"Book.vm\", implicit.get(\"template\"));\r\n    assertEquals(\"0\", implicit.get(\"detail\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\urlmapper\\model\\YamlURLMappingContainerTest.java",
+  "methodName" : "testGetName",
+  "sourceCode" : "@Test\r\npublic void testGetName() {\r\n    assertNotNull(container);\r\n    assertEquals(\"default\", container.getName());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\urlmapper\\model\\YamlURLMappingContainerTest.java",
+  "methodName" : "testGetMapEntries",
+  "sourceCode" : "@Test\r\npublic void testGetMapEntries() {\r\n    assertNotNull(container);\r\n    List<URLMapEntry> mapEntries = container.getMapEntries();\r\n    assertNotNull(mapEntries);\r\n    assertNotEquals(0, mapEntries.size());\r\n    URLMapEntry entry = mapEntries.get(0);\r\n    assertNotNull(entry);\r\n    Pattern pattern = entry.getUrlPattern();\r\n    assertNotNull(pattern);\r\n    assertTrue(pattern.matcher(\"/app/book/123\").matches());\r\n    Map<String, String> implicit = entry.getImplicitParameters();\r\n    assertNotNull(implicit);\r\n    assertEquals(2, implicit.size());\r\n    assertEquals(\"Book.vm\", implicit.get(\"template\"));\r\n    assertEquals(\"0\", implicit.get(\"detail\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\urlmapper\\TurbineURLMapperJSONServiceTest.java",
+  "methodName" : "testDetailParameterForShortURL",
+  "sourceCode" : "@Test\r\npublic void testDetailParameterForShortURL() throws Exception {\r\n    PipelineData pipelineData = data;\r\n    assertNotNull(urlMapper);\r\n    ParameterParser pp = pipelineData.get(Turbine.class, ParameterParser.class);\r\n    assertNotNull(pp);\r\n    assertTrue(pp.keySet().isEmpty());\r\n    pp.clear();\r\n    urlMapper.mapFromURL(\"/app/context/contact\", pp);\r\n    log.info(\"parameters: {}\", pp);\r\n    assertEquals(2, pp.keySet().size());\r\n    assertEquals(\"anon\", pp.getString(\"role\"));\r\n    assertEquals(\"Contact\", pp.getString(\"page\"));\r\n    TemplateURI uri2 = new TemplateURI(pipelineData.getRunData());\r\n    uri2.clearResponse();\r\n    uri2.addPathInfo(pp);\r\n    // this is an artifical url\r\n    assertEquals(\"scheme://bob/wow/damn2/page/Contact/role/anon\", uri2.getAbsoluteLink());\r\n    uri2.addPathInfo(\"language\", \"en\");\r\n    uri2.addQueryData(\"kind\", \"4\");\r\n    assertEquals(\"scheme://bob/wow/damn2/page/Contact/role/anon/language/en?kind=4\", uri2.getAbsoluteLink());\r\n    urlMapper.mapToURL(uri2);\r\n    //        String expectedMappedURL = \"/wow/damn2/contact/4\";\r\n    // not ignored\r\n    String expectedMappedURL = \"/wow/damn2/contact/4/en\";\r\n    assertEquals(expectedMappedURL, uri2.getRelativeLink());\r\n    pp.clear();\r\n    //\r\n    // scheme://bob/wow/damn2/contact/4/de\r\n    log.info(\"relative uri is now {}\", uri2.getRelativeLink());\r\n    urlMapper.mapFromURL(uri2.getRelativeLink(), pp);\r\n    log.info(\"parameters: {}\", pp);\r\n    assertEquals(4, pp.keySet().size());\r\n    assertEquals(\"anon\", pp.getString(\"role\"));\r\n    assertEquals(\"Contact\", pp.getString(\"page\"));\r\n    assertEquals(\"4\", pp.getString(\"kind\"));\r\n    // not ignored\r\n    assertEquals(\"en\", pp.getString(\"language\"));\r\n    uri2 = new TemplateURI(pipelineData.getRunData());\r\n    uri2.clearResponse();\r\n    uri2.addPathInfo(pp);\r\n    urlMapper.mapToURL(uri2);\r\n    assertEquals(expectedMappedURL, uri2.getRelativeLink());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\urlmapper\\TurbineURLMapperJSONServiceTest.java",
+  "methodName" : "testIgnoreParameterForShortURL",
+  "sourceCode" : "@Test\r\npublic void testIgnoreParameterForShortURL() throws Exception {\r\n    PipelineData pipelineData = data;\r\n    assertNotNull(urlMapper);\r\n    ParameterParser pp = pipelineData.get(Turbine.class, ParameterParser.class);\r\n    assertNotNull(pp);\r\n    assertTrue(pp.keySet().isEmpty());\r\n    pp.clear();\r\n    urlMapper.mapFromURL(\"/app/context/info\", pp);\r\n    log.info(\"parameters: {}\", pp);\r\n    assertEquals(2, pp.keySet().size());\r\n    assertEquals(\"anon\", pp.getString(\"role\"));\r\n    assertEquals(\"Info\", pp.getString(\"page\"));\r\n    TemplateURI uri2 = new TemplateURI(pipelineData.getRunData());\r\n    uri2.clearResponse();\r\n    uri2.addPathInfo(pp);\r\n    // this is an artifical url\r\n    assertEquals(\"scheme://bob/wow/damn2/page/Info/role/anon\", uri2.getAbsoluteLink());\r\n    uri2.addPathInfo(\"language\", \"en\");\r\n    uri2.addQueryData(\"kind\", \"4\");\r\n    assertEquals(\"scheme://bob/wow/damn2/page/Info/role/anon/language/en?kind=4\", uri2.getAbsoluteLink());\r\n    urlMapper.mapToURL(uri2);\r\n    //  ignored\r\n    String expectedMappedURL = \"/wow/damn2/info/4\";\r\n    assertEquals(expectedMappedURL, uri2.getRelativeLink());\r\n    pp.clear();\r\n    uri2.addPathInfo(\"de\", \"\");\r\n    // scheme://bob/wow/damn2/info/4/de/\r\n    log.info(\"relative uri is now {}\", uri2.getRelativeLink());\r\n    urlMapper.mapFromURL(uri2.getRelativeLink(), pp);\r\n    log.info(\"parameters: {}\", pp);\r\n    assertEquals(3, pp.keySet().size());\r\n    assertEquals(\"anon\", pp.getString(\"role\"));\r\n    assertEquals(\"Info\", pp.getString(\"page\"));\r\n    assertEquals(\"4\", pp.getString(\"kind\"));\r\n    // language ignored\r\n    uri2 = new TemplateURI(pipelineData.getRunData());\r\n    uri2.clearResponse();\r\n    uri2.addPathInfo(pp);\r\n    urlMapper.mapToURL(uri2);\r\n    assertEquals(expectedMappedURL, uri2.getRelativeLink());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\urlmapper\\TurbineURLMapperJSONServiceTest.java",
+  "methodName" : "testNonOptionalParameterForShortURL",
+  "sourceCode" : "@Test\r\npublic void testNonOptionalParameterForShortURL() throws Exception {\r\n    PipelineData pipelineData = data;\r\n    assertNotNull(urlMapper);\r\n    ParameterParser pp = pipelineData.get(Turbine.class, ParameterParser.class);\r\n    assertNotNull(pp);\r\n    assertTrue(pp.keySet().isEmpty());\r\n    pp.clear();\r\n    urlMapper.mapFromURL(\"/wow/damn2/register\", pp);\r\n    log.info(\"parameters: {}\", pp);\r\n    assertEquals(2, pp.keySet().size());\r\n    assertEquals(\"anon\", pp.getString(\"role\"));\r\n    assertEquals(\"Register\", pp.getString(\"page\"));\r\n    TemplateURI uri2 = new TemplateURI(pipelineData.getRunData());\r\n    uri2.clearResponse();\r\n    uri2.addPathInfo(pp);\r\n    // this is an artifical url\r\n    assertEquals(\"scheme://bob/wow/damn2/page/Register/role/anon\", uri2.getAbsoluteLink());\r\n    uri2.addPathInfo(\"language\", \"en\");\r\n    assertEquals(\"scheme://bob/wow/damn2/page/Register/role/anon/language/en\", uri2.getAbsoluteLink());\r\n    urlMapper.mapToURL(uri2);\r\n    String expectedMappedURL = \"/wow/damn2/en/register\";\r\n    assertEquals(expectedMappedURL, uri2.getRelativeLink());\r\n    pp.clear();\r\n    urlMapper.mapFromURL(uri2.getRelativeLink(), pp);\r\n    log.info(\"parameters: {}\", pp);\r\n    assertEquals(3, pp.keySet().size());\r\n    assertEquals(\"anon\", pp.getString(\"role\"));\r\n    assertEquals(\"Register\", pp.getString(\"page\"));\r\n    assertEquals(\"en\", pp.getString(\"language\"));\r\n    uri2 = new TemplateURI(pipelineData.getRunData());\r\n    uri2.clearResponse();\r\n    uri2.addPathInfo(pp);\r\n    urlMapper.mapToURL(uri2);\r\n    assertEquals(expectedMappedURL, uri2.getRelativeLink());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\urlmapper\\TurbineURLMapperServiceTest.java",
+  "methodName" : "testMapToURL",
+  "sourceCode" : "/**\r\n * Tests\r\n *\r\n * <code>scheme://bob/wow/damn2/bookId/123</code>\r\n * <code>scheme://bob/wow/book/123</code>\r\n * <p>\r\n * and\r\n *\r\n * <code>scheme://bob/wow/damn2/bookId/123/template/Book.vm?detail=1&amp;detail=2&amp;view=collapsed</code>\r\n * <code>scheme://bob/wow/book/123/1?view=collapsed</code>\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testMapToURL() throws Exception {\r\n    assertNotNull(urlMapper);\r\n    HttpServletRequest request = getMockRequest();\r\n    HttpServletResponse response = Mockito.mock(HttpServletResponse.class);\r\n    PipelineData pipelineData = getPipelineData(request, response, tc.getTurbine().getServletConfig());\r\n    assertNotNull(pipelineData);\r\n    TemplateURI uri = new TemplateURI(pipelineData.getRunData());\r\n    // avoid encoding on mocked HTTPServletResponse\r\n    uri.clearResponse();\r\n    uri.addPathInfo(\"bookId\", 123);\r\n    uri.setTemplate(\"Book.vm\");\r\n    uri.addQueryData(\"detail\", 0);\r\n    urlMapper.mapToURL(uri);\r\n    assertEquals(\"/wow/book/123\", uri.getRelativeLink());\r\n    assertTrue(uri.getPathInfo().isEmpty());\r\n    assertTrue(uri.getQueryData().isEmpty());\r\n    uri = new TemplateURI(pipelineData.getRunData());\r\n    // avoid encoding on mocked HTTPServletResponse\r\n    uri.clearResponse();\r\n    uri.addPathInfo(\"bookId\", 123);\r\n    uri.setTemplate(\"Book.vm\");\r\n    uri.addQueryData(\"detail\", 1);\r\n    uri.addQueryData(\"detail\", 2);\r\n    uri.addQueryData(\"view\", \"collapsed\");\r\n    urlMapper.mapToURL(uri);\r\n    assertEquals(\"/wow/book/123/1?view=collapsed\", uri.getRelativeLink());\r\n    assertTrue(uri.getPathInfo().isEmpty());\r\n    assertEquals(1, uri.getQueryData().size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\urlmapper\\TurbineURLMapperServiceTest.java",
+  "methodName" : "testMapFromURL",
+  "sourceCode" : "/**\r\n * Tests\r\n *\r\n * <code>scheme:///app/book/123/4</code>\r\n * <code>scheme:///wow/damn2/detail/4/bookId/123</code>\r\n *\r\n * @throws Exception\r\n */\r\n@Test\r\npublic void testMapFromURL() throws Exception {\r\n    assertNotNull(urlMapper);\r\n    HttpServletRequest request = getMockRequest();\r\n    HttpServletResponse response = Mockito.mock(HttpServletResponse.class);\r\n    PipelineData pipelineData = getPipelineData(request, response, tc.getTurbine().getServletConfig());\r\n    assertNotNull(pipelineData);\r\n    ParameterParser pp = pipelineData.get(Turbine.class, ParameterParser.class);\r\n    assertNotNull(pp);\r\n    assertTrue(pp.keySet().isEmpty());\r\n    urlMapper.mapFromURL(\"/app/book/123/4\", pp);\r\n    assertEquals(3, pp.keySet().size());\r\n    assertEquals(123, pp.getInt(\"bookId\"));\r\n    assertEquals(\"Book.vm\", pp.getString(\"template\"));\r\n    assertEquals(4, pp.getInt(\"detail\"));\r\n    // double check\r\n    TemplateURI uri = new TemplateURI(pipelineData.getRunData());\r\n    uri.clearResponse();\r\n    uri.addPathInfo(pp);\r\n    assertEquals(\"/wow/damn2/detail/4/bookId/123\", uri.getRelativeLink());\r\n    urlMapper.mapToURL(uri);\r\n    assertEquals(\"/wow/book/123/4\", uri.getRelativeLink());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\urlmapper\\TurbineURLMapperServiceTest.java",
+  "methodName" : "testPerformance",
+  "sourceCode" : "@Tag(\"performance\")\r\n@Test\r\npublic void testPerformance() throws Exception {\r\n    assertNotNull(urlMapper);\r\n    int templateURIs = 5;\r\n    List<AtomicLong> counterSum = new ArrayList<>();\r\n    List<AtomicInteger> counters = new ArrayList<>();\r\n    for (int i = 0; i < templateURIs; i++) {\r\n        counters.add(i, new AtomicInteger(0));\r\n        counterSum.add(i, new AtomicLong(0L));\r\n    }\r\n    // above 1024, set max total of parser pool2 in fulcrum component configuration   ..\r\n    int calls = 10_000;\r\n    boolean parallel = false;\r\n    IntStream range = IntStream.range(0, calls);\r\n    if (parallel) {\r\n        range = range.parallel();\r\n    }\r\n    SplittableRandom sr = new SplittableRandom();\r\n    //        range\r\n    //        .peek(e -> System.out.println(\"current value: \" + e))\r\n    //        .forEach( actionInt -> {\r\n    //        \trunCheck(templateURIs, counterSum, counters, parallel, sr);\r\n    //        });\r\n    Spliterator.OfInt spliterator1 = range.spliterator();\r\n    Spliterator.OfInt spliterator2 = spliterator1.trySplit();\r\n    System.out.println(\"s1 estimateSize: \" + spliterator1.estimateSize());\r\n    spliterator1.forEachRemaining((IntConsumer) i -> {\r\n        runCheck(templateURIs, counterSum, counters, parallel, sr);\r\n    });\r\n    System.out.println(\"s2 estimateSize: \" + spliterator2.estimateSize());\r\n    spliterator2.forEachRemaining((IntConsumer) i -> {\r\n        runCheck(templateURIs, counterSum, counters, parallel, sr);\r\n    });\r\n    for (int i = 0; i < counters.size() - 1; i++) {\r\n        long time = counterSum.get(i).longValue() / 1_000_000;\r\n        int count = counters.get(i).get();\r\n        TemplateURI turi = getURI(i);\r\n        String relativeLink = turi.getRelativeLink();\r\n        callMapToUrl(turi);\r\n        System.out.printf(\"time = %dms (%d calls),average time = %5.3fmics, uri=%s, map=%s%n\", time, count, count > 0 ? ((double) time * 1000 / count) : 0, relativeLink, turi.getRelativeLink());\r\n    }\r\n    System.out.printf(\"total time = %dms (%d total calls) parallel:%s%n\", counterSum.stream().mapToInt(AtomicLong::intValue).sum() / 1_000_000, counters.stream().mapToInt(AtomicInteger::intValue).sum(), parallel);\r\n}",
+  "annotations" : [ "Tag", "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\urlmapper\\TurbineURLMapperYAMLServiceTest.java",
+  "methodName" : "testMapToAnotherURL",
+  "sourceCode" : "@Test\r\npublic void testMapToAnotherURL() throws Exception {\r\n    PipelineData pipelineData = data;\r\n    assertNotNull(urlMapper);\r\n    TemplateURI uri = new TemplateURI(pipelineData.getRunData());\r\n    uri.addPathInfo(\"id\", 1234);\r\n    uri.addPathInfo(\"role\", \"guest\");\r\n    uri.addPathInfo(\"language\", \"de\");\r\n    // scheme://bob/wow/damn2/id/1234/role/guest\r\n    String unMappedURL = uri.getAbsoluteLink();\r\n    log.info(unMappedURL);\r\n    String expectedRawURL = \"scheme://bob/wow/damn2/id/1234/role/guest/language/de\";\r\n    urlMapper.mapToURL(uri);\r\n    // should be idempotent\r\n    urlMapper.mapToURL(uri);\r\n    // raw url\r\n    assertEquals(expectedRawURL, unMappedURL);\r\n    // wow/damn2/id/1234/role/guest\r\n    String mappedLink = uri.getRelativeLink();\r\n    log.info(mappedLink);\r\n    String expectedMappedURL = \"/wow/1234/guest/de\";\r\n    assertEquals(expectedMappedURL, mappedLink);\r\n    ParameterParser pp = pipelineData.get(Turbine.class, ParameterParser.class);\r\n    assertNotNull(pp);\r\n    assertTrue(pp.keySet().isEmpty());\r\n    urlMapper.mapFromURL(mappedLink, pp);\r\n    assertEquals(5, pp.keySet().size());\r\n    assertEquals(1234, pp.getInt(\"id\"));\r\n    assertEquals(\"guest\", pp.getString(\"role\"));\r\n    assertEquals(\"de\", pp.getString(\"language\"));\r\n    assertEquals(\"html\", pp.getString(\"media-type\"));\r\n    TemplateURI uri2 = new TemplateURI(pipelineData.getRunData());\r\n    uri2.clearResponse();\r\n    uri2.setTemplate(\"default.vm\");\r\n    uri2.addPathInfo(pp);\r\n    // this is an artifical url\r\n    assertEquals(\"scheme://bob/wow/damn2/template/default.vm/media-type/html/role/guest/id/1234/language/de\", uri2.getAbsoluteLink());\r\n    urlMapper.mapToURL(uri2);\r\n    assertEquals(expectedMappedURL, uri2.getRelativeLink());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\urlmapper\\TurbineURLMapperYAMLServiceTest.java",
+  "methodName" : "testOverrideShortURL",
+  "sourceCode" : "@Test\r\npublic void testOverrideShortURL() throws Exception {\r\n    PipelineData pipelineData = data;\r\n    assertNotNull(urlMapper);\r\n    ParameterParser pp = pipelineData.get(Turbine.class, ParameterParser.class);\r\n    assertNotNull(pp);\r\n    assertTrue(pp.keySet().isEmpty());\r\n    // will not be overridden\r\n    pp.add(\"role\", \"admin\");\r\n    urlMapper.mapFromURL(\"/app/register\", pp);\r\n    log.info(\"parameters: {}\", pp);\r\n    assertEquals(4, pp.keySet().size());\r\n    assertEquals(\"random-id-123-abc\", pp.getString(\"js_pane\"));\r\n    assertEquals(\"admin\", pp.getString(\"role\"));\r\n    assertEquals(\"html\", pp.getString(\"media-type\"));\r\n    assertEquals(\"Registerone.vm\", pp.getString(\"template\"));\r\n    TemplateURI uri2 = new TemplateURI(pipelineData.getRunData());\r\n    uri2.clearResponse();\r\n    uri2.setTemplate(\"Registerone.vm\");\r\n    pp.remove(\"role\");\r\n    pp.add(\"role\", \"anon\");\r\n    uri2.addPathInfo(pp);\r\n    // this is an artifical url, as the exact sequence could not be reconstructed as\r\n    // ParameterParser uses expicitely a random access table\r\n    assertEquals(\"scheme://bob/wow/damn2/template/Registerone.vm/media-type/html/js_pane/random-id-123-abc/role/anon\", uri2.getAbsoluteLink());\r\n    urlMapper.mapToURL(uri2);\r\n    String expectedMappedURL = \"/wow/damn2/register\";\r\n    assertEquals(expectedMappedURL, uri2.getRelativeLink());\r\n    pp.clear();\r\n    // will be overridden\r\n    pp.add(\"role\", \"admin\");\r\n    urlMapper.mapFromURL(\"/app/contact\", pp);\r\n    log.info(\"parameters: {}\", pp);\r\n    assertEquals(4, pp.keySet().size());\r\n    assertEquals(\"anon\", pp.getString(\"role\"));\r\n    assertEquals(\"another-random-id-876-dfg\", pp.getString(\"js_pane\"));\r\n    uri2 = new TemplateURI(pipelineData.getRunData());\r\n    uri2.clearResponse();\r\n    uri2.addPathInfo(pp);\r\n    // this is an artifical url\r\n    assertEquals(\"scheme://bob/wow/damn2/page/Contact/media-type/html/js_pane/another-random-id-876-dfg/role/anon\", uri2.getAbsoluteLink());\r\n    urlMapper.mapToURL(uri2);\r\n    expectedMappedURL = \"/wow/damn2/contact\";\r\n    assertEquals(expectedMappedURL, uri2.getRelativeLink());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\velocity\\PathConverterTest.java",
+  "methodName" : "testService",
+  "sourceCode" : "@Test\r\nvoid testService() throws Exception {\r\n    // Can we start the service?\r\n    assertNotNull(vs, \"Could not load Service!\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\services\\velocity\\PathConverterTest.java",
+  "methodName" : "testPathTranslation",
+  "sourceCode" : "@Test\r\nvoid testPathTranslation() throws Exception {\r\n    Configuration conf = vs.getConfiguration();\r\n    VelocityEngine ve = new VelocityEngine();\r\n    ((TurbineVelocityService) vs).setVelocityProperties(ve, conf);\r\n    String rootPath = Turbine.getRealPath(\"\");\r\n    String test1 = (String) ve.getProperty(\"test1.resource.loader.path\");\r\n    assertNotNull(test1, \"No Test1 Property found\");\r\n    assertEquals(String.join(File.separator, rootPath, \"relative\", \"path\"), test1, \"Test1 Path translation failed\");\r\n    String test2 = (String) ve.getProperty(\"test2.resource.loader.path\");\r\n    assertNotNull(test2, \"No Test2 Property found\");\r\n    assertEquals(String.join(File.separator, rootPath, \"absolute\", \"path\"), test2, \"Test2 Path translation failed\");\r\n    String test3 = (String) ve.getProperty(\"test3.resource.loader.path\");\r\n    assertNotNull(test3, \"No Test3 Property found\");\r\n    assertEquals(rootPath + File.separator + \"jar-file.jar!/\", test3, \"Test3 Path translation failed\");\r\n    String test4 = (String) ve.getProperty(\"test4.resource.loader.path\");\r\n    assertNotNull(test4, \"No Test4 Property found\");\r\n    assertEquals(rootPath + File.separator + \"jar-file.jar!/with/some/extensions\", test4, \"Test4 Path translation failed\");\r\n    String test5 = (String) ve.getProperty(\"test5.resource.loader.path\");\r\n    assertNotNull(test5, \"No Test5 Property found\");\r\n    assertEquals(rootPath + File.separator + \"jar-file.jar\", test5, \"Test5 Path translation failed\");\r\n    String test6 = (String) ve.getProperty(\"test6.resource.loader.path\");\r\n    assertNotNull(test6, \"No Test6 Property found\");\r\n    assertEquals(\"jar:http://jar.on.website/\", test6, \"Test6 Path translation failed\");\r\n    String test7 = (String) ve.getProperty(\"test7.resource.loader.path\");\r\n    assertNotNull(test7, \"No Test7 Property found\");\r\n    assertEquals(String.join(File.separator, rootPath, \"file\", \"system\", \"reference\"), test7, \"Test7 Path translation failed\");\r\n    String test8 = (String) ve.getProperty(\"test8.resource.loader.path\");\r\n    assertNotNull(test8, \"No Test8 Property found\");\r\n    assertEquals(\"http://reference.on.website/\", test8, \"Test8 Path translation failed\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\testcontainer\\BuildContainerWithDockerfileTest.java",
+  "methodName" : "createUser",
+  "sourceCode" : "@Test\r\n@Order(2)\r\nvoid createUser() throws SQLException {\r\n    if (connection == null)\r\n        return;\r\n    try (PreparedStatement preparedStatement = connection.prepareStatement(\"INSERT INTO TURBINE_USER (USER_ID,LOGIN_NAME,PASSWORD_VALUE,FIRST_NAME,LAST_NAME) values (?,?,?,?,?)\")) {\r\n        preparedStatement.setString(1, \"4\");\r\n        preparedStatement.setString(2, \"kzipfel\");\r\n        preparedStatement.setString(3, \"kzipfel\");\r\n        preparedStatement.setString(4, \"Konrad\");\r\n        preparedStatement.setString(5, \"Zipfel\");\r\n        assertFalse(preparedStatement.execute());\r\n        Assertions.assertEquals(1, preparedStatement.getUpdateCount());\r\n    }\r\n}",
+  "annotations" : [ "Test", "Order" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\testcontainer\\BuildContainerWithDockerfileTest.java",
+  "methodName" : "selectExistingUser",
+  "sourceCode" : "@Test\r\n@Order(1)\r\nvoid selectExistingUser() throws SQLException {\r\n    if (connection == null)\r\n        return;\r\n    try (PreparedStatement preparedStatement = connection.prepareStatement(\"select USER_ID, LAST_NAME, FIRST_NAME from TURBINE_USER where USER_ID=?\")) {\r\n        preparedStatement.setString(1, \"1\");\r\n        ResultSet resultSet = preparedStatement.executeQuery();\r\n        assertTrue(resultSet.next());\r\n        assertEquals(\"Admin\", resultSet.getString(\"LAST_NAME\"));\r\n        assertEquals(\"\", resultSet.getString(\"FIRST_NAME\"));\r\n        resultSet.close();\r\n    }\r\n}",
+  "annotations" : [ "Test", "Order" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\testcontainer\\BuildContainerWithDockerfileTest.java",
+  "methodName" : "selectNewUser",
+  "sourceCode" : "@Test\r\n@Order(3)\r\nvoid selectNewUser() throws SQLException {\r\n    if (connection == null)\r\n        return;\r\n    try (PreparedStatement preparedStatement = connection.prepareStatement(\"select USER_ID, LAST_NAME, FIRST_NAME from TURBINE_USER where USER_ID=?\")) {\r\n        preparedStatement.setString(1, \"4\");\r\n        ResultSet resultSet = preparedStatement.executeQuery();\r\n        assertTrue(resultSet.next());\r\n        assertEquals(\"Zipfel\", resultSet.getString(\"LAST_NAME\"));\r\n        assertEquals(\"Konrad\", resultSet.getString(\"FIRST_NAME\"));\r\n    }\r\n}",
+  "annotations" : [ "Test", "Order" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\testcontainer\\UserManagerWithContainerTest.java",
+  "methodName" : "testCreateManagedUser",
+  "sourceCode" : "@Test\r\n@Order(1)\r\n@Tag(\"docker\")\r\npublic void testCreateManagedUser() throws Exception {\r\n    User user = turbineSecurityService.getUserInstance();\r\n    user.setAccessCounter(5);\r\n    user.setName(\"ringo\");\r\n    // required not null constraint\r\n    ((ExtendedUser) user).setFirstName(user.getName());\r\n    ((ExtendedUser) user).setLastName(user.getName());\r\n    turbineSecurityService.addUser(user, \"fakepassword\");\r\n    assertTrue(turbineSecurityService.accountExists(user));\r\n    //assertTrue( turbineSecurityService.getUserManager().checkExists( user ) );\r\n}",
+  "annotations" : [ "Test", "Order", "Tag" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\testcontainer\\UserManagerWithContainerTest.java",
+  "methodName" : "selectNewUser",
+  "sourceCode" : "@Test\r\n@Order(2)\r\n@Tag(\"docker\")\r\n//@Disabled\r\nvoid selectNewUser() {\r\n    User ringo;\r\n    try {\r\n        ringo = turbineSecurityService.getUser(\"ringo\");\r\n        assertEquals(\"ringo\", ringo.getFirstName());\r\n        deleteUser(ringo);\r\n    } catch (Exception sqle) {\r\n        log.error(\"new user error\", sqle);\r\n        fail();\r\n    }\r\n    try {\r\n        ringo = turbineSecurityService.getUser(\"ringo\");\r\n        fail(\"Should throw UnknownEntity\");\r\n    } catch (UnknownEntityException sqle) {\r\n        log.info(\"correct entity unknown\", sqle);\r\n    } catch (Exception sqle) {\r\n        log.error(\"new user error\", sqle);\r\n        fail();\r\n    }\r\n}",
+  "annotations" : [ "Test", "Order", "Tag" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\TurbineConfigTest.java",
+  "methodName" : "testTurbineConfigWithPropertiesFile",
+  "sourceCode" : "@Test\r\npublic void testTurbineConfigWithPropertiesFile() throws Exception {\r\n    String value = new File(\"/conf/test/TemplateService.properties\").getPath();\r\n    TurbineConfig tc = new TurbineConfig(\".\", value);\r\n    Turbine turbine = new Turbine();\r\n    ServletConfig config = tc;\r\n    ServletContext context = config.getServletContext();\r\n    String confFile = turbine.findInitParameter(context, config, TurbineConfig.PROPERTIES_PATH_KEY, null);\r\n    assertEquals(value, confFile);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\TurbineConfigTest.java",
+  "methodName" : "testTurbineXmlConfigWithConfigurationFile",
+  "sourceCode" : "@Test\r\npublic void testTurbineXmlConfigWithConfigurationFile() throws Exception {\r\n    String value = new File(\"/conf/test/TurbineConfiguration.xml\").getPath();\r\n    TurbineXmlConfig txc = new TurbineXmlConfig(\".\", value);\r\n    Turbine turbine = new Turbine();\r\n    ServletConfig config = txc;\r\n    ServletContext context = config.getServletContext();\r\n    String confFile = turbine.findInitParameter(context, config, TurbineConfig.CONFIGURATION_PATH_KEY, null);\r\n    assertEquals(value, confFile);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\TurbineTest.java",
+  "methodName" : "testTurbineAndFirstGet",
+  "sourceCode" : "@Test\r\npublic void testTurbineAndFirstGet() throws Exception {\r\n    assertNotNull(Turbine.getDefaultServerData());\r\n    assertEquals(\"\", Turbine.getServerName());\r\n    assertEquals(\"80\", Turbine.getServerPort());\r\n    assertEquals(\"\", Turbine.getScriptName());\r\n    Turbine t = tc.getTurbine();\r\n    HttpServletRequest request = getMockRequest();\r\n    HttpServletResponse resp = Mockito.mock(HttpServletResponse.class);\r\n    t.doGet(request, resp);\r\n    assertEquals(\"8080\", Turbine.getServerPort());\r\n    t.destroy();\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\TurbineTest.java",
+  "methodName" : "testDefaultInputEncoding",
+  "sourceCode" : "@Test\r\n@Deprecated\r\npublic void testDefaultInputEncoding() throws Exception {\r\n    Turbine t = tc.getTurbine();\r\n    assertNotNull(Turbine.getDefaultInputEncoding());\r\n    assertEquals(TurbineConstants.PARAMETER_ENCODING_DEFAULT, Turbine.getDefaultInputEncoding());\r\n    t.destroy();\r\n}",
+  "annotations" : [ "Test", "Deprecated" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\TurbineTest.java",
+  "methodName" : "testNonDefaultEncoding",
+  "sourceCode" : "@Test\r\n@Deprecated\r\npublic void testNonDefaultEncoding() {\r\n    Turbine t = tc.getTurbine();\r\n    Turbine.getConfiguration().setProperty(TurbineConstants.PARAMETER_ENCODING_KEY, \"UTF-8\");\r\n    assertNotNull(Turbine.getDefaultInputEncoding());\r\n    assertEquals(\"UTF-8\", Turbine.getDefaultInputEncoding());\r\n    t.destroy();\r\n}",
+  "annotations" : [ "Test", "Deprecated" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\BrowserDetectorTest.java",
+  "methodName" : "testFirefox",
+  "sourceCode" : "@Test\r\npublic void testFirefox() {\r\n    String userAgent = \"Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8) Gecko/20051111 Firefox/1.5\";\r\n    BrowserDetector bd = new BrowserDetector(userAgent);\r\n    assertEquals(\"Firefox\", bd.getBrowserName());\r\n    assertEquals(1.5f, bd.getBrowserVersion(), 0.0f);\r\n    assertEquals(\"Windows NT\", bd.getBrowserPlatform());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\BrowserDetectorTest.java",
+  "methodName" : "testOpera",
+  "sourceCode" : "@Test\r\npublic void testOpera() {\r\n    String userAgent = \"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; en) Opera 8.02\";\r\n    BrowserDetector bd = new BrowserDetector(userAgent);\r\n    assertEquals(\"Opera\", bd.getBrowserName());\r\n    assertEquals(8.02f, bd.getBrowserVersion(), 0.0f);\r\n    assertEquals(\"Windows NT\", bd.getBrowserPlatform());\r\n    userAgent = \"Opera/7.51 (Windows NT 5.1; U) [en]\";\r\n    bd = new BrowserDetector(userAgent);\r\n    assertEquals(\"Opera\", bd.getBrowserName());\r\n    assertEquals(7.51f, bd.getBrowserVersion(), 0.0f);\r\n    assertEquals(\"Windows NT\", bd.getBrowserPlatform());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\BrowserDetectorTest.java",
+  "methodName" : "testIE",
+  "sourceCode" : "@Test\r\npublic void testIE() {\r\n    String userAgent = \"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)\";\r\n    BrowserDetector bd = new BrowserDetector(userAgent);\r\n    assertEquals(\"Internet Explorer\", bd.getBrowserName());\r\n    assertEquals(6.0f, bd.getBrowserVersion(), 0.0f);\r\n    assertEquals(\"Windows NT\", bd.getBrowserPlatform());\r\n    userAgent = \"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)\";\r\n    bd = new BrowserDetector(userAgent);\r\n    assertEquals(\"Internet Explorer\", bd.getBrowserName());\r\n    assertEquals(6.0f, bd.getBrowserVersion(), 0.0f);\r\n    assertEquals(\"Windows NT\", bd.getBrowserPlatform());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\FormMessageTest.java",
+  "methodName" : "testCreateFormMessage",
+  "sourceCode" : "@Test\r\npublic void testCreateFormMessage() {\r\n    FormMessage fm = new FormMessage(\"mainForm\", \"someField\", \"A message!\");\r\n    String fmString = fm.toString();\r\n    assertTrue(\"Make sure toString works\", fmString.indexOf(\"someField\") > -1);\r\n    assertTrue(\"Make sure toString works\", fmString.indexOf(\"A message\") > -1);\r\n    assertTrue(\"Make sure toString works\", fmString.indexOf(\"mainForm\") > -1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\FormMessageTest.java",
+  "methodName" : "testCreateFormMessageMultipleFields",
+  "sourceCode" : "@Test\r\npublic void testCreateFormMessageMultipleFields() {\r\n    FormMessage fm = new FormMessage(\"mainForm\", \"someField\", \"A message!\");\r\n    fm.setFieldName(\"someOtherField\");\r\n    String fmString = fm.toString();\r\n    assertTrue(\"Make sure toString works\", fmString.indexOf(\"someField\") > -1);\r\n    assertTrue(\"Make sure toString works\", fmString.indexOf(\"someOtherField\") > -1);\r\n    assertTrue(\"Make sure toString works\", fmString.indexOf(\"A message\") > -1);\r\n    assertTrue(\"Make sure toString works\", fmString.indexOf(\"mainForm\") > -1);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\parser\\BaseValueParserTest.java",
+  "methodName" : "testGetByte",
+  "sourceCode" : "@Test\r\npublic void testGetByte() {\r\n    // no param\r\n    byte result = parser.getByte(\"invalid\");\r\n    assertEquals(result, 0);\r\n    // default\r\n    result = parser.getByte(\"default\", (byte) 3);\r\n    assertEquals(result, 3);\r\n    // param exists\r\n    parser.add(\"exists\", \"1\");\r\n    result = parser.getByte(\"exists\");\r\n    assertEquals(result, 1);\r\n    // unparsable value\r\n    parser.add(\"unparsable\", \"a\");\r\n    result = parser.getByte(\"unparsable\");\r\n    assertEquals(result, 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\parser\\BaseValueParserTest.java",
+  "methodName" : "testGetByteObject",
+  "sourceCode" : "@Test\r\npublic void testGetByteObject() {\r\n    // no param\r\n    Byte result = parser.getByteObject(\"invalid\");\r\n    assertNull(result);\r\n    // default\r\n    result = parser.getByteObject(\"default\", Byte.valueOf((byte) 3));\r\n    assertEquals(result, Byte.valueOf((byte) 3));\r\n    // param exists\r\n    parser.add(\"exists\", \"1\");\r\n    result = parser.getByteObject(\"exists\");\r\n    assertEquals(result, Byte.valueOf((byte) 1));\r\n    // unparsable value\r\n    parser.add(\"unparsable\", \"a\");\r\n    result = parser.getByteObject(\"unparsable\");\r\n    assertNull(result);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\parser\\BaseValueParserTest.java",
+  "methodName" : "testGetInt",
+  "sourceCode" : "@Test\r\npublic void testGetInt() {\r\n    // no param\r\n    int result = parser.getInt(\"invalid\");\r\n    assertEquals(result, 0);\r\n    // default\r\n    result = parser.getInt(\"default\", 3);\r\n    assertEquals(result, 3);\r\n    // param exists\r\n    parser.add(\"exists\", \"1\");\r\n    result = parser.getInt(\"exists\");\r\n    assertEquals(result, 1);\r\n    // unparsable value\r\n    parser.add(\"unparsable\", \"a\");\r\n    result = parser.getInt(\"unparsable\");\r\n    assertEquals(result, 0);\r\n    // array\r\n    parser.add(\"array\", \"1\");\r\n    parser.add(\"array\", \"2\");\r\n    parser.add(\"array\", \"3\");\r\n    int[] arrayResult = parser.getInts(\"array\");\r\n    int[] compare = { 1, 2, 3 };\r\n    assertEquals(arrayResult.length, compare.length);\r\n    for (int i = 0; i < compare.length; i++) {\r\n        assertEquals(compare[i], arrayResult[i]);\r\n    }\r\n    // array w/ unparsable element\r\n    parser.add(\"array2\", \"1\");\r\n    parser.add(\"array2\", \"a\");\r\n    parser.add(\"array2\", \"3\");\r\n    int[] arrayResult2 = parser.getInts(\"array2\");\r\n    int[] compare2 = { 1, 0, 3 };\r\n    assertEquals(arrayResult2.length, compare2.length);\r\n    for (int i = 0; i < compare2.length; i++) {\r\n        assertEquals(compare2[i], arrayResult2[i]);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\parser\\BaseValueParserTest.java",
+  "methodName" : "testGetIntObject",
+  "sourceCode" : "@Test\r\npublic void testGetIntObject() {\r\n    // no param\r\n    Integer result = parser.getIntObject(\"invalid\");\r\n    assertNull(result);\r\n    // default\r\n    result = parser.getIntObject(\"default\", Integer.valueOf(3));\r\n    assertEquals(result, Integer.valueOf(3));\r\n    // param exists\r\n    parser.add(\"exists\", \"1\");\r\n    result = parser.getIntObject(\"exists\");\r\n    assertEquals(result, Integer.valueOf(1));\r\n    // unparsable value\r\n    parser.add(\"unparsable\", \"a\");\r\n    result = parser.getIntObject(\"unparsable\");\r\n    assertNull(result);\r\n    // array\r\n    parser.add(\"array\", \"1\");\r\n    parser.add(\"array\", \"2\");\r\n    parser.add(\"array\", \"3\");\r\n    Integer[] arrayResult = parser.getIntObjects(\"array\");\r\n    Integer[] compare = { Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3) };\r\n    assertEquals(arrayResult.length, compare.length);\r\n    for (int i = 0; i < compare.length; i++) {\r\n        assertEquals(compare[i], arrayResult[i]);\r\n    }\r\n    // array w/ unparsable element\r\n    parser.add(\"array2\", \"1\");\r\n    parser.add(\"array2\", \"a\");\r\n    parser.add(\"array2\", \"3\");\r\n    Integer[] arrayResult2 = parser.getIntObjects(\"array2\");\r\n    Integer[] compare2 = { Integer.valueOf(1), null, Integer.valueOf(3) };\r\n    assertEquals(arrayResult2.length, compare2.length);\r\n    for (int i = 0; i < compare2.length; i++) {\r\n        assertEquals(compare2[i], arrayResult2[i]);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\parser\\BaseValueParserTest.java",
+  "methodName" : "testGetFloat",
+  "sourceCode" : "@Test\r\npublic void testGetFloat() {\r\n    // no param\r\n    float result = parser.getFloat(\"invalid\");\r\n    assertEquals(result, 0, 0);\r\n    // default\r\n    result = parser.getFloat(\"default\", 3);\r\n    assertEquals(result, 3, 0);\r\n    // param exists\r\n    parser.add(\"exists\", \"1\");\r\n    result = parser.getFloat(\"exists\");\r\n    assertEquals(result, 1, 0);\r\n    // unparsable value\r\n    parser.add(\"unparsable\", \"a\");\r\n    result = parser.getFloat(\"unparsable\");\r\n    assertEquals(result, 0, 0);\r\n    // array\r\n    parser.add(\"array\", \"1\");\r\n    parser.add(\"array\", \"2\");\r\n    parser.add(\"array\", \"3\");\r\n    float[] arrayResult = parser.getFloats(\"array\");\r\n    float[] compare = { 1, 2, 3 };\r\n    assertEquals(arrayResult.length, compare.length);\r\n    for (int i = 0; i < compare.length; i++) {\r\n        assertEquals(compare[i], arrayResult[i], 0);\r\n    }\r\n    // array w/ unparsable element\r\n    parser.add(\"array2\", \"1\");\r\n    parser.add(\"array2\", \"a\");\r\n    parser.add(\"array2\", \"3\");\r\n    float[] arrayResult2 = parser.getFloats(\"array2\");\r\n    float[] compare2 = { 1, 0, 3 };\r\n    assertEquals(arrayResult2.length, compare2.length);\r\n    for (int i = 0; i < compare2.length; i++) {\r\n        assertEquals(compare2[i], arrayResult2[i], 0);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\parser\\BaseValueParserTest.java",
+  "methodName" : "testGetFloatObject",
+  "sourceCode" : "@Test\r\npublic void testGetFloatObject() {\r\n    // no param\r\n    Float result = parser.getFloatObject(\"invalid\");\r\n    assertNull(result);\r\n    // default\r\n    result = parser.getFloatObject(\"default\", Float.valueOf(3));\r\n    assertEquals(result, Float.valueOf(3));\r\n    // param exists\r\n    parser.add(\"exists\", \"1\");\r\n    result = parser.getFloatObject(\"exists\");\r\n    assertEquals(result, Float.valueOf(1));\r\n    // unparsable value\r\n    parser.add(\"unparsable\", \"a\");\r\n    result = parser.getFloatObject(\"unparsable\");\r\n    assertNull(result);\r\n    // array\r\n    parser.add(\"array\", \"1\");\r\n    parser.add(\"array\", \"2\");\r\n    parser.add(\"array\", \"3\");\r\n    Float[] arrayResult = parser.getFloatObjects(\"array\");\r\n    Float[] compare = { Float.valueOf(1), Float.valueOf(2), Float.valueOf(3) };\r\n    assertEquals(arrayResult.length, compare.length);\r\n    for (int i = 0; i < compare.length; i++) {\r\n        assertEquals(compare[i], arrayResult[i]);\r\n    }\r\n    // array w/ unparsable element\r\n    parser.add(\"array2\", \"1\");\r\n    parser.add(\"array2\", \"a\");\r\n    parser.add(\"array2\", \"3\");\r\n    Float[] arrayResult2 = parser.getFloatObjects(\"array2\");\r\n    Float[] compare2 = { Float.valueOf(1), null, Float.valueOf(3) };\r\n    assertEquals(arrayResult2.length, compare2.length);\r\n    for (int i = 0; i < compare2.length; i++) {\r\n        assertEquals(compare2[i], arrayResult2[i]);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\parser\\BaseValueParserTest.java",
+  "methodName" : "testGetDouble",
+  "sourceCode" : "@Test\r\npublic void testGetDouble() {\r\n    // no param\r\n    double result = parser.getDouble(\"invalid\");\r\n    assertEquals(result, 0, 0);\r\n    // default\r\n    result = parser.getDouble(\"default\", 3);\r\n    assertEquals(result, 3, 0);\r\n    // param exists\r\n    parser.add(\"exists\", \"1\");\r\n    result = parser.getDouble(\"exists\");\r\n    assertEquals(result, 1, 0);\r\n    // unparsable value\r\n    parser.add(\"unparsable\", \"a\");\r\n    result = parser.getDouble(\"unparsable\");\r\n    assertEquals(result, 0, 0);\r\n    // array\r\n    parser.add(\"array\", \"1\");\r\n    parser.add(\"array\", \"2\");\r\n    parser.add(\"array\", \"3\");\r\n    double[] arrayResult = parser.getDoubles(\"array\");\r\n    double[] compare = { 1, 2, 3 };\r\n    assertEquals(arrayResult.length, compare.length);\r\n    for (int i = 0; i < compare.length; i++) {\r\n        assertEquals(compare[i], arrayResult[i], 0);\r\n    }\r\n    // array w/ unparsable element\r\n    parser.add(\"array2\", \"1\");\r\n    parser.add(\"array2\", \"a\");\r\n    parser.add(\"array2\", \"3\");\r\n    double[] arrayResult2 = parser.getDoubles(\"array2\");\r\n    double[] compare2 = { 1, 0, 3 };\r\n    assertEquals(arrayResult2.length, compare2.length);\r\n    for (int i = 0; i < compare2.length; i++) {\r\n        assertEquals(compare2[i], arrayResult2[i], 0);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\parser\\BaseValueParserTest.java",
+  "methodName" : "testGetDoubleObject",
+  "sourceCode" : "@Test\r\npublic void testGetDoubleObject() {\r\n    // no param\r\n    Double result = parser.getDoubleObject(\"invalid\");\r\n    assertNull(result);\r\n    // default\r\n    result = parser.getDoubleObject(\"default\", Double.valueOf(3));\r\n    assertEquals(result, Double.valueOf(3));\r\n    // param exists\r\n    parser.add(\"exists\", \"1\");\r\n    result = parser.getDoubleObject(\"exists\");\r\n    assertEquals(result, Double.valueOf(1));\r\n    // unparsable value\r\n    parser.add(\"unparsable\", \"a\");\r\n    result = parser.getDoubleObject(\"unparsable\");\r\n    assertNull(result);\r\n    // array\r\n    parser.add(\"array\", \"1\");\r\n    parser.add(\"array\", \"2\");\r\n    parser.add(\"array\", \"3\");\r\n    Double[] arrayResult = parser.getDoubleObjects(\"array\");\r\n    Double[] compare = { Double.valueOf(1), Double.valueOf(2), Double.valueOf(3) };\r\n    assertEquals(arrayResult.length, compare.length);\r\n    for (int i = 0; i < compare.length; i++) {\r\n        assertEquals(compare[i], arrayResult[i]);\r\n    }\r\n    // array w/ unparsable element\r\n    parser.add(\"array2\", \"1\");\r\n    parser.add(\"array2\", \"a\");\r\n    parser.add(\"array2\", \"3\");\r\n    Double[] arrayResult2 = parser.getDoubleObjects(\"array2\");\r\n    Double[] compare2 = { Double.valueOf(1), null, Double.valueOf(3) };\r\n    assertEquals(arrayResult2.length, compare2.length);\r\n    for (int i = 0; i < compare2.length; i++) {\r\n        assertEquals(compare2[i], arrayResult2[i]);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\parser\\BaseValueParserTest.java",
+  "methodName" : "testGetLong",
+  "sourceCode" : "@Test\r\npublic void testGetLong() {\r\n    // no param\r\n    long result = parser.getLong(\"invalid\");\r\n    assertEquals(result, 0);\r\n    // default\r\n    result = parser.getLong(\"default\", 3);\r\n    assertEquals(result, 3);\r\n    // param exists\r\n    parser.add(\"exists\", \"1\");\r\n    result = parser.getLong(\"exists\");\r\n    assertEquals(result, 1);\r\n    // unparsable value\r\n    parser.add(\"unparsable\", \"a\");\r\n    result = parser.getLong(\"unparsable\");\r\n    assertEquals(result, 0);\r\n    // array\r\n    parser.add(\"array\", \"1\");\r\n    parser.add(\"array\", \"2\");\r\n    parser.add(\"array\", \"3\");\r\n    long[] arrayResult = parser.getLongs(\"array\");\r\n    long[] compare = { 1, 2, 3 };\r\n    assertEquals(arrayResult.length, compare.length);\r\n    for (int i = 0; i < compare.length; i++) {\r\n        assertEquals(compare[i], arrayResult[i]);\r\n    }\r\n    // array w/ unparsable element\r\n    parser.add(\"array2\", \"1\");\r\n    parser.add(\"array2\", \"a\");\r\n    parser.add(\"array2\", \"3\");\r\n    long[] arrayResult2 = parser.getLongs(\"array2\");\r\n    long[] compare2 = { 1, 0, 3 };\r\n    assertEquals(arrayResult2.length, compare2.length);\r\n    for (int i = 0; i < compare2.length; i++) {\r\n        assertEquals(compare2[i], arrayResult2[i]);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\parser\\BaseValueParserTest.java",
+  "methodName" : "testGetLongObject",
+  "sourceCode" : "@Test\r\npublic void testGetLongObject() {\r\n    // no param\r\n    Long result = parser.getLongObject(\"invalid\");\r\n    assertNull(result);\r\n    // default\r\n    result = parser.getLongObject(\"default\", Long.valueOf(3));\r\n    assertEquals(result, Long.valueOf(3));\r\n    // param exists\r\n    parser.add(\"exists\", \"1\");\r\n    result = parser.getLongObject(\"exists\");\r\n    assertEquals(result, Long.valueOf(1));\r\n    // unparsable value\r\n    parser.add(\"unparsable\", \"a\");\r\n    result = parser.getLongObject(\"unparsable\");\r\n    assertNull(result);\r\n    // array\r\n    parser.add(\"array\", \"1\");\r\n    parser.add(\"array\", \"2\");\r\n    parser.add(\"array\", \"3\");\r\n    Long[] arrayResult = parser.getLongObjects(\"array\");\r\n    Long[] compare = { Long.valueOf(1), Long.valueOf(2), Long.valueOf(3) };\r\n    assertEquals(arrayResult.length, compare.length);\r\n    for (int i = 0; i < compare.length; i++) {\r\n        assertEquals(compare[i], arrayResult[i]);\r\n    }\r\n    // array w/ unparsable element\r\n    parser.add(\"array2\", \"1\");\r\n    parser.add(\"array2\", \"a\");\r\n    parser.add(\"array2\", \"3\");\r\n    Long[] arrayResult2 = parser.getLongObjects(\"array2\");\r\n    Long[] compare2 = { Long.valueOf(1), null, Long.valueOf(3) };\r\n    assertEquals(arrayResult2.length, compare2.length);\r\n    for (int i = 0; i < compare2.length; i++) {\r\n        assertEquals(compare2[i], arrayResult2[i]);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\parser\\BaseValueParserTest.java",
+  "methodName" : "testGetBoolean",
+  "sourceCode" : "@Test\r\npublic void testGetBoolean() {\r\n    // no param\r\n    boolean result = parser.getBoolean(\"invalid\");\r\n    assertFalse(result);\r\n    // default\r\n    result = parser.getBoolean(\"default\", true);\r\n    assertTrue(result);\r\n    // true values - Case is intentional\r\n    parser.add(\"true1\", \"trUe\");\r\n    result = parser.getBoolean(\"true1\");\r\n    assertTrue(result);\r\n    parser.add(\"true2\", \"yEs\");\r\n    result = parser.getBoolean(\"true2\");\r\n    assertTrue(result);\r\n    parser.add(\"true3\", \"1\");\r\n    result = parser.getBoolean(\"true3\");\r\n    assertTrue(result);\r\n    parser.add(\"true4\", \"oN\");\r\n    result = parser.getBoolean(\"true4\");\r\n    assertTrue(result);\r\n    // unparsable value\r\n    parser.add(\"unparsable\", \"a\");\r\n    result = parser.getBoolean(\"unparsable\");\r\n    assertFalse(result);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\parser\\BaseValueParserTest.java",
+  "methodName" : "testGetBooleanObject",
+  "sourceCode" : "@Test\r\npublic void testGetBooleanObject() {\r\n    // no param\r\n    Boolean result = parser.getBooleanObject(\"invalid\");\r\n    assertNull(result);\r\n    // default\r\n    result = parser.getBooleanObject(\"default\", Boolean.TRUE);\r\n    assertEquals(result, Boolean.TRUE);\r\n    // true values - Case is intentional\r\n    parser.add(\"true1\", \"trUe\");\r\n    result = parser.getBooleanObject(\"true1\");\r\n    assertEquals(result, Boolean.TRUE);\r\n    parser.add(\"true2\", \"yEs\");\r\n    result = parser.getBooleanObject(\"true2\");\r\n    assertEquals(result, Boolean.TRUE);\r\n    parser.add(\"true3\", \"1\");\r\n    result = parser.getBooleanObject(\"true3\");\r\n    assertEquals(result, Boolean.TRUE);\r\n    parser.add(\"true4\", \"oN\");\r\n    result = parser.getBooleanObject(\"true4\");\r\n    assertEquals(result, Boolean.TRUE);\r\n    // false values - Case is intentional\r\n    parser.add(\"false1\", \"falSe\");\r\n    result = parser.getBooleanObject(\"false1\");\r\n    assertEquals(result, Boolean.FALSE);\r\n    parser.add(\"false2\", \"nO\");\r\n    result = parser.getBooleanObject(\"false2\");\r\n    assertEquals(result, Boolean.FALSE);\r\n    parser.add(\"false3\", \"0\");\r\n    result = parser.getBooleanObject(\"false3\");\r\n    assertEquals(result, Boolean.FALSE);\r\n    parser.add(\"false4\", \"oFf\");\r\n    result = parser.getBooleanObject(\"false4\");\r\n    assertEquals(result, Boolean.FALSE);\r\n    // unparsable value\r\n    parser.add(\"unparsable\", \"a\");\r\n    result = parser.getBooleanObject(\"unparsable\");\r\n    assertNull(result);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\parser\\BaseValueParserTest.java",
+  "methodName" : "testRecycling",
+  "sourceCode" : "@Test\r\npublic void testRecycling() throws Exception {\r\n    parser.setCharacterEncoding(\"fake\");\r\n    parser.recycle();\r\n    assertEquals(\"US-ASCII\", parser.getCharacterEncoding());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\template\\HtmlPageAttributesTest.java",
+  "methodName" : "testBuildDoctype",
+  "sourceCode" : "@Test\r\npublic void testBuildDoctype() throws TurbineException {\r\n    HtmlPageAttributes page = new HtmlPageAttributes();\r\n    assertEquals(\"<!DOCTYPE html>\", page.getDoctype(\"html\", null, null));\r\n    assertEquals(\"<!DOCTYPE html>\", page.getDoctype(\"html\", \"\", \"\"));\r\n    assertEquals(\"<!DOCTYPE html SYSTEM \\\"bla\\\">\", page.getDoctype(\"html\", \"\", \"bla\"));\r\n    // by default empty in HTML 5\r\n    assertEquals(\"<!DOCTYPE HTML>\", page.getDoctype(TurbineConstants.DEFAULT_HTML_DOCTYPE_ROOT_ELEMENT_DEFAULT, TurbineConstants.DEFAULT_HTML_DOCTYPE_IDENTIFIER_DEFAULT, TurbineConstants.DEFAULT_HTML_DOCTYPE_URI_DEFAULT));\r\n    // test old style locally\r\n    AnnotationProcessor.process(this);\r\n    assertEquals(\"<!DOCTYPE HTML PUBLIC \\\"-//W3C//DTD HTML 4.01 Transitional//EN\\\" \" + \"\\\"http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd\\\">\", page.getDoctype(defaultHtmlDoctypeRootElement, defaultHtmlDoctypeIdentifier, defaultHtmlDoctypeUri));\r\n    // HTML 5 is the default\r\n    assertEquals(\"<!DOCTYPE HTML>\", page.getDefaultDoctype());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit5"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\uri\\TurbineURITest.java",
+  "methodName" : "testAddRemove",
+  "sourceCode" : "@Test\r\npublic void testAddRemove() {\r\n    assertFalse(\"TurbineURI should not have a pathInfo\", turi.hasPathInfo());\r\n    assertFalse(\"TurbineURI must not have a queryData\", turi.hasQueryData());\r\n    turi.addPathInfo(\"test\", \"x\");\r\n    assertTrue(\"TurbineURI must have a pathInfo\", turi.hasPathInfo());\r\n    assertFalse(\"TurbineURI must not have a queryData\", turi.hasQueryData());\r\n    turi.removePathInfo(\"test\");\r\n    assertFalse(\"TurbineURI must not have a pathInfo\", turi.hasPathInfo());\r\n    assertFalse(\"TurbineURI must not have a queryData\", turi.hasQueryData());\r\n    turi.addQueryData(\"test\", \"x\");\r\n    assertTrue(\"TurbineURI must have a queryData\", turi.hasQueryData());\r\n    assertFalse(\"TurbineURI must not have a pathInfo\", turi.hasPathInfo());\r\n    turi.removeQueryData(\"test\");\r\n    assertFalse(\"TurbineURI must not have a queryData\", turi.hasQueryData());\r\n    assertFalse(\"TurbineURI must not have a pathInfo\", turi.hasPathInfo());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\uri\\TurbineURITest.java",
+  "methodName" : "testEmptyAndNullQueryData",
+  "sourceCode" : "@Test\r\npublic void testEmptyAndNullQueryData() {\r\n    // Check empty String\r\n    assertEquals(\"/context/servlet/turbine\", turi.getRelativeLink());\r\n    turi.addQueryData(\"test\", \"\");\r\n    assertEquals(\"/context/servlet/turbine?test=\", turi.getRelativeLink());\r\n    turi.removeQueryData(\"test\");\r\n    // Check null\r\n    assertEquals(\"/context/servlet/turbine\", turi.getRelativeLink());\r\n    turi.addQueryData(\"test\", null);\r\n    assertEquals(\"/context/servlet/turbine?test=null\", turi.getRelativeLink());\r\n    turi.removeQueryData(\"test\");\r\n    assertEquals(\"/context/servlet/turbine\", turi.getRelativeLink());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\uri\\TurbineURITest.java",
+  "methodName" : "testEmptyAndNullPathInfo",
+  "sourceCode" : "@Test\r\npublic void testEmptyAndNullPathInfo() {\r\n    // Check empty String\r\n    assertEquals(\"/context/servlet/turbine\", turi.getRelativeLink());\r\n    turi.addPathInfo(\"test\", \"\");\r\n    // Kind of susspect result - might result in \"//\" in the URL.\r\n    assertEquals(\"/context/servlet/turbine/test/\", turi.getRelativeLink());\r\n    turi.removePathInfo(\"test\");\r\n    // Check null\r\n    assertEquals(\"/context/servlet/turbine\", turi.getRelativeLink());\r\n    turi.addPathInfo(\"test\", null);\r\n    assertEquals(\"/context/servlet/turbine/test/null\", turi.getRelativeLink());\r\n    turi.removePathInfo(\"test\");\r\n    assertEquals(\"/context/servlet/turbine\", turi.getRelativeLink());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\uri\\TurbineURITest.java",
+  "methodName" : "testAddEmptyParameterParser",
+  "sourceCode" : "@Test\r\npublic void testAddEmptyParameterParser() {\r\n    ParameterParser pp = new DefaultParameterParser();\r\n    // 1 = query data\r\n    turi.add(1, pp);\r\n    assertEquals(\"/context/servlet/turbine\", turi.getRelativeLink());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\Turbine\\src\\test\\org\\apache\\turbine\\util\\uri\\TurbineURITest.java",
+  "methodName" : "testAddParameterParser",
+  "sourceCode" : "@Test\r\npublic void testAddParameterParser() throws InstantiationException {\r\n    ParameterParser pp = parserService.getParser(DefaultParameterParser.class);\r\n    pp.add(\"test\", \"\");\r\n    // 1 = query data\r\n    turi.add(1, pp);\r\n    assertEquals(\"/context/servlet/turbine?test=\", turi.getRelativeLink());\r\n    turi.removeQueryData(\"test\");\r\n    assertEquals(\"/context/servlet/turbine\", turi.getRelativeLink());\r\n    parserService.putParser(pp);\r\n    pp = parserService.getParser(DefaultParameterParser.class);\r\n    pp.add(\"test\", \"null\");\r\n    //        pp.add(\"test\", (String) null); // isnotnull guarded\r\n    // 1 = query data\r\n    turi.add(1, pp);\r\n    // Should make the following work so as to be consistent with directly\r\n    // added values.\r\n    assertEquals(\"/context/servlet/turbine?test=null\", turi.getRelativeLink());\r\n    turi.removeQueryData(\"test\");\r\n    assertEquals(\"/context/servlet/turbine\", turi.getRelativeLink());\r\n    parserService.putParser(pp);\r\n    pp = parserService.getParser(DefaultParameterParser.class);\r\n    pp.add(\"test\", \"1\");\r\n    pp.add(\"test\", \"2\");\r\n    // 1 = query data\r\n    turi.add(1, pp);\r\n    assertEquals(\"/context/servlet/turbine?test=1&test=2\", turi.getRelativeLink());\r\n    turi.removeQueryData(\"test\");\r\n    assertEquals(\"/context/servlet/turbine\", turi.getRelativeLink());\r\n    parserService.putParser(pp);\r\n    pp = parserService.getParser(DefaultParameterParser.class);\r\n    Part part = Mockito.mock(Part.class);\r\n    pp.add(\"upload-field\", part);\r\n    // 1 = query data\r\n    turi.add(1, pp);\r\n    assertEquals(\"/context/servlet/turbine?upload-field=\", turi.getRelativeLink());\r\n    turi.removeQueryData(\"upload-field\");\r\n    assertEquals(\"/context/servlet/turbine\", turi.getRelativeLink());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

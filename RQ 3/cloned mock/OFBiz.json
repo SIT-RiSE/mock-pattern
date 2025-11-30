@@ -1,0 +1,1551 @@
+[
+  {
+    "instanceId": 0,
+    "variableType": "HttpServletRequest",
+    "convertedLevel": 2,
+    "numberOfConverted": 6,
+    "coreStubbedMethods": [
+      "getSession"
+    ],
+    "sharedLogic": "HttpServletRequest mockHttpServletRequest() {\n    HttpServletRequest request = mock(HttpServletRequest.class);\n    when(request.getSession()).thenReturn(session);\n    return request;\n}\n",
+    "involvedMocks": [
+      {
+        "rawMockObjectId": 8,
+        "variableName": "request",
+        "variableType": "HttpServletRequest",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.security",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\security\\src\\test\\java\\org\\apache\\ofbiz\\security\\CsrfUtilTests.java"
+        },
+        "statements": [
+          {
+            "code": "HttpServletRequest request = mock(HttpServletRequest.class);",
+            "line": 47,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "testGetTokenMap",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGetTokenMap() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // prepare the token map to be retrieved from session\r\n    Map<String, String> tokenMap = new LinkedHashMap<>();\r\n    tokenMap.put(\"uri_1\", \"abcd\");\r\n    when(session.getAttribute(\"CSRF-Token\")).thenReturn(tokenMap);\r\n    // without userLogin in session, test token map is retrieved from session\r\n    Map<String, String> resultMap = CsrfUtil.getTokenMap(request, \"\");\r\n    assertEquals(\"abcd\", resultMap.get(\"uri_1\"));\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    // with userLogin in session, test token map is not retrieved from session\r\n    resultMap = CsrfUtil.getTokenMap(request, \"/partymgr\");\r\n    assertNull(resultMap.get(\"uri_1\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(request.getSession()).thenReturn(session);",
+            "line": 49,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getSession",
+            "locationContext": {
+              "methodName": "testGetTokenMap",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGetTokenMap() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // prepare the token map to be retrieved from session\r\n    Map<String, String> tokenMap = new LinkedHashMap<>();\r\n    tokenMap.put(\"uri_1\", \"abcd\");\r\n    when(session.getAttribute(\"CSRF-Token\")).thenReturn(tokenMap);\r\n    // without userLogin in session, test token map is retrieved from session\r\n    Map<String, String> resultMap = CsrfUtil.getTokenMap(request, \"\");\r\n    assertEquals(\"abcd\", resultMap.get(\"uri_1\"));\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    // with userLogin in session, test token map is not retrieved from session\r\n    resultMap = CsrfUtil.getTokenMap(request, \"/partymgr\");\r\n    assertNull(resultMap.get(\"uri_1\"));\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "getSession"
+        ]
+      },
+      {
+        "rawMockObjectId": 11,
+        "variableName": "request",
+        "variableType": "HttpServletRequest",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.security",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\security\\src\\test\\java\\org\\apache\\ofbiz\\security\\CsrfUtilTests.java"
+        },
+        "statements": [
+          {
+            "code": "HttpServletRequest request = mock(HttpServletRequest.class);",
+            "line": 98,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "testGenerateTokenForNonAjax",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGenerateTokenForNonAjax() throws ParserConfigurationException {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    String token = CsrfUtil.generateTokenForNonAjax(request, \"\");\r\n    assertEquals(\"\", token);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"javascript:\");\r\n    assertEquals(\"\", token);\r\n    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();\r\n    DocumentBuilder builder = dbf.newDocumentBuilder();\r\n    Document doc = builder.newDocument();\r\n    Map<String, ConfigXMLReader.RequestMap> requestMapMap = new HashMap<>();\r\n    Element requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"checkLogin\");\r\n    ConfigXMLReader.RequestMap requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"entity/find/{entityName}/{pkValues: .*}\");\r\n    requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    when(request.getAttribute(\"requestMapMap\")).thenReturn(requestMapMap);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"checkLogin\");\r\n    assertNotEquals(\"\", token);\r\n    CsrfUtil.setStrategy(new CsrfDefenseStrategy());\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0001\");\r\n    assertNotEquals(\"\", token);\r\n    String token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find&#x2f;Budget/0001\");\r\n    // test support for treating \"&#x2f;\" as \"/\"\r\n    assertEquals(token2, token);\r\n    token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0002\");\r\n    // token only generated for up to 3 subfolders in the path\r\n    assertEquals(token2, token);\r\n}"
+            }
+          },
+          {
+            "code": "when(request.getSession()).thenReturn(session);",
+            "line": 100,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getSession",
+            "locationContext": {
+              "methodName": "testGenerateTokenForNonAjax",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGenerateTokenForNonAjax() throws ParserConfigurationException {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    String token = CsrfUtil.generateTokenForNonAjax(request, \"\");\r\n    assertEquals(\"\", token);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"javascript:\");\r\n    assertEquals(\"\", token);\r\n    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();\r\n    DocumentBuilder builder = dbf.newDocumentBuilder();\r\n    Document doc = builder.newDocument();\r\n    Map<String, ConfigXMLReader.RequestMap> requestMapMap = new HashMap<>();\r\n    Element requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"checkLogin\");\r\n    ConfigXMLReader.RequestMap requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"entity/find/{entityName}/{pkValues: .*}\");\r\n    requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    when(request.getAttribute(\"requestMapMap\")).thenReturn(requestMapMap);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"checkLogin\");\r\n    assertNotEquals(\"\", token);\r\n    CsrfUtil.setStrategy(new CsrfDefenseStrategy());\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0001\");\r\n    assertNotEquals(\"\", token);\r\n    String token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find&#x2f;Budget/0001\");\r\n    // test support for treating \"&#x2f;\" as \"/\"\r\n    assertEquals(token2, token);\r\n    token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0002\");\r\n    // token only generated for up to 3 subfolders in the path\r\n    assertEquals(token2, token);\r\n}"
+            }
+          },
+          {
+            "code": "when(request.getAttribute(\"requestMapMap\")).thenReturn(requestMapMap);",
+            "line": 129,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "testGenerateTokenForNonAjax",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGenerateTokenForNonAjax() throws ParserConfigurationException {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    String token = CsrfUtil.generateTokenForNonAjax(request, \"\");\r\n    assertEquals(\"\", token);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"javascript:\");\r\n    assertEquals(\"\", token);\r\n    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();\r\n    DocumentBuilder builder = dbf.newDocumentBuilder();\r\n    Document doc = builder.newDocument();\r\n    Map<String, ConfigXMLReader.RequestMap> requestMapMap = new HashMap<>();\r\n    Element requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"checkLogin\");\r\n    ConfigXMLReader.RequestMap requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"entity/find/{entityName}/{pkValues: .*}\");\r\n    requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    when(request.getAttribute(\"requestMapMap\")).thenReturn(requestMapMap);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"checkLogin\");\r\n    assertNotEquals(\"\", token);\r\n    CsrfUtil.setStrategy(new CsrfDefenseStrategy());\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0001\");\r\n    assertNotEquals(\"\", token);\r\n    String token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find&#x2f;Budget/0001\");\r\n    // test support for treating \"&#x2f;\" as \"/\"\r\n    assertEquals(token2, token);\r\n    token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0002\");\r\n    // token only generated for up to 3 subfolders in the path\r\n    assertEquals(token2, token);\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "getSession",
+          "getAttribute"
+        ]
+      },
+      {
+        "rawMockObjectId": 14,
+        "variableName": "request",
+        "variableType": "HttpServletRequest",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.security",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\security\\src\\test\\java\\org\\apache\\ofbiz\\security\\CsrfUtilTests.java"
+        },
+        "statements": [
+          {
+            "code": "HttpServletRequest request = mock(HttpServletRequest.class);",
+            "line": 197,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "testGenerateTokenForAjax",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGenerateTokenForAjax() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    when(session.getAttribute(\"X-CSRF-Token\")).thenReturn(\"abcd\");\r\n    String token = CsrfUtil.generateTokenForAjax(request);\r\n    assertEquals(\"abcd\", token);\r\n}"
+            }
+          },
+          {
+            "code": "when(request.getSession()).thenReturn(session);",
+            "line": 199,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getSession",
+            "locationContext": {
+              "methodName": "testGenerateTokenForAjax",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGenerateTokenForAjax() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    when(session.getAttribute(\"X-CSRF-Token\")).thenReturn(\"abcd\");\r\n    String token = CsrfUtil.generateTokenForAjax(request);\r\n    assertEquals(\"abcd\", token);\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "getSession"
+        ]
+      },
+      {
+        "rawMockObjectId": 23,
+        "variableName": "request",
+        "variableType": "HttpServletRequest",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.webapp.control",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\webapp\\src\\test\\java\\org\\apache\\ofbiz\\webapp\\control\\ExternalLoginKeysManagerTests.java"
+        },
+        "statements": [
+          {
+            "code": "HttpServletRequest request = mock(HttpServletRequest.class);",
+            "line": 46,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "getExternalLoginKeyReturnsEmptyKeyIfUserLoginIsNull",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void getExternalLoginKeyReturnsEmptyKeyIfUserLoginIsNull() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    String externalLoginKey = ExternalLoginKeysManager.getExternalLoginKey(request);\r\n    assertEquals(\"\", externalLoginKey);\r\n}"
+            }
+          },
+          {
+            "code": "when(request.getSession()).thenReturn(session);",
+            "line": 48,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getSession",
+            "locationContext": {
+              "methodName": "getExternalLoginKeyReturnsEmptyKeyIfUserLoginIsNull",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void getExternalLoginKeyReturnsEmptyKeyIfUserLoginIsNull() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    String externalLoginKey = ExternalLoginKeysManager.getExternalLoginKey(request);\r\n    assertEquals(\"\", externalLoginKey);\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "getSession"
+        ]
+      },
+      {
+        "rawMockObjectId": 25,
+        "variableName": "request",
+        "variableType": "HttpServletRequest",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.webapp.control",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\webapp\\src\\test\\java\\org\\apache\\ofbiz\\webapp\\control\\ExternalLoginKeysManagerTests.java"
+        },
+        "statements": [
+          {
+            "code": "HttpServletRequest request = mock(HttpServletRequest.class);",
+            "line": 57,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "getExternalLoginKeyReturnsKeyFromSessionForAjaxRequests",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void getExternalLoginKeyReturnsKeyFromSessionForAjaxRequests() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    when(request.getHeader(\"X-Requested-With\")).thenReturn(\"XMLHttpRequest\");\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(session.getAttribute(\"externalLoginKey\")).thenReturn(\"abcd\");\r\n    when(request.getSession()).thenReturn(session);\r\n    String externalLoginKey = ExternalLoginKeysManager.getExternalLoginKey(request);\r\n    assertEquals(\"abcd\", externalLoginKey);\r\n}"
+            }
+          },
+          {
+            "code": "when(request.getHeader(\"X-Requested-With\")).thenReturn(\"XMLHttpRequest\");",
+            "line": 58,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getHeader",
+            "locationContext": {
+              "methodName": "getExternalLoginKeyReturnsKeyFromSessionForAjaxRequests",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void getExternalLoginKeyReturnsKeyFromSessionForAjaxRequests() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    when(request.getHeader(\"X-Requested-With\")).thenReturn(\"XMLHttpRequest\");\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(session.getAttribute(\"externalLoginKey\")).thenReturn(\"abcd\");\r\n    when(request.getSession()).thenReturn(session);\r\n    String externalLoginKey = ExternalLoginKeysManager.getExternalLoginKey(request);\r\n    assertEquals(\"abcd\", externalLoginKey);\r\n}"
+            }
+          },
+          {
+            "code": "when(request.getSession()).thenReturn(session);",
+            "line": 61,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getSession",
+            "locationContext": {
+              "methodName": "getExternalLoginKeyReturnsKeyFromSessionForAjaxRequests",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void getExternalLoginKeyReturnsKeyFromSessionForAjaxRequests() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    when(request.getHeader(\"X-Requested-With\")).thenReturn(\"XMLHttpRequest\");\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(session.getAttribute(\"externalLoginKey\")).thenReturn(\"abcd\");\r\n    when(request.getSession()).thenReturn(session);\r\n    String externalLoginKey = ExternalLoginKeysManager.getExternalLoginKey(request);\r\n    assertEquals(\"abcd\", externalLoginKey);\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "getHeader",
+          "getSession"
+        ]
+      },
+      {
+        "rawMockObjectId": 27,
+        "variableName": "request",
+        "variableType": "HttpServletRequest",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.webapp.control",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\webapp\\src\\test\\java\\org\\apache\\ofbiz\\webapp\\control\\ExternalLoginKeysManagerTests.java"
+        },
+        "statements": [
+          {
+            "code": "HttpServletRequest request = mock(HttpServletRequest.class);",
+            "line": 70,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "getExternalLoginKeyGeneratesNewKey",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void getExternalLoginKeyGeneratesNewKey() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    GenericValue userLogin = new GenericValue();\r\n    when(request.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    String externalLoginKey = ExternalLoginKeysManager.getExternalLoginKey(request);\r\n    assertTrue(externalLoginKey.startsWith(\"EL\"));\r\n    verify(request).setAttribute(\"externalLoginKey\", externalLoginKey);\r\n    verify(session).setAttribute(\"externalLoginKey\", externalLoginKey);\r\n}"
+            }
+          },
+          {
+            "code": "when(request.getAttribute(\"userLogin\")).thenReturn(userLogin);",
+            "line": 72,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "getExternalLoginKeyGeneratesNewKey",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void getExternalLoginKeyGeneratesNewKey() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    GenericValue userLogin = new GenericValue();\r\n    when(request.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    String externalLoginKey = ExternalLoginKeysManager.getExternalLoginKey(request);\r\n    assertTrue(externalLoginKey.startsWith(\"EL\"));\r\n    verify(request).setAttribute(\"externalLoginKey\", externalLoginKey);\r\n    verify(session).setAttribute(\"externalLoginKey\", externalLoginKey);\r\n}"
+            }
+          },
+          {
+            "code": "when(request.getSession()).thenReturn(session);",
+            "line": 74,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getSession",
+            "locationContext": {
+              "methodName": "getExternalLoginKeyGeneratesNewKey",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void getExternalLoginKeyGeneratesNewKey() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    GenericValue userLogin = new GenericValue();\r\n    when(request.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    String externalLoginKey = ExternalLoginKeysManager.getExternalLoginKey(request);\r\n    assertTrue(externalLoginKey.startsWith(\"EL\"));\r\n    verify(request).setAttribute(\"externalLoginKey\", externalLoginKey);\r\n    verify(session).setAttribute(\"externalLoginKey\", externalLoginKey);\r\n}"
+            }
+          },
+          {
+            "code": "verify(request).setAttribute(\"externalLoginKey\", externalLoginKey);",
+            "line": 79,
+            "type": "VERIFICATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "getExternalLoginKeyGeneratesNewKey",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void getExternalLoginKeyGeneratesNewKey() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    GenericValue userLogin = new GenericValue();\r\n    when(request.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    String externalLoginKey = ExternalLoginKeysManager.getExternalLoginKey(request);\r\n    assertTrue(externalLoginKey.startsWith(\"EL\"));\r\n    verify(request).setAttribute(\"externalLoginKey\", externalLoginKey);\r\n    verify(session).setAttribute(\"externalLoginKey\", externalLoginKey);\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "getAttribute",
+          "getSession"
+        ]
+      }
+    ]
+  },
+  {
+    "instanceId": 1,
+    "variableType": "GenericValue",
+    "convertedLevel": 1,
+    "numberOfConverted": 2,
+    "coreStubbedMethods": [
+      "getAttribute",
+      "get",
+      "getString"
+    ],
+    "sharedLogic": "GenericValue mockGenericValue() {\n    // add userLogin to session\r\nGenericValue userLogin = mock(GenericValue.class);\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\n    return userLogin;\n}\n",
+    "involvedMocks": [
+      {
+        "rawMockObjectId": 10,
+        "variableName": "userLogin",
+        "variableType": "GenericValue",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.security",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\security\\src\\test\\java\\org\\apache\\ofbiz\\security\\CsrfUtilTests.java"
+        },
+        "statements": [
+          {
+            "code": "// add userLogin to session\r\nGenericValue userLogin = mock(GenericValue.class);",
+            "line": 61,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "testGetTokenMap",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGetTokenMap() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // prepare the token map to be retrieved from session\r\n    Map<String, String> tokenMap = new LinkedHashMap<>();\r\n    tokenMap.put(\"uri_1\", \"abcd\");\r\n    when(session.getAttribute(\"CSRF-Token\")).thenReturn(tokenMap);\r\n    // without userLogin in session, test token map is retrieved from session\r\n    Map<String, String> resultMap = CsrfUtil.getTokenMap(request, \"\");\r\n    assertEquals(\"abcd\", resultMap.get(\"uri_1\"));\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    // with userLogin in session, test token map is not retrieved from session\r\n    resultMap = CsrfUtil.getTokenMap(request, \"/partymgr\");\r\n    assertNull(resultMap.get(\"uri_1\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(userLogin.get(\"partyId\")).thenReturn(\"10000\");",
+            "line": 62,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "get",
+            "locationContext": {
+              "methodName": "testGetTokenMap",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGetTokenMap() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // prepare the token map to be retrieved from session\r\n    Map<String, String> tokenMap = new LinkedHashMap<>();\r\n    tokenMap.put(\"uri_1\", \"abcd\");\r\n    when(session.getAttribute(\"CSRF-Token\")).thenReturn(tokenMap);\r\n    // without userLogin in session, test token map is retrieved from session\r\n    Map<String, String> resultMap = CsrfUtil.getTokenMap(request, \"\");\r\n    assertEquals(\"abcd\", resultMap.get(\"uri_1\"));\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    // with userLogin in session, test token map is not retrieved from session\r\n    resultMap = CsrfUtil.getTokenMap(request, \"/partymgr\");\r\n    assertNull(resultMap.get(\"uri_1\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");",
+            "line": 63,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getString",
+            "locationContext": {
+              "methodName": "testGetTokenMap",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGetTokenMap() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // prepare the token map to be retrieved from session\r\n    Map<String, String> tokenMap = new LinkedHashMap<>();\r\n    tokenMap.put(\"uri_1\", \"abcd\");\r\n    when(session.getAttribute(\"CSRF-Token\")).thenReturn(tokenMap);\r\n    // without userLogin in session, test token map is retrieved from session\r\n    Map<String, String> resultMap = CsrfUtil.getTokenMap(request, \"\");\r\n    assertEquals(\"abcd\", resultMap.get(\"uri_1\"));\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    // with userLogin in session, test token map is not retrieved from session\r\n    resultMap = CsrfUtil.getTokenMap(request, \"/partymgr\");\r\n    assertNull(resultMap.get(\"uri_1\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);",
+            "line": 64,
+            "type": "REFERENCE",
+            "locate": "",
+            "isMockRelated": false,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "testGetTokenMap",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGetTokenMap() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // prepare the token map to be retrieved from session\r\n    Map<String, String> tokenMap = new LinkedHashMap<>();\r\n    tokenMap.put(\"uri_1\", \"abcd\");\r\n    when(session.getAttribute(\"CSRF-Token\")).thenReturn(tokenMap);\r\n    // without userLogin in session, test token map is retrieved from session\r\n    Map<String, String> resultMap = CsrfUtil.getTokenMap(request, \"\");\r\n    assertEquals(\"abcd\", resultMap.get(\"uri_1\"));\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    // with userLogin in session, test token map is not retrieved from session\r\n    resultMap = CsrfUtil.getTokenMap(request, \"/partymgr\");\r\n    assertNull(resultMap.get(\"uri_1\"));\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "get",
+          "getString",
+          "getAttribute"
+        ]
+      },
+      {
+        "rawMockObjectId": 13,
+        "variableName": "userLogin",
+        "variableType": "GenericValue",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.security",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\security\\src\\test\\java\\org\\apache\\ofbiz\\security\\CsrfUtilTests.java"
+        },
+        "statements": [
+          {
+            "code": "// add userLogin to session\r\nGenericValue userLogin = mock(GenericValue.class);",
+            "line": 103,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "testGenerateTokenForNonAjax",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGenerateTokenForNonAjax() throws ParserConfigurationException {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    String token = CsrfUtil.generateTokenForNonAjax(request, \"\");\r\n    assertEquals(\"\", token);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"javascript:\");\r\n    assertEquals(\"\", token);\r\n    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();\r\n    DocumentBuilder builder = dbf.newDocumentBuilder();\r\n    Document doc = builder.newDocument();\r\n    Map<String, ConfigXMLReader.RequestMap> requestMapMap = new HashMap<>();\r\n    Element requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"checkLogin\");\r\n    ConfigXMLReader.RequestMap requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"entity/find/{entityName}/{pkValues: .*}\");\r\n    requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    when(request.getAttribute(\"requestMapMap\")).thenReturn(requestMapMap);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"checkLogin\");\r\n    assertNotEquals(\"\", token);\r\n    CsrfUtil.setStrategy(new CsrfDefenseStrategy());\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0001\");\r\n    assertNotEquals(\"\", token);\r\n    String token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find&#x2f;Budget/0001\");\r\n    // test support for treating \"&#x2f;\" as \"/\"\r\n    assertEquals(token2, token);\r\n    token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0002\");\r\n    // token only generated for up to 3 subfolders in the path\r\n    assertEquals(token2, token);\r\n}"
+            }
+          },
+          {
+            "code": "when(userLogin.get(\"partyId\")).thenReturn(\"10000\");",
+            "line": 104,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "get",
+            "locationContext": {
+              "methodName": "testGenerateTokenForNonAjax",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGenerateTokenForNonAjax() throws ParserConfigurationException {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    String token = CsrfUtil.generateTokenForNonAjax(request, \"\");\r\n    assertEquals(\"\", token);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"javascript:\");\r\n    assertEquals(\"\", token);\r\n    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();\r\n    DocumentBuilder builder = dbf.newDocumentBuilder();\r\n    Document doc = builder.newDocument();\r\n    Map<String, ConfigXMLReader.RequestMap> requestMapMap = new HashMap<>();\r\n    Element requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"checkLogin\");\r\n    ConfigXMLReader.RequestMap requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"entity/find/{entityName}/{pkValues: .*}\");\r\n    requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    when(request.getAttribute(\"requestMapMap\")).thenReturn(requestMapMap);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"checkLogin\");\r\n    assertNotEquals(\"\", token);\r\n    CsrfUtil.setStrategy(new CsrfDefenseStrategy());\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0001\");\r\n    assertNotEquals(\"\", token);\r\n    String token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find&#x2f;Budget/0001\");\r\n    // test support for treating \"&#x2f;\" as \"/\"\r\n    assertEquals(token2, token);\r\n    token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0002\");\r\n    // token only generated for up to 3 subfolders in the path\r\n    assertEquals(token2, token);\r\n}"
+            }
+          },
+          {
+            "code": "when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");",
+            "line": 105,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getString",
+            "locationContext": {
+              "methodName": "testGenerateTokenForNonAjax",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGenerateTokenForNonAjax() throws ParserConfigurationException {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    String token = CsrfUtil.generateTokenForNonAjax(request, \"\");\r\n    assertEquals(\"\", token);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"javascript:\");\r\n    assertEquals(\"\", token);\r\n    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();\r\n    DocumentBuilder builder = dbf.newDocumentBuilder();\r\n    Document doc = builder.newDocument();\r\n    Map<String, ConfigXMLReader.RequestMap> requestMapMap = new HashMap<>();\r\n    Element requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"checkLogin\");\r\n    ConfigXMLReader.RequestMap requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"entity/find/{entityName}/{pkValues: .*}\");\r\n    requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    when(request.getAttribute(\"requestMapMap\")).thenReturn(requestMapMap);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"checkLogin\");\r\n    assertNotEquals(\"\", token);\r\n    CsrfUtil.setStrategy(new CsrfDefenseStrategy());\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0001\");\r\n    assertNotEquals(\"\", token);\r\n    String token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find&#x2f;Budget/0001\");\r\n    // test support for treating \"&#x2f;\" as \"/\"\r\n    assertEquals(token2, token);\r\n    token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0002\");\r\n    // token only generated for up to 3 subfolders in the path\r\n    assertEquals(token2, token);\r\n}"
+            }
+          },
+          {
+            "code": "when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);",
+            "line": 106,
+            "type": "REFERENCE",
+            "locate": "",
+            "isMockRelated": false,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "testGenerateTokenForNonAjax",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGenerateTokenForNonAjax() throws ParserConfigurationException {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    String token = CsrfUtil.generateTokenForNonAjax(request, \"\");\r\n    assertEquals(\"\", token);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"javascript:\");\r\n    assertEquals(\"\", token);\r\n    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();\r\n    DocumentBuilder builder = dbf.newDocumentBuilder();\r\n    Document doc = builder.newDocument();\r\n    Map<String, ConfigXMLReader.RequestMap> requestMapMap = new HashMap<>();\r\n    Element requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"checkLogin\");\r\n    ConfigXMLReader.RequestMap requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"entity/find/{entityName}/{pkValues: .*}\");\r\n    requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    when(request.getAttribute(\"requestMapMap\")).thenReturn(requestMapMap);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"checkLogin\");\r\n    assertNotEquals(\"\", token);\r\n    CsrfUtil.setStrategy(new CsrfDefenseStrategy());\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0001\");\r\n    assertNotEquals(\"\", token);\r\n    String token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find&#x2f;Budget/0001\");\r\n    // test support for treating \"&#x2f;\" as \"/\"\r\n    assertEquals(token2, token);\r\n    token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0002\");\r\n    // token only generated for up to 3 subfolders in the path\r\n    assertEquals(token2, token);\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "get",
+          "getString",
+          "getAttribute"
+        ]
+      }
+    ]
+  },
+  {
+    "instanceId": 2,
+    "variableType": "Delegator",
+    "convertedLevel": 2,
+    "numberOfConverted": 2,
+    "coreStubbedMethods": [
+      "cloneDelegator"
+    ],
+    "sharedLogic": "Delegator mockDelegator() {\n    Delegator delegator = mock(Delegator.class);\n    when(delegator.cloneDelegator()).thenReturn(clonedDelegator);\n    return delegator;\n}\n",
+    "involvedMocks": [
+      {
+        "rawMockObjectId": 4,
+        "variableName": "delegator",
+        "variableType": "Delegator",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.entity.util",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\entity\\src\\test\\java\\org\\apache\\ofbiz\\entity\\util\\EntitySaxReaderTests.java"
+        },
+        "statements": [
+          {
+            "code": "Delegator delegator = mock(Delegator.class);",
+            "line": 71,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "parse",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void parse() throws Exception {\r\n    Delegator delegator = mock(Delegator.class);\r\n    Delegator clonedDelegator = mock(Delegator.class);\r\n    GenericValue genericValue = mock(GenericValue.class);\r\n    ModelEntity modelEntity = mock(ModelEntity.class);\r\n    when(delegator.cloneDelegator()).thenReturn(clonedDelegator);\r\n    when(clonedDelegator.makeValue(\"EntityName\")).thenReturn(genericValue);\r\n    when(genericValue.getModelEntity()).thenReturn(modelEntity);\r\n    when(genericValue.containsPrimaryKey()).thenReturn(true);\r\n    when(modelEntity.isField(\"fieldName\")).thenReturn(true);\r\n    EntitySaxReader esr = new EntitySaxReader(delegator);\r\n    String input = \"<entity-engine-xml><EntityName fieldName=\\\"field value\\\"/></entity-engine-xml>\";\r\n    long recordsProcessed = esr.parse(input);\r\n    verify(clonedDelegator).makeValue(\"EntityName\");\r\n    assertEquals(1, recordsProcessed);\r\n}"
+            }
+          },
+          {
+            "code": "when(delegator.cloneDelegator()).thenReturn(clonedDelegator);",
+            "line": 75,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "cloneDelegator",
+            "locationContext": {
+              "methodName": "parse",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void parse() throws Exception {\r\n    Delegator delegator = mock(Delegator.class);\r\n    Delegator clonedDelegator = mock(Delegator.class);\r\n    GenericValue genericValue = mock(GenericValue.class);\r\n    ModelEntity modelEntity = mock(ModelEntity.class);\r\n    when(delegator.cloneDelegator()).thenReturn(clonedDelegator);\r\n    when(clonedDelegator.makeValue(\"EntityName\")).thenReturn(genericValue);\r\n    when(genericValue.getModelEntity()).thenReturn(modelEntity);\r\n    when(genericValue.containsPrimaryKey()).thenReturn(true);\r\n    when(modelEntity.isField(\"fieldName\")).thenReturn(true);\r\n    EntitySaxReader esr = new EntitySaxReader(delegator);\r\n    String input = \"<entity-engine-xml><EntityName fieldName=\\\"field value\\\"/></entity-engine-xml>\";\r\n    long recordsProcessed = esr.parse(input);\r\n    verify(clonedDelegator).makeValue(\"EntityName\");\r\n    assertEquals(1, recordsProcessed);\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "cloneDelegator"
+        ]
+      },
+      {
+        "rawMockObjectId": 5,
+        "variableName": "clonedDelegator",
+        "variableType": "Delegator",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.entity.util",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\entity\\src\\test\\java\\org\\apache\\ofbiz\\entity\\util\\EntitySaxReaderTests.java"
+        },
+        "statements": [
+          {
+            "code": "Delegator clonedDelegator = mock(Delegator.class);",
+            "line": 72,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "parse",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void parse() throws Exception {\r\n    Delegator delegator = mock(Delegator.class);\r\n    Delegator clonedDelegator = mock(Delegator.class);\r\n    GenericValue genericValue = mock(GenericValue.class);\r\n    ModelEntity modelEntity = mock(ModelEntity.class);\r\n    when(delegator.cloneDelegator()).thenReturn(clonedDelegator);\r\n    when(clonedDelegator.makeValue(\"EntityName\")).thenReturn(genericValue);\r\n    when(genericValue.getModelEntity()).thenReturn(modelEntity);\r\n    when(genericValue.containsPrimaryKey()).thenReturn(true);\r\n    when(modelEntity.isField(\"fieldName\")).thenReturn(true);\r\n    EntitySaxReader esr = new EntitySaxReader(delegator);\r\n    String input = \"<entity-engine-xml><EntityName fieldName=\\\"field value\\\"/></entity-engine-xml>\";\r\n    long recordsProcessed = esr.parse(input);\r\n    verify(clonedDelegator).makeValue(\"EntityName\");\r\n    assertEquals(1, recordsProcessed);\r\n}"
+            }
+          },
+          {
+            "code": "when(delegator.cloneDelegator()).thenReturn(clonedDelegator);",
+            "line": 75,
+            "type": "REFERENCE",
+            "locate": "",
+            "isMockRelated": false,
+            "isShareable": false,
+            "stubbedMethod": "cloneDelegator",
+            "locationContext": {
+              "methodName": "parse",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void parse() throws Exception {\r\n    Delegator delegator = mock(Delegator.class);\r\n    Delegator clonedDelegator = mock(Delegator.class);\r\n    GenericValue genericValue = mock(GenericValue.class);\r\n    ModelEntity modelEntity = mock(ModelEntity.class);\r\n    when(delegator.cloneDelegator()).thenReturn(clonedDelegator);\r\n    when(clonedDelegator.makeValue(\"EntityName\")).thenReturn(genericValue);\r\n    when(genericValue.getModelEntity()).thenReturn(modelEntity);\r\n    when(genericValue.containsPrimaryKey()).thenReturn(true);\r\n    when(modelEntity.isField(\"fieldName\")).thenReturn(true);\r\n    EntitySaxReader esr = new EntitySaxReader(delegator);\r\n    String input = \"<entity-engine-xml><EntityName fieldName=\\\"field value\\\"/></entity-engine-xml>\";\r\n    long recordsProcessed = esr.parse(input);\r\n    verify(clonedDelegator).makeValue(\"EntityName\");\r\n    assertEquals(1, recordsProcessed);\r\n}"
+            }
+          },
+          {
+            "code": "when(clonedDelegator.makeValue(\"EntityName\")).thenReturn(genericValue);",
+            "line": 76,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "makeValue",
+            "locationContext": {
+              "methodName": "parse",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void parse() throws Exception {\r\n    Delegator delegator = mock(Delegator.class);\r\n    Delegator clonedDelegator = mock(Delegator.class);\r\n    GenericValue genericValue = mock(GenericValue.class);\r\n    ModelEntity modelEntity = mock(ModelEntity.class);\r\n    when(delegator.cloneDelegator()).thenReturn(clonedDelegator);\r\n    when(clonedDelegator.makeValue(\"EntityName\")).thenReturn(genericValue);\r\n    when(genericValue.getModelEntity()).thenReturn(modelEntity);\r\n    when(genericValue.containsPrimaryKey()).thenReturn(true);\r\n    when(modelEntity.isField(\"fieldName\")).thenReturn(true);\r\n    EntitySaxReader esr = new EntitySaxReader(delegator);\r\n    String input = \"<entity-engine-xml><EntityName fieldName=\\\"field value\\\"/></entity-engine-xml>\";\r\n    long recordsProcessed = esr.parse(input);\r\n    verify(clonedDelegator).makeValue(\"EntityName\");\r\n    assertEquals(1, recordsProcessed);\r\n}"
+            }
+          },
+          {
+            "code": "verify(clonedDelegator).makeValue(\"EntityName\");",
+            "line": 84,
+            "type": "VERIFICATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "parse",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void parse() throws Exception {\r\n    Delegator delegator = mock(Delegator.class);\r\n    Delegator clonedDelegator = mock(Delegator.class);\r\n    GenericValue genericValue = mock(GenericValue.class);\r\n    ModelEntity modelEntity = mock(ModelEntity.class);\r\n    when(delegator.cloneDelegator()).thenReturn(clonedDelegator);\r\n    when(clonedDelegator.makeValue(\"EntityName\")).thenReturn(genericValue);\r\n    when(genericValue.getModelEntity()).thenReturn(modelEntity);\r\n    when(genericValue.containsPrimaryKey()).thenReturn(true);\r\n    when(modelEntity.isField(\"fieldName\")).thenReturn(true);\r\n    EntitySaxReader esr = new EntitySaxReader(delegator);\r\n    String input = \"<entity-engine-xml><EntityName fieldName=\\\"field value\\\"/></entity-engine-xml>\";\r\n    long recordsProcessed = esr.parse(input);\r\n    verify(clonedDelegator).makeValue(\"EntityName\");\r\n    assertEquals(1, recordsProcessed);\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "cloneDelegator",
+          "makeValue"
+        ]
+      }
+    ]
+  },
+  {
+    "instanceId": 3,
+    "variableType": "Delegator",
+    "convertedLevel": 1,
+    "numberOfConverted": 2,
+    "coreStubbedMethods": [],
+    "sharedLogic": "@Mock\nDelegator mockDelegator;\n",
+    "involvedMocks": [
+      {
+        "rawMockObjectId": 2,
+        "variableName": "delegator",
+        "variableType": "Delegator",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.entity.util",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\entity\\src\\test\\java\\org\\apache\\ofbiz\\entity\\util\\EntitySaxReaderTests.java"
+        },
+        "statements": [
+          {
+            "code": "Delegator delegator = mock(Delegator.class);",
+            "line": 53,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "constructorWithDefaultTimeout",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void constructorWithDefaultTimeout() {\r\n    Delegator delegator = mock(Delegator.class);\r\n    // create a reader with default tx timeout\r\n    EntitySaxReader esr = new EntitySaxReader(delegator);\r\n    verify(delegator).cloneDelegator();\r\n    verifyNoMoreInteractions(delegator);\r\n    assertEquals(EntitySaxReader.DEFAULT_TX_TIMEOUT, esr.getTransactionTimeout());\r\n}"
+            }
+          },
+          {
+            "code": "verify(delegator).cloneDelegator();",
+            "line": 55,
+            "type": "VERIFICATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "constructorWithDefaultTimeout",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void constructorWithDefaultTimeout() {\r\n    Delegator delegator = mock(Delegator.class);\r\n    // create a reader with default tx timeout\r\n    EntitySaxReader esr = new EntitySaxReader(delegator);\r\n    verify(delegator).cloneDelegator();\r\n    verifyNoMoreInteractions(delegator);\r\n    assertEquals(EntitySaxReader.DEFAULT_TX_TIMEOUT, esr.getTransactionTimeout());\r\n}"
+            }
+          },
+          {
+            "code": "verifyNoMoreInteractions(delegator);",
+            "line": 56,
+            "type": "REFERENCE",
+            "locate": "",
+            "isMockRelated": false,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "constructorWithDefaultTimeout",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void constructorWithDefaultTimeout() {\r\n    Delegator delegator = mock(Delegator.class);\r\n    // create a reader with default tx timeout\r\n    EntitySaxReader esr = new EntitySaxReader(delegator);\r\n    verify(delegator).cloneDelegator();\r\n    verifyNoMoreInteractions(delegator);\r\n    assertEquals(EntitySaxReader.DEFAULT_TX_TIMEOUT, esr.getTransactionTimeout());\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": []
+      },
+      {
+        "rawMockObjectId": 3,
+        "variableName": "delegator",
+        "variableType": "Delegator",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.entity.util",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\entity\\src\\test\\java\\org\\apache\\ofbiz\\entity\\util\\EntitySaxReaderTests.java"
+        },
+        "statements": [
+          {
+            "code": "Delegator delegator = mock(Delegator.class);",
+            "line": 62,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "constructorWithTimeout",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void constructorWithTimeout() {\r\n    Delegator delegator = mock(Delegator.class);\r\n    // create a reader with a non default tx timeout\r\n    EntitySaxReader esr = new EntitySaxReader(delegator, 14400);\r\n    verify(delegator).cloneDelegator();\r\n    verifyNoMoreInteractions(delegator);\r\n    assertEquals(14400, esr.getTransactionTimeout());\r\n}"
+            }
+          },
+          {
+            "code": "verify(delegator).cloneDelegator();",
+            "line": 64,
+            "type": "VERIFICATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "constructorWithTimeout",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void constructorWithTimeout() {\r\n    Delegator delegator = mock(Delegator.class);\r\n    // create a reader with a non default tx timeout\r\n    EntitySaxReader esr = new EntitySaxReader(delegator, 14400);\r\n    verify(delegator).cloneDelegator();\r\n    verifyNoMoreInteractions(delegator);\r\n    assertEquals(14400, esr.getTransactionTimeout());\r\n}"
+            }
+          },
+          {
+            "code": "verifyNoMoreInteractions(delegator);",
+            "line": 65,
+            "type": "REFERENCE",
+            "locate": "",
+            "isMockRelated": false,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "constructorWithTimeout",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void constructorWithTimeout() {\r\n    Delegator delegator = mock(Delegator.class);\r\n    // create a reader with a non default tx timeout\r\n    EntitySaxReader esr = new EntitySaxReader(delegator, 14400);\r\n    verify(delegator).cloneDelegator();\r\n    verifyNoMoreInteractions(delegator);\r\n    assertEquals(14400, esr.getTransactionTimeout());\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": []
+      }
+    ]
+  },
+  {
+    "instanceId": 4,
+    "variableType": "HttpSession",
+    "convertedLevel": 1,
+    "numberOfConverted": 4,
+    "coreStubbedMethods": [
+      "getAttribute",
+      "getSession"
+    ],
+    "sharedLogic": "HttpSession mockHttpSession() {\n    HttpSession session = mock(HttpSession.class);\n    when(session.getAttribute(\"CSRF-Token\")).thenReturn(tokenMap);\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\n    return session;\n}\n",
+    "involvedMocks": [
+      {
+        "rawMockObjectId": 9,
+        "variableName": "session",
+        "variableType": "HttpSession",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.security",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\security\\src\\test\\java\\org\\apache\\ofbiz\\security\\CsrfUtilTests.java"
+        },
+        "statements": [
+          {
+            "code": "HttpSession session = mock(HttpSession.class);",
+            "line": 48,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "testGetTokenMap",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGetTokenMap() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // prepare the token map to be retrieved from session\r\n    Map<String, String> tokenMap = new LinkedHashMap<>();\r\n    tokenMap.put(\"uri_1\", \"abcd\");\r\n    when(session.getAttribute(\"CSRF-Token\")).thenReturn(tokenMap);\r\n    // without userLogin in session, test token map is retrieved from session\r\n    Map<String, String> resultMap = CsrfUtil.getTokenMap(request, \"\");\r\n    assertEquals(\"abcd\", resultMap.get(\"uri_1\"));\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    // with userLogin in session, test token map is not retrieved from session\r\n    resultMap = CsrfUtil.getTokenMap(request, \"/partymgr\");\r\n    assertNull(resultMap.get(\"uri_1\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(request.getSession()).thenReturn(session);",
+            "line": 49,
+            "type": "REFERENCE",
+            "locate": "",
+            "isMockRelated": false,
+            "isShareable": false,
+            "stubbedMethod": "getSession",
+            "locationContext": {
+              "methodName": "testGetTokenMap",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGetTokenMap() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // prepare the token map to be retrieved from session\r\n    Map<String, String> tokenMap = new LinkedHashMap<>();\r\n    tokenMap.put(\"uri_1\", \"abcd\");\r\n    when(session.getAttribute(\"CSRF-Token\")).thenReturn(tokenMap);\r\n    // without userLogin in session, test token map is retrieved from session\r\n    Map<String, String> resultMap = CsrfUtil.getTokenMap(request, \"\");\r\n    assertEquals(\"abcd\", resultMap.get(\"uri_1\"));\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    // with userLogin in session, test token map is not retrieved from session\r\n    resultMap = CsrfUtil.getTokenMap(request, \"/partymgr\");\r\n    assertNull(resultMap.get(\"uri_1\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(session.getAttribute(\"CSRF-Token\")).thenReturn(tokenMap);",
+            "line": 54,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "testGetTokenMap",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGetTokenMap() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // prepare the token map to be retrieved from session\r\n    Map<String, String> tokenMap = new LinkedHashMap<>();\r\n    tokenMap.put(\"uri_1\", \"abcd\");\r\n    when(session.getAttribute(\"CSRF-Token\")).thenReturn(tokenMap);\r\n    // without userLogin in session, test token map is retrieved from session\r\n    Map<String, String> resultMap = CsrfUtil.getTokenMap(request, \"\");\r\n    assertEquals(\"abcd\", resultMap.get(\"uri_1\"));\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    // with userLogin in session, test token map is not retrieved from session\r\n    resultMap = CsrfUtil.getTokenMap(request, \"/partymgr\");\r\n    assertNull(resultMap.get(\"uri_1\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);",
+            "line": 64,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "testGetTokenMap",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGetTokenMap() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // prepare the token map to be retrieved from session\r\n    Map<String, String> tokenMap = new LinkedHashMap<>();\r\n    tokenMap.put(\"uri_1\", \"abcd\");\r\n    when(session.getAttribute(\"CSRF-Token\")).thenReturn(tokenMap);\r\n    // without userLogin in session, test token map is retrieved from session\r\n    Map<String, String> resultMap = CsrfUtil.getTokenMap(request, \"\");\r\n    assertEquals(\"abcd\", resultMap.get(\"uri_1\"));\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    // with userLogin in session, test token map is not retrieved from session\r\n    resultMap = CsrfUtil.getTokenMap(request, \"/partymgr\");\r\n    assertNull(resultMap.get(\"uri_1\"));\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "getSession",
+          "getAttribute",
+          "getAttribute"
+        ]
+      },
+      {
+        "rawMockObjectId": 12,
+        "variableName": "session",
+        "variableType": "HttpSession",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.security",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\security\\src\\test\\java\\org\\apache\\ofbiz\\security\\CsrfUtilTests.java"
+        },
+        "statements": [
+          {
+            "code": "HttpSession session = mock(HttpSession.class);",
+            "line": 99,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "testGenerateTokenForNonAjax",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGenerateTokenForNonAjax() throws ParserConfigurationException {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    String token = CsrfUtil.generateTokenForNonAjax(request, \"\");\r\n    assertEquals(\"\", token);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"javascript:\");\r\n    assertEquals(\"\", token);\r\n    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();\r\n    DocumentBuilder builder = dbf.newDocumentBuilder();\r\n    Document doc = builder.newDocument();\r\n    Map<String, ConfigXMLReader.RequestMap> requestMapMap = new HashMap<>();\r\n    Element requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"checkLogin\");\r\n    ConfigXMLReader.RequestMap requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"entity/find/{entityName}/{pkValues: .*}\");\r\n    requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    when(request.getAttribute(\"requestMapMap\")).thenReturn(requestMapMap);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"checkLogin\");\r\n    assertNotEquals(\"\", token);\r\n    CsrfUtil.setStrategy(new CsrfDefenseStrategy());\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0001\");\r\n    assertNotEquals(\"\", token);\r\n    String token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find&#x2f;Budget/0001\");\r\n    // test support for treating \"&#x2f;\" as \"/\"\r\n    assertEquals(token2, token);\r\n    token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0002\");\r\n    // token only generated for up to 3 subfolders in the path\r\n    assertEquals(token2, token);\r\n}"
+            }
+          },
+          {
+            "code": "when(request.getSession()).thenReturn(session);",
+            "line": 100,
+            "type": "REFERENCE",
+            "locate": "",
+            "isMockRelated": false,
+            "isShareable": false,
+            "stubbedMethod": "getSession",
+            "locationContext": {
+              "methodName": "testGenerateTokenForNonAjax",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGenerateTokenForNonAjax() throws ParserConfigurationException {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    String token = CsrfUtil.generateTokenForNonAjax(request, \"\");\r\n    assertEquals(\"\", token);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"javascript:\");\r\n    assertEquals(\"\", token);\r\n    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();\r\n    DocumentBuilder builder = dbf.newDocumentBuilder();\r\n    Document doc = builder.newDocument();\r\n    Map<String, ConfigXMLReader.RequestMap> requestMapMap = new HashMap<>();\r\n    Element requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"checkLogin\");\r\n    ConfigXMLReader.RequestMap requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"entity/find/{entityName}/{pkValues: .*}\");\r\n    requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    when(request.getAttribute(\"requestMapMap\")).thenReturn(requestMapMap);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"checkLogin\");\r\n    assertNotEquals(\"\", token);\r\n    CsrfUtil.setStrategy(new CsrfDefenseStrategy());\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0001\");\r\n    assertNotEquals(\"\", token);\r\n    String token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find&#x2f;Budget/0001\");\r\n    // test support for treating \"&#x2f;\" as \"/\"\r\n    assertEquals(token2, token);\r\n    token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0002\");\r\n    // token only generated for up to 3 subfolders in the path\r\n    assertEquals(token2, token);\r\n}"
+            }
+          },
+          {
+            "code": "when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);",
+            "line": 106,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "testGenerateTokenForNonAjax",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGenerateTokenForNonAjax() throws ParserConfigurationException {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    // add userLogin to session\r\n    GenericValue userLogin = mock(GenericValue.class);\r\n    when(userLogin.get(\"partyId\")).thenReturn(\"10000\");\r\n    when(userLogin.getString(\"partyId\")).thenReturn(\"10000\");\r\n    when(session.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    String token = CsrfUtil.generateTokenForNonAjax(request, \"\");\r\n    assertEquals(\"\", token);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"javascript:\");\r\n    assertEquals(\"\", token);\r\n    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();\r\n    DocumentBuilder builder = dbf.newDocumentBuilder();\r\n    Document doc = builder.newDocument();\r\n    Map<String, ConfigXMLReader.RequestMap> requestMapMap = new HashMap<>();\r\n    Element requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"checkLogin\");\r\n    ConfigXMLReader.RequestMap requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    requestMapElement = doc.createElement(\"request-map\");\r\n    requestMapElement.setAttribute(\"uri\", \"entity/find/{entityName}/{pkValues: .*}\");\r\n    requestMap = new ConfigXMLReader.RequestMap(requestMapElement);\r\n    requestMapMap.put(requestMap.getUri(), requestMap);\r\n    when(request.getAttribute(\"requestMapMap\")).thenReturn(requestMapMap);\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"checkLogin\");\r\n    assertNotEquals(\"\", token);\r\n    CsrfUtil.setStrategy(new CsrfDefenseStrategy());\r\n    token = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0001\");\r\n    assertNotEquals(\"\", token);\r\n    String token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find&#x2f;Budget/0001\");\r\n    // test support for treating \"&#x2f;\" as \"/\"\r\n    assertEquals(token2, token);\r\n    token2 = CsrfUtil.generateTokenForNonAjax(request, \"entity/find/Budget/0002\");\r\n    // token only generated for up to 3 subfolders in the path\r\n    assertEquals(token2, token);\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "getSession",
+          "getAttribute"
+        ]
+      },
+      {
+        "rawMockObjectId": 15,
+        "variableName": "session",
+        "variableType": "HttpSession",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.security",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\security\\src\\test\\java\\org\\apache\\ofbiz\\security\\CsrfUtilTests.java"
+        },
+        "statements": [
+          {
+            "code": "HttpSession session = mock(HttpSession.class);",
+            "line": 198,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "testGenerateTokenForAjax",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGenerateTokenForAjax() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    when(session.getAttribute(\"X-CSRF-Token\")).thenReturn(\"abcd\");\r\n    String token = CsrfUtil.generateTokenForAjax(request);\r\n    assertEquals(\"abcd\", token);\r\n}"
+            }
+          },
+          {
+            "code": "when(request.getSession()).thenReturn(session);",
+            "line": 199,
+            "type": "REFERENCE",
+            "locate": "",
+            "isMockRelated": false,
+            "isShareable": false,
+            "stubbedMethod": "getSession",
+            "locationContext": {
+              "methodName": "testGenerateTokenForAjax",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGenerateTokenForAjax() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    when(session.getAttribute(\"X-CSRF-Token\")).thenReturn(\"abcd\");\r\n    String token = CsrfUtil.generateTokenForAjax(request);\r\n    assertEquals(\"abcd\", token);\r\n}"
+            }
+          },
+          {
+            "code": "when(session.getAttribute(\"X-CSRF-Token\")).thenReturn(\"abcd\");",
+            "line": 200,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "testGenerateTokenForAjax",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void testGenerateTokenForAjax() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    when(session.getAttribute(\"X-CSRF-Token\")).thenReturn(\"abcd\");\r\n    String token = CsrfUtil.generateTokenForAjax(request);\r\n    assertEquals(\"abcd\", token);\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "getSession",
+          "getAttribute"
+        ]
+      },
+      {
+        "rawMockObjectId": 26,
+        "variableName": "session",
+        "variableType": "HttpSession",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.webapp.control",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\webapp\\src\\test\\java\\org\\apache\\ofbiz\\webapp\\control\\ExternalLoginKeysManagerTests.java"
+        },
+        "statements": [
+          {
+            "code": "HttpSession session = mock(HttpSession.class);",
+            "line": 59,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "getExternalLoginKeyReturnsKeyFromSessionForAjaxRequests",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void getExternalLoginKeyReturnsKeyFromSessionForAjaxRequests() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    when(request.getHeader(\"X-Requested-With\")).thenReturn(\"XMLHttpRequest\");\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(session.getAttribute(\"externalLoginKey\")).thenReturn(\"abcd\");\r\n    when(request.getSession()).thenReturn(session);\r\n    String externalLoginKey = ExternalLoginKeysManager.getExternalLoginKey(request);\r\n    assertEquals(\"abcd\", externalLoginKey);\r\n}"
+            }
+          },
+          {
+            "code": "when(session.getAttribute(\"externalLoginKey\")).thenReturn(\"abcd\");",
+            "line": 60,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "getExternalLoginKeyReturnsKeyFromSessionForAjaxRequests",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void getExternalLoginKeyReturnsKeyFromSessionForAjaxRequests() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    when(request.getHeader(\"X-Requested-With\")).thenReturn(\"XMLHttpRequest\");\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(session.getAttribute(\"externalLoginKey\")).thenReturn(\"abcd\");\r\n    when(request.getSession()).thenReturn(session);\r\n    String externalLoginKey = ExternalLoginKeysManager.getExternalLoginKey(request);\r\n    assertEquals(\"abcd\", externalLoginKey);\r\n}"
+            }
+          },
+          {
+            "code": "when(request.getSession()).thenReturn(session);",
+            "line": 61,
+            "type": "REFERENCE",
+            "locate": "",
+            "isMockRelated": false,
+            "isShareable": false,
+            "stubbedMethod": "getSession",
+            "locationContext": {
+              "methodName": "getExternalLoginKeyReturnsKeyFromSessionForAjaxRequests",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void getExternalLoginKeyReturnsKeyFromSessionForAjaxRequests() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    when(request.getHeader(\"X-Requested-With\")).thenReturn(\"XMLHttpRequest\");\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(session.getAttribute(\"externalLoginKey\")).thenReturn(\"abcd\");\r\n    when(request.getSession()).thenReturn(session);\r\n    String externalLoginKey = ExternalLoginKeysManager.getExternalLoginKey(request);\r\n    assertEquals(\"abcd\", externalLoginKey);\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "getAttribute",
+          "getSession"
+        ]
+      }
+    ]
+  },
+  {
+    "instanceId": 5,
+    "variableType": "HttpSession",
+    "convertedLevel": 1,
+    "numberOfConverted": 2,
+    "coreStubbedMethods": [
+      "getSession"
+    ],
+    "sharedLogic": "HttpSession mockHttpSession() {\n    HttpSession session = mock(HttpSession.class);\n    return session;\n}\n",
+    "involvedMocks": [
+      {
+        "rawMockObjectId": 24,
+        "variableName": "session",
+        "variableType": "HttpSession",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.webapp.control",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\webapp\\src\\test\\java\\org\\apache\\ofbiz\\webapp\\control\\ExternalLoginKeysManagerTests.java"
+        },
+        "statements": [
+          {
+            "code": "HttpSession session = mock(HttpSession.class);",
+            "line": 47,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "getExternalLoginKeyReturnsEmptyKeyIfUserLoginIsNull",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void getExternalLoginKeyReturnsEmptyKeyIfUserLoginIsNull() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    String externalLoginKey = ExternalLoginKeysManager.getExternalLoginKey(request);\r\n    assertEquals(\"\", externalLoginKey);\r\n}"
+            }
+          },
+          {
+            "code": "when(request.getSession()).thenReturn(session);",
+            "line": 48,
+            "type": "REFERENCE",
+            "locate": "",
+            "isMockRelated": false,
+            "isShareable": false,
+            "stubbedMethod": "getSession",
+            "locationContext": {
+              "methodName": "getExternalLoginKeyReturnsEmptyKeyIfUserLoginIsNull",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void getExternalLoginKeyReturnsEmptyKeyIfUserLoginIsNull() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    String externalLoginKey = ExternalLoginKeysManager.getExternalLoginKey(request);\r\n    assertEquals(\"\", externalLoginKey);\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "getSession"
+        ]
+      },
+      {
+        "rawMockObjectId": 28,
+        "variableName": "session",
+        "variableType": "HttpSession",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.webapp.control",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\webapp\\src\\test\\java\\org\\apache\\ofbiz\\webapp\\control\\ExternalLoginKeysManagerTests.java"
+        },
+        "statements": [
+          {
+            "code": "HttpSession session = mock(HttpSession.class);",
+            "line": 73,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "getExternalLoginKeyGeneratesNewKey",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void getExternalLoginKeyGeneratesNewKey() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    GenericValue userLogin = new GenericValue();\r\n    when(request.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    String externalLoginKey = ExternalLoginKeysManager.getExternalLoginKey(request);\r\n    assertTrue(externalLoginKey.startsWith(\"EL\"));\r\n    verify(request).setAttribute(\"externalLoginKey\", externalLoginKey);\r\n    verify(session).setAttribute(\"externalLoginKey\", externalLoginKey);\r\n}"
+            }
+          },
+          {
+            "code": "when(request.getSession()).thenReturn(session);",
+            "line": 74,
+            "type": "REFERENCE",
+            "locate": "",
+            "isMockRelated": false,
+            "isShareable": false,
+            "stubbedMethod": "getSession",
+            "locationContext": {
+              "methodName": "getExternalLoginKeyGeneratesNewKey",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void getExternalLoginKeyGeneratesNewKey() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    GenericValue userLogin = new GenericValue();\r\n    when(request.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    String externalLoginKey = ExternalLoginKeysManager.getExternalLoginKey(request);\r\n    assertTrue(externalLoginKey.startsWith(\"EL\"));\r\n    verify(request).setAttribute(\"externalLoginKey\", externalLoginKey);\r\n    verify(session).setAttribute(\"externalLoginKey\", externalLoginKey);\r\n}"
+            }
+          },
+          {
+            "code": "verify(session).setAttribute(\"externalLoginKey\", externalLoginKey);",
+            "line": 80,
+            "type": "VERIFICATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "getExternalLoginKeyGeneratesNewKey",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void getExternalLoginKeyGeneratesNewKey() {\r\n    HttpServletRequest request = mock(HttpServletRequest.class);\r\n    GenericValue userLogin = new GenericValue();\r\n    when(request.getAttribute(\"userLogin\")).thenReturn(userLogin);\r\n    HttpSession session = mock(HttpSession.class);\r\n    when(request.getSession()).thenReturn(session);\r\n    String externalLoginKey = ExternalLoginKeysManager.getExternalLoginKey(request);\r\n    assertTrue(externalLoginKey.startsWith(\"EL\"));\r\n    verify(request).setAttribute(\"externalLoginKey\", externalLoginKey);\r\n    verify(session).setAttribute(\"externalLoginKey\", externalLoginKey);\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "getSession"
+        ]
+      }
+    ]
+  },
+  {
+    "instanceId": 6,
+    "variableType": "Element",
+    "convertedLevel": 1,
+    "numberOfConverted": 3,
+    "coreStubbedMethods": [
+      "getAttribute",
+      "getTagName"
+    ],
+    "sharedLogic": "Element mockElement() {\n    Element element = Mockito.mock(Element.class);\n    when(element.getTagName()).thenReturn(\"lookup\");\n    when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");\n    when(element.getAttribute(\"size\")).thenReturn(\"1\");\n    when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam, ${key1}\");\n    return element;\n}\n",
+    "involvedMocks": [
+      {
+        "rawMockObjectId": 32,
+        "variableName": "element",
+        "variableType": "Element",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.widget.model",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\widget\\src\\test\\java\\org\\apache\\ofbiz\\widget\\model\\ModelFormFieldTest.java"
+        },
+        "statements": [
+          {
+            "code": "Element element = Mockito.mock(Element.class);",
+            "line": 119,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "lookupFieldDeprecatedMethodTreatsTargetParameterAsString",
+              "methodAnnotations": [
+                "Test",
+                "SuppressWarnings"
+              ],
+              "methodRawCode": "/**\r\n * Ensures behaviour of deprecated method LookupField#getTargetParameterList is maintained while the underlying\r\n * property type is changed from String to FlexibleStringExpander.\r\n */\r\n@Test\r\n@SuppressWarnings(\"deprecation\")\r\npublic void lookupFieldDeprecatedMethodTreatsTargetParameterAsString() {\r\n    Element element = Mockito.mock(Element.class);\r\n    when(element.getTagName()).thenReturn(\"lookup\");\r\n    when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"size\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam, ${key1}\");\r\n    ModelFormField field = from(b -> b.setName(\"lookup-field\"));\r\n    ModelFormField.LookupField lookupField = new ModelFormField.LookupField(element, field);\r\n    assertThat(lookupField.getTargetParameterList(), Matchers.contains(\"${prefix}TargetParam\", \"${key1}\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(element.getTagName()).thenReturn(\"lookup\");",
+            "line": 120,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getTagName",
+            "locationContext": {
+              "methodName": "lookupFieldDeprecatedMethodTreatsTargetParameterAsString",
+              "methodAnnotations": [
+                "Test",
+                "SuppressWarnings"
+              ],
+              "methodRawCode": "/**\r\n * Ensures behaviour of deprecated method LookupField#getTargetParameterList is maintained while the underlying\r\n * property type is changed from String to FlexibleStringExpander.\r\n */\r\n@Test\r\n@SuppressWarnings(\"deprecation\")\r\npublic void lookupFieldDeprecatedMethodTreatsTargetParameterAsString() {\r\n    Element element = Mockito.mock(Element.class);\r\n    when(element.getTagName()).thenReturn(\"lookup\");\r\n    when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"size\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam, ${key1}\");\r\n    ModelFormField field = from(b -> b.setName(\"lookup-field\"));\r\n    ModelFormField.LookupField lookupField = new ModelFormField.LookupField(element, field);\r\n    assertThat(lookupField.getTargetParameterList(), Matchers.contains(\"${prefix}TargetParam\", \"${key1}\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");",
+            "line": 121,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "lookupFieldDeprecatedMethodTreatsTargetParameterAsString",
+              "methodAnnotations": [
+                "Test",
+                "SuppressWarnings"
+              ],
+              "methodRawCode": "/**\r\n * Ensures behaviour of deprecated method LookupField#getTargetParameterList is maintained while the underlying\r\n * property type is changed from String to FlexibleStringExpander.\r\n */\r\n@Test\r\n@SuppressWarnings(\"deprecation\")\r\npublic void lookupFieldDeprecatedMethodTreatsTargetParameterAsString() {\r\n    Element element = Mockito.mock(Element.class);\r\n    when(element.getTagName()).thenReturn(\"lookup\");\r\n    when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"size\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam, ${key1}\");\r\n    ModelFormField field = from(b -> b.setName(\"lookup-field\"));\r\n    ModelFormField.LookupField lookupField = new ModelFormField.LookupField(element, field);\r\n    assertThat(lookupField.getTargetParameterList(), Matchers.contains(\"${prefix}TargetParam\", \"${key1}\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(element.getAttribute(\"size\")).thenReturn(\"1\");",
+            "line": 122,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "lookupFieldDeprecatedMethodTreatsTargetParameterAsString",
+              "methodAnnotations": [
+                "Test",
+                "SuppressWarnings"
+              ],
+              "methodRawCode": "/**\r\n * Ensures behaviour of deprecated method LookupField#getTargetParameterList is maintained while the underlying\r\n * property type is changed from String to FlexibleStringExpander.\r\n */\r\n@Test\r\n@SuppressWarnings(\"deprecation\")\r\npublic void lookupFieldDeprecatedMethodTreatsTargetParameterAsString() {\r\n    Element element = Mockito.mock(Element.class);\r\n    when(element.getTagName()).thenReturn(\"lookup\");\r\n    when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"size\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam, ${key1}\");\r\n    ModelFormField field = from(b -> b.setName(\"lookup-field\"));\r\n    ModelFormField.LookupField lookupField = new ModelFormField.LookupField(element, field);\r\n    assertThat(lookupField.getTargetParameterList(), Matchers.contains(\"${prefix}TargetParam\", \"${key1}\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam, ${key1}\");",
+            "line": 123,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "lookupFieldDeprecatedMethodTreatsTargetParameterAsString",
+              "methodAnnotations": [
+                "Test",
+                "SuppressWarnings"
+              ],
+              "methodRawCode": "/**\r\n * Ensures behaviour of deprecated method LookupField#getTargetParameterList is maintained while the underlying\r\n * property type is changed from String to FlexibleStringExpander.\r\n */\r\n@Test\r\n@SuppressWarnings(\"deprecation\")\r\npublic void lookupFieldDeprecatedMethodTreatsTargetParameterAsString() {\r\n    Element element = Mockito.mock(Element.class);\r\n    when(element.getTagName()).thenReturn(\"lookup\");\r\n    when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"size\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam, ${key1}\");\r\n    ModelFormField field = from(b -> b.setName(\"lookup-field\"));\r\n    ModelFormField.LookupField lookupField = new ModelFormField.LookupField(element, field);\r\n    assertThat(lookupField.getTargetParameterList(), Matchers.contains(\"${prefix}TargetParam\", \"${key1}\"));\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "getTagName",
+          "getAttribute",
+          "getAttribute",
+          "getAttribute"
+        ]
+      },
+      {
+        "rawMockObjectId": 33,
+        "variableName": "element",
+        "variableType": "Element",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.widget.model",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\widget\\src\\test\\java\\org\\apache\\ofbiz\\widget\\model\\ModelFormFieldTest.java"
+        },
+        "statements": [
+          {
+            "code": "Element element = Mockito.mock(Element.class);",
+            "line": 133,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "lookupFieldUsesFlexibleTargetParameters",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void lookupFieldUsesFlexibleTargetParameters() {\r\n    Element element = Mockito.mock(Element.class);\r\n    when(element.getTagName()).thenReturn(\"lookup\");\r\n    when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"size\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam\");\r\n    ModelFormField field = from(b -> b.setName(\"lookup-field\"));\r\n    ModelFormField.LookupField lookupField = new ModelFormField.LookupField(element, field);\r\n    assertThat(lookupField.getTargetParameterList(ImmutableMap.of(\"prefix\", \"P1\")), Matchers.contains(\"P1TargetParam\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(element.getTagName()).thenReturn(\"lookup\");",
+            "line": 134,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getTagName",
+            "locationContext": {
+              "methodName": "lookupFieldUsesFlexibleTargetParameters",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void lookupFieldUsesFlexibleTargetParameters() {\r\n    Element element = Mockito.mock(Element.class);\r\n    when(element.getTagName()).thenReturn(\"lookup\");\r\n    when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"size\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam\");\r\n    ModelFormField field = from(b -> b.setName(\"lookup-field\"));\r\n    ModelFormField.LookupField lookupField = new ModelFormField.LookupField(element, field);\r\n    assertThat(lookupField.getTargetParameterList(ImmutableMap.of(\"prefix\", \"P1\")), Matchers.contains(\"P1TargetParam\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");",
+            "line": 135,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "lookupFieldUsesFlexibleTargetParameters",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void lookupFieldUsesFlexibleTargetParameters() {\r\n    Element element = Mockito.mock(Element.class);\r\n    when(element.getTagName()).thenReturn(\"lookup\");\r\n    when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"size\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam\");\r\n    ModelFormField field = from(b -> b.setName(\"lookup-field\"));\r\n    ModelFormField.LookupField lookupField = new ModelFormField.LookupField(element, field);\r\n    assertThat(lookupField.getTargetParameterList(ImmutableMap.of(\"prefix\", \"P1\")), Matchers.contains(\"P1TargetParam\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(element.getAttribute(\"size\")).thenReturn(\"1\");",
+            "line": 136,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "lookupFieldUsesFlexibleTargetParameters",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void lookupFieldUsesFlexibleTargetParameters() {\r\n    Element element = Mockito.mock(Element.class);\r\n    when(element.getTagName()).thenReturn(\"lookup\");\r\n    when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"size\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam\");\r\n    ModelFormField field = from(b -> b.setName(\"lookup-field\"));\r\n    ModelFormField.LookupField lookupField = new ModelFormField.LookupField(element, field);\r\n    assertThat(lookupField.getTargetParameterList(ImmutableMap.of(\"prefix\", \"P1\")), Matchers.contains(\"P1TargetParam\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam\");",
+            "line": 137,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "lookupFieldUsesFlexibleTargetParameters",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void lookupFieldUsesFlexibleTargetParameters() {\r\n    Element element = Mockito.mock(Element.class);\r\n    when(element.getTagName()).thenReturn(\"lookup\");\r\n    when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"size\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam\");\r\n    ModelFormField field = from(b -> b.setName(\"lookup-field\"));\r\n    ModelFormField.LookupField lookupField = new ModelFormField.LookupField(element, field);\r\n    assertThat(lookupField.getTargetParameterList(ImmutableMap.of(\"prefix\", \"P1\")), Matchers.contains(\"P1TargetParam\"));\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "getTagName",
+          "getAttribute",
+          "getAttribute",
+          "getAttribute"
+        ]
+      },
+      {
+        "rawMockObjectId": 34,
+        "variableName": "element",
+        "variableType": "Element",
+        "isGlobal": false,
+        "mockPatternLevel": 0,
+        "classContext": {
+          "packageName": "org.apache.ofbiz.widget.model",
+          "filePath": "C:\\Java_projects\\temp_projects\\OFBiz\\framework\\widget\\src\\test\\java\\org\\apache\\ofbiz\\widget\\model\\ModelFormFieldTest.java"
+        },
+        "statements": [
+          {
+            "code": "Element element = Mockito.mock(Element.class);",
+            "line": 148,
+            "type": "CREATION",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "",
+            "locationContext": {
+              "methodName": "lookupFieldEvaluatesExpressionBeforeSplitting",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void lookupFieldEvaluatesExpressionBeforeSplitting() {\r\n    Element element = Mockito.mock(Element.class);\r\n    when(element.getTagName()).thenReturn(\"lookup\");\r\n    when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"size\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam, ${key1}\");\r\n    ModelFormField field = from(b -> b.setName(\"lookup-field\"));\r\n    ModelFormField.LookupField lookupField = new ModelFormField.LookupField(element, field);\r\n    final List<String> targetParameterList = lookupField.getTargetParameterList(ImmutableMap.of(\"prefix\", \"P1\", \"key1\", \"AA,BB , CC\"));\r\n    assertThat(targetParameterList, Matchers.contains(\"P1TargetParam\", \"AA\", \"BB\", \"CC\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(element.getTagName()).thenReturn(\"lookup\");",
+            "line": 149,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getTagName",
+            "locationContext": {
+              "methodName": "lookupFieldEvaluatesExpressionBeforeSplitting",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void lookupFieldEvaluatesExpressionBeforeSplitting() {\r\n    Element element = Mockito.mock(Element.class);\r\n    when(element.getTagName()).thenReturn(\"lookup\");\r\n    when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"size\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam, ${key1}\");\r\n    ModelFormField field = from(b -> b.setName(\"lookup-field\"));\r\n    ModelFormField.LookupField lookupField = new ModelFormField.LookupField(element, field);\r\n    final List<String> targetParameterList = lookupField.getTargetParameterList(ImmutableMap.of(\"prefix\", \"P1\", \"key1\", \"AA,BB , CC\"));\r\n    assertThat(targetParameterList, Matchers.contains(\"P1TargetParam\", \"AA\", \"BB\", \"CC\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");",
+            "line": 150,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "lookupFieldEvaluatesExpressionBeforeSplitting",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void lookupFieldEvaluatesExpressionBeforeSplitting() {\r\n    Element element = Mockito.mock(Element.class);\r\n    when(element.getTagName()).thenReturn(\"lookup\");\r\n    when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"size\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam, ${key1}\");\r\n    ModelFormField field = from(b -> b.setName(\"lookup-field\"));\r\n    ModelFormField.LookupField lookupField = new ModelFormField.LookupField(element, field);\r\n    final List<String> targetParameterList = lookupField.getTargetParameterList(ImmutableMap.of(\"prefix\", \"P1\", \"key1\", \"AA,BB , CC\"));\r\n    assertThat(targetParameterList, Matchers.contains(\"P1TargetParam\", \"AA\", \"BB\", \"CC\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(element.getAttribute(\"size\")).thenReturn(\"1\");",
+            "line": 151,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "lookupFieldEvaluatesExpressionBeforeSplitting",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void lookupFieldEvaluatesExpressionBeforeSplitting() {\r\n    Element element = Mockito.mock(Element.class);\r\n    when(element.getTagName()).thenReturn(\"lookup\");\r\n    when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"size\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam, ${key1}\");\r\n    ModelFormField field = from(b -> b.setName(\"lookup-field\"));\r\n    ModelFormField.LookupField lookupField = new ModelFormField.LookupField(element, field);\r\n    final List<String> targetParameterList = lookupField.getTargetParameterList(ImmutableMap.of(\"prefix\", \"P1\", \"key1\", \"AA,BB , CC\"));\r\n    assertThat(targetParameterList, Matchers.contains(\"P1TargetParam\", \"AA\", \"BB\", \"CC\"));\r\n}"
+            }
+          },
+          {
+            "code": "when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam, ${key1}\");",
+            "line": 152,
+            "type": "STUBBING",
+            "locate": "",
+            "isMockRelated": true,
+            "isShareable": false,
+            "stubbedMethod": "getAttribute",
+            "locationContext": {
+              "methodName": "lookupFieldEvaluatesExpressionBeforeSplitting",
+              "methodAnnotations": [
+                "Test"
+              ],
+              "methodRawCode": "@Test\r\npublic void lookupFieldEvaluatesExpressionBeforeSplitting() {\r\n    Element element = Mockito.mock(Element.class);\r\n    when(element.getTagName()).thenReturn(\"lookup\");\r\n    when(element.getAttribute(\"maxlength\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"size\")).thenReturn(\"1\");\r\n    when(element.getAttribute(\"target-parameter\")).thenReturn(\"${prefix}TargetParam, ${key1}\");\r\n    ModelFormField field = from(b -> b.setName(\"lookup-field\"));\r\n    ModelFormField.LookupField lookupField = new ModelFormField.LookupField(element, field);\r\n    final List<String> targetParameterList = lookupField.getTargetParameterList(ImmutableMap.of(\"prefix\", \"P1\", \"key1\", \"AA,BB , CC\"));\r\n    assertThat(targetParameterList, Matchers.contains(\"P1TargetParam\", \"AA\", \"BB\", \"CC\"));\r\n}"
+            }
+          }
+        ],
+        "stubbedInfo": [
+          "getTagName",
+          "getAttribute",
+          "getAttribute",
+          "getAttribute"
+        ]
+      }
+    ]
+  }
+]

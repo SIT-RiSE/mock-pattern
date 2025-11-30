@@ -1,0 +1,1120 @@
+[
+  {
+    "rawMockObjectId": 1,
+    "variableName": "s3Client",
+    "variableType": "AmazonS3",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.oodt.cas.filemgr.datatransfer",
+      "filePath": "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\datatransfer\\TestS3DataTransferer.java",
+      "className": "TestS3DataTransferer"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate AmazonS3 s3Client;",
+        "line": 66,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      },
+      {
+        "code": "when(s3Client.getObject(Mockito.<GetObjectRequest>any())).thenReturn(s3Object);",
+        "line": 85,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws IOException {\r\n    MockitoAnnotations.initMocks(this);\r\n    stagingDir = tempFolder.getRoot();\r\n    dataTransferer = new S3DataTransferer(s3Client, S3_BUCKET_NAME, true);\r\n    when(reference.getOrigReference()).thenReturn(ORGINAL_REF);\r\n    when(reference.getDataStoreReference()).thenReturn(DATA_STORE_REF);\r\n    when(product.getProductReferences()).thenReturn(Lists.newArrayList(reference));\r\n    when(s3Client.getObject(Mockito.<GetObjectRequest>any())).thenReturn(s3Object);\r\n    when(s3Object.getObjectContent()).thenReturn(s3InputStream);\r\n    when(s3InputStream.read(Mockito.<byte[]>any())).thenReturn(-1);\r\n}"
+        }
+      },
+      {
+        "code": "verify(s3Client).putObject(argument.capture());",
+        "line": 95,
+        "type": "VERIFICATION",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTransferProduct",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTransferProduct() throws DataTransferException, IOException {\r\n    dataTransferer.transferProduct(product);\r\n    ArgumentCaptor<PutObjectRequest> argument = ArgumentCaptor.forClass(PutObjectRequest.class);\r\n    verify(s3Client).putObject(argument.capture());\r\n    PutObjectRequest request = argument.getValue();\r\n    assertThat(request.getBucketName(), is(S3_BUCKET_NAME));\r\n    assertThat(request.getKey(), is(EXPECTED_DATA_STORE_REF));\r\n    assertThat(request.getFile().getAbsolutePath(), is(EXPECTED_ORGINAL_REF));\r\n}"
+        }
+      },
+      {
+        "code": "verify(s3Client).getObject(argument.capture());",
+        "line": 108,
+        "type": "VERIFICATION",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testRetrieveProduct",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testRetrieveProduct() throws DataTransferException, IOException {\r\n    dataTransferer.retrieveProduct(product, stagingDir);\r\n    ArgumentCaptor<GetObjectRequest> argument = ArgumentCaptor.forClass(GetObjectRequest.class);\r\n    verify(s3Client).getObject(argument.capture());\r\n    GetObjectRequest request = argument.getValue();\r\n    assertThat(request.getBucketName(), is(S3_BUCKET_NAME));\r\n    assertThat(request.getKey(), is(EXPECTED_DATA_STORE_REF));\r\n}"
+        }
+      },
+      {
+        "code": "verify(s3Client).deleteObject(argument.capture());",
+        "line": 121,
+        "type": "VERIFICATION",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testDeleteProduct",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testDeleteProduct() throws DataTransferException, IOException {\r\n    dataTransferer.deleteProduct(product);\r\n    ArgumentCaptor<DeleteObjectRequest> argument = ArgumentCaptor.forClass(DeleteObjectRequest.class);\r\n    verify(s3Client).deleteObject(argument.capture());\r\n    DeleteObjectRequest request = argument.getValue();\r\n    assertThat(request.getBucketName(), is(S3_BUCKET_NAME));\r\n    assertThat(request.getKey(), is(EXPECTED_DATA_STORE_REF));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 2,
+    "variableName": "product",
+    "variableType": "Product",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.oodt.cas.filemgr.datatransfer",
+      "filePath": "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\datatransfer\\TestS3DataTransferer.java",
+      "className": "TestS3DataTransferer"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate Product product;",
+        "line": 67,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      },
+      {
+        "code": "when(product.getProductReferences()).thenReturn(Lists.newArrayList(reference));",
+        "line": 84,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws IOException {\r\n    MockitoAnnotations.initMocks(this);\r\n    stagingDir = tempFolder.getRoot();\r\n    dataTransferer = new S3DataTransferer(s3Client, S3_BUCKET_NAME, true);\r\n    when(reference.getOrigReference()).thenReturn(ORGINAL_REF);\r\n    when(reference.getDataStoreReference()).thenReturn(DATA_STORE_REF);\r\n    when(product.getProductReferences()).thenReturn(Lists.newArrayList(reference));\r\n    when(s3Client.getObject(Mockito.<GetObjectRequest>any())).thenReturn(s3Object);\r\n    when(s3Object.getObjectContent()).thenReturn(s3InputStream);\r\n    when(s3InputStream.read(Mockito.<byte[]>any())).thenReturn(-1);\r\n}"
+        }
+      },
+      {
+        "code": "dataTransferer.transferProduct(product);",
+        "line": 92,
+        "type": "REFERENCE",
+        "locate": "Test Case",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTransferProduct",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTransferProduct() throws DataTransferException, IOException {\r\n    dataTransferer.transferProduct(product);\r\n    ArgumentCaptor<PutObjectRequest> argument = ArgumentCaptor.forClass(PutObjectRequest.class);\r\n    verify(s3Client).putObject(argument.capture());\r\n    PutObjectRequest request = argument.getValue();\r\n    assertThat(request.getBucketName(), is(S3_BUCKET_NAME));\r\n    assertThat(request.getKey(), is(EXPECTED_DATA_STORE_REF));\r\n    assertThat(request.getFile().getAbsolutePath(), is(EXPECTED_ORGINAL_REF));\r\n}"
+        }
+      },
+      {
+        "code": "dataTransferer.retrieveProduct(product, stagingDir);",
+        "line": 105,
+        "type": "REFERENCE",
+        "locate": "Test Case",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testRetrieveProduct",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testRetrieveProduct() throws DataTransferException, IOException {\r\n    dataTransferer.retrieveProduct(product, stagingDir);\r\n    ArgumentCaptor<GetObjectRequest> argument = ArgumentCaptor.forClass(GetObjectRequest.class);\r\n    verify(s3Client).getObject(argument.capture());\r\n    GetObjectRequest request = argument.getValue();\r\n    assertThat(request.getBucketName(), is(S3_BUCKET_NAME));\r\n    assertThat(request.getKey(), is(EXPECTED_DATA_STORE_REF));\r\n}"
+        }
+      },
+      {
+        "code": "dataTransferer.deleteProduct(product);",
+        "line": 117,
+        "type": "REFERENCE",
+        "locate": "Test Case",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testDeleteProduct",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testDeleteProduct() throws DataTransferException, IOException {\r\n    dataTransferer.deleteProduct(product);\r\n    ArgumentCaptor<DeleteObjectRequest> argument = ArgumentCaptor.forClass(DeleteObjectRequest.class);\r\n    verify(s3Client).deleteObject(argument.capture());\r\n    DeleteObjectRequest request = argument.getValue();\r\n    assertThat(request.getBucketName(), is(S3_BUCKET_NAME));\r\n    assertThat(request.getKey(), is(EXPECTED_DATA_STORE_REF));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 3,
+    "variableName": "reference",
+    "variableType": "Reference",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.oodt.cas.filemgr.datatransfer",
+      "filePath": "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\datatransfer\\TestS3DataTransferer.java",
+      "className": "TestS3DataTransferer"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate Reference reference;",
+        "line": 68,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      },
+      {
+        "code": "when(reference.getOrigReference()).thenReturn(ORGINAL_REF);",
+        "line": 82,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws IOException {\r\n    MockitoAnnotations.initMocks(this);\r\n    stagingDir = tempFolder.getRoot();\r\n    dataTransferer = new S3DataTransferer(s3Client, S3_BUCKET_NAME, true);\r\n    when(reference.getOrigReference()).thenReturn(ORGINAL_REF);\r\n    when(reference.getDataStoreReference()).thenReturn(DATA_STORE_REF);\r\n    when(product.getProductReferences()).thenReturn(Lists.newArrayList(reference));\r\n    when(s3Client.getObject(Mockito.<GetObjectRequest>any())).thenReturn(s3Object);\r\n    when(s3Object.getObjectContent()).thenReturn(s3InputStream);\r\n    when(s3InputStream.read(Mockito.<byte[]>any())).thenReturn(-1);\r\n}"
+        }
+      },
+      {
+        "code": "when(reference.getDataStoreReference()).thenReturn(DATA_STORE_REF);",
+        "line": 83,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws IOException {\r\n    MockitoAnnotations.initMocks(this);\r\n    stagingDir = tempFolder.getRoot();\r\n    dataTransferer = new S3DataTransferer(s3Client, S3_BUCKET_NAME, true);\r\n    when(reference.getOrigReference()).thenReturn(ORGINAL_REF);\r\n    when(reference.getDataStoreReference()).thenReturn(DATA_STORE_REF);\r\n    when(product.getProductReferences()).thenReturn(Lists.newArrayList(reference));\r\n    when(s3Client.getObject(Mockito.<GetObjectRequest>any())).thenReturn(s3Object);\r\n    when(s3Object.getObjectContent()).thenReturn(s3InputStream);\r\n    when(s3InputStream.read(Mockito.<byte[]>any())).thenReturn(-1);\r\n}"
+        }
+      },
+      {
+        "code": "when(product.getProductReferences()).thenReturn(Lists.newArrayList(reference));",
+        "line": 84,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws IOException {\r\n    MockitoAnnotations.initMocks(this);\r\n    stagingDir = tempFolder.getRoot();\r\n    dataTransferer = new S3DataTransferer(s3Client, S3_BUCKET_NAME, true);\r\n    when(reference.getOrigReference()).thenReturn(ORGINAL_REF);\r\n    when(reference.getDataStoreReference()).thenReturn(DATA_STORE_REF);\r\n    when(product.getProductReferences()).thenReturn(Lists.newArrayList(reference));\r\n    when(s3Client.getObject(Mockito.<GetObjectRequest>any())).thenReturn(s3Object);\r\n    when(s3Object.getObjectContent()).thenReturn(s3InputStream);\r\n    when(s3InputStream.read(Mockito.<byte[]>any())).thenReturn(-1);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 4,
+    "variableName": "s3Object",
+    "variableType": "S3Object",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.oodt.cas.filemgr.datatransfer",
+      "filePath": "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\datatransfer\\TestS3DataTransferer.java",
+      "className": "TestS3DataTransferer"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate S3Object s3Object;",
+        "line": 69,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      },
+      {
+        "code": "when(s3Client.getObject(Mockito.<GetObjectRequest>any())).thenReturn(s3Object);",
+        "line": 85,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws IOException {\r\n    MockitoAnnotations.initMocks(this);\r\n    stagingDir = tempFolder.getRoot();\r\n    dataTransferer = new S3DataTransferer(s3Client, S3_BUCKET_NAME, true);\r\n    when(reference.getOrigReference()).thenReturn(ORGINAL_REF);\r\n    when(reference.getDataStoreReference()).thenReturn(DATA_STORE_REF);\r\n    when(product.getProductReferences()).thenReturn(Lists.newArrayList(reference));\r\n    when(s3Client.getObject(Mockito.<GetObjectRequest>any())).thenReturn(s3Object);\r\n    when(s3Object.getObjectContent()).thenReturn(s3InputStream);\r\n    when(s3InputStream.read(Mockito.<byte[]>any())).thenReturn(-1);\r\n}"
+        }
+      },
+      {
+        "code": "when(s3Object.getObjectContent()).thenReturn(s3InputStream);",
+        "line": 86,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws IOException {\r\n    MockitoAnnotations.initMocks(this);\r\n    stagingDir = tempFolder.getRoot();\r\n    dataTransferer = new S3DataTransferer(s3Client, S3_BUCKET_NAME, true);\r\n    when(reference.getOrigReference()).thenReturn(ORGINAL_REF);\r\n    when(reference.getDataStoreReference()).thenReturn(DATA_STORE_REF);\r\n    when(product.getProductReferences()).thenReturn(Lists.newArrayList(reference));\r\n    when(s3Client.getObject(Mockito.<GetObjectRequest>any())).thenReturn(s3Object);\r\n    when(s3Object.getObjectContent()).thenReturn(s3InputStream);\r\n    when(s3InputStream.read(Mockito.<byte[]>any())).thenReturn(-1);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 5,
+    "variableName": "s3InputStream",
+    "variableType": "S3ObjectInputStream",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.oodt.cas.filemgr.datatransfer",
+      "filePath": "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\datatransfer\\TestS3DataTransferer.java",
+      "className": "TestS3DataTransferer"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate S3ObjectInputStream s3InputStream;",
+        "line": 70,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      },
+      {
+        "code": "when(s3Object.getObjectContent()).thenReturn(s3InputStream);",
+        "line": 86,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws IOException {\r\n    MockitoAnnotations.initMocks(this);\r\n    stagingDir = tempFolder.getRoot();\r\n    dataTransferer = new S3DataTransferer(s3Client, S3_BUCKET_NAME, true);\r\n    when(reference.getOrigReference()).thenReturn(ORGINAL_REF);\r\n    when(reference.getDataStoreReference()).thenReturn(DATA_STORE_REF);\r\n    when(product.getProductReferences()).thenReturn(Lists.newArrayList(reference));\r\n    when(s3Client.getObject(Mockito.<GetObjectRequest>any())).thenReturn(s3Object);\r\n    when(s3Object.getObjectContent()).thenReturn(s3InputStream);\r\n    when(s3InputStream.read(Mockito.<byte[]>any())).thenReturn(-1);\r\n}"
+        }
+      },
+      {
+        "code": "when(s3InputStream.read(Mockito.<byte[]>any())).thenReturn(-1);",
+        "line": 87,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws IOException {\r\n    MockitoAnnotations.initMocks(this);\r\n    stagingDir = tempFolder.getRoot();\r\n    dataTransferer = new S3DataTransferer(s3Client, S3_BUCKET_NAME, true);\r\n    when(reference.getOrigReference()).thenReturn(ORGINAL_REF);\r\n    when(reference.getDataStoreReference()).thenReturn(DATA_STORE_REF);\r\n    when(product.getProductReferences()).thenReturn(Lists.newArrayList(reference));\r\n    when(s3Client.getObject(Mockito.<GetObjectRequest>any())).thenReturn(s3Object);\r\n    when(s3Object.getObjectContent()).thenReturn(s3InputStream);\r\n    when(s3InputStream.read(Mockito.<byte[]>any())).thenReturn(-1);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 6,
+    "variableName": "configuration",
+    "variableType": "Properties",
+    "isGlobal": true,
+    "mockPatternLevel": 2,
+    "classContext": {
+      "packageName": "org.apache.oodt.cas.filemgr.metadata.extractors.examples",
+      "filePath": "C:\\Java_projects\\temp_projects\\OODT\\filemgr\\src\\test\\java\\org\\apache\\oodt\\cas\\filemgr\\metadata\\extractors\\examples\\TestDateTimeExpandMetExtractor.java",
+      "className": "TestDateTimeExpandMetExtractor"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate Properties configuration;",
+        "line": 53,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      },
+      {
+        "code": "when(configuration.getProperty(\"FullDateTimeKey\")).thenReturn(\"StartDateTime\");",
+        "line": 62,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(configuration.getProperty(\"FullDateTimeKey\")).thenReturn(\"StartDateTime\");\r\n    when(configuration.getProperty(\"FullDateTimeFormat\")).thenReturn(\"yyyy-MM-dd HH:mm:ss\");\r\n    when(configuration.getProperty(\"YearKey\")).thenReturn(\"StartYear\");\r\n    when(configuration.getProperty(\"MonthKey\")).thenReturn(\"StartMonth\");\r\n    when(configuration.getProperty(\"DayKey\")).thenReturn(\"StartDay\");\r\n    when(configuration.getProperty(\"HourKey\")).thenReturn(\"StartHour\");\r\n    when(configuration.getProperty(\"MinuteKey\")).thenReturn(\"StartMinute\");\r\n    when(configuration.getProperty(\"SecondKey\")).thenReturn(\"StartSecond\");\r\n    metadata = new Metadata();\r\n    metadata.addMetadata(\"StartDateTime\", \"2013-05-23 03:02:01\");\r\n    extractor = new DateTimeExpandMetExtractor();\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.getProperty(\"FullDateTimeFormat\")).thenReturn(\"yyyy-MM-dd HH:mm:ss\");",
+        "line": 63,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(configuration.getProperty(\"FullDateTimeKey\")).thenReturn(\"StartDateTime\");\r\n    when(configuration.getProperty(\"FullDateTimeFormat\")).thenReturn(\"yyyy-MM-dd HH:mm:ss\");\r\n    when(configuration.getProperty(\"YearKey\")).thenReturn(\"StartYear\");\r\n    when(configuration.getProperty(\"MonthKey\")).thenReturn(\"StartMonth\");\r\n    when(configuration.getProperty(\"DayKey\")).thenReturn(\"StartDay\");\r\n    when(configuration.getProperty(\"HourKey\")).thenReturn(\"StartHour\");\r\n    when(configuration.getProperty(\"MinuteKey\")).thenReturn(\"StartMinute\");\r\n    when(configuration.getProperty(\"SecondKey\")).thenReturn(\"StartSecond\");\r\n    metadata = new Metadata();\r\n    metadata.addMetadata(\"StartDateTime\", \"2013-05-23 03:02:01\");\r\n    extractor = new DateTimeExpandMetExtractor();\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.getProperty(\"YearKey\")).thenReturn(\"StartYear\");",
+        "line": 64,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(configuration.getProperty(\"FullDateTimeKey\")).thenReturn(\"StartDateTime\");\r\n    when(configuration.getProperty(\"FullDateTimeFormat\")).thenReturn(\"yyyy-MM-dd HH:mm:ss\");\r\n    when(configuration.getProperty(\"YearKey\")).thenReturn(\"StartYear\");\r\n    when(configuration.getProperty(\"MonthKey\")).thenReturn(\"StartMonth\");\r\n    when(configuration.getProperty(\"DayKey\")).thenReturn(\"StartDay\");\r\n    when(configuration.getProperty(\"HourKey\")).thenReturn(\"StartHour\");\r\n    when(configuration.getProperty(\"MinuteKey\")).thenReturn(\"StartMinute\");\r\n    when(configuration.getProperty(\"SecondKey\")).thenReturn(\"StartSecond\");\r\n    metadata = new Metadata();\r\n    metadata.addMetadata(\"StartDateTime\", \"2013-05-23 03:02:01\");\r\n    extractor = new DateTimeExpandMetExtractor();\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.getProperty(\"MonthKey\")).thenReturn(\"StartMonth\");",
+        "line": 65,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(configuration.getProperty(\"FullDateTimeKey\")).thenReturn(\"StartDateTime\");\r\n    when(configuration.getProperty(\"FullDateTimeFormat\")).thenReturn(\"yyyy-MM-dd HH:mm:ss\");\r\n    when(configuration.getProperty(\"YearKey\")).thenReturn(\"StartYear\");\r\n    when(configuration.getProperty(\"MonthKey\")).thenReturn(\"StartMonth\");\r\n    when(configuration.getProperty(\"DayKey\")).thenReturn(\"StartDay\");\r\n    when(configuration.getProperty(\"HourKey\")).thenReturn(\"StartHour\");\r\n    when(configuration.getProperty(\"MinuteKey\")).thenReturn(\"StartMinute\");\r\n    when(configuration.getProperty(\"SecondKey\")).thenReturn(\"StartSecond\");\r\n    metadata = new Metadata();\r\n    metadata.addMetadata(\"StartDateTime\", \"2013-05-23 03:02:01\");\r\n    extractor = new DateTimeExpandMetExtractor();\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.getProperty(\"DayKey\")).thenReturn(\"StartDay\");",
+        "line": 66,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(configuration.getProperty(\"FullDateTimeKey\")).thenReturn(\"StartDateTime\");\r\n    when(configuration.getProperty(\"FullDateTimeFormat\")).thenReturn(\"yyyy-MM-dd HH:mm:ss\");\r\n    when(configuration.getProperty(\"YearKey\")).thenReturn(\"StartYear\");\r\n    when(configuration.getProperty(\"MonthKey\")).thenReturn(\"StartMonth\");\r\n    when(configuration.getProperty(\"DayKey\")).thenReturn(\"StartDay\");\r\n    when(configuration.getProperty(\"HourKey\")).thenReturn(\"StartHour\");\r\n    when(configuration.getProperty(\"MinuteKey\")).thenReturn(\"StartMinute\");\r\n    when(configuration.getProperty(\"SecondKey\")).thenReturn(\"StartSecond\");\r\n    metadata = new Metadata();\r\n    metadata.addMetadata(\"StartDateTime\", \"2013-05-23 03:02:01\");\r\n    extractor = new DateTimeExpandMetExtractor();\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.getProperty(\"HourKey\")).thenReturn(\"StartHour\");",
+        "line": 67,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(configuration.getProperty(\"FullDateTimeKey\")).thenReturn(\"StartDateTime\");\r\n    when(configuration.getProperty(\"FullDateTimeFormat\")).thenReturn(\"yyyy-MM-dd HH:mm:ss\");\r\n    when(configuration.getProperty(\"YearKey\")).thenReturn(\"StartYear\");\r\n    when(configuration.getProperty(\"MonthKey\")).thenReturn(\"StartMonth\");\r\n    when(configuration.getProperty(\"DayKey\")).thenReturn(\"StartDay\");\r\n    when(configuration.getProperty(\"HourKey\")).thenReturn(\"StartHour\");\r\n    when(configuration.getProperty(\"MinuteKey\")).thenReturn(\"StartMinute\");\r\n    when(configuration.getProperty(\"SecondKey\")).thenReturn(\"StartSecond\");\r\n    metadata = new Metadata();\r\n    metadata.addMetadata(\"StartDateTime\", \"2013-05-23 03:02:01\");\r\n    extractor = new DateTimeExpandMetExtractor();\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.getProperty(\"MinuteKey\")).thenReturn(\"StartMinute\");",
+        "line": 68,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(configuration.getProperty(\"FullDateTimeKey\")).thenReturn(\"StartDateTime\");\r\n    when(configuration.getProperty(\"FullDateTimeFormat\")).thenReturn(\"yyyy-MM-dd HH:mm:ss\");\r\n    when(configuration.getProperty(\"YearKey\")).thenReturn(\"StartYear\");\r\n    when(configuration.getProperty(\"MonthKey\")).thenReturn(\"StartMonth\");\r\n    when(configuration.getProperty(\"DayKey\")).thenReturn(\"StartDay\");\r\n    when(configuration.getProperty(\"HourKey\")).thenReturn(\"StartHour\");\r\n    when(configuration.getProperty(\"MinuteKey\")).thenReturn(\"StartMinute\");\r\n    when(configuration.getProperty(\"SecondKey\")).thenReturn(\"StartSecond\");\r\n    metadata = new Metadata();\r\n    metadata.addMetadata(\"StartDateTime\", \"2013-05-23 03:02:01\");\r\n    extractor = new DateTimeExpandMetExtractor();\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.getProperty(\"SecondKey\")).thenReturn(\"StartSecond\");",
+        "line": 69,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(configuration.getProperty(\"FullDateTimeKey\")).thenReturn(\"StartDateTime\");\r\n    when(configuration.getProperty(\"FullDateTimeFormat\")).thenReturn(\"yyyy-MM-dd HH:mm:ss\");\r\n    when(configuration.getProperty(\"YearKey\")).thenReturn(\"StartYear\");\r\n    when(configuration.getProperty(\"MonthKey\")).thenReturn(\"StartMonth\");\r\n    when(configuration.getProperty(\"DayKey\")).thenReturn(\"StartDay\");\r\n    when(configuration.getProperty(\"HourKey\")).thenReturn(\"StartHour\");\r\n    when(configuration.getProperty(\"MinuteKey\")).thenReturn(\"StartMinute\");\r\n    when(configuration.getProperty(\"SecondKey\")).thenReturn(\"StartSecond\");\r\n    metadata = new Metadata();\r\n    metadata.addMetadata(\"StartDateTime\", \"2013-05-23 03:02:01\");\r\n    extractor = new DateTimeExpandMetExtractor();\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);",
+        "line": 79,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testExpandAll",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testExpandAll() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);\r\n    when(configuration.containsKey(\"YearKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MonthKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"DayKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"HourKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MinuteKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"SecondKey\")).thenReturn(true);\r\n    extractor.configure(configuration);\r\n    Metadata extractedMetadata = extractor.doExtract(null, metadata);\r\n    assertThat(extractedMetadata.getMetadata(\"StartYear\"), is(\"2013\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMonth\"), is(\"05\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartDay\"), is(\"23\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartHour\"), is(\"03\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMinute\"), is(\"02\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartSecond\"), is(\"01\"));\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);",
+        "line": 80,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testExpandAll",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testExpandAll() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);\r\n    when(configuration.containsKey(\"YearKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MonthKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"DayKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"HourKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MinuteKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"SecondKey\")).thenReturn(true);\r\n    extractor.configure(configuration);\r\n    Metadata extractedMetadata = extractor.doExtract(null, metadata);\r\n    assertThat(extractedMetadata.getMetadata(\"StartYear\"), is(\"2013\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMonth\"), is(\"05\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartDay\"), is(\"23\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartHour\"), is(\"03\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMinute\"), is(\"02\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartSecond\"), is(\"01\"));\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.containsKey(\"YearKey\")).thenReturn(true);",
+        "line": 81,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testExpandAll",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testExpandAll() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);\r\n    when(configuration.containsKey(\"YearKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MonthKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"DayKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"HourKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MinuteKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"SecondKey\")).thenReturn(true);\r\n    extractor.configure(configuration);\r\n    Metadata extractedMetadata = extractor.doExtract(null, metadata);\r\n    assertThat(extractedMetadata.getMetadata(\"StartYear\"), is(\"2013\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMonth\"), is(\"05\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartDay\"), is(\"23\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartHour\"), is(\"03\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMinute\"), is(\"02\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartSecond\"), is(\"01\"));\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.containsKey(\"MonthKey\")).thenReturn(true);",
+        "line": 82,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testExpandAll",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testExpandAll() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);\r\n    when(configuration.containsKey(\"YearKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MonthKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"DayKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"HourKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MinuteKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"SecondKey\")).thenReturn(true);\r\n    extractor.configure(configuration);\r\n    Metadata extractedMetadata = extractor.doExtract(null, metadata);\r\n    assertThat(extractedMetadata.getMetadata(\"StartYear\"), is(\"2013\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMonth\"), is(\"05\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartDay\"), is(\"23\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartHour\"), is(\"03\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMinute\"), is(\"02\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartSecond\"), is(\"01\"));\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.containsKey(\"DayKey\")).thenReturn(true);",
+        "line": 83,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testExpandAll",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testExpandAll() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);\r\n    when(configuration.containsKey(\"YearKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MonthKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"DayKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"HourKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MinuteKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"SecondKey\")).thenReturn(true);\r\n    extractor.configure(configuration);\r\n    Metadata extractedMetadata = extractor.doExtract(null, metadata);\r\n    assertThat(extractedMetadata.getMetadata(\"StartYear\"), is(\"2013\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMonth\"), is(\"05\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartDay\"), is(\"23\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartHour\"), is(\"03\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMinute\"), is(\"02\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartSecond\"), is(\"01\"));\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.containsKey(\"HourKey\")).thenReturn(true);",
+        "line": 84,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testExpandAll",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testExpandAll() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);\r\n    when(configuration.containsKey(\"YearKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MonthKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"DayKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"HourKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MinuteKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"SecondKey\")).thenReturn(true);\r\n    extractor.configure(configuration);\r\n    Metadata extractedMetadata = extractor.doExtract(null, metadata);\r\n    assertThat(extractedMetadata.getMetadata(\"StartYear\"), is(\"2013\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMonth\"), is(\"05\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartDay\"), is(\"23\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartHour\"), is(\"03\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMinute\"), is(\"02\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartSecond\"), is(\"01\"));\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.containsKey(\"MinuteKey\")).thenReturn(true);",
+        "line": 85,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testExpandAll",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testExpandAll() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);\r\n    when(configuration.containsKey(\"YearKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MonthKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"DayKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"HourKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MinuteKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"SecondKey\")).thenReturn(true);\r\n    extractor.configure(configuration);\r\n    Metadata extractedMetadata = extractor.doExtract(null, metadata);\r\n    assertThat(extractedMetadata.getMetadata(\"StartYear\"), is(\"2013\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMonth\"), is(\"05\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartDay\"), is(\"23\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartHour\"), is(\"03\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMinute\"), is(\"02\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartSecond\"), is(\"01\"));\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.containsKey(\"SecondKey\")).thenReturn(true);",
+        "line": 86,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testExpandAll",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testExpandAll() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);\r\n    when(configuration.containsKey(\"YearKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MonthKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"DayKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"HourKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MinuteKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"SecondKey\")).thenReturn(true);\r\n    extractor.configure(configuration);\r\n    Metadata extractedMetadata = extractor.doExtract(null, metadata);\r\n    assertThat(extractedMetadata.getMetadata(\"StartYear\"), is(\"2013\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMonth\"), is(\"05\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartDay\"), is(\"23\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartHour\"), is(\"03\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMinute\"), is(\"02\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartSecond\"), is(\"01\"));\r\n}"
+        }
+      },
+      {
+        "code": "extractor.configure(configuration);",
+        "line": 88,
+        "type": "REFERENCE",
+        "locate": "Test Case",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testExpandAll",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testExpandAll() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);\r\n    when(configuration.containsKey(\"YearKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MonthKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"DayKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"HourKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MinuteKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"SecondKey\")).thenReturn(true);\r\n    extractor.configure(configuration);\r\n    Metadata extractedMetadata = extractor.doExtract(null, metadata);\r\n    assertThat(extractedMetadata.getMetadata(\"StartYear\"), is(\"2013\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMonth\"), is(\"05\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartDay\"), is(\"23\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartHour\"), is(\"03\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMinute\"), is(\"02\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartSecond\"), is(\"01\"));\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);",
+        "line": 101,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testExpandSome",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testExpandSome() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);\r\n    when(configuration.containsKey(\"YearKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MonthKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"DayKey\")).thenReturn(true);\r\n    extractor.configure(configuration);\r\n    Metadata extractedMetadata = extractor.doExtract(null, metadata);\r\n    assertThat(extractedMetadata.getMetadata(\"StartYear\"), is(\"2013\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMonth\"), is(\"05\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartDay\"), is(\"23\"));\r\n    assertThat(extractedMetadata.containsKey(\"StartHour\"), is(false));\r\n    assertThat(extractedMetadata.containsKey(\"StartMinute\"), is(false));\r\n    assertThat(extractedMetadata.containsKey(\"StartSecond\"), is(false));\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);",
+        "line": 102,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testExpandSome",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testExpandSome() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);\r\n    when(configuration.containsKey(\"YearKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MonthKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"DayKey\")).thenReturn(true);\r\n    extractor.configure(configuration);\r\n    Metadata extractedMetadata = extractor.doExtract(null, metadata);\r\n    assertThat(extractedMetadata.getMetadata(\"StartYear\"), is(\"2013\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMonth\"), is(\"05\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartDay\"), is(\"23\"));\r\n    assertThat(extractedMetadata.containsKey(\"StartHour\"), is(false));\r\n    assertThat(extractedMetadata.containsKey(\"StartMinute\"), is(false));\r\n    assertThat(extractedMetadata.containsKey(\"StartSecond\"), is(false));\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.containsKey(\"YearKey\")).thenReturn(true);",
+        "line": 103,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testExpandSome",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testExpandSome() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);\r\n    when(configuration.containsKey(\"YearKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MonthKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"DayKey\")).thenReturn(true);\r\n    extractor.configure(configuration);\r\n    Metadata extractedMetadata = extractor.doExtract(null, metadata);\r\n    assertThat(extractedMetadata.getMetadata(\"StartYear\"), is(\"2013\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMonth\"), is(\"05\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartDay\"), is(\"23\"));\r\n    assertThat(extractedMetadata.containsKey(\"StartHour\"), is(false));\r\n    assertThat(extractedMetadata.containsKey(\"StartMinute\"), is(false));\r\n    assertThat(extractedMetadata.containsKey(\"StartSecond\"), is(false));\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.containsKey(\"MonthKey\")).thenReturn(true);",
+        "line": 104,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testExpandSome",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testExpandSome() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);\r\n    when(configuration.containsKey(\"YearKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MonthKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"DayKey\")).thenReturn(true);\r\n    extractor.configure(configuration);\r\n    Metadata extractedMetadata = extractor.doExtract(null, metadata);\r\n    assertThat(extractedMetadata.getMetadata(\"StartYear\"), is(\"2013\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMonth\"), is(\"05\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartDay\"), is(\"23\"));\r\n    assertThat(extractedMetadata.containsKey(\"StartHour\"), is(false));\r\n    assertThat(extractedMetadata.containsKey(\"StartMinute\"), is(false));\r\n    assertThat(extractedMetadata.containsKey(\"StartSecond\"), is(false));\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.containsKey(\"DayKey\")).thenReturn(true);",
+        "line": 105,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testExpandSome",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testExpandSome() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);\r\n    when(configuration.containsKey(\"YearKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MonthKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"DayKey\")).thenReturn(true);\r\n    extractor.configure(configuration);\r\n    Metadata extractedMetadata = extractor.doExtract(null, metadata);\r\n    assertThat(extractedMetadata.getMetadata(\"StartYear\"), is(\"2013\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMonth\"), is(\"05\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartDay\"), is(\"23\"));\r\n    assertThat(extractedMetadata.containsKey(\"StartHour\"), is(false));\r\n    assertThat(extractedMetadata.containsKey(\"StartMinute\"), is(false));\r\n    assertThat(extractedMetadata.containsKey(\"StartSecond\"), is(false));\r\n}"
+        }
+      },
+      {
+        "code": "extractor.configure(configuration);",
+        "line": 107,
+        "type": "REFERENCE",
+        "locate": "Test Case",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testExpandSome",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testExpandSome() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"FullDateTimeFormat\")).thenReturn(true);\r\n    when(configuration.containsKey(\"YearKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"MonthKey\")).thenReturn(true);\r\n    when(configuration.containsKey(\"DayKey\")).thenReturn(true);\r\n    extractor.configure(configuration);\r\n    Metadata extractedMetadata = extractor.doExtract(null, metadata);\r\n    assertThat(extractedMetadata.getMetadata(\"StartYear\"), is(\"2013\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartMonth\"), is(\"05\"));\r\n    assertThat(extractedMetadata.getMetadata(\"StartDay\"), is(\"23\"));\r\n    assertThat(extractedMetadata.containsKey(\"StartHour\"), is(false));\r\n    assertThat(extractedMetadata.containsKey(\"StartMinute\"), is(false));\r\n    assertThat(extractedMetadata.containsKey(\"StartSecond\"), is(false));\r\n}"
+        }
+      },
+      {
+        "code": "when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(false);",
+        "line": 120,
+        "type": "STUBBING",
+        "locate": "Test Case",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testFailure",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testFailure() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(false);\r\n    extractor.configure(configuration);\r\n    expectedException.expect(MetExtractionException.class);\r\n    extractor.doExtract(null, metadata);\r\n}"
+        }
+      },
+      {
+        "code": "extractor.configure(configuration);",
+        "line": 122,
+        "type": "REFERENCE",
+        "locate": "Test Case",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testFailure",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testFailure() throws MetExtractionException {\r\n    when(configuration.containsKey(\"FullDateTimeKey\")).thenReturn(false);\r\n    extractor.configure(configuration);\r\n    expectedException.expect(MetExtractionException.class);\r\n    extractor.doExtract(null, metadata);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 7,
+    "variableName": "dataSource",
+    "variableType": "DataSource",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.oodt.cas.metadata.extractors",
+      "filePath": "C:\\Java_projects\\temp_projects\\OODT\\metadata\\src\\test\\java\\org\\apache\\oodt\\cas\\metadata\\extractors\\TestDataSourceMetExtractor.java",
+      "className": "TestDataSourceMetExtractor"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate DataSource dataSource;",
+        "line": 62,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      },
+      {
+        "code": "when(dataSource.getConnection()).thenReturn(conn);",
+        "line": 74,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(dataSource.getConnection()).thenReturn(conn);\r\n    when(conn.createStatement()).thenReturn(statement);\r\n    when(statement.executeQuery(Mockito.<String>any())).thenReturn(rs);\r\n    when(rs.getMetaData()).thenReturn(rsMet);\r\n    when(rs.next()).thenReturn(true);\r\n    when(rs.getString(1)).thenReturn(DB_COL_VALUE_1);\r\n    when(rs.getString(2)).thenReturn(DB_COL_VALUE_2);\r\n    when(rsMet.getColumnCount()).thenReturn(2);\r\n    when(rsMet.getColumnName(1)).thenReturn(DB_COL_NAME_1);\r\n    when(rsMet.getColumnName(2)).thenReturn(DB_COL_NAME_2);\r\n    extractor = new DataSourceMetExtractor();\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 8,
+    "variableName": "conn",
+    "variableType": "Connection",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.oodt.cas.metadata.extractors",
+      "filePath": "C:\\Java_projects\\temp_projects\\OODT\\metadata\\src\\test\\java\\org\\apache\\oodt\\cas\\metadata\\extractors\\TestDataSourceMetExtractor.java",
+      "className": "TestDataSourceMetExtractor"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate Connection conn;",
+        "line": 63,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      },
+      {
+        "code": "when(dataSource.getConnection()).thenReturn(conn);",
+        "line": 74,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(dataSource.getConnection()).thenReturn(conn);\r\n    when(conn.createStatement()).thenReturn(statement);\r\n    when(statement.executeQuery(Mockito.<String>any())).thenReturn(rs);\r\n    when(rs.getMetaData()).thenReturn(rsMet);\r\n    when(rs.next()).thenReturn(true);\r\n    when(rs.getString(1)).thenReturn(DB_COL_VALUE_1);\r\n    when(rs.getString(2)).thenReturn(DB_COL_VALUE_2);\r\n    when(rsMet.getColumnCount()).thenReturn(2);\r\n    when(rsMet.getColumnName(1)).thenReturn(DB_COL_NAME_1);\r\n    when(rsMet.getColumnName(2)).thenReturn(DB_COL_NAME_2);\r\n    extractor = new DataSourceMetExtractor();\r\n}"
+        }
+      },
+      {
+        "code": "when(conn.createStatement()).thenReturn(statement);",
+        "line": 75,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(dataSource.getConnection()).thenReturn(conn);\r\n    when(conn.createStatement()).thenReturn(statement);\r\n    when(statement.executeQuery(Mockito.<String>any())).thenReturn(rs);\r\n    when(rs.getMetaData()).thenReturn(rsMet);\r\n    when(rs.next()).thenReturn(true);\r\n    when(rs.getString(1)).thenReturn(DB_COL_VALUE_1);\r\n    when(rs.getString(2)).thenReturn(DB_COL_VALUE_2);\r\n    when(rsMet.getColumnCount()).thenReturn(2);\r\n    when(rsMet.getColumnName(1)).thenReturn(DB_COL_NAME_1);\r\n    when(rsMet.getColumnName(2)).thenReturn(DB_COL_NAME_2);\r\n    extractor = new DataSourceMetExtractor();\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 9,
+    "variableName": "statement",
+    "variableType": "Statement",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.oodt.cas.metadata.extractors",
+      "filePath": "C:\\Java_projects\\temp_projects\\OODT\\metadata\\src\\test\\java\\org\\apache\\oodt\\cas\\metadata\\extractors\\TestDataSourceMetExtractor.java",
+      "className": "TestDataSourceMetExtractor"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate Statement statement;",
+        "line": 64,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      },
+      {
+        "code": "when(conn.createStatement()).thenReturn(statement);",
+        "line": 75,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(dataSource.getConnection()).thenReturn(conn);\r\n    when(conn.createStatement()).thenReturn(statement);\r\n    when(statement.executeQuery(Mockito.<String>any())).thenReturn(rs);\r\n    when(rs.getMetaData()).thenReturn(rsMet);\r\n    when(rs.next()).thenReturn(true);\r\n    when(rs.getString(1)).thenReturn(DB_COL_VALUE_1);\r\n    when(rs.getString(2)).thenReturn(DB_COL_VALUE_2);\r\n    when(rsMet.getColumnCount()).thenReturn(2);\r\n    when(rsMet.getColumnName(1)).thenReturn(DB_COL_NAME_1);\r\n    when(rsMet.getColumnName(2)).thenReturn(DB_COL_NAME_2);\r\n    extractor = new DataSourceMetExtractor();\r\n}"
+        }
+      },
+      {
+        "code": "when(statement.executeQuery(Mockito.<String>any())).thenReturn(rs);",
+        "line": 76,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(dataSource.getConnection()).thenReturn(conn);\r\n    when(conn.createStatement()).thenReturn(statement);\r\n    when(statement.executeQuery(Mockito.<String>any())).thenReturn(rs);\r\n    when(rs.getMetaData()).thenReturn(rsMet);\r\n    when(rs.next()).thenReturn(true);\r\n    when(rs.getString(1)).thenReturn(DB_COL_VALUE_1);\r\n    when(rs.getString(2)).thenReturn(DB_COL_VALUE_2);\r\n    when(rsMet.getColumnCount()).thenReturn(2);\r\n    when(rsMet.getColumnName(1)).thenReturn(DB_COL_NAME_1);\r\n    when(rsMet.getColumnName(2)).thenReturn(DB_COL_NAME_2);\r\n    extractor = new DataSourceMetExtractor();\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 10,
+    "variableName": "rs",
+    "variableType": "ResultSet",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.oodt.cas.metadata.extractors",
+      "filePath": "C:\\Java_projects\\temp_projects\\OODT\\metadata\\src\\test\\java\\org\\apache\\oodt\\cas\\metadata\\extractors\\TestDataSourceMetExtractor.java",
+      "className": "TestDataSourceMetExtractor"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate ResultSet rs;",
+        "line": 65,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      },
+      {
+        "code": "when(statement.executeQuery(Mockito.<String>any())).thenReturn(rs);",
+        "line": 76,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(dataSource.getConnection()).thenReturn(conn);\r\n    when(conn.createStatement()).thenReturn(statement);\r\n    when(statement.executeQuery(Mockito.<String>any())).thenReturn(rs);\r\n    when(rs.getMetaData()).thenReturn(rsMet);\r\n    when(rs.next()).thenReturn(true);\r\n    when(rs.getString(1)).thenReturn(DB_COL_VALUE_1);\r\n    when(rs.getString(2)).thenReturn(DB_COL_VALUE_2);\r\n    when(rsMet.getColumnCount()).thenReturn(2);\r\n    when(rsMet.getColumnName(1)).thenReturn(DB_COL_NAME_1);\r\n    when(rsMet.getColumnName(2)).thenReturn(DB_COL_NAME_2);\r\n    extractor = new DataSourceMetExtractor();\r\n}"
+        }
+      },
+      {
+        "code": "when(rs.getMetaData()).thenReturn(rsMet);",
+        "line": 77,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(dataSource.getConnection()).thenReturn(conn);\r\n    when(conn.createStatement()).thenReturn(statement);\r\n    when(statement.executeQuery(Mockito.<String>any())).thenReturn(rs);\r\n    when(rs.getMetaData()).thenReturn(rsMet);\r\n    when(rs.next()).thenReturn(true);\r\n    when(rs.getString(1)).thenReturn(DB_COL_VALUE_1);\r\n    when(rs.getString(2)).thenReturn(DB_COL_VALUE_2);\r\n    when(rsMet.getColumnCount()).thenReturn(2);\r\n    when(rsMet.getColumnName(1)).thenReturn(DB_COL_NAME_1);\r\n    when(rsMet.getColumnName(2)).thenReturn(DB_COL_NAME_2);\r\n    extractor = new DataSourceMetExtractor();\r\n}"
+        }
+      },
+      {
+        "code": "when(rs.next()).thenReturn(true);",
+        "line": 78,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(dataSource.getConnection()).thenReturn(conn);\r\n    when(conn.createStatement()).thenReturn(statement);\r\n    when(statement.executeQuery(Mockito.<String>any())).thenReturn(rs);\r\n    when(rs.getMetaData()).thenReturn(rsMet);\r\n    when(rs.next()).thenReturn(true);\r\n    when(rs.getString(1)).thenReturn(DB_COL_VALUE_1);\r\n    when(rs.getString(2)).thenReturn(DB_COL_VALUE_2);\r\n    when(rsMet.getColumnCount()).thenReturn(2);\r\n    when(rsMet.getColumnName(1)).thenReturn(DB_COL_NAME_1);\r\n    when(rsMet.getColumnName(2)).thenReturn(DB_COL_NAME_2);\r\n    extractor = new DataSourceMetExtractor();\r\n}"
+        }
+      },
+      {
+        "code": "when(rs.getString(1)).thenReturn(DB_COL_VALUE_1);",
+        "line": 79,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(dataSource.getConnection()).thenReturn(conn);\r\n    when(conn.createStatement()).thenReturn(statement);\r\n    when(statement.executeQuery(Mockito.<String>any())).thenReturn(rs);\r\n    when(rs.getMetaData()).thenReturn(rsMet);\r\n    when(rs.next()).thenReturn(true);\r\n    when(rs.getString(1)).thenReturn(DB_COL_VALUE_1);\r\n    when(rs.getString(2)).thenReturn(DB_COL_VALUE_2);\r\n    when(rsMet.getColumnCount()).thenReturn(2);\r\n    when(rsMet.getColumnName(1)).thenReturn(DB_COL_NAME_1);\r\n    when(rsMet.getColumnName(2)).thenReturn(DB_COL_NAME_2);\r\n    extractor = new DataSourceMetExtractor();\r\n}"
+        }
+      },
+      {
+        "code": "when(rs.getString(2)).thenReturn(DB_COL_VALUE_2);",
+        "line": 80,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(dataSource.getConnection()).thenReturn(conn);\r\n    when(conn.createStatement()).thenReturn(statement);\r\n    when(statement.executeQuery(Mockito.<String>any())).thenReturn(rs);\r\n    when(rs.getMetaData()).thenReturn(rsMet);\r\n    when(rs.next()).thenReturn(true);\r\n    when(rs.getString(1)).thenReturn(DB_COL_VALUE_1);\r\n    when(rs.getString(2)).thenReturn(DB_COL_VALUE_2);\r\n    when(rsMet.getColumnCount()).thenReturn(2);\r\n    when(rsMet.getColumnName(1)).thenReturn(DB_COL_NAME_1);\r\n    when(rsMet.getColumnName(2)).thenReturn(DB_COL_NAME_2);\r\n    extractor = new DataSourceMetExtractor();\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 11,
+    "variableName": "rsMet",
+    "variableType": "ResultSetMetaData",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "org.apache.oodt.cas.metadata.extractors",
+      "filePath": "C:\\Java_projects\\temp_projects\\OODT\\metadata\\src\\test\\java\\org\\apache\\oodt\\cas\\metadata\\extractors\\TestDataSourceMetExtractor.java",
+      "className": "TestDataSourceMetExtractor"
+    },
+    "statements": [
+      {
+        "code": "@Mock\r\nprivate ResultSetMetaData rsMet;",
+        "line": 66,
+        "type": "CREATION",
+        "locate": "Attribute",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": [
+            "Mock"
+          ]
+        }
+      },
+      {
+        "code": "when(rs.getMetaData()).thenReturn(rsMet);",
+        "line": 77,
+        "type": "REFERENCE",
+        "locate": "@Before",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(dataSource.getConnection()).thenReturn(conn);\r\n    when(conn.createStatement()).thenReturn(statement);\r\n    when(statement.executeQuery(Mockito.<String>any())).thenReturn(rs);\r\n    when(rs.getMetaData()).thenReturn(rsMet);\r\n    when(rs.next()).thenReturn(true);\r\n    when(rs.getString(1)).thenReturn(DB_COL_VALUE_1);\r\n    when(rs.getString(2)).thenReturn(DB_COL_VALUE_2);\r\n    when(rsMet.getColumnCount()).thenReturn(2);\r\n    when(rsMet.getColumnName(1)).thenReturn(DB_COL_NAME_1);\r\n    when(rsMet.getColumnName(2)).thenReturn(DB_COL_NAME_2);\r\n    extractor = new DataSourceMetExtractor();\r\n}"
+        }
+      },
+      {
+        "code": "when(rsMet.getColumnCount()).thenReturn(2);",
+        "line": 81,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(dataSource.getConnection()).thenReturn(conn);\r\n    when(conn.createStatement()).thenReturn(statement);\r\n    when(statement.executeQuery(Mockito.<String>any())).thenReturn(rs);\r\n    when(rs.getMetaData()).thenReturn(rsMet);\r\n    when(rs.next()).thenReturn(true);\r\n    when(rs.getString(1)).thenReturn(DB_COL_VALUE_1);\r\n    when(rs.getString(2)).thenReturn(DB_COL_VALUE_2);\r\n    when(rsMet.getColumnCount()).thenReturn(2);\r\n    when(rsMet.getColumnName(1)).thenReturn(DB_COL_NAME_1);\r\n    when(rsMet.getColumnName(2)).thenReturn(DB_COL_NAME_2);\r\n    extractor = new DataSourceMetExtractor();\r\n}"
+        }
+      },
+      {
+        "code": "when(rsMet.getColumnName(1)).thenReturn(DB_COL_NAME_1);",
+        "line": 82,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(dataSource.getConnection()).thenReturn(conn);\r\n    when(conn.createStatement()).thenReturn(statement);\r\n    when(statement.executeQuery(Mockito.<String>any())).thenReturn(rs);\r\n    when(rs.getMetaData()).thenReturn(rsMet);\r\n    when(rs.next()).thenReturn(true);\r\n    when(rs.getString(1)).thenReturn(DB_COL_VALUE_1);\r\n    when(rs.getString(2)).thenReturn(DB_COL_VALUE_2);\r\n    when(rsMet.getColumnCount()).thenReturn(2);\r\n    when(rsMet.getColumnName(1)).thenReturn(DB_COL_NAME_1);\r\n    when(rsMet.getColumnName(2)).thenReturn(DB_COL_NAME_2);\r\n    extractor = new DataSourceMetExtractor();\r\n}"
+        }
+      },
+      {
+        "code": "when(rsMet.getColumnName(2)).thenReturn(DB_COL_NAME_2);",
+        "line": 83,
+        "type": "STUBBING",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    MockitoAnnotations.initMocks(this);\r\n    when(dataSource.getConnection()).thenReturn(conn);\r\n    when(conn.createStatement()).thenReturn(statement);\r\n    when(statement.executeQuery(Mockito.<String>any())).thenReturn(rs);\r\n    when(rs.getMetaData()).thenReturn(rsMet);\r\n    when(rs.next()).thenReturn(true);\r\n    when(rs.getString(1)).thenReturn(DB_COL_VALUE_1);\r\n    when(rs.getString(2)).thenReturn(DB_COL_VALUE_2);\r\n    when(rsMet.getColumnCount()).thenReturn(2);\r\n    when(rsMet.getColumnName(1)).thenReturn(DB_COL_NAME_1);\r\n    when(rsMet.getColumnName(2)).thenReturn(DB_COL_NAME_2);\r\n    extractor = new DataSourceMetExtractor();\r\n}"
+        }
+      }
+    ]
+  }
+]

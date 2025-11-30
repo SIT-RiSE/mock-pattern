@@ -1,0 +1,632 @@
+[
+  {
+    "rawMockObjectId": 1,
+    "variableName": "clientConfig",
+    "variableType": "TubeClientConfig",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "com.tencent.tubemq.client.consumer",
+      "filePath": "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\consumer\\MessageFetchManagerTest.java"
+    },
+    "statements": [
+      {
+        "code": "TubeClientConfig clientConfig = mock(TubeClientConfig.class);",
+        "line": 41,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testMessageFetchManager",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testMessageFetchManager() throws Exception {\r\n    TubeClientConfig clientConfig = mock(TubeClientConfig.class);\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1\");\r\n    when(clientConfig.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    ConsumerConfig config = new ConsumerConfig(\"182.168.1.2:18080\", \"192.168.1.1:18080\", \"test\");\r\n    ClientFactory clientFactory = new NettyClientFactory();\r\n    TubeBaseSessionFactory factory = new TubeBaseSessionFactory(clientFactory, clientConfig);\r\n    SimplePushMessageConsumer consumer = new SimplePushMessageConsumer(factory, config);\r\n    MessageFetchManager fetchManager = new MessageFetchManager(config, consumer);\r\n    Assert.assertFalse(fetchManager.isShutdown());\r\n    fetchManager.startFetchWorkers();\r\n    fetchManager.stopFetchWorkers(true);\r\n    Assert.assertTrue(fetchManager.isShutdown());\r\n}"
+        }
+      },
+      {
+        "code": "when(clientConfig.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));",
+        "line": 45,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testMessageFetchManager",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testMessageFetchManager() throws Exception {\r\n    TubeClientConfig clientConfig = mock(TubeClientConfig.class);\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1\");\r\n    when(clientConfig.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    ConsumerConfig config = new ConsumerConfig(\"182.168.1.2:18080\", \"192.168.1.1:18080\", \"test\");\r\n    ClientFactory clientFactory = new NettyClientFactory();\r\n    TubeBaseSessionFactory factory = new TubeBaseSessionFactory(clientFactory, clientConfig);\r\n    SimplePushMessageConsumer consumer = new SimplePushMessageConsumer(factory, config);\r\n    MessageFetchManager fetchManager = new MessageFetchManager(config, consumer);\r\n    Assert.assertFalse(fetchManager.isShutdown());\r\n    fetchManager.startFetchWorkers();\r\n    fetchManager.stopFetchWorkers(true);\r\n    Assert.assertTrue(fetchManager.isShutdown());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 2,
+    "variableName": "config",
+    "variableType": "TubeClientConfig",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "com.tencent.tubemq.client.factory",
+      "filePath": "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\factory\\TubeBaseSessionFactoryTest.java"
+    },
+    "statements": [
+      {
+        "code": "TubeClientConfig config = mock(TubeClientConfig.class);",
+        "line": 47,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTubeBaseSessionFactory",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTubeBaseSessionFactory() throws Exception {\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    ClientFactory clientFactory = mock(ClientFactory.class);\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1:18080\");\r\n    TubeBaseSessionFactory factory = new TubeBaseSessionFactory(clientFactory, config);\r\n    assertFalse(factory.isShutdown());\r\n    // Use reflection to change the producer manager to a mock one\r\n    ProducerManager mockPM = mock(ProducerManager.class);\r\n    Field field = factory.getClass().getDeclaredField(\"producerManager\");\r\n    field.setAccessible(true);\r\n    field.set(factory, mockPM);\r\n    MessageProducer producer = factory.createProducer();\r\n    assertEquals(1, factory.getCurrClients().size());\r\n    final PullMessageConsumer pullMessageConsumer = factory.createPullConsumer(new ConsumerConfig(\"127.0.0.1:18080\", \"192.168.1.1:18080\", \"test\"));\r\n    final PushMessageConsumer pushMessageConsumer = factory.createPushConsumer(new ConsumerConfig(\"127.0.0.1:18081\", \"192.168.1.1:18080\", \"test\"));\r\n    assertEquals(3, factory.getCurrClients().size());\r\n    factory.removeClient(producer);\r\n    factory.removeClient(pullMessageConsumer);\r\n    factory.removeClient(pushMessageConsumer);\r\n    assertEquals(0, factory.getCurrClients().size());\r\n    factory.shutdown();\r\n    assertTrue(factory.isShutdown());\r\n}"
+        }
+      },
+      {
+        "code": "when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));",
+        "line": 48,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTubeBaseSessionFactory",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTubeBaseSessionFactory() throws Exception {\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    ClientFactory clientFactory = mock(ClientFactory.class);\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1:18080\");\r\n    TubeBaseSessionFactory factory = new TubeBaseSessionFactory(clientFactory, config);\r\n    assertFalse(factory.isShutdown());\r\n    // Use reflection to change the producer manager to a mock one\r\n    ProducerManager mockPM = mock(ProducerManager.class);\r\n    Field field = factory.getClass().getDeclaredField(\"producerManager\");\r\n    field.setAccessible(true);\r\n    field.set(factory, mockPM);\r\n    MessageProducer producer = factory.createProducer();\r\n    assertEquals(1, factory.getCurrClients().size());\r\n    final PullMessageConsumer pullMessageConsumer = factory.createPullConsumer(new ConsumerConfig(\"127.0.0.1:18080\", \"192.168.1.1:18080\", \"test\"));\r\n    final PushMessageConsumer pushMessageConsumer = factory.createPushConsumer(new ConsumerConfig(\"127.0.0.1:18081\", \"192.168.1.1:18080\", \"test\"));\r\n    assertEquals(3, factory.getCurrClients().size());\r\n    factory.removeClient(producer);\r\n    factory.removeClient(pullMessageConsumer);\r\n    factory.removeClient(pushMessageConsumer);\r\n    assertEquals(0, factory.getCurrClients().size());\r\n    factory.shutdown();\r\n    assertTrue(factory.isShutdown());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 3,
+    "variableName": "clientFactory",
+    "variableType": "ClientFactory",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "com.tencent.tubemq.client.factory",
+      "filePath": "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\factory\\TubeBaseSessionFactoryTest.java"
+    },
+    "statements": [
+      {
+        "code": "ClientFactory clientFactory = mock(ClientFactory.class);",
+        "line": 50,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTubeBaseSessionFactory",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTubeBaseSessionFactory() throws Exception {\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    ClientFactory clientFactory = mock(ClientFactory.class);\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1:18080\");\r\n    TubeBaseSessionFactory factory = new TubeBaseSessionFactory(clientFactory, config);\r\n    assertFalse(factory.isShutdown());\r\n    // Use reflection to change the producer manager to a mock one\r\n    ProducerManager mockPM = mock(ProducerManager.class);\r\n    Field field = factory.getClass().getDeclaredField(\"producerManager\");\r\n    field.setAccessible(true);\r\n    field.set(factory, mockPM);\r\n    MessageProducer producer = factory.createProducer();\r\n    assertEquals(1, factory.getCurrClients().size());\r\n    final PullMessageConsumer pullMessageConsumer = factory.createPullConsumer(new ConsumerConfig(\"127.0.0.1:18080\", \"192.168.1.1:18080\", \"test\"));\r\n    final PushMessageConsumer pushMessageConsumer = factory.createPushConsumer(new ConsumerConfig(\"127.0.0.1:18081\", \"192.168.1.1:18080\", \"test\"));\r\n    assertEquals(3, factory.getCurrClients().size());\r\n    factory.removeClient(producer);\r\n    factory.removeClient(pullMessageConsumer);\r\n    factory.removeClient(pushMessageConsumer);\r\n    assertEquals(0, factory.getCurrClients().size());\r\n    factory.shutdown();\r\n    assertTrue(factory.isShutdown());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 4,
+    "variableName": "mockPM",
+    "variableType": "ProducerManager",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "com.tencent.tubemq.client.factory",
+      "filePath": "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\factory\\TubeBaseSessionFactoryTest.java"
+    },
+    "statements": [
+      {
+        "code": "// Use reflection to change the producer manager to a mock one\r\nProducerManager mockPM = mock(ProducerManager.class);",
+        "line": 58,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTubeBaseSessionFactory",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTubeBaseSessionFactory() throws Exception {\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    ClientFactory clientFactory = mock(ClientFactory.class);\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1:18080\");\r\n    TubeBaseSessionFactory factory = new TubeBaseSessionFactory(clientFactory, config);\r\n    assertFalse(factory.isShutdown());\r\n    // Use reflection to change the producer manager to a mock one\r\n    ProducerManager mockPM = mock(ProducerManager.class);\r\n    Field field = factory.getClass().getDeclaredField(\"producerManager\");\r\n    field.setAccessible(true);\r\n    field.set(factory, mockPM);\r\n    MessageProducer producer = factory.createProducer();\r\n    assertEquals(1, factory.getCurrClients().size());\r\n    final PullMessageConsumer pullMessageConsumer = factory.createPullConsumer(new ConsumerConfig(\"127.0.0.1:18080\", \"192.168.1.1:18080\", \"test\"));\r\n    final PushMessageConsumer pushMessageConsumer = factory.createPushConsumer(new ConsumerConfig(\"127.0.0.1:18081\", \"192.168.1.1:18080\", \"test\"));\r\n    assertEquals(3, factory.getCurrClients().size());\r\n    factory.removeClient(producer);\r\n    factory.removeClient(pullMessageConsumer);\r\n    factory.removeClient(pushMessageConsumer);\r\n    assertEquals(0, factory.getCurrClients().size());\r\n    factory.shutdown();\r\n    assertTrue(factory.isShutdown());\r\n}"
+        }
+      },
+      {
+        "code": "field.set(factory, mockPM);",
+        "line": 61,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTubeBaseSessionFactory",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTubeBaseSessionFactory() throws Exception {\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    ClientFactory clientFactory = mock(ClientFactory.class);\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1:18080\");\r\n    TubeBaseSessionFactory factory = new TubeBaseSessionFactory(clientFactory, config);\r\n    assertFalse(factory.isShutdown());\r\n    // Use reflection to change the producer manager to a mock one\r\n    ProducerManager mockPM = mock(ProducerManager.class);\r\n    Field field = factory.getClass().getDeclaredField(\"producerManager\");\r\n    field.setAccessible(true);\r\n    field.set(factory, mockPM);\r\n    MessageProducer producer = factory.createProducer();\r\n    assertEquals(1, factory.getCurrClients().size());\r\n    final PullMessageConsumer pullMessageConsumer = factory.createPullConsumer(new ConsumerConfig(\"127.0.0.1:18080\", \"192.168.1.1:18080\", \"test\"));\r\n    final PushMessageConsumer pushMessageConsumer = factory.createPushConsumer(new ConsumerConfig(\"127.0.0.1:18081\", \"192.168.1.1:18080\", \"test\"));\r\n    assertEquals(3, factory.getCurrClients().size());\r\n    factory.removeClient(producer);\r\n    factory.removeClient(pullMessageConsumer);\r\n    factory.removeClient(pushMessageConsumer);\r\n    assertEquals(0, factory.getCurrClients().size());\r\n    factory.shutdown();\r\n    assertTrue(factory.isShutdown());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 5,
+    "variableName": "config",
+    "variableType": "TubeClientConfig",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "com.tencent.tubemq.client.factory",
+      "filePath": "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\factory\\TubeMultiSessionFactoryTest.java"
+    },
+    "statements": [
+      {
+        "code": "TubeClientConfig config = mock(TubeClientConfig.class);",
+        "line": 37,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTubeMultiSessionFactory",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTubeMultiSessionFactory() throws Exception {\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getRpcConnProcesserCnt()).thenReturn(1);\r\n    when(config.getRpcRspCallBackThreadCnt()).thenReturn(1);\r\n    when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1\");\r\n    TubeMultiSessionFactory factory = new TubeMultiSessionFactory(config);\r\n    factory.shutdown();\r\n}"
+        }
+      },
+      {
+        "code": "when(config.getRpcConnProcesserCnt()).thenReturn(1);",
+        "line": 38,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTubeMultiSessionFactory",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTubeMultiSessionFactory() throws Exception {\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getRpcConnProcesserCnt()).thenReturn(1);\r\n    when(config.getRpcRspCallBackThreadCnt()).thenReturn(1);\r\n    when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1\");\r\n    TubeMultiSessionFactory factory = new TubeMultiSessionFactory(config);\r\n    factory.shutdown();\r\n}"
+        }
+      },
+      {
+        "code": "when(config.getRpcRspCallBackThreadCnt()).thenReturn(1);",
+        "line": 39,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTubeMultiSessionFactory",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTubeMultiSessionFactory() throws Exception {\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getRpcConnProcesserCnt()).thenReturn(1);\r\n    when(config.getRpcRspCallBackThreadCnt()).thenReturn(1);\r\n    when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1\");\r\n    TubeMultiSessionFactory factory = new TubeMultiSessionFactory(config);\r\n    factory.shutdown();\r\n}"
+        }
+      },
+      {
+        "code": "when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));",
+        "line": 40,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTubeMultiSessionFactory",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTubeMultiSessionFactory() throws Exception {\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getRpcConnProcesserCnt()).thenReturn(1);\r\n    when(config.getRpcRspCallBackThreadCnt()).thenReturn(1);\r\n    when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1\");\r\n    TubeMultiSessionFactory factory = new TubeMultiSessionFactory(config);\r\n    factory.shutdown();\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 6,
+    "variableName": "config",
+    "variableType": "TubeClientConfig",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "com.tencent.tubemq.client.factory",
+      "filePath": "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\factory\\TubeSingleSessionFactoryTest.java"
+    },
+    "statements": [
+      {
+        "code": "TubeClientConfig config = mock(TubeClientConfig.class);",
+        "line": 36,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTubeSingleSessionFactory",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTubeSingleSessionFactory() throws Exception {\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getRpcConnProcesserCnt()).thenReturn(1);\r\n    when(config.getRpcRspCallBackThreadCnt()).thenReturn(1);\r\n    when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1\");\r\n    TubeSingleSessionFactory factory = new TubeSingleSessionFactory(config);\r\n    factory.shutdown();\r\n}"
+        }
+      },
+      {
+        "code": "when(config.getRpcConnProcesserCnt()).thenReturn(1);",
+        "line": 37,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTubeSingleSessionFactory",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTubeSingleSessionFactory() throws Exception {\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getRpcConnProcesserCnt()).thenReturn(1);\r\n    when(config.getRpcRspCallBackThreadCnt()).thenReturn(1);\r\n    when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1\");\r\n    TubeSingleSessionFactory factory = new TubeSingleSessionFactory(config);\r\n    factory.shutdown();\r\n}"
+        }
+      },
+      {
+        "code": "when(config.getRpcRspCallBackThreadCnt()).thenReturn(1);",
+        "line": 38,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTubeSingleSessionFactory",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTubeSingleSessionFactory() throws Exception {\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getRpcConnProcesserCnt()).thenReturn(1);\r\n    when(config.getRpcRspCallBackThreadCnt()).thenReturn(1);\r\n    when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1\");\r\n    TubeSingleSessionFactory factory = new TubeSingleSessionFactory(config);\r\n    factory.shutdown();\r\n}"
+        }
+      },
+      {
+        "code": "when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));",
+        "line": 39,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testTubeSingleSessionFactory",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testTubeSingleSessionFactory() throws Exception {\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getRpcConnProcesserCnt()).thenReturn(1);\r\n    when(config.getRpcRspCallBackThreadCnt()).thenReturn(1);\r\n    when(config.getMasterInfo()).thenReturn(new MasterInfo(\"192.168.1.1:18080\"));\r\n    PowerMockito.mockStatic(AddressUtils.class);\r\n    PowerMockito.when(AddressUtils.getLocalAddress()).thenReturn(\"127.0.0.1\");\r\n    TubeSingleSessionFactory factory = new TubeSingleSessionFactory(config);\r\n    factory.shutdown();\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 7,
+    "variableName": "rpcServiceFactory",
+    "variableType": "RpcServiceFactory",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "com.tencent.tubemq.client.producer.qltystats",
+      "filePath": "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\producer\\qltystats\\DefaultBrokerRcvQltyStatsTest.java"
+    },
+    "statements": [
+      {
+        "code": "RpcServiceFactory rpcServiceFactory = mock(RpcServiceFactory.class);",
+        "line": 40,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testStartBrokerStatistic",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testStartBrokerStatistic() throws Exception {\r\n    RpcServiceFactory rpcServiceFactory = mock(RpcServiceFactory.class);\r\n    when(rpcServiceFactory.getForbiddenAddrMap()).thenReturn(new ConcurrentHashMap<String, Long>());\r\n    when(rpcServiceFactory.getUnavilableBrokerMap()).thenReturn(new ConcurrentHashMap<Integer, Long>());\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getSessionMaxAllowedDelayedMsgCount()).thenReturn(1000L);\r\n    DefaultBrokerRcvQltyStats stats = new DefaultBrokerRcvQltyStats(rpcServiceFactory, config);\r\n    stats.startBrokerStatistic();\r\n    assertFalse(stats.isStopped());\r\n    stats.addSendStatistic(0);\r\n    stats.addReceiveStatistic(0, true);\r\n    stats.statisticDltBrokerStatus();\r\n    // Test getAllowedBrokerPartitions\r\n    Map<Integer, List<Partition>> brokerPartList = new HashMap<>();\r\n    List<Partition> partitions = new ArrayList<>();\r\n    partitions.add(new Partition(new BrokerInfo(\"0:192.168.0.1:18080\"), \"test_topic\", 1));\r\n    brokerPartList.put(0, partitions);\r\n    List<Partition> actualPartitions = stats.getAllowedBrokerPartitions(brokerPartList);\r\n    assertEquals(1, actualPartitions.size());\r\n    assertEquals(1, actualPartitions.get(0).getPartitionId());\r\n    // Unregister and stop statistic server\r\n    stats.removeUnRegisteredBroker(new ArrayList<Integer>());\r\n    stats.stopBrokerStatistic();\r\n    assertTrue(stats.isStopped());\r\n}"
+        }
+      },
+      {
+        "code": "when(rpcServiceFactory.getForbiddenAddrMap()).thenReturn(new ConcurrentHashMap<String, Long>());",
+        "line": 41,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testStartBrokerStatistic",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testStartBrokerStatistic() throws Exception {\r\n    RpcServiceFactory rpcServiceFactory = mock(RpcServiceFactory.class);\r\n    when(rpcServiceFactory.getForbiddenAddrMap()).thenReturn(new ConcurrentHashMap<String, Long>());\r\n    when(rpcServiceFactory.getUnavilableBrokerMap()).thenReturn(new ConcurrentHashMap<Integer, Long>());\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getSessionMaxAllowedDelayedMsgCount()).thenReturn(1000L);\r\n    DefaultBrokerRcvQltyStats stats = new DefaultBrokerRcvQltyStats(rpcServiceFactory, config);\r\n    stats.startBrokerStatistic();\r\n    assertFalse(stats.isStopped());\r\n    stats.addSendStatistic(0);\r\n    stats.addReceiveStatistic(0, true);\r\n    stats.statisticDltBrokerStatus();\r\n    // Test getAllowedBrokerPartitions\r\n    Map<Integer, List<Partition>> brokerPartList = new HashMap<>();\r\n    List<Partition> partitions = new ArrayList<>();\r\n    partitions.add(new Partition(new BrokerInfo(\"0:192.168.0.1:18080\"), \"test_topic\", 1));\r\n    brokerPartList.put(0, partitions);\r\n    List<Partition> actualPartitions = stats.getAllowedBrokerPartitions(brokerPartList);\r\n    assertEquals(1, actualPartitions.size());\r\n    assertEquals(1, actualPartitions.get(0).getPartitionId());\r\n    // Unregister and stop statistic server\r\n    stats.removeUnRegisteredBroker(new ArrayList<Integer>());\r\n    stats.stopBrokerStatistic();\r\n    assertTrue(stats.isStopped());\r\n}"
+        }
+      },
+      {
+        "code": "when(rpcServiceFactory.getUnavilableBrokerMap()).thenReturn(new ConcurrentHashMap<Integer, Long>());",
+        "line": 42,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testStartBrokerStatistic",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testStartBrokerStatistic() throws Exception {\r\n    RpcServiceFactory rpcServiceFactory = mock(RpcServiceFactory.class);\r\n    when(rpcServiceFactory.getForbiddenAddrMap()).thenReturn(new ConcurrentHashMap<String, Long>());\r\n    when(rpcServiceFactory.getUnavilableBrokerMap()).thenReturn(new ConcurrentHashMap<Integer, Long>());\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getSessionMaxAllowedDelayedMsgCount()).thenReturn(1000L);\r\n    DefaultBrokerRcvQltyStats stats = new DefaultBrokerRcvQltyStats(rpcServiceFactory, config);\r\n    stats.startBrokerStatistic();\r\n    assertFalse(stats.isStopped());\r\n    stats.addSendStatistic(0);\r\n    stats.addReceiveStatistic(0, true);\r\n    stats.statisticDltBrokerStatus();\r\n    // Test getAllowedBrokerPartitions\r\n    Map<Integer, List<Partition>> brokerPartList = new HashMap<>();\r\n    List<Partition> partitions = new ArrayList<>();\r\n    partitions.add(new Partition(new BrokerInfo(\"0:192.168.0.1:18080\"), \"test_topic\", 1));\r\n    brokerPartList.put(0, partitions);\r\n    List<Partition> actualPartitions = stats.getAllowedBrokerPartitions(brokerPartList);\r\n    assertEquals(1, actualPartitions.size());\r\n    assertEquals(1, actualPartitions.get(0).getPartitionId());\r\n    // Unregister and stop statistic server\r\n    stats.removeUnRegisteredBroker(new ArrayList<Integer>());\r\n    stats.stopBrokerStatistic();\r\n    assertTrue(stats.isStopped());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 8,
+    "variableName": "config",
+    "variableType": "TubeClientConfig",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "com.tencent.tubemq.client.producer.qltystats",
+      "filePath": "C:\\Java_projects\\temp_projects\\InLong\\tubemq-client\\src\\test\\java\\com\\tencent\\tubemq\\client\\producer\\qltystats\\DefaultBrokerRcvQltyStatsTest.java"
+    },
+    "statements": [
+      {
+        "code": "TubeClientConfig config = mock(TubeClientConfig.class);",
+        "line": 44,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testStartBrokerStatistic",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testStartBrokerStatistic() throws Exception {\r\n    RpcServiceFactory rpcServiceFactory = mock(RpcServiceFactory.class);\r\n    when(rpcServiceFactory.getForbiddenAddrMap()).thenReturn(new ConcurrentHashMap<String, Long>());\r\n    when(rpcServiceFactory.getUnavilableBrokerMap()).thenReturn(new ConcurrentHashMap<Integer, Long>());\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getSessionMaxAllowedDelayedMsgCount()).thenReturn(1000L);\r\n    DefaultBrokerRcvQltyStats stats = new DefaultBrokerRcvQltyStats(rpcServiceFactory, config);\r\n    stats.startBrokerStatistic();\r\n    assertFalse(stats.isStopped());\r\n    stats.addSendStatistic(0);\r\n    stats.addReceiveStatistic(0, true);\r\n    stats.statisticDltBrokerStatus();\r\n    // Test getAllowedBrokerPartitions\r\n    Map<Integer, List<Partition>> brokerPartList = new HashMap<>();\r\n    List<Partition> partitions = new ArrayList<>();\r\n    partitions.add(new Partition(new BrokerInfo(\"0:192.168.0.1:18080\"), \"test_topic\", 1));\r\n    brokerPartList.put(0, partitions);\r\n    List<Partition> actualPartitions = stats.getAllowedBrokerPartitions(brokerPartList);\r\n    assertEquals(1, actualPartitions.size());\r\n    assertEquals(1, actualPartitions.get(0).getPartitionId());\r\n    // Unregister and stop statistic server\r\n    stats.removeUnRegisteredBroker(new ArrayList<Integer>());\r\n    stats.stopBrokerStatistic();\r\n    assertTrue(stats.isStopped());\r\n}"
+        }
+      },
+      {
+        "code": "when(config.getSessionMaxAllowedDelayedMsgCount()).thenReturn(1000L);",
+        "line": 45,
+        "type": "STUBBING",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testStartBrokerStatistic",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testStartBrokerStatistic() throws Exception {\r\n    RpcServiceFactory rpcServiceFactory = mock(RpcServiceFactory.class);\r\n    when(rpcServiceFactory.getForbiddenAddrMap()).thenReturn(new ConcurrentHashMap<String, Long>());\r\n    when(rpcServiceFactory.getUnavilableBrokerMap()).thenReturn(new ConcurrentHashMap<Integer, Long>());\r\n    TubeClientConfig config = mock(TubeClientConfig.class);\r\n    when(config.getSessionMaxAllowedDelayedMsgCount()).thenReturn(1000L);\r\n    DefaultBrokerRcvQltyStats stats = new DefaultBrokerRcvQltyStats(rpcServiceFactory, config);\r\n    stats.startBrokerStatistic();\r\n    assertFalse(stats.isStopped());\r\n    stats.addSendStatistic(0);\r\n    stats.addReceiveStatistic(0, true);\r\n    stats.statisticDltBrokerStatus();\r\n    // Test getAllowedBrokerPartitions\r\n    Map<Integer, List<Partition>> brokerPartList = new HashMap<>();\r\n    List<Partition> partitions = new ArrayList<>();\r\n    partitions.add(new Partition(new BrokerInfo(\"0:192.168.0.1:18080\"), \"test_topic\", 1));\r\n    brokerPartList.put(0, partitions);\r\n    List<Partition> actualPartitions = stats.getAllowedBrokerPartitions(brokerPartList);\r\n    assertEquals(1, actualPartitions.size());\r\n    assertEquals(1, actualPartitions.get(0).getPartitionId());\r\n    // Unregister and stop statistic server\r\n    stats.removeUnRegisteredBroker(new ArrayList<Integer>());\r\n    stats.stopBrokerStatistic();\r\n    assertTrue(stats.isStopped());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 9,
+    "variableName": "brokerInfo",
+    "variableType": "BrokerInfo",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "com.tencent.tubemq.server.master.nodemanage.nodebroker",
+      "filePath": "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\master\\nodemanage\\nodebroker\\BrokerInfoHolderTest.java"
+    },
+    "statements": [
+      {
+        "code": "BrokerInfo brokerInfo = mock(BrokerInfo.class);",
+        "line": 38,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testBrokerInfo",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testBrokerInfo() {\r\n    BrokerInfo brokerInfo = mock(BrokerInfo.class);\r\n    brokerInfoHolder.setBrokerInfo(1, brokerInfo);\r\n    Assert.assertEquals(brokerInfo, brokerInfoHolder.getBrokerInfo(1));\r\n    brokerInfoHolder.removeBroker(1);\r\n    Assert.assertNull(brokerInfoHolder.getBrokerInfo(1));\r\n}"
+        }
+      },
+      {
+        "code": "brokerInfoHolder.setBrokerInfo(1, brokerInfo);",
+        "line": 40,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testBrokerInfo",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testBrokerInfo() {\r\n    BrokerInfo brokerInfo = mock(BrokerInfo.class);\r\n    brokerInfoHolder.setBrokerInfo(1, brokerInfo);\r\n    Assert.assertEquals(brokerInfo, brokerInfoHolder.getBrokerInfo(1));\r\n    brokerInfoHolder.removeBroker(1);\r\n    Assert.assertNull(brokerInfoHolder.getBrokerInfo(1));\r\n}"
+        }
+      },
+      {
+        "code": "Assert.assertEquals(brokerInfo, brokerInfoHolder.getBrokerInfo(1));",
+        "line": 41,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "testBrokerInfo",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void testBrokerInfo() {\r\n    BrokerInfo brokerInfo = mock(BrokerInfo.class);\r\n    brokerInfoHolder.setBrokerInfo(1, brokerInfo);\r\n    Assert.assertEquals(brokerInfo, brokerInfoHolder.getBrokerInfo(1));\r\n    brokerInfoHolder.removeBroker(1);\r\n    Assert.assertNull(brokerInfoHolder.getBrokerInfo(1));\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 10,
+    "variableName": "brokerConfManage",
+    "variableType": "BrokerConfManage",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "com.tencent.tubemq.server.master.nodemanage.nodebroker",
+      "filePath": "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\master\\nodemanage\\nodebroker\\BrokerInfoHolderTest.java",
+      "className": "BrokerInfoHolderTest"
+    },
+    "statements": [
+      {
+        "code": "private BrokerConfManage brokerConfManage;",
+        "line": 28,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "brokerConfManage = mock(BrokerConfManage.class);",
+        "line": 32,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    brokerConfManage = mock(BrokerConfManage.class);\r\n    brokerInfoHolder = new BrokerInfoHolder(10, brokerConfManage);\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 11,
+    "variableName": "event1",
+    "variableType": "ConsumerEvent",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "com.tencent.tubemq.server.master.nodemanage.nodeconsumer",
+      "filePath": "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\master\\nodemanage\\nodeconsumer\\ConsumerEventManagerTest.java"
+    },
+    "statements": [
+      {
+        "code": "ConsumerEvent event1 = mock(ConsumerEvent.class);",
+        "line": 44,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "eventTest",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void eventTest() {\r\n    ConsumerEvent event1 = mock(ConsumerEvent.class);\r\n    consumerEventManager.addDisconnectEvent(\"consumer001\", event1);\r\n    ConsumerEvent event2 = mock(ConsumerEvent.class);\r\n    consumerEventManager.addConnectEvent(\"consumer002\", event2);\r\n    Assert.assertTrue(consumerEventManager.hasEvent());\r\n    Assert.assertEquals(2, consumerEventManager.getUnProcessedIdSet().size());\r\n    consumerEventManager.removeAll(\"consumer001\");\r\n    consumerEventManager.removeAll(\"consumer002\");\r\n    Assert.assertFalse(consumerEventManager.hasEvent());\r\n}"
+        }
+      },
+      {
+        "code": "consumerEventManager.addDisconnectEvent(\"consumer001\", event1);",
+        "line": 45,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "eventTest",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void eventTest() {\r\n    ConsumerEvent event1 = mock(ConsumerEvent.class);\r\n    consumerEventManager.addDisconnectEvent(\"consumer001\", event1);\r\n    ConsumerEvent event2 = mock(ConsumerEvent.class);\r\n    consumerEventManager.addConnectEvent(\"consumer002\", event2);\r\n    Assert.assertTrue(consumerEventManager.hasEvent());\r\n    Assert.assertEquals(2, consumerEventManager.getUnProcessedIdSet().size());\r\n    consumerEventManager.removeAll(\"consumer001\");\r\n    consumerEventManager.removeAll(\"consumer002\");\r\n    Assert.assertFalse(consumerEventManager.hasEvent());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 12,
+    "variableName": "event2",
+    "variableType": "ConsumerEvent",
+    "isGlobal": false,
+    "mockPatternLevel": 0,
+    "classContext": {
+      "packageName": "com.tencent.tubemq.server.master.nodemanage.nodeconsumer",
+      "filePath": "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\master\\nodemanage\\nodeconsumer\\ConsumerEventManagerTest.java"
+    },
+    "statements": [
+      {
+        "code": "ConsumerEvent event2 = mock(ConsumerEvent.class);",
+        "line": 46,
+        "type": "CREATION",
+        "locate": "",
+        "isMockRelated": true,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "eventTest",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void eventTest() {\r\n    ConsumerEvent event1 = mock(ConsumerEvent.class);\r\n    consumerEventManager.addDisconnectEvent(\"consumer001\", event1);\r\n    ConsumerEvent event2 = mock(ConsumerEvent.class);\r\n    consumerEventManager.addConnectEvent(\"consumer002\", event2);\r\n    Assert.assertTrue(consumerEventManager.hasEvent());\r\n    Assert.assertEquals(2, consumerEventManager.getUnProcessedIdSet().size());\r\n    consumerEventManager.removeAll(\"consumer001\");\r\n    consumerEventManager.removeAll(\"consumer002\");\r\n    Assert.assertFalse(consumerEventManager.hasEvent());\r\n}"
+        }
+      },
+      {
+        "code": "consumerEventManager.addConnectEvent(\"consumer002\", event2);",
+        "line": 47,
+        "type": "REFERENCE",
+        "locate": "",
+        "isMockRelated": false,
+        "isShareable": false,
+        "locationContext": {
+          "methodName": "eventTest",
+          "methodAnnotations": [
+            "Test"
+          ],
+          "methodRawCode": "@Test\r\npublic void eventTest() {\r\n    ConsumerEvent event1 = mock(ConsumerEvent.class);\r\n    consumerEventManager.addDisconnectEvent(\"consumer001\", event1);\r\n    ConsumerEvent event2 = mock(ConsumerEvent.class);\r\n    consumerEventManager.addConnectEvent(\"consumer002\", event2);\r\n    Assert.assertTrue(consumerEventManager.hasEvent());\r\n    Assert.assertEquals(2, consumerEventManager.getUnProcessedIdSet().size());\r\n    consumerEventManager.removeAll(\"consumer001\");\r\n    consumerEventManager.removeAll(\"consumer002\");\r\n    Assert.assertFalse(consumerEventManager.hasEvent());\r\n}"
+        }
+      }
+    ]
+  },
+  {
+    "rawMockObjectId": 13,
+    "variableName": "consumerInfoHolder",
+    "variableType": "ConsumerInfoHolder",
+    "isGlobal": true,
+    "mockPatternLevel": 1,
+    "classContext": {
+      "packageName": "com.tencent.tubemq.server.master.nodemanage.nodeconsumer",
+      "filePath": "C:\\Java_projects\\temp_projects\\InLong\\tubemq-server\\src\\test\\java\\com\\tencent\\tubemq\\server\\master\\nodemanage\\nodeconsumer\\ConsumerEventManagerTest.java",
+      "className": "ConsumerEventManagerTest"
+    },
+    "statements": [
+      {
+        "code": "private ConsumerInfoHolder consumerInfoHolder;",
+        "line": 29,
+        "type": "FIELD_DECLARATION",
+        "locate": "Attribute",
+        "isMockRelated": false,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "FieldDeclaration",
+          "methodAnnotations": []
+        }
+      },
+      {
+        "code": "consumerInfoHolder = mock(ConsumerInfoHolder.class);",
+        "line": 33,
+        "type": "CREATION",
+        "locate": "@Before",
+        "isMockRelated": true,
+        "isShareable": true,
+        "locationContext": {
+          "methodName": "setUp",
+          "methodAnnotations": [
+            "Before"
+          ],
+          "methodRawCode": "@Before\r\npublic void setUp() throws Exception {\r\n    consumerInfoHolder = mock(ConsumerInfoHolder.class);\r\n    consumerEventManager = new ConsumerEventManager(consumerInfoHolder);\r\n}"
+        }
+      }
+    ]
+  }
+]

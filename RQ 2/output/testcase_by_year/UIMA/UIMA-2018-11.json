@@ -1,0 +1,229 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\cas\\impl\\SelectFsTest.java",
+  "methodName" : "testSelect_asList",
+  "sourceCode" : "@Test\r\npublic void testSelect_asList() {\r\n    cas.reset();\r\n    JCas jcas = cas.getJCas();\r\n    Token p1 = new Token(jcas, 0, 1);\r\n    p1.addToIndexes();\r\n    Token p2 = new Token(jcas, 1, 2);\r\n    p2.addToIndexes();\r\n    Token c1 = new Token(jcas, 2, 3);\r\n    c1.addToIndexes();\r\n    new Token(jcas, 3, 4).addToIndexes();\r\n    new Token(jcas, 4, 5).addToIndexes();\r\n    Token p3 = new Token(jcas, 1, 3);\r\n    p3.addToIndexes();\r\n    Token c = jcas.select(Token.class).at(2, 3).get(0);\r\n    assertTrue(c == c1);\r\n    /* preceding -> backwards iteration, starting at annot whose end <= c's begin,\r\n     *                therefore starts  \r\n     */\r\n    Iterator<Token> it = jcas.select(Token.class).preceding(c).iterator();\r\n    assertTrue(it.hasNext());\r\n    Token x = it.next();\r\n    assertTrue(x == p1);\r\n    assertTrue(it.hasNext());\r\n    x = it.next();\r\n    assertTrue(x == p2);\r\n    assertFalse(it.hasNext());\r\n    List<Token> preceedingTokens = jcas.select(Token.class).preceding(c).limit(2).asList();\r\n    assertEquals(2, preceedingTokens.size());\r\n    assertTrue(preceedingTokens.get(0) == p1);\r\n    assertTrue(preceedingTokens.get(1) == p2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\cas\\impl\\SelectFsTest.java",
+  "methodName" : "testPrecedingAndShifted",
+  "sourceCode" : "@Test\r\npublic void testPrecedingAndShifted() {\r\n    cas.reset();\r\n    JCas jCas = cas.getJCas();\r\n    Annotation a = new Annotation(jCas, 0, 1);\r\n    Annotation b = new Annotation(jCas, 2, 3);\r\n    Annotation c = new Annotation(jCas, 4, 5);\r\n    for (Annotation ann : Arrays.asList(a, b, c)) {\r\n        ann.addToIndexes();\r\n    }\r\n    // uimaFIT: Arrays.asList(a, b), selectPreceding(this.jCas, Annotation.class, c, 2));\r\n    // Produces reverse order\r\n    assertEquals(Arrays.asList(a, b), jCas.select(Annotation.class).preceding(c).limit(2).asList());\r\n    // Produces: java.lang.IllegalArgumentException: Strict requires BoundsUse.coveredBy\r\n    assertEquals(Arrays.asList(a, b), jCas.select(Annotation.class).startAt(c).shifted(-2).limit(2).asList());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\cas\\impl\\SelectFsTest.java",
+  "methodName" : "testBetween",
+  "sourceCode" : "@Test\r\npublic void testBetween() {\r\n    cas.reset();\r\n    JCas jCas = cas.getJCas();\r\n    Token t1 = new Token(jCas, 45, 57);\r\n    t1.addToIndexes();\r\n    Token t2 = new Token(jCas, 52, 52);\r\n    t2.addToIndexes();\r\n    new Sentence(jCas, 52, 52).addToIndexes();\r\n    // uimaFIT: selectBetween(jCas, Sentence.class, t1, t2);\r\n    List<Sentence> stem1 = jCas.select(Sentence.class).between(t1, t2).asList();\r\n    assertTrue(stem1.isEmpty());\r\n    t1 = new Token(jCas, 45, 52);\r\n    stem1 = jCas.select(Sentence.class).between(t1, t2).asList();\r\n    assertEquals(1, stem1.size());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\cas\\impl\\SelectFsTest.java",
+  "methodName" : "testBackwards",
+  "sourceCode" : "@Test\r\npublic void testBackwards() {\r\n    cas.reset();\r\n    JCas jcas = cas.getJCas();\r\n    cas.setDocumentText(\"t1 t2 t3 t4\");\r\n    Token p1 = new Token(jcas, 0, 2);\r\n    p1.addToIndexes();\r\n    Token p2 = new Token(jcas, 3, 5);\r\n    p2.addToIndexes();\r\n    Token p3 = new Token(jcas, 6, 8);\r\n    p3.addToIndexes();\r\n    Token p4 = new Token(jcas, 9, 11);\r\n    p4.addToIndexes();\r\n    // uimaFIT: JCasUtil.selectByIndex(jCas, Token.class, -1).getCoveredText()\r\n    assertEquals(\"t4\", jcas.select(Token.class).backwards().get(0).getCoveredText());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\cas\\impl\\SelectFsTest.java",
+  "methodName" : "testempty",
+  "sourceCode" : "@Test\r\npublic void testempty() {\r\n    cas.reset();\r\n    JCas jcas = cas.getJCas();\r\n    cas.setDocumentText(\"t1 t2 t3 t4\");\r\n    Token p1 = new Token(jcas, 0, 2);\r\n    p1.addToIndexes();\r\n    assertFalse(jcas.select(Token.class).isEmpty());\r\n    cas.reset();\r\n    assertTrue(jcas.select(Token.class).isEmpty());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\cas\\impl\\SelectFsTest.java",
+  "methodName" : "testSelectFollowingPrecedingDifferentTypes",
+  "sourceCode" : "@Test\r\npublic void testSelectFollowingPrecedingDifferentTypes() {\r\n    JCas jCas = cas.getJCas();\r\n    jCas.setDocumentText(\"A B C D E\");\r\n    Token a = new Token(jCas, 0, 1);\r\n    Token b = new Token(jCas, 2, 3);\r\n    Token c = new Token(jCas, 4, 5);\r\n    Token d = new Token(jCas, 6, 7);\r\n    Token e = new Token(jCas, 8, 9);\r\n    for (Token token : Arrays.asList(a, b, c, d, e)) {\r\n        token.addToIndexes();\r\n    }\r\n    Sentence sentence = new Sentence(jCas, 2, 5);\r\n    sentence.addToIndexes();\r\n    // uimaFIT: selectFollowing(this.jCas, Token.class, sentence, 1);\r\n    List<Token> following1 = jCas.select(Token.class).following(sentence).limit(1).asList();\r\n    //    assertEquals(Arrays.asList(\"D\"), JCasUtil.toText(following1));\r\n    assertEquals(Arrays.asList(d), following1);\r\n    Sentence s2 = new Sentence(jCas, 4, 5);\r\n    Token[] prec1 = jCas.select(Token.class).preceding(s2).asArray(Token.class);\r\n    assertEquals(2, prec1.length);\r\n    assertTrue(Arrays.equals(new Token[] { a, b }, prec1));\r\n    List<Token> prec2 = jCas.select(Token.class).preceding(s2).backwards().asList();\r\n    assertEquals(Arrays.asList(b, a), prec2);\r\n    prec2 = jCas.select(Token.class).preceding(s2).backwards().shifted(1).asList();\r\n    assertEquals(Arrays.asList(a), prec2);\r\n    prec2 = jCas.select(Token.class).following(sentence).shifted(1).asList();\r\n    assertEquals(Arrays.asList(e), prec2);\r\n    prec2 = jCas.select(Token.class).following(sentence).shifted(-1).asList();\r\n    assertEquals(Arrays.asList(c, d, e), prec2);\r\n    prec2 = jCas.select(Token.class).between(b, e).asList();\r\n    assertEquals(Arrays.asList(c, d), prec2);\r\n    prec2 = jCas.select(Token.class).between(e, b).asList();\r\n    assertEquals(Arrays.asList(c, d), prec2);\r\n    prec2 = jCas.select(Token.class).between(b, e).backwards().asList();\r\n    assertEquals(Arrays.asList(d, c), prec2);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\cas\\test\\SelectTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() {\r\n    /* Select testing\r\n     *   Test with cas, jcas, fsArray, fsList, index\r\n     *   \r\n     *   Test with type as positional, as keyword\r\n     *   \r\n     *   \r\n     */\r\n    /* non-annotation testing\r\n     *   bag, set, sorted - count, try T1, T1a\r\n     * \r\n     *   For set and sorted, test order and backwards\r\n     *     For bag, confirm backwards is ignored  \r\n     * \r\n     *   \r\n     */\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-core\\src\\test\\java\\org\\apache\\uima\\internal\\util\\MiscTest.java",
+  "methodName" : "test",
+  "sourceCode" : "@Test\r\npublic void test() {\r\n    assertEquals(8, Misc.nextHigherPowerOfX(0, 8));\r\n    assertEquals(8, Misc.nextHigherPowerOfX(-0, 8));\r\n    assertEquals(8, Misc.nextHigherPowerOfX(1, 8));\r\n    assertEquals(8, Misc.nextHigherPowerOfX(7, 8));\r\n    assertEquals(8, Misc.nextHigherPowerOfX(8, 8));\r\n    assertEquals(16, Misc.nextHigherPowerOfX(9, 8));\r\n    assertEquals(561152, Misc.nextHigherPowerOfX(10 * 1024 * 1024 * 8 / 3 / 50, 4096));\r\n    assertEquals(576, Misc.nextHigherPowerOfX(Math.max(512, 561152 / 1000), 32));\r\n    assertTrue(Arrays.equals(new byte[] { 0x03, 0x42 }, Misc.hex_string_to_bytearray(\"0342\")));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\model\\dotcorpus\\AnnotationStyleTest.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "/**\r\n * Tests the {@link AnnotationStyle#equals(Object)} method.\r\n */\r\n@Test\r\npublic void testEquals() {\r\n    AnnotationStyle a = new AnnotationStyle(\"testType\", AnnotationStyle.Style.BRACKET, new Color(255, 255, 0), 0);\r\n    AnnotationStyle b = new AnnotationStyle(\"testType\", AnnotationStyle.Style.BRACKET, new Color(255, 255, 0), 0);\r\n    assertEquals(a, b);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\model\\dotcorpus\\DotCorpusSerializerTest.java",
+  "methodName" : "testSerializeAndCreate",
+  "sourceCode" : "/**\r\n * Tests if serialization and recreations creates and object that is equal to the original.\r\n *\r\n * @throws CoreException -\r\n */\r\n@Test\r\npublic void testSerializeAndCreate() throws CoreException {\r\n    DotCorpus original = new DotCorpus();\r\n    original.setTypeSystemFilename(\"typesystem\");\r\n    original.addCasProcessorFolder(\"uima processor folder\");\r\n    original.setStyle(new AnnotationStyle(\"test\", Style.BRACKET, new Color(255, 255, 0), 0));\r\n    original.addCorpusFolder(\"corpus\");\r\n    ByteArrayOutputStream out = new ByteArrayOutputStream();\r\n    DotCorpusSerializer.serialize(original, out);\r\n    InputStream in = new ByteArrayInputStream(out.toByteArray());\r\n    DotCorpus recreated = DotCorpusSerializer.parseDotCorpus(in);\r\n    assertEquals(original, recreated);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "/**\r\n * Test the Span.equals() method.\r\n */\r\n@Test\r\npublic void testEquals() {\r\n    Span a = new Span(100, 1000);\r\n    Span b = new Span(100, 1000);\r\n    assertEquals(a.equals(b), true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testEqualsWithAnotherObject",
+  "sourceCode" : "/**\r\n * Test the Span.equals() method.\r\n */\r\n@Test\r\npublic void testEqualsWithAnotherObject() {\r\n    Span a = new Span(0, 0);\r\n    assertFalse(Boolean.TRUE.equals(a));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testEqualsWithNull",
+  "sourceCode" : "/**\r\n * Test the Span.equals() method.\r\n */\r\n@Test\r\npublic void testEqualsWithNull() {\r\n    Span a = new Span(0, 0);\r\n    assertEquals(a.equals(null), false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testCompareToWithBiggerSpan",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToWithBiggerSpan() {\r\n    Span a = new Span(100, 1000);\r\n    Span b = new Span(5000, 900);\r\n    assertEquals(true, a.compareTo(b) > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testCompareToWithBiggerIntersectSpan",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToWithBiggerIntersectSpan() {\r\n    Span a = new Span(100, 1000);\r\n    Span b = new Span(900, 900);\r\n    assertEquals(true, a.compareTo(b) > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testCompareToWithLowerSpan",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToWithLowerSpan() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(100, 1000);\r\n    assertEquals(true, a.compareTo(b) < 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testCompareToWithLowerIntersectSpan",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToWithLowerIntersectSpan() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(4900, 1000);\r\n    assertEquals(true, a.compareTo(b) < 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testCompareToEquals",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToEquals() {\r\n    Span a = new Span(4900, 1000);\r\n    Span b = new Span(4900, 1000);\r\n    assertEquals(true, a.compareTo(b) == 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testIsContaining",
+  "sourceCode" : "/**\r\n * Test the Span.IsContaining(Span) method.\r\n */\r\n@Test\r\npublic void testIsContaining() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(5200, 600);\r\n    assertEquals(true, a.isContaining(b));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testIsContainingWithEqual",
+  "sourceCode" : "/**\r\n * Test the Span.IsContaining(Span) method.\r\n */\r\n@Test\r\npublic void testIsContainingWithEqual() {\r\n    Span a = new Span(5000, 900);\r\n    assertEquals(true, a.isContaining(a));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testIsContainingWithLowerIntersect",
+  "sourceCode" : "/**\r\n * Test the Span.IsContaining(Span) method.\r\n */\r\n@Test\r\npublic void testIsContainingWithLowerIntersect() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(4500, 1000);\r\n    assertEquals(false, a.isContaining(b));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\core\\util\\SpanTest.java",
+  "methodName" : "testIsContainingWithHigherIntersect",
+  "sourceCode" : "/**\r\n * Test the Span.IsContaining(Span) method.\r\n */\r\n@Test\r\npublic void testIsContainingWithHigherIntersect() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(5000, 1000);\r\n    assertEquals(false, a.isContaining(b));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\AnnotationStyleTest.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "/**\r\n * Tests the {@link AnnotationStyle#equals(Object)} method.\r\n */\r\n@Test\r\npublic void testEquals() {\r\n    AnnotationStyle a = new AnnotationStyle(\"testType\", AnnotationStyle.Style.BRACKET, new Color(255, 255, 0), 0);\r\n    AnnotationStyle b = new AnnotationStyle(\"testType\", AnnotationStyle.Style.BRACKET, new Color(255, 255, 0), 0);\r\n    assertEquals(a, b);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testEquals",
+  "sourceCode" : "/**\r\n * Test the Span.equals() method.\r\n */\r\n@Test\r\npublic void testEquals() {\r\n    Span a = new Span(100, 1000);\r\n    Span b = new Span(100, 1000);\r\n    assertEquals(a.equals(b), true);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testEqualsWithAnotherObject",
+  "sourceCode" : "/**\r\n * Test the Span.equals() method.\r\n */\r\n@Test\r\npublic void testEqualsWithAnotherObject() {\r\n    Span a = new Span(0, 0);\r\n    assertFalse(Boolean.TRUE.equals(a));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testEqualsWithNull",
+  "sourceCode" : "/**\r\n * Test the Span.equals() method.\r\n */\r\n@Test\r\npublic void testEqualsWithNull() {\r\n    Span a = new Span(0, 0);\r\n    assertEquals(a.equals(null), false);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testCompareToWithBiggerSpan",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToWithBiggerSpan() {\r\n    Span a = new Span(100, 1000);\r\n    Span b = new Span(5000, 900);\r\n    assertEquals(true, a.compareTo(b) > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testCompareToWithBiggerIntersectSpan",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToWithBiggerIntersectSpan() {\r\n    Span a = new Span(100, 1000);\r\n    Span b = new Span(900, 900);\r\n    assertEquals(true, a.compareTo(b) > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testCompareToWithLowerSpan",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToWithLowerSpan() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(100, 1000);\r\n    assertEquals(true, a.compareTo(b) < 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testCompareToWithLowerIntersectSpan",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToWithLowerIntersectSpan() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(4900, 1000);\r\n    assertEquals(true, a.compareTo(b) < 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testCompareToEquals",
+  "sourceCode" : "/**\r\n * Test the Span.compareTo(Object) method.\r\n */\r\n@Test\r\npublic void testCompareToEquals() {\r\n    Span a = new Span(4900, 1000);\r\n    Span b = new Span(4900, 1000);\r\n    assertEquals(true, a.compareTo(b) == 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testIsContaining",
+  "sourceCode" : "/**\r\n * Test the Span.IsContaining(Span) method.\r\n */\r\n@Test\r\npublic void testIsContaining() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(5200, 600);\r\n    assertEquals(true, a.isContaining(b));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testIsContainingWithEqual",
+  "sourceCode" : "/**\r\n * Test the Span.IsContaining(Span) method.\r\n */\r\n@Test\r\npublic void testIsContainingWithEqual() {\r\n    Span a = new Span(5000, 900);\r\n    assertEquals(true, a.isContaining(a));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testIsContainingWithLowerIntersect",
+  "sourceCode" : "/**\r\n * Test the Span.IsContaining(Span) method.\r\n */\r\n@Test\r\npublic void testIsContainingWithLowerIntersect() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(4500, 1000);\r\n    assertEquals(false, a.isContaining(b));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\uimaj-ep-cas-editor\\src\\test\\java\\org\\apache\\uima\\caseditor\\editor\\util\\SpanTest.java",
+  "methodName" : "testIsContainingWithHigherIntersect",
+  "sourceCode" : "/**\r\n * Test the Span.IsContaining(Span) method.\r\n */\r\n@Test\r\npublic void testIsContainingWithHigherIntersect() {\r\n    Span a = new Span(5000, 900);\r\n    Span b = new Span(5000, 1000);\r\n    assertEquals(false, a.isContaining(b));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\unused-saved\\src\\org\\apache\\uima\\cas\\impl\\JCasCoverClassFactoryTest.java",
+  "methodName" : "testCreateJCasCoverClass",
+  "sourceCode" : "@Test\r\npublic void testCreateJCasCoverClass() throws InvalidXMLException, IOException, ResourceInitializationException {\r\n    File file = JUnitExtension.getFile(\"JCasGen/typeSystemAllKinds.xml\");\r\n    TypeSystemDescription tsDesc = UIMAFramework.getXMLParser().parseTypeSystemDescription(new XMLInputSource(file));\r\n    CAS cas = CasCreationUtils.createCas(tsDesc, null, null);\r\n    JCasCoverClassFactory jcf = new JCasCoverClassFactory();\r\n    byte[] r = jcf.createJCasCoverClass((TypeImpl) cas.getTypeSystem().getType(\"pkg.sample.name.All\"));\r\n    // should resolve to the project path\r\n    Path root = Paths.get(\".\");\r\n    Path dir = root.resolve(\"temp/test/JCasGen\");\r\n    dir.toFile().mkdirs();\r\n    Files.write(dir.resolve(\"testOutputAllKinds.class\"), r);\r\n    System.out.println(\"debug: generated byte array\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\unused-saved\\src\\org\\apache\\uima\\fs_generation\\impl\\JCasCoverClassFactoryTest.java",
+  "methodName" : "testCreateJCasCoverClass",
+  "sourceCode" : "@Test\r\npublic void testCreateJCasCoverClass() throws UnsupportedEncodingException {\r\n    TypeSystemImpl tsi = new TypeSystemImpl();\r\n    FeatureStructureClassGen jcf = new FeatureStructureClassGen();\r\n    byte[] br = jcf.createJCasCoverClass(tsi.getType(TypeSystem.TYPE_NAME_ANNOTATION));\r\n    // convert generated byte codes for jvm into java source via decompiling\r\n    UimaDecompiler ud = new UimaDecompiler();\r\n    String sr = ud.decompile(TypeSystem.TYPE_NAME_ANNOTATION, br).toString(\"UTF-8\");\r\n    System.out.println(sr);\r\n    //    File file = JUnitExtension.getFile(\"JCasGen/typeSystemAllKinds.xml\");\r\n    //    TypeSystemDescription tsDesc = UIMAFramework.getXMLParser().parseTypeSystemDescription(\r\n    //            new XMLInputSource(file));\r\n    //\r\n    //    CAS cas = CasCreationUtils.createCas(tsDesc, null, null);\r\n    //\r\n    //    FeatureStructureClassGen jcf = new FeatureStructureClassGen();\r\n    //\r\n    //    byte[] r = jcf.createJCasCoverClass((TypeImpl) cas.getTypeSystem().getType(\"pkg.sample.name.All\"));\r\n    //\r\n    //    Path root = Paths.get(\".\");  // should resolve to the project path\r\n    //    Path dir = root.resolve(\"temp/test/JCasGen\");\r\n    //    dir.toFile().mkdirs();\r\n    //    Files.write(dir.resolve(\"testOutputAllKinds.class\"), r);\r\n    //\r\n    //    System.out.println(\"debug: generated byte array\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\UIMA\\unused-saved\\src\\org\\apache\\uima\\jcas\\impl\\JCasCoverClassFactoryTest.java",
+  "methodName" : "testCreateJCasCoverClass",
+  "sourceCode" : "@Test\r\npublic void testCreateJCasCoverClass() throws InvalidXMLException, IOException, ResourceInitializationException {\r\n    File file = JUnitExtension.getFile(\"JCasGen/typeSystemAllKinds.xml\");\r\n    TypeSystemDescription tsDesc = UIMAFramework.getXMLParser().parseTypeSystemDescription(new XMLInputSource(file));\r\n    CAS cas = CasCreationUtils.createCas(tsDesc, null, null);\r\n    JCasCoverClassFactory jcf = new JCasCoverClassFactory();\r\n    byte[] r = jcf.createJCasCoverClass((TypeImpl) cas.getTypeSystem().getType(\"pkg.sample.name.All\"));\r\n    // should resolve to the project path\r\n    Path root = Paths.get(\".\");\r\n    Path dir = root.resolve(\"temp/test/JCasGen\");\r\n    dir.toFile().mkdirs();\r\n    Files.write(dir.resolve(\"testOutputAllKinds.class\"), r);\r\n    System.out.println(\"debug: generated byte array\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "junit4"
+} ]

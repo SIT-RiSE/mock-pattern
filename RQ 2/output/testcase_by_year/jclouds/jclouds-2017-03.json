@@ -1,0 +1,583 @@
+[ {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\compute\\AzureTemplateBuilderLiveTest.java",
+  "methodName" : "testDefaultTemplateBuilder",
+  "sourceCode" : "@Override\r\n@Test\r\npublic void testDefaultTemplateBuilder() throws IOException {\r\n    Template defaultTemplate = view.getComputeService().templateBuilder().build();\r\n    assertTrue(defaultTemplate.getImage().getOperatingSystem().getVersion().matches(\"1[45]\\\\.[01][04]\\\\.[0-9]-LTS\"), \"Version mismatch, expected dd.dd.d-LTS, found: \" + defaultTemplate.getImage().getOperatingSystem().getVersion());\r\n    assertEquals(defaultTemplate.getImage().getOperatingSystem().is64Bit(), true);\r\n    assertEquals(defaultTemplate.getImage().getOperatingSystem().getFamily(), OsFamily.UBUNTU);\r\n    assertEquals(getCores(defaultTemplate.getHardware()), 1.0d);\r\n}",
+  "annotations" : [ "Override", "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\compute\\extensions\\AzureComputeSecurityGroupExtensionLiveTest.java",
+  "methodName" : "testAddIpPermissionForAnyProtocol",
+  "sourceCode" : "@Test(groups = { \"integration\", \"live\" }, singleThreaded = true, dependsOnMethods = \"testAddIpPermissionsFromSpec\")\r\npublic void testAddIpPermissionForAnyProtocol() {\r\n    ComputeService computeService = view.getComputeService();\r\n    Optional<SecurityGroupExtension> securityGroupExtension = computeService.getSecurityGroupExtension();\r\n    assertTrue(securityGroupExtension.isPresent(), \"security group extension was not present\");\r\n    SecurityGroup group = securityGroupExtension.get().getSecurityGroupById(groupId);\r\n    assertNotNull(group, \"No security group was found with id: \" + groupId);\r\n    IpPermission openAll = IpPermissions.permitAnyProtocol();\r\n    SecurityGroup allOpenSecurityGroup = securityGroupExtension.get().addIpPermission(openAll, group);\r\n    assertTrue(allOpenSecurityGroup.getIpPermissions().contains(openAll));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\compute\\extensions\\AzureComputeSecurityGroupExtensionLiveTest.java",
+  "methodName" : "testCreateNodeWithSecurityGroup",
+  "sourceCode" : "@Test(groups = { \"integration\", \"live\" }, dependsOnMethods = \"testCreateSecurityGroup\")\r\npublic void testCreateNodeWithSecurityGroup() throws RunNodesException, InterruptedException, ExecutionException {\r\n    ComputeService computeService = view.getComputeService();\r\n    Optional<SecurityGroupExtension> securityGroupExtension = computeService.getSecurityGroupExtension();\r\n    assertTrue(securityGroupExtension.isPresent(), \"security group extension was not present\");\r\n    NodeMetadata node = getOnlyElement(computeService.createNodesInGroup(nodeGroup, 1, securityGroups(groupId)));\r\n    try {\r\n        Set<SecurityGroup> groups = securityGroupExtension.get().listSecurityGroupsForNode(node.getId());\r\n        assertEquals(groups.size(), 1, \"node has \" + groups.size() + \" groups\");\r\n        assertEquals(getOnlyElement(groups).getId(), groupId);\r\n    } finally {\r\n        computeService.destroyNodesMatching(inGroup(node.getGroup()));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\compute\\extensions\\AzureComputeSecurityGroupExtensionLiveTest.java",
+  "methodName" : "testCreateNodeWithInboundPorts",
+  "sourceCode" : "@Test(groups = { \"integration\", \"live\" }, dependsOnMethods = \"testCreateSecurityGroup\")\r\npublic void testCreateNodeWithInboundPorts() throws RunNodesException, InterruptedException, ExecutionException {\r\n    ComputeService computeService = view.getComputeService();\r\n    Optional<SecurityGroupExtension> securityGroupExtension = computeService.getSecurityGroupExtension();\r\n    assertTrue(securityGroupExtension.isPresent(), \"security group extension was not present\");\r\n    NodeMetadata node = getOnlyElement(computeService.createNodesInGroup(nodeGroup, 1, inboundPorts(22, 23, 24, 8000)));\r\n    try {\r\n        Set<SecurityGroup> groups = securityGroupExtension.get().listSecurityGroupsForNode(node.getId());\r\n        assertEquals(groups.size(), 1, \"node has \" + groups.size() + \" groups\");\r\n        SecurityGroup group = getOnlyElement(groups);\r\n        assertEquals(group.getIpPermissions().size(), 2);\r\n        assertEquals(get(group.getIpPermissions(), 0), IpPermissions.permit(TCP).fromPort(22).to(24));\r\n        assertEquals(get(group.getIpPermissions(), 1), IpPermissions.permit(TCP).port(8000));\r\n    } finally {\r\n        computeService.destroyNodesMatching(inGroup(node.getGroup()));\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\AvailabilitySetApiLiveTest.java",
+  "methodName" : "deleteAvailabilitySetDoesNotExist",
+  "sourceCode" : "@Test\r\npublic void deleteAvailabilitySetDoesNotExist() {\r\n    assertNull(api().delete(UUID.randomUUID().toString()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\AvailabilitySetApiLiveTest.java",
+  "methodName" : "createAvailabilitySet",
+  "sourceCode" : "@Test\r\npublic void createAvailabilitySet() {\r\n    AvailabilitySetProperties props = AvailabilitySetProperties.builder().platformUpdateDomainCount(2).platformFaultDomainCount(3).build();\r\n    AvailabilitySet as = api().createOrUpdate(asName, LOCATION, null, props);\r\n    assertNotNull(as);\r\n    assertEquals(as.name(), asName);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\AvailabilitySetApiLiveTest.java",
+  "methodName" : "getAvailabilitySet",
+  "sourceCode" : "@Test(dependsOnMethods = \"createAvailabilitySet\")\r\npublic void getAvailabilitySet() {\r\n    assertNotNull(api().get(asName));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\AvailabilitySetApiLiveTest.java",
+  "methodName" : "listAvailabilitySet",
+  "sourceCode" : "@Test(dependsOnMethods = \"createAvailabilitySet\")\r\npublic void listAvailabilitySet() {\r\n    assertTrue(any(api().list(), new Predicate<AvailabilitySet>() {\r\n\r\n        @Override\r\n        public boolean apply(AvailabilitySet input) {\r\n            return asName.equals(input.name());\r\n        }\r\n    }));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\AvailabilitySetApiLiveTest.java",
+  "methodName" : "updateAvailabilitySet",
+  "sourceCode" : "@Test(dependsOnMethods = \"createAvailabilitySet\")\r\npublic void updateAvailabilitySet() {\r\n    AvailabilitySet as = api().get(asName);\r\n    as = api().createOrUpdate(asName, LOCATION, ImmutableMap.of(\"foo\", \"bar\"), as.properties());\r\n    assertNotNull(as);\r\n    assertTrue(as.tags().containsKey(\"foo\"));\r\n    assertEquals(as.tags().get(\"foo\"), \"bar\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\AvailabilitySetApiLiveTest.java",
+  "methodName" : "deleteAvailabilitySet",
+  "sourceCode" : "@Test(dependsOnMethods = { \"getAvailabilitySet\", \"listAvailabilitySet\", \"updateAvailabilitySet\" })\r\npublic void deleteAvailabilitySet() {\r\n    URI uri = api().delete(asName);\r\n    assertResourceDeleted(uri);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\DeploymentApiLiveTest.java",
+  "methodName" : "testValidate",
+  "sourceCode" : "@Test\r\npublic void testValidate() {\r\n    Deployment deploymentInvalid = null;\r\n    try {\r\n        deploymentInvalid = api().validate(deploymentName + \"invalid\", badProperties);\r\n    } catch (Exception ex) {\r\n        assertTrue(ex.getClass() == java.lang.IllegalArgumentException.class);\r\n    }\r\n    assertNull(deploymentInvalid);\r\n    Deployment deploymentValid = null;\r\n    try {\r\n        deploymentValid = api().validate(deploymentName + \"valid\", properties);\r\n    } catch (Exception ex) {\r\n        assertTrue(ex.getClass() == java.lang.IllegalArgumentException.class);\r\n    }\r\n    assertNotNull(deploymentValid);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\DeploymentApiLiveTest.java",
+  "methodName" : "testCreate",
+  "sourceCode" : "@Test\r\npublic void testCreate() {\r\n    String rsakey = new String(\"ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAmfk/QSF0pvnrpdz+Ah2KulGruKU+8FFBdlw938MpOysRdmp7uwpH6Z7+5VNGNdxFIAyc/W3UaZXF9hTsU8+78TlwkZpsr2mzU+ycu37XLAQ8Uv7hjsAN0DkKKPrZ9lgUUfZVKV/8E/JIAs03gIbL6zO3y7eYJQ5fNeZb+nji7tQT+YLpGq/FDegvraPKVMQbCSCZhsHyWhdPLyFlu9/30npZ0ahYOPI/KyZxFDtM/pHp88+ZAk9Icq5owaLRWcJQqrBGWqjbZnHtjdDqvHZ+C0wPhdJZPyfkHOrSYTwSQBXfX4JLRRCz3J1jf62MbQWT1o6Y4JEs1ZP1Skxu6zR96Q== mocktest\");\r\n    AzureTemplateOptions options = new AzureTemplateOptions();\r\n    options.authorizePublicKey(rsakey);\r\n    options.subnetId(subnetId);\r\n    String deploymentTemplate = \"{\\n\" + \"  \\\"id\\\": \\\"/subscriptions/04f7ec88-8e28-41ed-8537-5e17766001f5/resourceGroups/jims216group/providers/Microsoft.Resources/deployments/jcdep1458344383064\\\",\\n\" + \"  \\\"name\\\": \\\"jcdep1458344383064\\\",\\n\" + \"  \\\"properties\\\": {\\n\" + \"    \\\"parameters\\\": {\\n\" + \"      \\\"newStorageAccountName\\\": {\\n\" + \"        \\\"type\\\": \\\"String\\\",\\n\" + \"        \\\"value\\\": \\\"jcres1458344383064\\\"\\n\" + \"      },\\n\" + \"      \\\"storageAccountType\\\": {\\n\" + \"        \\\"type\\\": \\\"String\\\",\\n\" + \"        \\\"value\\\": \\\"Standard_LRS\\\"\\n\" + \"      },\\n\" + \"      \\\"location\\\": {\\n\" + \"        \\\"type\\\": \\\"String\\\",\\n\" + \"        \\\"value\\\": \\\"West US\\\"\\n\" + \"      }\\n\" + \"    },\\n\" + \"    \\\"mode\\\": \\\"Incremental\\\",\\n\" + \"    \\\"provisioningState\\\": \\\"Accepted\\\",\\n\" + \"    \\\"timestamp\\\": \\\"2016-03-18T23:39:47.3048037Z\\\",\\n\" + \"    \\\"duration\\\": \\\"PT2.4433028S\\\",\\n\" + \"    \\\"correlationId\\\": \\\"8dee9711-8632-4948-9fe6-368bb75e6438\\\",\\n\" + \"    \\\"providers\\\": [{\\n\" + \"      \\\"namespace\\\": \\\"Microsoft.Storage\\\",\\n\" + \"      \\\"resourceTypes\\\": [{\\n\" + \"        \\\"resourceType\\\": \\\"storageAccounts\\\",\\n\" + \"        \\\"locations\\\": [\\\"westus\\\"]\\n\" + \"      }]\\n\" + \"    }],\\n\" + \"    \\\"dependencies\\\": []\\n\" + \"  }\\n\" + \"}\";\r\n    deploymentTemplate = UrlEscapers.urlFormParameterEscaper().escape(deploymentTemplate);\r\n    Deployment deploymentValid = api().validate(deploymentName, deploymentTemplate);\r\n    assertNotNull(deploymentValid);\r\n    Deployment deployment = api().create(deploymentName, deploymentTemplate);\r\n    assertNotNull(deployment);\r\n    //Poll until resource is ready to be used\r\n    boolean jobDone = Predicates2.retry(new Predicate<String>() {\r\n\r\n        @Override\r\n        public boolean apply(String name) {\r\n            Deployment dp = api().get(deploymentName);\r\n            ProvisioningState state = ProvisioningState.fromValue(dp.properties().provisioningState());\r\n            if (state == ProvisioningState.FAILED)\r\n                Assert.fail();\r\n            return state == ProvisioningState.SUCCEEDED;\r\n        }\r\n    }, 60 * 20 * 1000).apply(deploymentName);\r\n    assertTrue(jobDone, \"create operation did not complete in the configured timeout\");\r\n    Deployment dp = api().get(deploymentName);\r\n    ProvisioningState state = ProvisioningState.fromValue(dp.properties().provisioningState());\r\n    assertTrue(state == ProvisioningState.SUCCEEDED);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\DeploymentApiLiveTest.java",
+  "methodName" : "testGetDeployment",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCreate\")\r\npublic void testGetDeployment() {\r\n    Deployment deployment = api().get(deploymentName);\r\n    assertNotNull(deployment);\r\n    ProvisioningState state = ProvisioningState.fromValue(deployment.properties().provisioningState());\r\n    assertTrue(state == ProvisioningState.SUCCEEDED);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\DeploymentApiLiveTest.java",
+  "methodName" : "testListDeployments",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCreate\")\r\npublic void testListDeployments() {\r\n    List<Deployment> deployments = api().list();\r\n    assertTrue(deployments.size() > 0);\r\n    boolean deploymentFound = false;\r\n    for (Deployment d : deployments) {\r\n        if (d.name().equals(deploymentName)) {\r\n            deploymentFound = true;\r\n            break;\r\n        }\r\n    }\r\n    assertTrue(deploymentFound);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\DeploymentApiLiveTest.java",
+  "methodName" : "testDelete",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testGetDeployment\", \"testListDeployments\" })\r\npublic void testDelete() throws Exception {\r\n    List<Deployment> deployments = api().list();\r\n    for (Deployment d : deployments) {\r\n        if (d.name().contains(\"jc\")) {\r\n            URI uri = api().delete(d.name());\r\n            assertResourceDeleted(uri);\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\DeploymentApiMockTest.java",
+  "methodName" : "testCreateDeployment",
+  "sourceCode" : "@Test\r\npublic void testCreateDeployment() throws Exception {\r\n    final DeploymentApi deploymentApi = api.getDeploymentApi(resourceGroup);\r\n    // check if deployment accepted\r\n    server.enqueue(jsonResponse(\"/createdeploymentaccepted.json\"));\r\n    String template = \"{\\\"$schema\\\":\\\"https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#\\\",\\\"contentVersion\\\":\\\"1.0.0.0\\\",\\\"parameters\\\":{\\\"newStorageAccountName\\\":{\\\"type\\\":\\\"string\\\",\\\"metadata\\\":{\\\"description\\\":\\\"Name of the Storage Account\\\"}},\\\"storageAccountType\\\":{\\\"type\\\":\\\"string\\\",\\\"defaultValue\\\":\\\"Standard_LRS\\\",\\\"allowedValues\\\":[\\\"Standard_LRS\\\",\\\"Standard_GRS\\\",\\\"Standard_ZRS\\\"],\\\"metadata\\\":{\\\"description\\\":\\\"Storage Account type\\\"}},\\\"location\\\":{\\\"type\\\":\\\"string\\\",\\\"allowedValues\\\":[\\\"East US\\\",\\\"West US\\\",\\\"West Europe\\\",\\\"East Asia\\\",\\\"Southeast Asia\\\"],\\\"metadata\\\":{\\\"description\\\":\\\"Location of storage account\\\"}}},\\\"resources\\\":[{\\\"type\\\":\\\"Microsoft.Storage/storageAccounts\\\",\\\"name\\\":\\\"[parameters('newStorageAccountName')]\\\",\\\"apiVersion\\\":\\\"2015-05-01-preview\\\",\\\"location\\\":\\\"[parameters('location')]\\\",\\\"properties\\\":{\\\"accountType\\\":\\\"[parameters('storageAccountType')]\\\"}}]}\";\r\n    String parameters = \"{\\\"newStorageAccountName\\\":{\\\"value\\\":\\\"\" + resourceName + \"\\\"},\\\"storageAccountType\\\":{\\\"value\\\":\\\"Standard_LRS\\\"},\\\"location\\\":{\\\"value\\\":\\\"West US\\\"}}\";\r\n    String properties = getPutBody(template, \"Incremental\", parameters);\r\n    Deployment deployment = deploymentApi.create(deploymentName, properties);\r\n    assertTrue(deployment != null);\r\n    assertEquals(ProvisioningState.fromValue(deployment.properties().provisioningState()), ProvisioningState.ACCEPTED);\r\n    // check if deployment succeeded\r\n    server.enqueue(jsonResponse(\"/createdeploymentsucceeded.json\"));\r\n    deployment = deploymentApi.create(deploymentName, properties);\r\n    assertTrue(deployment != null);\r\n    assertEquals(ProvisioningState.fromValue(deployment.properties().provisioningState()), ProvisioningState.SUCCEEDED);\r\n    assertSent(server, \"PUT\", \"/subscriptions/\" + subscriptionId + \"/resourcegroups/\" + resourceGroup + \"/providers/microsoft.resources/deployments/\" + deploymentName + \"?api-version=2016-02-01\", properties);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\DeploymentApiMockTest.java",
+  "methodName" : "testGetDeployment",
+  "sourceCode" : "@Test\r\npublic void testGetDeployment() throws Exception {\r\n    final DeploymentApi deploymentApi = api.getDeploymentApi(resourceGroup);\r\n    // check if deployment succeeded\r\n    server.enqueue(jsonResponse(\"/createdeploymentsucceeded.json\"));\r\n    Deployment deployment = deploymentApi.get(deploymentName);\r\n    assertTrue(deployment != null);\r\n    assertEquals(ProvisioningState.fromValue(deployment.properties().provisioningState()), ProvisioningState.SUCCEEDED);\r\n    assertSent(server, \"GET\", \"/subscriptions/\" + subscriptionId + \"/resourcegroups/\" + resourceGroup + \"/providers/microsoft.resources/deployments/\" + deploymentName + \"?api-version=2016-02-01\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\DeploymentApiMockTest.java",
+  "methodName" : "testGetDeploymentEmpty",
+  "sourceCode" : "@Test\r\npublic void testGetDeploymentEmpty() throws Exception {\r\n    final DeploymentApi deploymentApi = api.getDeploymentApi(resourceGroup);\r\n    server.enqueue(new MockResponse().setResponseCode(404));\r\n    Deployment deployment = deploymentApi.get(deploymentName);\r\n    assertNull(deployment);\r\n    assertSent(server, \"GET\", \"/subscriptions/\" + subscriptionId + \"/resourcegroups/\" + resourceGroup + \"/providers/microsoft.resources/deployments/\" + deploymentName + \"?api-version=2016-02-01\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\DeploymentApiMockTest.java",
+  "methodName" : "testListDeployment",
+  "sourceCode" : "@Test\r\npublic void testListDeployment() throws Exception {\r\n    final DeploymentApi deploymentApi = api.getDeploymentApi(resourceGroup);\r\n    // check if deployment succeeded\r\n    server.enqueue(jsonResponse(\"/listdeployments.json\"));\r\n    List<Deployment> deployments = deploymentApi.list();\r\n    assertTrue(deployments.size() > 0);\r\n    assertSent(server, \"GET\", \"/subscriptions/\" + subscriptionId + \"/resourcegroups/\" + resourceGroup + \"/providers/microsoft.resources/deployments?api-version=2016-02-01\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\DeploymentApiMockTest.java",
+  "methodName" : "testListDeploymentEmpty",
+  "sourceCode" : "@Test\r\npublic void testListDeploymentEmpty() throws Exception {\r\n    final DeploymentApi deploymentApi = api.getDeploymentApi(resourceGroup);\r\n    server.enqueue(new MockResponse().setResponseCode(404));\r\n    List<Deployment> deployments = deploymentApi.list();\r\n    assertTrue(deployments.size() == 0);\r\n    assertSent(server, \"GET\", \"/subscriptions/\" + subscriptionId + \"/resourcegroups/\" + resourceGroup + \"/providers/microsoft.resources/deployments?api-version=2016-02-01\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\DeploymentApiMockTest.java",
+  "methodName" : "testDeleteDeployment",
+  "sourceCode" : "@Test\r\npublic void testDeleteDeployment() throws InterruptedException {\r\n    final DeploymentApi deploymentApi = api.getDeploymentApi(resourceGroup);\r\n    server.enqueue(response202WithHeader());\r\n    URI uri = deploymentApi.delete(deploymentName);\r\n    assertNotNull(uri);\r\n    assertSent(server, \"DELETE\", \"/subscriptions/\" + subscriptionId + \"/resourcegroups/\" + resourceGroup + \"/providers/microsoft.resources/deployments/\" + deploymentName + \"?api-version=2016-02-01\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\DeploymentApiMockTest.java",
+  "methodName" : "testDeleteDeploymentReturns404",
+  "sourceCode" : "@Test\r\npublic void testDeleteDeploymentReturns404() throws InterruptedException {\r\n    final DeploymentApi deploymentApi = api.getDeploymentApi(resourceGroup);\r\n    server.enqueue(response404());\r\n    URI uri = deploymentApi.delete(deploymentName);\r\n    assertNull(uri);\r\n    assertSent(server, \"DELETE\", \"/subscriptions/\" + subscriptionId + \"/resourcegroups/\" + resourceGroup + \"/providers/microsoft.resources/deployments/\" + deploymentName + \"?api-version=2016-02-01\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\LoadBalancerApiLiveTest.java",
+  "methodName" : "testDeleteLoadBalancerDoesNotExist",
+  "sourceCode" : "@Test\r\npublic void testDeleteLoadBalancerDoesNotExist() {\r\n    URI uri = lbApi.delete(lbName);\r\n    assertNull(uri);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\LoadBalancerApiLiveTest.java",
+  "methodName" : "testCreateLoadBalancer",
+  "sourceCode" : "@Test(dependsOnMethods = \"testDeleteLoadBalancerDoesNotExist\")\r\npublic void testCreateLoadBalancer() {\r\n    LoadBalancer createLB = newLoadBalancer(lbName, location);\r\n    PublicIPAddress publicIP = createPublicIPAddress(\"Ip4LoadBalancer\");\r\n    FrontendIPConfigurationsProperties fronendProps = FrontendIPConfigurationsProperties.builder().publicIPAddress(IdReference.create(publicIP.id())).build();\r\n    FrontendIPConfigurations frontendIps = FrontendIPConfigurations.create(\"ipConfigs\", null, fronendProps, null);\r\n    LoadBalancerProperties props = LoadBalancerProperties.builder().frontendIPConfigurations(ImmutableList.of(frontendIps)).build();\r\n    lb = lbApi.createOrUpdate(lbName, createLB.location(), createLB.tags(), props);\r\n    assertNotNull(lb);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\LoadBalancerApiLiveTest.java",
+  "methodName" : "testListLoadBalancers",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCreateLoadBalancer\")\r\npublic void testListLoadBalancers() {\r\n    List<LoadBalancer> result = lbApi.list();\r\n    // Verify we have something\r\n    assertNotNull(result);\r\n    assertTrue(result.size() > 0);\r\n    // Check that the load balancer matches the one we originally passed in\r\n    assertTrue(any(result, new Predicate<LoadBalancer>() {\r\n\r\n        @Override\r\n        public boolean apply(LoadBalancer input) {\r\n            return lb.name().equals(input.name());\r\n        }\r\n    }));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\LoadBalancerApiLiveTest.java",
+  "methodName" : "testGetLoadBalancer",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCreateLoadBalancer\")\r\npublic void testGetLoadBalancer() {\r\n    lb = lbApi.get(lbName);\r\n    assertNotNull(lb);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\LoadBalancerApiLiveTest.java",
+  "methodName" : "testAddProbe",
+  "sourceCode" : "@Test(dependsOnMethods = \"testGetLoadBalancer\")\r\npublic void testAddProbe() {\r\n    ProbeProperties probeProps = ProbeProperties.builder().protocol(ProbeProperties.Protocol.Http).port(80).requestPath(\"/\").intervalInSeconds(5).numberOfProbes(2).build();\r\n    Probe probe = Probe.create(\"probetest\", null, probeProps, null);\r\n    LoadBalancerProperties props = lb.properties().toBuilder().probes(ImmutableList.of(probe)).build();\r\n    lb = updateLoadBalancer(lbName, props);\r\n    assertEquals(lb.properties().probes().size(), 1);\r\n    assertEquals(lb.properties().probes().get(0).name(), probe.name());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\LoadBalancerApiLiveTest.java",
+  "methodName" : "testAddBackendPool",
+  "sourceCode" : "@Test(dependsOnMethods = \"testGetLoadBalancer\")\r\npublic void testAddBackendPool() throws Exception {\r\n    List<IdReference> rules = newArrayList(transform(lb.properties().loadBalancingRules(), ToIdReference));\r\n    BackendAddressPool pool = BackendAddressPool.create(\"backpools\", null, BackendAddressPoolProperties.builder().loadBalancingRules(rules).build(), null);\r\n    LoadBalancerProperties props = lb.properties().toBuilder().backendAddressPools(ImmutableList.of(pool)).build();\r\n    lb = updateLoadBalancer(lbName, props);\r\n    assertEquals(lb.properties().backendAddressPools().size(), 1);\r\n    assertEquals(lb.properties().backendAddressPools().get(0).name(), pool.name());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\LoadBalancerApiLiveTest.java",
+  "methodName" : "testAddLoadBalancingRule",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddProbe\", \"testAddBackendPool\" })\r\npublic void testAddLoadBalancingRule() {\r\n    IdReference frontendIp = IdReference.create(lb.properties().frontendIPConfigurations().get(0).id());\r\n    IdReference probe = IdReference.create(lb.properties().probes().get(0).id());\r\n    IdReference backendPool = IdReference.create(lb.properties().backendAddressPools().get(0).id());\r\n    LoadBalancingRuleProperties ruleProperties = LoadBalancingRuleProperties.builder().frontendIPConfiguration(frontendIp).backendAddressPool(backendPool).frontendPort(80).backendPort(80).protocol(Protocol.Tcp).probe(probe).build();\r\n    LoadBalancingRule rule = LoadBalancingRule.create(\"lbRule1\", null, ruleProperties, null);\r\n    LoadBalancerProperties props = lb.properties().toBuilder().loadBalancingRules(ImmutableList.of(rule)).build();\r\n    lb = updateLoadBalancer(lbName, props);\r\n    assertEquals(lb.properties().loadBalancingRules().size(), 1);\r\n    assertEquals(lb.properties().loadBalancingRules().get(0).name(), rule.name());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\LoadBalancerApiLiveTest.java",
+  "methodName" : "testAttachNodesToBackendPool",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testAddBackendPool\", \"testAddProbe\", \"testAddLoadBalancingRule\" })\r\npublic void testAttachNodesToBackendPool() throws Exception {\r\n    nicNames = createVirtualMachinesInGroupAndGetNicRefs(group, 2);\r\n    // Add the first IP of each node to the pool\r\n    List<NetworkInterfaceCard> attachedNics = new ArrayList<NetworkInterfaceCard>();\r\n    BackendAddressPool targetPool = lb.properties().backendAddressPools().get(0);\r\n    for (String nicName : nicNames) {\r\n        attachedNics.add(attachNicToBackendPool(nicName, targetPool));\r\n    }\r\n    // Refresh the LB after having attached NICs to the pool\r\n    lb = lbApi.get(lbName);\r\n    List<BackendAddressPool> pools = lb.properties().backendAddressPools();\r\n    assertEquals(pools.size(), 1);\r\n    List<IdReference> backendIps = pools.get(0).properties().backendIPConfigurations();\r\n    assertEquals(backendIps.size(), attachedNics.size());\r\n    assertTrue(backendIps.containsAll(newArrayList(transform(attachedNics, ToFirstIpReference))));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\LoadBalancerApiLiveTest.java",
+  "methodName" : "testAddInboundNatRule",
+  "sourceCode" : "@Test(dependsOnMethods = \"testAttachNodesToBackendPool\")\r\npublic void testAddInboundNatRule() {\r\n    IdReference frontendIp = IdReference.create(lb.properties().frontendIPConfigurations().get(0).id());\r\n    InboundNatRuleProperties natProps = InboundNatRuleProperties.builder().frontendIPConfiguration(frontendIp).frontendPort(5679).backendPort(56710).protocol(Tcp).build();\r\n    InboundNatRule natRule = InboundNatRule.create(\"inboundnat\", null, natProps, null);\r\n    LoadBalancerProperties props = lb.properties().toBuilder().inboundNatRules(ImmutableList.of(natRule)).build();\r\n    lb = updateLoadBalancer(lbName, props);\r\n    assertEquals(lb.properties().inboundNatRules().size(), 1);\r\n    assertEquals(lb.properties().inboundNatRules().get(0).name(), natRule.name());\r\n    InboundNatRule createdRule = lb.properties().inboundNatRules().get(0);\r\n    NetworkInterfaceCard updatedNic = attachNicToNatRule(nicNames.get(0), createdRule);\r\n    List<IdReference> natRulesInNic = updatedNic.properties().ipConfigurations().get(0).properties().loadBalancerInboundNatRules();\r\n    assertEquals(natRulesInNic.size(), 1);\r\n    assertEquals(natRulesInNic.get(0), IdReference.create(createdRule.id()));\r\n    // Refresh the LB after having attached NICs to the pool\r\n    lb = lbApi.get(lbName);\r\n    IdReference backendIpRef = IdReference.create(updatedNic.properties().ipConfigurations().get(0).id());\r\n    assertEquals(lb.properties().inboundNatRules().size(), 1);\r\n    assertEquals(lb.properties().inboundNatRules().get(0).properties().backendIPConfiguration(), backendIpRef);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\LoadBalancerApiLiveTest.java",
+  "methodName" : "deleteLoadBalancer",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testCreateLoadBalancer\", \"testListLoadBalancers\", \"testGetLoadBalancer\", \"testAddProbe\", \"testAddLoadBalancingRule\", \"testAddBackendPool\", \"testAttachNodesToBackendPool\", \"testAddInboundNatRule\" }, alwaysRun = true)\r\npublic void deleteLoadBalancer() {\r\n    URI uri = lbApi.delete(lbName);\r\n    assertResourceDeleted(uri);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\LocationApiLiveTest.java",
+  "methodName" : "testList",
+  "sourceCode" : "@Test\r\npublic void testList() {\r\n    List<Location> locations = api().list();\r\n    assertTrue(!locations.isEmpty());\r\n    for (Location location : locations) {\r\n        checkLocation(location);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\NetworkInterfaceCardApiLiveTest.java",
+  "methodName" : "createNetworkInterfaceCard",
+  "sourceCode" : "@Test\r\npublic void createNetworkInterfaceCard() {\r\n    //Create properties object\r\n    final NetworkInterfaceCardProperties networkInterfaceCardProperties = NetworkInterfaceCardProperties.builder().ipConfigurations(Arrays.asList(IpConfiguration.builder().name(\"myipconfig\").properties(IpConfigurationProperties.builder().privateIPAllocationMethod(\"Dynamic\").subnet(IdReference.create(subnetId)).build()).build())).build();\r\n    final Map<String, String> tags = ImmutableMap.of(\"jclouds\", \"livetest\");\r\n    NetworkInterfaceCard nic = api().createOrUpdate(nicName, LOCATION, networkInterfaceCardProperties, tags);\r\n    assertEquals(nic.name(), nicName);\r\n    assertEquals(nic.location(), LOCATION);\r\n    assertTrue(nic.properties().ipConfigurations().size() > 0);\r\n    assertEquals(nic.properties().ipConfigurations().get(0).name(), \"myipconfig\");\r\n    assertEquals(nic.properties().ipConfigurations().get(0).properties().privateIPAllocationMethod(), \"Dynamic\");\r\n    assertEquals(nic.properties().ipConfigurations().get(0).properties().subnet().id(), subnetId);\r\n    assertEquals(nic.tags().get(\"jclouds\"), \"livetest\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\NetworkInterfaceCardApiLiveTest.java",
+  "methodName" : "getNetworkInterfaceCard",
+  "sourceCode" : "@Test(dependsOnMethods = \"createNetworkInterfaceCard\")\r\npublic void getNetworkInterfaceCard() {\r\n    NetworkInterfaceCard nic = api().get(nicName);\r\n    assertEquals(nic.name(), nicName);\r\n    assertEquals(nic.location(), LOCATION);\r\n    assertTrue(nic.properties().ipConfigurations().size() > 0);\r\n    assertEquals(nic.properties().ipConfigurations().get(0).name(), \"myipconfig\");\r\n    assertEquals(nic.properties().ipConfigurations().get(0).properties().privateIPAllocationMethod(), \"Dynamic\");\r\n    assertEquals(nic.properties().ipConfigurations().get(0).properties().subnet().id(), subnetId);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\NetworkInterfaceCardApiLiveTest.java",
+  "methodName" : "listNetworkInterfaceCards",
+  "sourceCode" : "@Test(dependsOnMethods = \"createNetworkInterfaceCard\")\r\npublic void listNetworkInterfaceCards() {\r\n    List<NetworkInterfaceCard> nicList = api().list();\r\n    assertTrue(nicList.contains(api().get(nicName)));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\NetworkInterfaceCardApiLiveTest.java",
+  "methodName" : "deleteNetworkInterfaceCard",
+  "sourceCode" : "@Test(dependsOnMethods = { \"listNetworkInterfaceCards\", \"getNetworkInterfaceCard\" })\r\npublic void deleteNetworkInterfaceCard() {\r\n    URI uri = api().delete(nicName);\r\n    assertResourceDeleted(uri);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\NetworkSecurityGroupApiLiveTest.java",
+  "methodName" : "deleteNetworkSecurityGroupDoesNotExist",
+  "sourceCode" : "@Test\r\npublic void deleteNetworkSecurityGroupDoesNotExist() {\r\n    URI uri = api().delete(nsgName);\r\n    assertNull(uri);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\NetworkSecurityGroupApiLiveTest.java",
+  "methodName" : "createNetworkSecurityGroup",
+  "sourceCode" : "@Test(dependsOnMethods = \"deleteNetworkSecurityGroupDoesNotExist\")\r\npublic void createNetworkSecurityGroup() {\r\n    final NetworkSecurityGroup nsg = newNetworkSecurityGroup(nsgName, LOCATION);\r\n    assertNotNull(nsg);\r\n    NetworkSecurityGroup result = api().createOrUpdate(nsgName, nsg.location(), nsg.tags(), nsg.properties());\r\n    assertNotNull(result);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\NetworkSecurityGroupApiLiveTest.java",
+  "methodName" : "listNetworkSecurityGroups",
+  "sourceCode" : "@Test(dependsOnMethods = \"createNetworkSecurityGroup\")\r\npublic void listNetworkSecurityGroups() {\r\n    List<NetworkSecurityGroup> result = api().list();\r\n    // verify we have something\r\n    assertNotNull(result);\r\n    assertEquals(result.size(), 1);\r\n    // check that the nework security group matches the one we originally passed in\r\n    NetworkSecurityGroup original = newNetworkSecurityGroup(nsgName, LOCATION);\r\n    NetworkSecurityGroup nsg = result.get(0);\r\n    assertEquals(original.name(), nsg.name());\r\n    assertEquals(original.location(), nsg.location());\r\n    assertEquals(original.tags(), nsg.tags());\r\n    // check the network security rule in the group\r\n    assertEquals(nsg.properties().securityRules().size(), 1);\r\n    NetworkSecurityRule originalRule = original.properties().securityRules().get(0);\r\n    NetworkSecurityRule nsgRule = nsg.properties().securityRules().get(0);\r\n    assertEquals(originalRule.name(), nsgRule.name());\r\n    assertTrue(originalRule.properties().equals(nsgRule.properties()));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\NetworkSecurityGroupApiLiveTest.java",
+  "methodName" : "deleteNetworkSecurityGroup",
+  "sourceCode" : "@Test(dependsOnMethods = { \"listNetworkSecurityGroups\", \"getNetworkSecurityGroup\" }, alwaysRun = true)\r\npublic void deleteNetworkSecurityGroup() {\r\n    URI uri = api().delete(nsgName);\r\n    assertResourceDeleted(uri);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\NetworkSecurityGroupApiLiveTest.java",
+  "methodName" : "getNetworkSecurityGroup",
+  "sourceCode" : "@Test(dependsOnMethods = \"createNetworkSecurityGroup\")\r\npublic void getNetworkSecurityGroup() {\r\n    NetworkSecurityGroup nsg = api().get(nsgName);\r\n    assertNotNull(nsg);\r\n    assertNotNull(nsg.etag());\r\n    assertEquals(nsg.name(), nsgName);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\NetworkSecurityRuleApiLiveTest.java",
+  "methodName" : "deleteNetworkSecurityRuleDoesNotExist",
+  "sourceCode" : "@Test\r\npublic void deleteNetworkSecurityRuleDoesNotExist() {\r\n    URI uri = api().delete(UNKNOWN_RULE_NAME);\r\n    assertNull(uri);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\NetworkSecurityRuleApiLiveTest.java",
+  "methodName" : "createNetworkSecurityRule",
+  "sourceCode" : "@Test(dependsOnMethods = \"deleteNetworkSecurityRuleDoesNotExist\")\r\npublic void createNetworkSecurityRule() {\r\n    final NetworkSecurityRule rule = createRule();\r\n    assertNotNull(rule);\r\n    final NetworkSecurityRuleApi ruleApi = api.getNetworkSecurityRuleApi(resourceGroupName, nsgName);\r\n    NetworkSecurityRule result = ruleApi.createOrUpdate(rule.name(), rule.properties());\r\n    assertNotNull(result);\r\n    assertEquals(result.name(), rule.name());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\NetworkSecurityRuleApiLiveTest.java",
+  "methodName" : "getNetworkSecurityRule",
+  "sourceCode" : "@Test(dependsOnMethods = \"createNetworkSecurityRule\")\r\npublic void getNetworkSecurityRule() {\r\n    final NetworkSecurityRule rule = createRule();\r\n    assertNotNull(rule);\r\n    NetworkSecurityRule result = api().get(rule.name());\r\n    assertNotNull(result);\r\n    assertNotNull(result.etag());\r\n    assertEquals(result.name(), rule.name());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\NetworkSecurityRuleApiLiveTest.java",
+  "methodName" : "getNetworkSecurityDefaultRule",
+  "sourceCode" : "@Test(dependsOnMethods = \"createNetworkSecurityRule\")\r\npublic void getNetworkSecurityDefaultRule() {\r\n    String defaultRuleName = \"AllowVnetInBound\";\r\n    NetworkSecurityRule result = api().getDefaultRule(defaultRuleName);\r\n    assertNotNull(result);\r\n    assertNotNull(result.etag());\r\n    assertEquals(result.name(), defaultRuleName);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\NetworkSecurityRuleApiLiveTest.java",
+  "methodName" : "listNetworkSecurityRules",
+  "sourceCode" : "@Test(dependsOnMethods = \"createNetworkSecurityRule\")\r\npublic void listNetworkSecurityRules() {\r\n    final NetworkSecurityRule rule = createRule();\r\n    assertNotNull(rule);\r\n    List<NetworkSecurityRule> result = api().list();\r\n    assertNotNull(result);\r\n    assertEquals(result.size(), 2);\r\n    boolean rulePresent = Iterables.any(result, new Predicate<NetworkSecurityRule>() {\r\n\r\n        public boolean apply(NetworkSecurityRule input) {\r\n            return input.name().equals(rule.name());\r\n        }\r\n    });\r\n    assertTrue(rulePresent);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\NetworkSecurityRuleApiLiveTest.java",
+  "methodName" : "listDefaultSecurityRules",
+  "sourceCode" : "@Test(dependsOnMethods = \"createNetworkSecurityRule\")\r\npublic void listDefaultSecurityRules() {\r\n    List<NetworkSecurityRule> result = api().listDefaultRules();\r\n    assertNotNull(result);\r\n    assertTrue(result.size() > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\NetworkSecurityRuleApiLiveTest.java",
+  "methodName" : "deleteNetworkSecurityRule",
+  "sourceCode" : "@Test(dependsOnMethods = { \"listNetworkSecurityRules\", \"listDefaultSecurityRules\", \"getNetworkSecurityRule\" })\r\npublic void deleteNetworkSecurityRule() {\r\n    final NetworkSecurityRule rule = createRule();\r\n    assertNotNull(rule);\r\n    URI uri = api().delete(rule.name());\r\n    assertResourceDeleted(uri);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\OSImageApiLiveTest.java",
+  "methodName" : "testPublisher",
+  "sourceCode" : "@Test\r\npublic void testPublisher() {\r\n    List<Publisher> publishers = api().listPublishers();\r\n    assertTrue(publishers.size() > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\OSImageApiLiveTest.java",
+  "methodName" : "testList",
+  "sourceCode" : "@Test\r\npublic void testList() {\r\n    List<Offer> offerList = api().listOffers(\"MicrosoftWindowsServer\");\r\n    assertTrue(offerList.size() > 0);\r\n    List<SKU> skuList = api().listSKUs(\"MicrosoftWindowsServer\", offerList.get(0).name());\r\n    assertTrue(skuList.size() > 0);\r\n    List<Version> versionList = api().listVersions(\"MicrosoftWindowsServer\", offerList.get(0).name(), skuList.get(0).name());\r\n    assertTrue(versionList.size() > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\OSImageApiLiveTest.java",
+  "methodName" : "testListCanonicalUbuntu",
+  "sourceCode" : "@Test\r\npublic void testListCanonicalUbuntu() {\r\n    Iterable<Offer> offerList = api().listOffers(\"canonical\");\r\n    int total = 0;\r\n    for (Offer offer : offerList) {\r\n        Iterable<SKU> skuList = api().listSKUs(\"canonical\", offer.name());\r\n        for (SKU sku : skuList) {\r\n            List<Version> versionList = api().listVersions(\"canonical\", offer.name(), sku.name());\r\n            total += versionList.size();\r\n        }\r\n    }\r\n    assertTrue(total > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\PublicIPAddressApiLiveTest.java",
+  "methodName" : "deletePublicIPAddressResourceDoesNotExist",
+  "sourceCode" : "@Test(groups = \"live\")\r\npublic void deletePublicIPAddressResourceDoesNotExist() {\r\n    final PublicIPAddressApi ipApi = api.getPublicIPAddressApi(resourceGroupName);\r\n    boolean status = ipApi.delete(publicIpAddressName);\r\n    assertFalse(status);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\PublicIPAddressApiLiveTest.java",
+  "methodName" : "createPublicIPAddress",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"deletePublicIPAddressResourceDoesNotExist\")\r\npublic void createPublicIPAddress() {\r\n    final PublicIPAddressApi ipApi = api.getPublicIPAddressApi(resourceGroupName);\r\n    final Map<String, String> tags = ImmutableMap.of(\"testkey\", \"testvalue\");\r\n    PublicIPAddressProperties properties = PublicIPAddressProperties.builder().publicIPAllocationMethod(\"Static\").idleTimeoutInMinutes(4).build();\r\n    PublicIPAddress ip = ipApi.createOrUpdate(publicIpAddressName, LOCATION, tags, properties);\r\n    assertNotNull(ip);\r\n    assertEquals(ip.name(), publicIpAddressName);\r\n    assertEquals(ip.location(), LOCATION);\r\n    assertEquals(ip.id(), String.format(\"/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Network/publicIPAddresses/%s\", subscriptionid, resourceGroupName, publicIpAddressName));\r\n    assertEquals(ip.tags().get(\"testkey\"), \"testvalue\");\r\n    assertNotNull(ip.properties());\r\n    assertEquals(ip.properties().provisioningState(), \"Updating\");\r\n    // as we don't get IP address until Succeeded state\r\n    assertNull(ip.properties().ipAddress());\r\n    assertEquals(ip.properties().publicIPAllocationMethod(), \"Static\");\r\n    assertEquals(ip.properties().idleTimeoutInMinutes().intValue(), 4);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\PublicIPAddressApiLiveTest.java",
+  "methodName" : "getPublicIPAddress",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"createPublicIPAddress\")\r\npublic void getPublicIPAddress() {\r\n    final PublicIPAddressApi ipApi = api.getPublicIPAddressApi(resourceGroupName);\r\n    //Poll until resource is ready to be used\r\n    boolean jobDone = Predicates2.retry(new Predicate<String>() {\r\n\r\n        @Override\r\n        public boolean apply(String name) {\r\n            return ipApi.get(name).properties().provisioningState().equals(\"Succeeded\");\r\n        }\r\n    }, 10 * 1000).apply(publicIpAddressName);\r\n    assertTrue(jobDone, \"get operation did not complete in the configured timeout\");\r\n    PublicIPAddress ip = ipApi.get(publicIpAddressName);\r\n    assertNotNull(ip);\r\n    assertEquals(ip.name(), publicIpAddressName);\r\n    assertEquals(ip.location(), LOCATION);\r\n    assertEquals(ip.id(), String.format(\"/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Network/publicIPAddresses/%s\", subscriptionid, resourceGroupName, publicIpAddressName));\r\n    assertEquals(ip.tags().get(\"testkey\"), \"testvalue\");\r\n    assertNotNull(ip.properties());\r\n    assertEquals(ip.properties().provisioningState(), \"Succeeded\");\r\n    // by this time we should have IP address already\r\n    assertNotNull(ip.properties().ipAddress());\r\n    assertEquals(ip.properties().publicIPAllocationMethod(), \"Static\");\r\n    assertEquals(ip.properties().idleTimeoutInMinutes().intValue(), 4);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\PublicIPAddressApiLiveTest.java",
+  "methodName" : "listPublicIPAddresses",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = \"createPublicIPAddress\")\r\npublic void listPublicIPAddresses() {\r\n    final PublicIPAddressApi ipApi = api.getPublicIPAddressApi(resourceGroupName);\r\n    List<PublicIPAddress> ipList = ipApi.list();\r\n    assertTrue(ipList.size() > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\PublicIPAddressApiLiveTest.java",
+  "methodName" : "deletePublicIPAddress",
+  "sourceCode" : "@Test(groups = \"live\", dependsOnMethods = { \"listPublicIPAddresses\", \"getPublicIPAddress\" }, alwaysRun = true)\r\npublic void deletePublicIPAddress() {\r\n    final PublicIPAddressApi ipApi = api.getPublicIPAddressApi(resourceGroupName);\r\n    boolean status = ipApi.delete(publicIpAddressName);\r\n    assertTrue(status);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\PublicIPAddressApiMockTest.java",
+  "methodName" : "createPublicIPAddressDnsRecordInUse",
+  "sourceCode" : "@Test(expectedExceptions = IllegalArgumentException.class)\r\npublic void createPublicIPAddressDnsRecordInUse() throws IllegalArgumentException, InterruptedException {\r\n    server.enqueue(jsonResponse(\"/PublicIPAddressCreateDnsRecordInUse.json\").setStatus(\"HTTP/1.1 400 Bad Request\"));\r\n    final PublicIPAddressApi ipApi = api.getPublicIPAddressApi(resourcegroup);\r\n    final Map<String, String> tags = ImmutableMap.of(\"testkey\", \"testvalue\");\r\n    PublicIPAddressProperties properties = PublicIPAddressProperties.create(null, null, \"Static\", 4, null, DnsSettings.create(\"foobar\", \"foobar.northeurope.cloudapp.azure.com\", null));\r\n    ipApi.createOrUpdate(publicIpName, location, tags, properties);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\ResourceGroupApiLiveTest.java",
+  "methodName" : "testResources",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCreate\")\r\npublic void testResources() {\r\n    List<Resource> resources = api().resources(RESOURCE_GROUP_NAME);\r\n    assertTrue(resources.isEmpty());\r\n    for (Resource resource : resources) {\r\n        assertNotNull(resource);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\ResourceGroupApiLiveTest.java",
+  "methodName" : "testList",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCreate\")\r\npublic void testList() {\r\n    final List<ResourceGroup> resourceGroups = api().list();\r\n    assertTrue(resourceGroups.size() > 0);\r\n    assertTrue(Iterables.any(resourceGroups, new Predicate<ResourceGroup>() {\r\n\r\n        @Override\r\n        public boolean apply(final ResourceGroup group) {\r\n            return RESOURCE_GROUP_NAME.equals(group.name());\r\n        }\r\n    }));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\ResourceGroupApiLiveTest.java",
+  "methodName" : "testRead",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCreate\")\r\npublic void testRead() {\r\n    final ResourceGroup resourceGroup = api().get(RESOURCE_GROUP_NAME);\r\n    assertNotNull(resourceGroup);\r\n    assertEquals(resourceGroup.name(), RESOURCE_GROUP_NAME);\r\n    assertEquals(resourceGroup.location(), LOCATION);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\ResourceGroupApiLiveTest.java",
+  "methodName" : "testUpdateWithEmptyTag",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCreate\")\r\npublic void testUpdateWithEmptyTag() {\r\n    ImmutableMap<String, String> tags = ImmutableMap.<String, String>builder().build();\r\n    final ResourceGroup resourceGroup = api().update(RESOURCE_GROUP_NAME, tags);\r\n    assertEquals(resourceGroup.tags().size(), 0);\r\n    assertEquals(resourceGroup.properties().provisioningState(), \"Succeeded\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\ResourceGroupApiLiveTest.java",
+  "methodName" : "testUpdateWithTag",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCreate\")\r\npublic void testUpdateWithTag() {\r\n    ImmutableMap<String, String> tags = ImmutableMap.<String, String>builder().put(\"test1\", \"value1\").build();\r\n    final ResourceGroup resourceGroup = api().update(RESOURCE_GROUP_NAME, tags);\r\n    assertEquals(resourceGroup.tags().size(), 1);\r\n    assertEquals(resourceGroup.properties().provisioningState(), \"Succeeded\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\ResourceProviderApiLiveTest.java",
+  "methodName" : "testGetComputeProviderMetadata",
+  "sourceCode" : "@Test\r\npublic void testGetComputeProviderMetadata() {\r\n    List<ResourceProviderMetaData> resourceProviderMetaDatas = api().get(PROVIDER);\r\n    assertNotNull(resourceProviderMetaDatas);\r\n    assertTrue(Iterables.any(resourceProviderMetaDatas, new Predicate<ResourceProviderMetaData>() {\r\n\r\n        @Override\r\n        public boolean apply(final ResourceProviderMetaData providerMetaData) {\r\n            return providerMetaData.resourceType().equals(VM_RESOURCE_TYPE);\r\n        }\r\n    }));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\StorageAccountApiLiveTest.java",
+  "methodName" : "testList",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCreate\")\r\npublic void testList() {\r\n    List<StorageService> storages = api().list();\r\n    assertTrue(storages.size() > 0);\r\n    for (StorageService storage : storages) {\r\n        check(storage);\r\n    }\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\StorageAccountApiLiveTest.java",
+  "methodName" : "testIsAvailable",
+  "sourceCode" : "@Test()\r\npublic void testIsAvailable() {\r\n    assertTrue(api().isAvailable(NAME).nameAvailable().equals(\"true\"));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\StorageAccountApiLiveTest.java",
+  "methodName" : "testCreate",
+  "sourceCode" : "@Test(dependsOnMethods = \"testIsAvailable\")\r\npublic void testCreate() {\r\n    URI uri = api().create(NAME, LOCATION, ImmutableMap.of(\"property_name\", \"property_value\"), ImmutableMap.of(\"accountType\", StorageService.AccountType.Standard_LRS.toString()));\r\n    if (uri != null) {\r\n        assertTrue(uri.toString().contains(\"api-version\"));\r\n        boolean jobDone = Predicates2.retry(new Predicate<URI>() {\r\n\r\n            @Override\r\n            public boolean apply(URI uri) {\r\n                return ParseJobStatus.JobStatus.DONE == api.getJobApi().jobStatus(uri);\r\n            }\r\n        }, 60 * 1 * 1000).apply(uri);\r\n        assertTrue(jobDone, \"create operation did not complete in the configured timeout\");\r\n    }\r\n    final StorageService service = api().get(NAME);\r\n    assertNotNull(service);\r\n    assertEquals(service.location(), LOCATION);\r\n    assertNotNull(service.storageServiceProperties().creationTime());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\StorageAccountApiLiveTest.java",
+  "methodName" : "testGet",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCreate\")\r\npublic void testGet() {\r\n    final StorageService service = api().get(NAME);\r\n    assertNotNull(service);\r\n    assertEquals(service.name(), NAME);\r\n    assertEquals(service.storageServiceProperties().primaryLocation(), LOCATION);\r\n    assertEquals(service.storageServiceProperties().accountType(), StorageService.AccountType.Standard_LRS);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\StorageAccountApiLiveTest.java",
+  "methodName" : "testGetKeys",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCreate\")\r\npublic void testGetKeys() {\r\n    final StorageServiceKeys keys = api().getKeys(NAME);\r\n    assertNotNull(keys);\r\n    assertNotNull(keys.key1());\r\n    assertNotNull(keys.key2());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\StorageAccountApiLiveTest.java",
+  "methodName" : "testRegenerateKeys",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCreate\")\r\npublic void testRegenerateKeys() {\r\n    StorageServiceKeys keys = api().regenerateKeys(NAME, \"key1\");\r\n    assertFalse(keys.key1().isEmpty());\r\n    assertFalse(keys.key2().isEmpty());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\StorageAccountApiLiveTest.java",
+  "methodName" : "testUpdateTags",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCreate\")\r\npublic void testUpdateTags() {\r\n    StorageServiceUpdateParams.StorageServiceUpdateProperties props = StorageServiceUpdateParams.StorageServiceUpdateProperties.create(null);\r\n    final StorageServiceUpdateParams params = api().update(NAME, ImmutableMap.of(\"another_property_name\", \"another_property_value\"), props);\r\n    assertTrue(params.tags().containsKey(\"another_property_name\"));\r\n    assertNull(params.storageServiceProperties().accountType());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\StorageAccountApiLiveTest.java",
+  "methodName" : "testUpdateAccountType",
+  "sourceCode" : "@Test(dependsOnMethods = { \"testCreate\", \"testGet\" })\r\npublic void testUpdateAccountType() {\r\n    StorageServiceUpdateParams.StorageServiceUpdateProperties props = StorageServiceUpdateParams.StorageServiceUpdateProperties.create(StorageService.AccountType.Standard_GRS);\r\n    final StorageServiceUpdateParams params = api().update(NAME, null, props);\r\n    assertNull(params.tags());\r\n    assertEquals(params.storageServiceProperties().accountType(), StorageService.AccountType.Standard_GRS);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\SubnetApiLiveTest.java",
+  "methodName" : "deleteSubnetResourceDoesNotExist",
+  "sourceCode" : "@Test\r\npublic void deleteSubnetResourceDoesNotExist() {\r\n    assertFalse(api().delete(subnetName));\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\SubnetApiLiveTest.java",
+  "methodName" : "createSubnet",
+  "sourceCode" : "@Test(dependsOnMethods = \"deleteSubnetResourceDoesNotExist\")\r\npublic void createSubnet() {\r\n    //Create properties object\r\n    //addressPrefix must match Virtual network address space!\r\n    Subnet.SubnetProperties properties = Subnet.SubnetProperties.builder().addressPrefix(\"10.2.0.0/23\").build();\r\n    Subnet subnet = api().createOrUpdate(subnetName, properties);\r\n    assertEquals(subnet.name(), subnetName);\r\n    assertEquals(subnet.properties().addressPrefix(), \"10.2.0.0/23\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\SubnetApiLiveTest.java",
+  "methodName" : "getSubnet",
+  "sourceCode" : "@Test(dependsOnMethods = \"createSubnet\")\r\npublic void getSubnet() {\r\n    Subnet subnet = api().get(subnetName);\r\n    assertNotNull(subnet.name());\r\n    assertNotNull(subnet.properties().addressPrefix());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\SubnetApiLiveTest.java",
+  "methodName" : "listSubnets",
+  "sourceCode" : "@Test(dependsOnMethods = \"createSubnet\")\r\npublic void listSubnets() {\r\n    List<Subnet> subnets = api().list();\r\n    assertTrue(subnets.size() > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\SubnetApiLiveTest.java",
+  "methodName" : "deleteSubnet",
+  "sourceCode" : "@Test(dependsOnMethods = { \"listSubnets\", \"getSubnet\" }, alwaysRun = true)\r\npublic void deleteSubnet() {\r\n    boolean status = api().delete(subnetName);\r\n    assertTrue(status);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\VirtualMachineApiLiveTest.java",
+  "methodName" : "testCreate",
+  "sourceCode" : "@Test\r\npublic void testCreate() {\r\n    String blob = storageService.storageServiceProperties().primaryEndpoints().get(\"blob\");\r\n    VirtualMachine vm = api().create(vmName, LOCATION, getProperties(blob, nicName), Collections.<String, String>emptyMap(), null);\r\n    assertTrue(!vm.name().isEmpty());\r\n    //Poll until resource is ready to be used\r\n    boolean jobDone = retry(new Predicate<String>() {\r\n\r\n        @Override\r\n        public boolean apply(String name) {\r\n            return !api().get(name).properties().provisioningState().equals(VirtualMachineProperties.ProvisioningState.CREATING);\r\n        }\r\n    }, 60 * 20 * 1000).apply(vmName);\r\n    assertTrue(jobDone, \"create operation did not complete in the configured timeout\");\r\n    VirtualMachineProperties.ProvisioningState status = api().get(vmName).properties().provisioningState();\r\n    // Cannot be creating anymore. Should be succeeded or running but not failed.\r\n    assertThat(status).isNotEqualTo(VirtualMachineProperties.ProvisioningState.CREATING);\r\n    assertThat(status).isNotEqualTo(VirtualMachineProperties.ProvisioningState.FAILED);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\VirtualMachineApiLiveTest.java",
+  "methodName" : "testGet",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCreate\")\r\npublic void testGet() {\r\n    VirtualMachine vm = api().get(vmName);\r\n    assertTrue(!vm.name().isEmpty());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\VirtualMachineApiLiveTest.java",
+  "methodName" : "testGetInstanceView",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCreate\")\r\npublic void testGetInstanceView() {\r\n    VirtualMachineInstance vmi = api().getInstanceDetails(vmName);\r\n    assertTrue(!vmi.statuses().isEmpty());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\VirtualMachineApiLiveTest.java",
+  "methodName" : "testStop",
+  "sourceCode" : "@Test(dependsOnMethods = \"testStart\")\r\npublic void testStop() {\r\n    api().stop(vmName);\r\n    assertTrue(stateReached(PowerState.STOPPED), \"stop operation did not complete in the configured timeout\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\VirtualMachineApiLiveTest.java",
+  "methodName" : "testStart",
+  "sourceCode" : "@Test(dependsOnMethods = \"testGet\")\r\npublic void testStart() {\r\n    api().start(vmName);\r\n    assertTrue(stateReached(PowerState.RUNNING), \"start operation did not complete in the configured timeout\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\VirtualMachineApiLiveTest.java",
+  "methodName" : "testRestart",
+  "sourceCode" : "@Test(dependsOnMethods = \"testStop\")\r\npublic void testRestart() {\r\n    api().start(vmName);\r\n    assertTrue(stateReached(PowerState.RUNNING), \"start operation did not complete in the configured timeout\");\r\n    api().restart(vmName);\r\n    assertTrue(stateReached(PowerState.RUNNING), \"restart operation did not complete in the configured timeout\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\VirtualMachineApiLiveTest.java",
+  "methodName" : "testList",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCreate\")\r\npublic void testList() {\r\n    List<VirtualMachine> list = api().list();\r\n    final VirtualMachine vm = api().get(vmName);\r\n    boolean vmPresent = Iterables.any(list, new Predicate<VirtualMachine>() {\r\n\r\n        public boolean apply(VirtualMachine input) {\r\n            return input.name().equals(vm.name());\r\n        }\r\n    });\r\n    assertTrue(vmPresent);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\VirtualMachineApiLiveTest.java",
+  "methodName" : "testGeneralize",
+  "sourceCode" : "@Test(dependsOnMethods = \"testRestart\")\r\npublic void testGeneralize() throws IllegalStateException {\r\n    api().stop(vmName);\r\n    assertTrue(stateReached(PowerState.STOPPED), \"restart operation did not complete in the configured timeout\");\r\n    api().generalize(vmName);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\VirtualMachineApiLiveTest.java",
+  "methodName" : "testCapture",
+  "sourceCode" : "@SuppressWarnings(\"unchecked\")\r\n@Test(dependsOnMethods = \"testGeneralize\")\r\npublic void testCapture() throws IllegalStateException {\r\n    URI uri = api().capture(vmName, vmName, vmName);\r\n    if (uri == null)\r\n        Assert.fail();\r\n    if (imageAvailablePredicate.apply(uri)) {\r\n        List<ResourceDefinition> definitions = api.getJobApi().captureStatus(uri);\r\n        if (definitions != null) {\r\n            for (ResourceDefinition definition : definitions) {\r\n                Map<String, String> properties = (Map<String, String>) definition.properties();\r\n                Object storageObject = properties.get(\"storageProfile\");\r\n                Map<String, String> properties2 = (Map<String, String>) storageObject;\r\n                Object osDiskObject = properties2.get(\"osDisk\");\r\n                Map<String, String> osProperties = (Map<String, String>) osDiskObject;\r\n                Object dataDisksObject = properties2.get(\"dataDisks\");\r\n                List<Object> dataProperties = (List<Object>) dataDisksObject;\r\n                Map<String, String> datadiskObject = (Map<String, String>) dataProperties.get(0);\r\n                assertNotNull(osProperties.get(\"name\"));\r\n                assertNotNull(datadiskObject.get(\"name\"));\r\n            }\r\n        }\r\n    }\r\n}",
+  "annotations" : [ "SuppressWarnings", "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\VirtualMachineApiLiveTest.java",
+  "methodName" : "testDelete",
+  "sourceCode" : "@Test(dependsOnMethods = \"testCapture\", alwaysRun = true)\r\npublic void testDelete() throws Exception {\r\n    URI uri = api().delete(vmName);\r\n    assertResourceDeleted(uri);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\VirtualNetworkApiLiveTest.java",
+  "methodName" : "deleteVirtualNetworkResourceDoesNotExist",
+  "sourceCode" : "@Test\r\npublic void deleteVirtualNetworkResourceDoesNotExist() {\r\n    boolean status = api().delete(virtualNetworkName);\r\n    assertFalse(status);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\VirtualNetworkApiLiveTest.java",
+  "methodName" : "createVirtualNetwork",
+  "sourceCode" : "@Test(dependsOnMethods = \"deleteVirtualNetworkResourceDoesNotExist\")\r\npublic void createVirtualNetwork() {\r\n    final VirtualNetwork.VirtualNetworkProperties virtualNetworkProperties = VirtualNetwork.VirtualNetworkProperties.builder().addressSpace(VirtualNetwork.AddressSpace.create(Arrays.asList(DEFAULT_VIRTUALNETWORK_ADDRESS_PREFIX))).build();\r\n    VirtualNetwork vn = api().createOrUpdate(virtualNetworkName, LOCATION, virtualNetworkProperties);\r\n    assertEquals(vn.name(), virtualNetworkName);\r\n    assertEquals(vn.location(), LOCATION);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\VirtualNetworkApiLiveTest.java",
+  "methodName" : "getVirtualNetwork",
+  "sourceCode" : "@Test(dependsOnMethods = \"createVirtualNetwork\")\r\npublic void getVirtualNetwork() {\r\n    VirtualNetwork vn = api().get(virtualNetworkName);\r\n    assertNotNull(vn.name());\r\n    assertNotNull(vn.location());\r\n    assertNotNull(vn.properties().addressSpace().addressPrefixes());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\VirtualNetworkApiLiveTest.java",
+  "methodName" : "listVirtualNetworks",
+  "sourceCode" : "@Test(dependsOnMethods = \"createVirtualNetwork\")\r\npublic void listVirtualNetworks() {\r\n    List<VirtualNetwork> vnList = api().list();\r\n    assertTrue(vnList.size() > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\VirtualNetworkApiLiveTest.java",
+  "methodName" : "deleteVirtualNetwork",
+  "sourceCode" : "@Test(dependsOnMethods = { \"listVirtualNetworks\", \"getVirtualNetwork\" }, alwaysRun = true)\r\npublic void deleteVirtualNetwork() {\r\n    boolean status = api().delete(virtualNetworkName);\r\n    assertTrue(status);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\features\\VMSizeApiLiveTest.java",
+  "methodName" : "testList",
+  "sourceCode" : "@Test\r\npublic void testList() {\r\n    for (VMSize vmSize : api().list()) {\r\n        assertNotNull(vmSize.name());\r\n    }\r\n    assertTrue(api().list().size() > 0);\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\filters\\ApiVersionFilterTest.java",
+  "methodName" : "testFailIfNoGeneratedHttpRequest",
+  "sourceCode" : "@Test(expectedExceptions = IllegalArgumentException.class)\r\npublic void testFailIfNoGeneratedHttpRequest() {\r\n    ApiVersionFilter filter = new ApiVersionFilter(config, filterStringsBoundToInjectorByName(new Properties()));\r\n    filter.filter(HttpRequest.builder().method(\"GET\").endpoint(\"http://localhost\").build());\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\filters\\ApiVersionFilterTest.java",
+  "methodName" : "testOverrideMethodVersion",
+  "sourceCode" : "@Test\r\npublic void testOverrideMethodVersion() {\r\n    Properties props = new Properties();\r\n    props.setProperty(API_VERSION_PREFIX + \"named:get\", \"namedversion\");\r\n    props.setProperty(API_VERSION_PREFIX + \"VersionedApi.noName\", \"noNameversion\");\r\n    ApiVersionFilter filter = new ApiVersionFilter(config, filterStringsBoundToInjectorByName(props));\r\n    HttpRequest request = GeneratedHttpRequest.builder().method(\"GET\").endpoint(\"http://localhost\").invocation(noName).addQueryParam(\"api-version\", \"original\", \"original2\").build();\r\n    HttpRequest filtered = filter.filter(request);\r\n    assertEquals(filtered.getEndpoint().getQuery(), \"api-version=noNameversion\");\r\n    request = GeneratedHttpRequest.builder().method(\"GET\").endpoint(\"http://localhost\").invocation(named).addQueryParam(\"api-version\", \"original\", \"original2\").build();\r\n    filtered = filter.filter(request);\r\n    assertEquals(filtered.getEndpoint().getQuery(), \"api-version=namedversion\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\filters\\ApiVersionFilterTest.java",
+  "methodName" : "testFallbackToClassName",
+  "sourceCode" : "@Test\r\npublic void testFallbackToClassName() {\r\n    Properties props = new Properties();\r\n    props.setProperty(API_VERSION_PREFIX + \"VersionedApi\", \"classversion\");\r\n    ApiVersionFilter filter = new ApiVersionFilter(config, filterStringsBoundToInjectorByName(props));\r\n    HttpRequest request = GeneratedHttpRequest.builder().method(\"GET\").endpoint(\"http://localhost\").invocation(noName).addQueryParam(\"api-version\", \"original\", \"original2\").build();\r\n    HttpRequest filtered = filter.filter(request);\r\n    assertEquals(filtered.getEndpoint().getQuery(), \"api-version=classversion\");\r\n    request = GeneratedHttpRequest.builder().method(\"GET\").endpoint(\"http://localhost\").invocation(named).addQueryParam(\"api-version\", \"original\", \"original2\").build();\r\n    filtered = filter.filter(request);\r\n    assertEquals(filtered.getEndpoint().getQuery(), \"api-version=classversion\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+}, {
+  "filePath" : "C:\\Java_projects\\temp_projects\\jclouds\\providers\\azurecompute-arm\\src\\test\\java\\org\\jclouds\\azurecompute\\arm\\filters\\ApiVersionFilterTest.java",
+  "methodName" : "testNothingChangesIfNoCustomVersion",
+  "sourceCode" : "@Test\r\npublic void testNothingChangesIfNoCustomVersion() {\r\n    ApiVersionFilter filter = new ApiVersionFilter(config, filterStringsBoundToInjectorByName(new Properties()));\r\n    HttpRequest request = GeneratedHttpRequest.builder().method(\"GET\").endpoint(\"http://localhost\").invocation(named).addQueryParam(\"api-version\", \"foo\").build();\r\n    HttpRequest filtered = filter.filter(request);\r\n    assertEquals(filtered.getEndpoint().getQuery(), \"api-version=foo\");\r\n}",
+  "annotations" : [ "Test" ],
+  "junit" : "unknown"
+} ]
