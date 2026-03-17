@@ -20,29 +20,29 @@ import java.nio.charset.StandardCharsets;
 public class MockInfoExporter {
 
     public static void main(String[] args) throws Exception {
-        String mode = "clone"; // pattern / clone
-        String projectRoot = "C:\\Java_projects\\temp_projects\\NiFi"; // ← 你可以直接改这里
-        String outputPath = "C:\\Users\\10590\\OneDrive - stevens.edu\\PHD\\2025 Fall\\mock pattern\\mock-pattern-analyzer\\NiFi.json";
+        // String mode = "clone"; // pattern / clone
+        // String projectRoot = "C:\\Java_projects\\temp_projects\\NiFi"; // ← 你可以直接改这里
+        // String outputPath = "C:\\Users\\10590\\OneDrive - stevens.edu\\PHD\\2025 Fall\\mock pattern\\mock-pattern-analyzer\\NiFi.json";
         // 参数检查
     // Usage 检查
-        // if (args.length < 3) {
-        //     System.out.println("""
-        //     Usage: java -jar mock-analyzer-lite.jar <mode> <source_dir> <output_json>
+        if (args.length < 3) {
+            System.out.println("""
+            Usage: java -jar mock-analyzer-lite.jar <mode> <source_dir> <output_json>
 
-        //     <mode>         'pattern' or 'clone'
-        //     <source_dir>   Path to the root directory of Java source files to analyze
-        //     <output_json>  Path to the output JSON file
+            <mode>         'pattern' or 'clone'
+            <source_dir>   Path to the root directory of Java source files to analyze
+            <output_json>  Path to the output JSON file
 
-        //     Examples:
-        //       java -jar mock-analyzer-lite.jar pattern ./src/test/java ./output/mock_info.json
-        //       java -jar mock-analyzer-lite.jar clone ./src/test/java ./output/mock_clone_instances.json
-        //     """);
-        //     return;
-        // }
+            Examples:
+              java -jar mock-analyzer-lite.jar pattern ./src/test/java ./output/mock_info.json
+              java -jar mock-analyzer-lite.jar clone ./src/test/java ./output/mock_clone_instances.json
+            """);
+            return;
+        }
 
-        // String mode = args[0].toLowerCase(); // pattern / clone
-        // String projectRoot = args[1];
-        // String outputPath = args[2];
+        String mode = args[0].toLowerCase(); // pattern / clone
+        String projectRoot = args[1];
+        String outputPath = args[2];
 
         Path projectRootPath = Path.of(projectRoot);
         if (!Files.exists(projectRootPath) || !Files.isDirectory(projectRootPath)) {
