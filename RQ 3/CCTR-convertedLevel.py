@@ -140,6 +140,7 @@ def analyze_mock_objects(json_path):
             "Dependency": obj.get("variableType", 0),
             "L0Count": test_case_count,
             "ConvertedLevel": convertedLevel,
+            "RawCCTR": raw_code_cctr,
             "AddedCCTR": raw_code_cctr - rm_code_cctr,
             "ConvertedCCTR": converted_code_cctr - rm_code_cctr,
             "CCTRReduction": (raw_code_cctr - converted_code_cctr),
@@ -160,5 +161,5 @@ for json_path in json_files:
     all_data.extend(result)
 
 df = pd.DataFrame(all_data)
-df.to_csv('Level 0 converted result.csv', index=False)
+df.to_csv('L0_conversion_result.csv', index=False)
 
